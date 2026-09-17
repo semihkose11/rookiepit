@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FRC Cad Modul 01 - Onshape temelleri: document ve tab'ler, Part Studio ile Assembly ayrimi, Feature list ve bulut paylasimi. Kavram, uc kart, sema, kurulum tuvali ve sekiz soruluk test.">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>window.__EMBED__=true;</script>
+<meta property="og:title" content="Onshape'e Giriş: Document, Part Studio ve Assembly">
+<meta property="og:description" content="FRC Cad Modul 01 - kavram, kartlar, sema ve test.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}
+[hidden]:not([hidden=until-found]){display:none!important}</style>
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<title>Onshape'e Giriş: Document, Part Studio ve Assembly · FRC Cad Modül 01</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
+:root, :root[data-theme="dark"], :root[data-theme="light"]{
+  color-scheme:light;
+  --ground:#EFE9FB; --surface:#FFFFFF; --sunk:#E4DBF7;
+  --ink:#000000; --body:#141019; --mute:#463E58; --hair:#CFC2EC;
+  --acc:#5B21B6; --acc-soft:#EDE5FE;
+  --ok:#116336; --ok-soft:#E4F3EA; --no:#A5124A; --no-soft:#FBE6EE;
+  --rung-b:#7C3AED; --rung-m:#4C1D95; --rung-p:#000000; --rung-p-fg:#EFE9FB;
+  --w-pos:#6D28D9; --w-neg:#000000; --dia-fill:#FFFFFF; --dia-edge:#BFB0E0;
+  --dia-ink:#000000; --dia-mute:#463E58; --dia-pd:#5B21B6; --dia-band:#E7DDFC;
+  --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+  font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:40px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font:700 clamp(34px,8vw,52px)/1.02 var(--disp);letter-spacing:-.01em;margin:10px 0 0}
+.sub{margin:14px 0 0;max-width:60ch;font-size:15.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+section{padding:38px 0;border-bottom:1px solid var(--hair)}
+section:last-of-type{border-bottom:0}
+h2{font:600 clamp(23px,5vw,29px)/1.15 var(--disp);letter-spacing:.005em;margin:8px 0 6px}
+.lede{margin:0 0 22px;font-size:15px;color:var(--mute);max-width:62ch}
+.concept p{margin:0 0 14px;font-size:15.5px;line-height:1.72;max-width:66ch}
+.vids{margin-top:22px}
+.vid{border:1px solid var(--hair);border-radius:12px;background:var(--surface);overflow:hidden}
+.vid+.vid{margin-top:14px}
+.vtop{padding:12px 16px;border-bottom:1px solid var(--hair)}
+.vtop b{display:block;color:var(--ink);font:600 14.5px/1.35 var(--sans)}
+.vtop span{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.vframe{position:relative;width:100%;aspect-ratio:16/9;background:#1b1620}
+.vface{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
+  background-color:#1b1620;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;text-decoration:none}
+.vface:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+.vptri{width:74px;height:52px;border-radius:12px;background:rgba(20,16,24,.78);
+  display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.vface:hover .vptri{background:var(--acc)}
+.vptri svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.vlink{display:inline-block;margin:14px 16px 0;padding:9px 14px;border-radius:8px;
+  background:var(--acc);color:#fff;text-decoration:none;font:600 13px/1 var(--sans)}
+.vnote{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot a{color:var(--acc);font-weight:600}
+.vsrc{margin:8px 16px 14px;font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.terms{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.term{font:500 12.5px/1 var(--mono);color:var(--ink);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:5px;padding:7px 9px}
+.rail{display:flex;flex-direction:column;gap:14px}
+.flip{perspective:1400px;background:none;border:0;padding:0;width:100%;
+  text-align:left;font:inherit;cursor:pointer;border-radius:14px}
+.flip:focus-visible{outline:2.5px solid var(--acc);outline-offset:3px}
+.inner{position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1)}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+.face{border-radius:14px;border:1px solid var(--hair);background:var(--surface);
+  box-shadow:var(--shadow);padding:20px;backface-visibility:hidden}
+.face.back{position:absolute;inset:0;transform:rotateY(180deg);overflow:auto}
+.face.front{min-height:150px;display:flex;flex-direction:column}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.rung{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 9px;border-radius:5px;color:#fff}
+.r-behaviour{background:var(--rung-b)} .r-mechanism{background:var(--rung-m)}
+.r-pit{background:var(--rung-p);color:var(--rung-p-fg)}
+.count{font:500 12px/1 var(--mono);color:var(--mute)}
+.cfront{font:600 clamp(19px,4.2vw,23px)/1.3 var(--disp);color:var(--ink)}
+.ctags{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:400 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);padding:5px 8px;border-radius:4px}
+.hintline{margin-top:12px;font:500 12px/1.5 var(--mono);color:var(--acc)}
+.face.front .hintline{margin-top:auto;padding-top:18px}
+.cardfig svg{max-height:150px}
+@media(max-width:520px){
+  .cback{font-size:13.6px;line-height:1.56}
+  .cardfig{margin-top:12px}
+  .cardfig svg{max-height:116px}
+  .take{font-size:12.8px;padding:9px 11px;margin-top:12px}
+}
+.cback{font-size:14.5px;line-height:1.62;margin:0}
+.take{margin-top:14px;padding:11px 13px;border-radius:9px;background:var(--acc-soft);
+  color:var(--ink);font:600 13.5px/1.45 var(--sans)}
+.gauges{padding:16px 18px;background:var(--sunk);border:1px solid var(--hair);
+  border-radius:12px;display:grid;gap:11px}
+#ipbody{margin-top:24px}
+.grow{display:grid;grid-template-columns:148px 1fr auto;align-items:center;gap:12px}
+.glabel{font:500 13px/1 var(--mono);color:var(--ink)}
+.gbar{height:14px;display:flex;align-items:center}
+.gbar i{display:block;width:100%;border-radius:2px;background:var(--acc)}
+.guse{font:400 12px/1.3 var(--sans);color:var(--mute);text-align:right;max-width:20ch}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.ptop{padding:18px 20px;border-bottom:1px solid var(--hair)}
+.ptop h3{font:600 19px/1.25 var(--disp)}
+.ptop p{margin:7px 0 0;font-size:14.5px}
+.must{list-style:none;margin:0;padding:2px 0}
+.must li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.must li:last-child{border-bottom:0}
+.must .n{font:600 12px/22px var(--mono);color:#fff;background:var(--acc);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.must b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.must span{font-size:13px;color:var(--mute)}
+.pfoot{padding:14px 20px;background:var(--sunk);font-size:13.5px;color:var(--mute)}
+.pfoot code{font:500 12.5px var(--mono);color:var(--ink)}
+.howgrid{display:grid;gap:16px;padding:18px 20px}
+@media(min-width:640px){.howgrid{grid-template-columns:1fr 1fr;gap:24px}}
+.howgrid h4{margin:0 0 9px;font:600 11.5px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--acc)}
+.howgrid ol{margin:0;padding-left:19px;font-size:13.8px;line-height:1.62}
+.howgrid ol li{margin-bottom:6px}
+.howgrid p{margin:0 0 9px;font-size:13.8px;line-height:1.62}
+.swipe{display:none;font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--mute);margin:0 0 8px}
+@media(max-width:860px){.swipe{display:block}}
+.fig{margin:16px 0 6px;border:1px solid var(--hair);border-radius:11px;
+  background:var(--surface);padding:13px 14px 9px}
+.fig .sc{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig .sc svg{display:block;width:100%;height:auto;min-width:520px}
+.fig .cap{margin:9px 0 0;font:500 11.5px/1.45 var(--mono);color:var(--mute)}
+.fig .cap b{display:none;color:var(--acc);font-weight:600}
+@media(max-width:620px){.fig .cap b{display:inline}}
+.ans .fig,.cfront .fig{background:var(--surface)}
+.cardfig{margin:14px 0 0;border-radius:9px;overflow:hidden}
+.cardfig svg{display:block;width:100%;height:auto}
+.conceptfig{margin:6px 0 22px}
+.match[hidden],.mbar[hidden]{display:none!important}
+.bwarn{margin:0;padding:12px 20px;font:500 13px/1.5 var(--sans);color:var(--no);
+  background:var(--no-soft);border-bottom:1px solid var(--hair)}
+#bpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#bpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#bpanel.locked #bwrap,#bpanel.locked .mbar,#bpanel.locked #bres{width:100%;max-width:1120px;
+  margin-left:auto;margin-right:auto}
+#bpanel.locked .mbar{position:sticky;bottom:0;background:var(--ground);
+  border-top:1px solid var(--hair);padding:12px 20px}
+#bpanel.locked .canvas{height:min(64vh,560px)}
+.blines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.blbl{position:absolute;inset:0;pointer-events:none;z-index:6}
+.placed{z-index:2}
+.placed.bad{outline:2.5px solid var(--no);outline-offset:3px;border-radius:10px}
+.placed.fine{outline:2px solid var(--ok);outline-offset:3px;border-radius:10px}
+.pin{position:absolute;width:15px;height:15px;border-radius:50%;padding:0;transform:translate(-50%,-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;z-index:4;touch-action:none}
+.pin:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.pin:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.pin.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.pinlb.lft{transform:translate(-100%,-50%)}
+.pinlb.rgt{transform:translate(0,-50%)}
+.pinlb{position:absolute;transform:translate(-50%,-190%);font:600 9px/1 var(--mono);
+  color:var(--acc);background:var(--surface);border:1px solid var(--hair);border-radius:4px;
+  padding:2px 3px;pointer-events:none;z-index:5;white-space:nowrap}
+.wchip[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);
+  box-shadow:0 0 0 2px var(--acc-soft)}
+.mres .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.mres .pen{margin:10px 0 0;font:500 13px/1.55 var(--sans);color:var(--no)}
+.mres .miss{margin:12px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:var(--body)}
+.mres .miss b{color:var(--no);font-family:var(--mono);font-size:12px}
+.mgate{padding:20px}
+.mgate p{margin:0 0 14px;font-size:14.5px;line-height:1.62;max-width:62ch}
+body.mlock{overflow:hidden}
+#matchpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#matchpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#matchpanel.locked .match,#matchpanel.locked .mres{width:100%;max-width:880px;margin-left:auto;margin-right:auto}
+#matchpanel.locked .mbar{width:100%;max-width:880px;margin:0 auto;position:sticky;bottom:0;
+  background:var(--ground);border-top:1px solid var(--hair);padding:12px 20px}
+#matchpanel.locked .mres{margin-bottom:24px}
+.match{position:relative;display:grid;grid-template-columns:1fr 92px 1fr;padding:18px 20px 6px}
+@media(max-width:620px){.match{grid-template-columns:1fr 46px 1fr;padding:14px 12px 4px}}
+.mcol{display:flex;flex-direction:column;gap:13px}
+.mitem{position:relative;display:flex;align-items:center;gap:11px;background:var(--surface);
+  border:1.6px solid var(--hair);border-radius:12px;padding:11px 13px;min-height:60px}
+.mcol.left .mitem{padding-right:24px}
+.mcol.right .mitem{padding-left:24px}
+.mitem .lbl{font:500 14px/1.35 var(--sans);color:var(--ink)}
+@media(max-width:620px){.mitem{min-height:54px;padding:9px 10px;gap:8px}
+  .mcol.left .mitem{padding-right:20px}.mcol.right .mitem{padding-left:20px}
+  .mitem .lbl{font-size:12.8px}}
+.mitem .art{flex:none;width:66px}
+.mitem .art svg{display:block;width:100%;height:auto}
+@media(max-width:620px){.mitem .art{width:50px}}
+.mdot{position:absolute;top:50%;width:19px;height:19px;border-radius:50%;transform:translateY(-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;padding:0;z-index:3}
+.mcol.left .mdot{right:-10px}
+.mcol.right .mdot{left:-10px}
+.mdot:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.mdot:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.mdot.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.mdot.ok{border-color:var(--ok);background:var(--ok)}
+.mdot.no{border-color:var(--no);background:var(--no)}
+.mitem.ok{border-color:var(--ok);background:var(--ok-soft)}
+.mitem.no{border-color:var(--no);background:var(--no-soft)}
+.mlines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.mfix{display:block;margin-top:5px;font:500 12px/1.4 var(--mono);color:var(--no)}
+.mbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 20px 16px}
+.mbar .btn:disabled{opacity:.45;cursor:default}
+.mres{margin:0 20px 16px;padding:16px 18px;border-radius:12px;background:var(--sunk);
+  border-left:3px solid var(--acc)}
+.mres .big{font:700 30px/1 var(--disp);color:var(--ink)}
+.mres .cap{font:500 12px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:9px}
+.mres p{margin:9px 0 0;font-size:14px;line-height:1.6}
+.diawrap{overflow-x:auto;padding:6px 0 2px;-webkit-overflow-scrolling:touch}
+.tray{padding:16px 20px 4px}
+.tlabel{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin:0 0 11px}
+.tgrid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:9px;margin-bottom:16px}
+.part{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font:inherit;color:var(--body)}
+.part:hover{border-color:var(--acc);background:var(--acc-soft)}
+.part:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.part span{font:500 10.5px/1 var(--mono);color:var(--mute);white-space:nowrap}
+.bleed{width:100%}
+@media(min-width:880px){
+  .bleed{width:min(1160px,calc(100vw - 40px));margin-left:50%;transform:translateX(-50%)}
+  .bleed .canvas{height:min(74vh,620px)}
+}
+.canvas{position:relative;height:min(72vh,520px);margin:0 14px 14px;border-radius:12px;
+  border:1.5px dashed var(--hair);background:var(--sunk);overflow:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.board{position:relative;width:1080px;height:680px}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--acc-soft) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--acc-soft) 1px,transparent 1px);
+  background-size:26px 26px;opacity:.75}
+.pan{margin:0 14px 12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+@media(max-width:700px){
+  .tgrid{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;font-size:13.5px;color:var(--mute);pointer-events:none}
+.empty.gone{display:none}
+.placed{position:absolute;cursor:grab;touch-action:none;user-select:none}
+.placed:active{cursor:grabbing}
+.placed .x{position:absolute;top:-9px;right:-9px;width:19px;height:19px;border-radius:50%;
+  background:var(--no);color:#fff;border:0;font:600 11px/19px var(--sans);cursor:pointer;padding:0}
+.placed .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.wireel{position:absolute;inset:0;pointer-events:none}
+.wireel .seg{position:absolute;height:20px;transform-origin:0 50%;pointer-events:auto;
+  cursor:grab;touch-action:none}
+.wireel .seg:active{cursor:grabbing}
+.wireel .seg i{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);border-radius:99px}
+.wireel .h{position:absolute;width:20px;height:20px;border-radius:50%;padding:0;
+  background:var(--surface);border:2.5px solid var(--acc);transform:translate(-50%,-50%);
+  cursor:crosshair;touch-action:none;pointer-events:auto;z-index:2;
+  opacity:0;transition:opacity .14s ease}
+.wireel .h:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.wireel .h.m{width:17px;height:17px;background:var(--acc);border-color:var(--surface);
+  box-shadow:0 0 0 2px var(--acc)}
+.wireel:hover .h,.wireel.sel .h,.wireel:focus-within .h{opacity:1}
+@media (prefers-reduced-motion:reduce){.wireel .h{transition:none}}
+.wireel .wtag{position:absolute;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:5px;pointer-events:auto;z-index:3;
+  font:600 10.5px/1 var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:4px 5px 4px 7px;white-space:nowrap}
+.wireel .x{position:static;width:16px;height:16px;flex:none;
+  border-radius:50%;background:var(--no);color:#fff;border:0;font:600 10px/16px var(--sans);
+  cursor:pointer;padding:0}
+.wireel .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:0 20px 16px}
+.mini{font:600 12px/1 var(--mono);background:var(--surface);color:var(--body);
+  border:1px solid var(--hair);padding:9px 13px;border-radius:999px;cursor:pointer}
+.mini:hover{border-color:var(--acc)} .mini:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cnote{font-size:12.5px;color:var(--mute);margin-left:auto;font-family:var(--mono)}
+.diawrap svg{display:block;min-width:790px;width:100%;height:auto}
+.diacap{padding:0 20px 16px;font-size:13px;color:var(--mute)}
+.calls{list-style:none;margin:0;padding:2px 0}
+.calls li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.calls li:last-child{border-bottom:0}
+.calls .n{font:600 12px/22px var(--mono);color:#fff;background:var(--dia-pd);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.calls b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.calls span{font-size:13px;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+.filt{font:600 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  background:var(--surface);color:var(--body);border:1px solid var(--hair);
+  padding:9px 13px;border-radius:999px;cursor:pointer}
+.filt[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.filt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.score{margin-left:auto;font:600 13px/1 var(--mono);color:var(--mute)}
+.q{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:13px}
+.pill{font:600 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 8px;border-radius:4px;border:1px solid var(--hair);color:var(--mute)}
+.pill.core{color:var(--rung-b);border-color:currentColor}
+.pill.stretch{color:var(--acc);border-color:currentColor}
+.pill.pit{color:var(--no);border-color:currentColor}
+.sym{margin:0 0 12px;padding:12px 14px;background:var(--sunk);border-radius:9px;font-size:14px;line-height:1.6}
+.qtext{margin:0 0 15px;color:var(--ink);font:500 16.5px/1.42 var(--sans)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;text-align:left;
+  font:400 14.5px/1.5 var(--sans);color:var(--body);background:var(--surface);
+  border:1px solid var(--hair);border-radius:10px;padding:12px 13px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--acc);background:var(--acc-soft)}
+.opt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.opt:disabled{cursor:default}
+.opt .k{font:600 12px/1.45 var(--mono);color:var(--mute)}
+.opt.pick-ok{background:var(--ok-soft);border-color:var(--ok)} .opt.pick-ok .k{color:var(--ok)}
+.opt.pick-no{background:var(--no-soft);border-color:var(--no)} .opt.pick-no .k{color:var(--no)}
+.opt.reveal{border-color:var(--ok);border-style:dashed}
+.opt.taken{opacity:.55}
+.num{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.num input{font:500 16px var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:9px;padding:11px 13px;width:130px}
+.num input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.btn{font:600 13px/1 var(--sans);background:var(--ink);color:var(--ground);border:0;
+  border-radius:9px;padding:12px 17px;cursor:pointer}
+.btn:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.unit{font:500 13px var(--mono);color:var(--mute)}
+/* debug_code: satır numaralı kod bloğu, hatalı satır seçilir ve doğrusu yazılır */
+.code{margin:0 0 12px;border:1px solid var(--hair);border-radius:10px;background:var(--surface);
+  overflow:auto}
+.code .ln{display:grid;grid-template-columns:38px 1fr;align-items:stretch;width:100%;
+  border:0;border-left:3px solid transparent;background:none;text-align:left;cursor:pointer;
+  font:400 13.5px/1.62 var(--mono);color:var(--body);padding:0}
+.code .ln:hover:not(:disabled){background:var(--acc-soft)}
+.code .ln:focus-visible{outline:2.5px solid var(--acc);outline-offset:-2px}
+.code .ln:disabled{cursor:default}
+.code .ln .no{color:var(--mute);text-align:right;padding:0 9px 0 0;user-select:none;
+  background:var(--sunk);font-size:12px}
+.code .ln .src{padding:0 12px;white-space:pre}
+.code .ln.pick{border-left-color:var(--acc);background:var(--acc-soft)}
+.code .ln.pick-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.code .ln.pick-no{border-left-color:var(--no);background:var(--no-soft)}
+.code .ln.reveal{border-left-color:var(--ok);border-left-style:dashed}
+.fixrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fixrow input{flex:1 1 320px;min-width:0;font:500 13.5px var(--mono);color:var(--ink);
+  background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:11px 13px}
+.fixrow input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.steplab{margin:0 0 9px;font:500 12px/1.5 var(--mono);color:var(--mute)}
+.ans{margin-top:14px;padding:14px 15px;border-radius:10px;font-size:14.5px;line-height:1.62;
+  background:var(--sunk);border-left:3px solid var(--acc)}
+.ans .verdict{display:block;font:600 13px/1 var(--mono);letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:9px}
+.ans.good .verdict{color:var(--ok)} .ans.bad .verdict{color:var(--no)}
+.srcs{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.rule{font:500 11px/1 var(--mono);color:var(--mute);border:1px solid var(--hair);
+  border-radius:4px;padding:4px 7px}
+details.ref{margin-top:11px}
+details.ref summary{font:500 12.5px var(--mono);color:var(--mute);cursor:pointer}
+details.ref summary:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+details.ref p{margin:9px 0 0;font-size:13.5px;color:var(--mute);word-break:break-word}
+.finish{background:var(--surface);border:1.5px solid var(--acc);border-radius:14px;
+  box-shadow:var(--shadow);padding:24px 20px;text-align:center}
+.finish .big{font:700 46px/1 var(--disp);color:var(--ink);letter-spacing:-.01em}
+.finish .cap{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:12px}
+.finish .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.finish .sm{font:400 14px/1.5 var(--sans);color:var(--body);margin:10px auto 0;max-width:44ch}
+.finish .bd{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:16px 0 20px}
+.finish .bd span{font:500 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 10px}
+.retry{margin-top:18px;font:600 14px/1 var(--sans);background:var(--acc);color:var(--ground);border:0;
+  border-radius:10px;padding:14px 24px;cursor:pointer}
+.retry:hover{filter:brightness(1.08)}
+.retry:focus-visible{outline:2.5px solid var(--ink);outline-offset:3px}
+footer{padding:28px 0 0;font-size:13px;color:var(--mute)}
+.cright{margin:0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap" lang="tr">
+<header>
+  <div class="eyebrow" lang="en">cad · modül 01</div>
+  <h1 id="mt"></h1>
+  <p class="sub" id="ms"></p>
+  <div class="meta" id="mm"></div>
+</header>
+
+<section class="concept">
+  <div class="eyebrow">kavram</div>
+  <h2>Onshape nedir</h2>
+  <div id="body"></div>
+  <div class="vids" id="vids"></div>
+  <div class="terms" id="terms"></div>
+</section>
+
+<section>
+  <div class="eyebrow">basamak</div>
+  <h2>Davranıştan bedele</h2>
+  <p class="lede">Aynı konu üç basamakta: önce ne olduğu, sonra neden olduğu, en sonda sahada neye mal olduğu. Çevirmek için karta dokunun.</p>
+  <div class="rail" id="cards"></div>
+</section>
+
+<section>
+  <div class="eyebrow">referans</div>
+  <h2>Hangi kavram ne demek</h2>
+  <p class="lede">Bu modülün kavramları kaplar ve içlerindekiler. Hangisinin neyi barındırdığını bilmek, bir aracı nerede arayacağınızı söyler.</p>
+  <div class="gauges" id="gauges"></div>
+  <div class="concept" id="ipbody"></div>
+  <div id="ipfig"></div>
+</section>
+
+<section>
+  <div class="eyebrow" lang="en">mechanism map</div>
+  <h2>Kur: işin yeri ve assembly sırası</h2>
+  <p class="lede">Önce kurulmuş bir örnek okuyun. Sonra aynısını, örneğe bakmadan kendiniz kurun.</p>
+  <div class="panel bleed">
+    <div class="ptop"><h3>Örnek: kaplar, işler ve paylaşım</h3>
+      <p>Üstte document ve içindeki tab'ler, ortada hangi işin hangi kapta yapıldığı, altta paylaşmak ile dosya göndermek arasındaki fark.</p></div>
+    <p class="swipe">→ şemayı yana kaydırarak tamamını görün</p>
+    <div class="diawrap" id="dia"></div>
+    <ol class="calls" id="calls"></ol>
+  </div>
+
+  <div class="panel bleed" id="matchpanel">
+    <div class="ptop"><h3 id="mth"></h3><p id="mtp"></p></div>
+    <div class="mgate" id="mgate">
+      <p id="mgtext"></p>
+      <button class="btn" id="mstart"></button>
+    </div>
+    <div class="match" id="match" hidden></div>
+    <div class="mbar" id="mbar" hidden>
+      <button class="btn" id="mdone"></button>
+      <button class="mini" id="mreset"></button>
+      <button class="mini" id="mclose" hidden></button>
+      <span class="cnote" id="mnote"></span>
+    </div>
+    <div id="mres"></div>
+  </div>
+
+  <div class="panel bleed" id="bpanel">
+    <div class="ptop"><h3 id="bh"></h3><p id="bp"></p></div>
+    <div class="mgate" id="bgate">
+      <p id="bgtext"></p>
+      <button class="btn" id="bstart"></button>
+    </div>
+    <div id="bwrap" hidden>
+      <p class="bwarn" id="bwarn"></p>
+      <div class="tray" id="btray"></div>
+      <div class="canvas" id="bcanvas"><div class="board" id="bboard"></div>
+        <div class="empty" id="bempty"></div></div>
+      <p class="pan" id="bpan"></p>
+    </div>
+    <div class="mbar" id="bbar" hidden>
+      <button class="btn" id="bdone"></button>
+      <button class="mini" id="breset"></button>
+      <button class="mini" id="bclose" hidden></button>
+      <span class="cnote" id="bnote"></span>
+    </div>
+    <div id="bres"></div>
+    <ol class="must" id="must"></ol>
+    <div class="ptop" style="border-top:1px solid var(--hair);border-bottom:0">
+      <h3 id="c2h"></h3><p id="c2p"></p>
+    </div>
+  </div>
+
+<section>
+  <div class="eyebrow">alıştırma</div>
+  <h2>Sorular</h2>
+  <p class="lede">Bir şık seçin; gerekçe hemen açılır. Puanınız cihazınızda saklanır.</p>
+  <div class="bar" id="bar"></div>
+  <div id="qs"></div>
+</section>
+
+<footer id="foot"><p class="cright">© 2026 Semih Tuna Köse</p></footer>
+</div>
+
+<script>
+const D = {"id": "cad-01-onshape-basics", "title": "Onshape'e Giriş: Document, Part Studio ve Assembly", "summary": "Onshape'in üç temel kabını, hangi işin hangisinde yapıldığını, tek bir Feature list'in birden çok part'ı nasıl sürdüğünü ve bulut tabanlı paylaşımın dosya göndermekten neden farklı olduğunu öğretir.", "season": "2026", "verifiedOn": "2026-09-02", "estimatedMinutes": 30, "body": "Onshape'te her şey bir document içinde yaşar. Document, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran bir kaptır. Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir; bunların her biri kendi tab'inde durur. Part Studio'lar, Assembly'ler ve içe aktarılan yabancı dosyalar arayüzde tab olarak görünür.\n\nPart Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan bir kaptır. Kaynak onu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı sayar. Soldaki Feature list varsayılan geometriyi ve oluşturduğunuz bütün feature'ları içerir; tek bir Feature list birden çok part'ın şeklini sürer. Kaynağın buna bağlı iki cümlesi vardır: performans açısından iyi bir uygulama olarak bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir, ve yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır. Çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context feature'ı kullanılır ve Part Studio'lar küçük tutulur.\n\nAssembly, part ve subassembly instance'larından oluşan hiyerarşik yapının tanımlandığı yerdir; degrees of freedom ve relation'lar da burada tanımlanır. Temel adımlar şunlardır: part ve assembly'leri insert etmek, mate connector oluşturmak, mate'ler oluşturmak ve istenirse relation'lar oluşturmak. Part'lar aynı document'tan veya izinlere sahip olduğunuz ve versiyonlanmış başka document'lardan instance edilebilir. Varsayılan olarak bir subassembly'nin mate'leri üst seviye assembly tarafından da geçerli sayılır.\n\nDocument'lar buluttadır. Kaynak paylaşımı şöyle tarif eder: document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur; document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. İzinleri document sahibi atar ve dilediği zaman geri alabilir.", "keyTerms": [{"term": "document", "glossTr": "Onshape'te bütün proje verisini barındıran kap"}, {"term": "tab", "glossTr": "document içinde bir veri türünü tutan sekme"}, {"term": "Part Studio", "glossTr": "part, surface ve sketch'lerin oluşturulduğu kap"}, {"term": "Feature list", "glossTr": "varsayılan geometriyi ve oluşturulan bütün feature'ları içeren sıralı liste"}, {"term": "feature", "glossTr": "geometriyi oluşturan veya değiştiren tek bir tasarım adımı"}, {"term": "Assembly", "glossTr": "part ve subassembly instance'larının birleştirildiği, degrees of freedom ve relation'ların tanımlandığı tab"}, {"term": "subassembly", "glossTr": "başka bir assembly içinde kullanılan assembly"}, {"term": "instance", "glossTr": "bir part veya assembly'nin assembly içindeki bir yerleşimi; kopya değildir, kaynağına bağlı kalır"}, {"term": "mate", "glossTr": "assembly'de iki part'ın birbirine göre hareketini tanımlayan bağ"}, {"term": "mate connector", "glossTr": "part'ların birbirine nerede bağlanacağını tanımlayan referans"}, {"term": "Derived part", "glossTr": "başka bir Part Studio'dan geometri getiren feature"}, {"term": "In context", "glossTr": "bir assembly bağlamında başka part'lara referans vererek tasarlama yolu"}], "cards": [{"id": "cad-01-c1", "rung": "behaviour", "index": 1, "of": 3, "label": "ONSHAPE BASICS", "front": "Onshape'te üç ayrı kap var ve her işin bir yeri var.", "back": "Onshape'te her şey bir document içinde yaşar; document, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran bir kaptır. Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir ve bunların her biri kendi tab'inde durur. Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan kaptır. Assembly ise part ve subassembly instance'larından oluşan hiyerarşik yapının tanımlandığı, degrees of freedom ve relation'ların kurulduğu yerdir. Bu ayrım bir üslup tercihi değildir: Assembly'de sketch aracı aramak, o kabın işi olmadığı için sonuçsuz kalır.", "takeaway": "Bir aracı bulamıyorsanız, önce yanlış kapta olup olmadığınıza bakın", "tags": ["document", "Part Studio", "Assembly"], "estMinutes": 2, "derivedFrom": ["cad-01-d2", "cad-01-d4"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}, {"id": "cad-01-c2", "rung": "mechanism", "index": 2, "of": 3, "label": "ONSHAPE BASICS", "front": "Bir Part Studio ne kadar büyük olmalı?", "back": "Kaynak Part Studio'yu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı sayar. Soldaki Feature list varsayılan geometriyi ve oluşturduğunuz bütün feature'ları içerir ve tek bir Feature list birden çok part'ın şeklini sürer. Buna bağlı iki cümle vardır: performans açısından iyi bir uygulama olarak bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir, ve yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır. Aynı mile oturan bir dişli ile tutucu aynı kaba girer, çünkü delik çapları birlikte değişmelidir. Şasi ile elektrik paneli girmez. Çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context kullanılır ve Part Studio'lar küçük tutulur.", "takeaway": "Aynı kapta olmak, birlikte değişmeyi kabul etmektir", "tags": ["Feature list", "ortak referans", "Derived part"], "estMinutes": 3, "derivedFrom": ["cad-01-d6", "cad-01-d5"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}, {"id": "cad-01-c3", "rung": "pit", "index": 3, "of": 3, "label": "ONSHAPE BASICS", "front": "Etkinlikte STEP dosyası gönderildi, iki saat sonra yanlış parça geldi.", "back": "Dışa aktarılan dosya, dışa aktarıldığı anın kopyasıdır ve document ile bir bağı yoktur. Document'taki delik deseni bir gün önce değiştiyse, gönderilen kopya o değişikliği taşımaz ve karşı taraf eski geometriyle üretir. Kaynağın tarif ettiği çalışma biçimi başkadır: document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur; document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. Bu, dosya formatı meselesi değildir; başka bir formata çevirmek sorunu çözmez, çünkü sorun formatta değil kopyanın donmuş olmasındadır. İzinleri document sahibi atar ve dilediği zaman geri alabilir, dolayısıyla paylaşmak denetimi kaybetmek de değildir.", "takeaway": "Gönderilen dosya, gönderildiği andan sonra yalan söylemeye başlar", "tags": ["paylaşım", "dışa aktarma", "pit"], "estMinutes": 3, "derivedFrom": ["cad-01-d8", "cad-01-d7"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}], "drills": [{"id": "cad-01-d1", "type": "multiple_choice", "prompt": "Bir öğrenci robot için yeni bir bracket tasarlayacak. Bracket'i oluşturmak üzere hangi tab türünü açmalı ve neden?", "options": ["Part Studio; part'lar, surface'ler ve sketch'ler burada oluşturulur ve düzenlenir.", "Assembly; yeni part'lar assembly içinde oluşturulur ve sonra Part Studio'ya aktarılır.", "Drawing; geometri önce drawing'de çizilir, ardından üç boyuta dönüştürülür.", "Feature Studio; bütün yeni geometri feature tanımı yazılarak oluşturulur."], "correctIndex": 0, "explanation": "Kaynağın tanımı açıktır: Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan bir kaptır. Yeni geometri buraya çizilir. Assembly ise farklı bir iş yapar; orada part ve subassembly instance'larından oluşan hiyerarşik bir yapı ile degrees of freedom ve relation'lar tanımlanır, yani var olan part'lar bir araya getirilir. İkinci şık bu iki kabın işini ters çevirir ve yeni başlayanların en sık yaptığı karışıklıktır. Üçüncü şık iş akışını tersine çevirir; drawing var olan geometriden üretilir. Dördüncü şık gerçek bir tab türünü anar, çünkü Feature Studio kaynağın oluşturulabilir tab türleri arasında saydığı bir tab'dir; ancak part, surface ve sketch oluşturmayı kaynak Part Studio'ya verir, dolayısıyla gündelik part tasarımının yeri orası değildir. Bu ayrımı en baştan oturtmak önemlidir, çünkü yanlış kapta çalışmak bir hata mesajı üretmez; bu son gözlem kaynakta yazmayan, pratikten gelen bir uyarıdır.", "hint": "İki kap var: biri parça yapmak, diğeri parçaları birleştirmek için. Hangisi yaratır?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"}, {"id": "cad-01-d2", "type": "diagnose", "symptom": "Bir öğrenci robot şasisinin Assembly tab'ini açtı ve orada yeni bir sketch başlatmaya çalışıyor. Sketch aracını bulamıyor. Aynı öğrenci daha önce başka bir tab'de sorunsuz sketch çizmişti. Document'ta hiçbir hata mesajı görünmüyor.", "prompt": "Neden bulamıyor?", "options": ["Assembly'de sketch çizebilmek için önce document sahibinden ek bir izin alınması gerekir.", "Sketch'ler Part Studio'da oluşturulur; Assembly var olan instance'ların birleştirildiği yerdir.", "Sketch aracı yalnızca document'ta en az bir drawing tab'i varsa etkinleşir; önce drawing eklenmelidir.", "Assembly tab'i salt okunur açılmıştır; tab'in kilidini açmak için sağ tıklayıp düzenleme moduna geçilmelidir."], "correctIndex": 1, "explanation": "Belirtideki en önemli ipucu hata mesajının olmamasıdır. Öğrenci bozuk bir şeyle karşılaşmıyor, yanlış kapta bulunuyor. Kaynak iki kabı ayrı ayrı tanımlar ve asıl dayanak bu olumlu tanımdır: Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan kaptır; Assembly ise part ve subassembly instance'larından oluşan hiyerarşik yapının, degrees of freedom'un ve relation'ların tanımlandığı yerdir. Assembly'nin dört temel adımlık iş akışında da sketch çizmek geçmez, ancak bu liste kaynakta temel adımlar başlığıyla verildiği için tek başına bir kanıt değil, destekleyici bir gözlemdir. Birinci şık izin sistemini yanlış yere bağlar; izinler kimin düzenleyebileceğini belirler, hangi araçların hangi tab'de bulunduğunu değil. Üçüncü ve dördüncü şıklar kaynakta karşılığı olmayan koşullar uydurur.", "hint": "Öğrenci bir hata almıyor, yalnızca aracı bulamıyor. Bu ne anlama gelir?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/Assembly/assembly.htm", "sourceNote": "Part Studio tanımı: https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"}, {"id": "cad-01-d3", "type": "find_the_fault", "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.", "scenario": "Bir CAD ekibi yeni üyeler için Onshape'i anlatan bir sayfa hazırlıyor.", "elements": ["Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir.", "Part Studio'lar, Assembly'ler ve içe aktarılan yabancı dosyalar arayüzde tab olarak görünür.", "Tek bir Feature list birden çok part'ın şeklini sürebilir.", "Bir Assembly içinde yalnızca aynı document'taki part'lar kullanılabilir.", "Varsayılan olarak bir subassembly'nin mate'leri üst seviye assembly tarafından da geçerli sayılır."], "faultIndex": 3, "explanation": "Kaynak bunun tersini söyler: part'ları birleştirme zamanı geldiğinde, birden çok Part Studio'dan, hatta farklı document'lardan gelen part'lar aynı Assembly içinde kullanılabilir. Kaynak buna iki şart bağlar ve bu şartlar pratikte belirleyicidir: part'lar aynı document'tan veya izinlere sahip olduğunuz ve versiyonlanmış başka document'lardan instance edilebilir. FRC takımları için doğrudan sonucu şudur: satın alınan bir COTS parçanın document'ı ayrı durabilir ve robot assembly'si o document'tan instance alabilir, ancak o document'ın versiyonlanmış olması gerekir. Yanlış inanç takımı her şeyi tek bir document'a kopyalamaya iter ve bu da güncellemeleri takip edilemez hâle getirir. Diğer dört ifade kaynağın yazdığı gibidir.", "hint": "İfadelerden biri bir sınır koyuyor. Kaynak orada gerçekten bir sınır tarif ediyor mu?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm", "sourceNote": "Document içeriği ve tab'ler: https://cad.onshape.com/help/Content/Document/documents.htm ve https://cad.onshape.com/help/Content/Document/document_tabs.htm"}, {"id": "cad-01-d4", "type": "multiple_choice", "prompt": "Bir takım robot projesini nasıl düzenleyeceğini tartışıyor. Bir üye her alt sistem için ayrı bir document açılmasını, diğeri tek bir document içinde ayrı tab'ler kullanılmasını öneriyor. Kaynağın document ve tab tanımına göre hangi ifade doğrudur?", "options": ["Tab'ler yalnızca içe aktarılan yabancı dosyalar için kullanılır; Part Studio ve Assembly arayüzde tab olarak görünmez.", "Bir document yalnızca tek bir part ve tek bir assembly barındırabilir, bu yüzden alt sistem başına ayrı document zorunludur.", "Bir document birden çok part, assembly ve drawing'i kendi tab'lerinde barındırabilir; bu düzen araç tarafından desteklenir.", "Bir document içindeki tab'ler klasörlere konulamaz, bu yüzden çok tab'li document'lar kısa sürede düzensizleşir."], "correctIndex": 2, "explanation": "Kaynak document'ı, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran bir kap olarak tanımlar ve içerebileceklerini sayar: part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller. Bunların her biri kendi tab'inde durur ve kaynak Part Studio'ların, Assembly'lerin ve içe aktarılan yabancı dosyaların arayüzde tab olarak göründüğünü açıkça söyler. Dolayısıyla çok tab'li bir document araç tarafından desteklenen bir düzendir. Dikkat edilmesi gereken nokta şudur: bu drill iki öneriden hangisinin daha iyi olduğunu sormuyor, hangisinin araç tarafından desteklendiğini soruyor. Kaynak document'ın nasıl bölüneceği konusunda tek bir doğru dayatmaz. Birinci ve i̇kinci şıklar tanımla doğrudan çelişir. Dördüncü şık da yanlıştır; kaynak tab'lerin klasörlere sürüklenip bırakılabildiğini ve klasörlerin iç içe kullanılabildiğini anlatır.", "hint": "Kaynak bir document'ın neler içerebileceğini sayıyor. O liste kaç tab türü içeriyor?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/Document/documents.htm", "sourceNote": "Tab türleri ve klasörler: https://cad.onshape.com/help/Content/Document/document_tabs.htm"}, {"id": "cad-01-d5", "type": "diagnose", "symptom": "Bir takım robotun bütün part'larını tek bir Part Studio içine koydu: şasi, intake, kol ve elektrik paneli. Kol tasarlanırken kolun bir sketch'i, aynı Part Studio'da duran şasi geometrisinin bir kenarına referans verilerek çizilmişti ve bunu kimse fark etmemişti. Şasi genişliğini değiştiren bir düzenlemeden sonra kolun o feature'ı hata verdi. Feature list ayrıca çok uzamış ve her düzenleme sonrası yeniden hesaplama gözle görülür biçimde yavaşlamıştı.", "prompt": "Bu davranışın kaynağı nedir?", "options": ["Document sahibi izinleri değiştirdiği için bazı feature'lar salt okunur hâle gelmiş ve yeniden hesaplanamamıştır.", "Onshape'te bir Part Studio en fazla iki part barındırabilir; bu sınır aşıldığı için feature'lar bozulmuştur.", "Part'lar arasında yanlışlıkla bir mate kurulmuştur; assembly'deki bu mate silindiğinde sorun ortadan kalkar.", "Aynı Part Studio'daki part'lar birbirine istemeden referans verebilir; kaynak kapsamı bu yüzden sınırlar."], "correctIndex": 3, "explanation": "Kaynak Part Studio'yu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı olarak tanımlar ve iki tavsiye verir. Birincisi performansla ilgilidir: iyi bir uygulama olarak bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir. İkincisi kapsamla ilgilidir: yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır. Belirtideki iki ayrı sorun tam olarak bu iki tavsiyenin karşılığıdır. Yavaşlama performans tavsiyesinin, kırılan feature ise kapsam tavsiyesinin ihlalinden gelir. Burada dikkat edilmesi gereken bir ayrım var: aynı Part Studio'da olmak tek başına bir part'ı bozmaz. Bir feature ancak referans verdiği geometri değiştiğinde etkilenir. Aynı kapta olmak, bu istenmeyen referansın kurulmasını mümkün ve kolay hâle getirir; belirtide kolun sketch'inin şasi kenarına referans verdiği zaten söyleniyor. Kaynak çözümü de verir: çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context feature'ı kullanılır ve böylece Part Studio'lar küçük tutulabilir. Üçüncü şık yanlış kapta arıyor; mate'ler assembly'de yaşar. Birinci ve i̇kinci şıklar kaynakta karşılığı olmayan sınırlar uydurur.", "hint": "Kimse kola dokunmadı ama kol değişti. Bu iki parçanın neyi paylaşıyor olması gerekir?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"}, {"id": "cad-01-d6", "type": "multiple_choice", "prompt": "Bir takım, aynı mil üzerine oturan bir dişli ile bir tutucuyu tasarlıyor. İkisinin delik çapı her zaman aynı kalmalı. Kaynağın Part Studio tavsiyesine göre bu iki part nerede tasarlanmalıdır?", "options": ["Aynı Part Studio içinde; ortak referans paylaşması gereken part'lar için tasarlanmış ortam burasıdır.", "Ayrı Part Studio'larda; iki part'ın aynı kapta olması Onshape'te her zaman kaçınılması gereken bir durumdur.", "Ayrı document'larda; ölçü birliği ancak document seviyesinde kurulan bir bağ ile sağlanabilir ve tek yol budur.", "Doğrudan Assembly içinde; part'lar arasındaki ortak ölçüler yalnızca mate'ler üzerinden korunabilir."], "correctIndex": 0, "explanation": "Bu drill bir önceki drill'in tersini sorar ve tavsiyenin bir yasak olmadığını göstermek için oradadır. Olumlu yöndeki dayanak, kaynağın Part Studio tanımıdır: Part Studio bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamıdır. Buradaki iki part tam olarak o tarife uyuyor, çünkü delik çapları birbirine bağlı ve aynı milin ölçüsünden geliyor. Aynı Part Studio'da olduklarında tek bir Feature list ikisinin şeklini birden sürer ve mil çapı değiştiğinde ikisi birlikte güncellenir. İkinci şık bir önceki drill'in dersini mutlak bir yasağa çevirdiği için yanlıştır; kaynak böyle bir yasak koymaz. Yine de o şıkkın içindeki fikir tümüyle geçersiz değildir: kaynak, çok sayıda part arasında ortak geometrik referans gerektiğinde Derived part veya In context feature'ı ile part'ların ayrı Part Studio'larda tutulabileceğini söyler. Buradaki gibi iki part'lık basit bir durumda ise aynı Part Studio doğrudan ve yeterli çözümdür. Üçüncü ve dördüncü şıklar ortak ölçünün korunmasını kaynakta karşılığı olmayan tek yollara bağlar; mate'ler part'ların birbirine göre hareketini tanımlar, ölçülerini değil.", "hint": "Bir önceki drill ayırmayı öğretti. Kaynağın cümlesi bir yasak mı, yoksa bir ölçüt mü?", "difficulty": "stretch", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"}, {"id": "cad-01-d7", "type": "diagnose", "symptom": "Takım kaptanı robot document'ının bağlantısını yeni bir üyeye gönderdi. Üye document'ı açabiliyor, bütün part'ları ve assembly'yi görebiliyor, ancak hiçbir şeyi değiştiremiyor. Bağlantı doğru, document açılıyor ve hiçbir hata mesajı yok.", "prompt": "En olası neden nedir?", "options": ["Aynı document'ta aynı anda yalnızca bir kişi çalışabilir; kaptan document'ı kapatınca üye düzenleyebilecektir.", "Üyeye verilen izin görüntülemeyle sınırlıdır; izinleri document sahibi atar ve dilediği zaman geri alabilir.", "Yeni üyenin Onshape hesabı henüz doğrulanmamıştır; doğrulanana kadar bütün document'lar salt okunur açılır.", "Document bir Assembly tab'i içerdiği için kilitlenmiştir; assembly içeren document'lar yalnızca sahibi tarafından düzenlenebilir."], "correctIndex": 1, "explanation": "Kaynak izin modelini açıkça tarif eder: bütün kullanıcılar aynı document'ı, hatta aynı part'ları eş zamanlı görüntüleyebilir ve izinleri varsa düzenleyebilir; document sahibi her kullanıcıya belirli bir document için izin atayabilir ve bu izinleri dilediği zaman geri alabilir. Belirtideki tablo bununla birebir örtüşüyor: erişim var, görüntüleme var, düzenleme yok. Birinci şık kaynağın söylediğinin tam tersidir; Onshape'in tasarım fikri zaten aynı document'ta aynı anda birlikte çalışmaktır ve kaynak bunu paylaşımın gerekçesi olarak sayar. Üçüncü ve dördüncü şıklar kaynakta karşılığı olmayan kısıtlar uydurur. Doğru düzeltme kaptanın paylaşım ayarlarından üyeye düzenleme izni vermesidir.", "hint": "Üye document'ı görebiliyor. Görebilmek ile değiştirebilmek arasındaki farkı ne belirliyor?", "difficulty": "stretch", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/Document/documents.htm"}, {"id": "cad-01-d8", "type": "diagnose", "symptom": "Etkinlikte kırılan bir bracket'in yenisi gerekiyor. Takım üyesi Onshape'ten bracket'in STEP dosyasını dışa aktarıp atölyedeki kişiye e-posta ile gönderiyor. İki saat sonra parça geliyor, ancak delik deseni robota uymuyor. Onshape'teki document incelendiğinde bracket'in delik deseninin bir gün önce akşam değiştirildiği görülüyor.", "prompt": "Ne oldu ve kaynağın önerdiği çalışma biçimi nedir?", "options": ["Document sahibi izinleri geri aldığı için atölyedeki kişi güncel geometriyi göremedi; izin verilseydi doğru parça çıkardı.", "STEP formatı delik desenlerini taşımaz; parçanın IGES olarak dışa aktarılması gerekirdi ve format değişikliği sorunu çözer.", "Dışa aktarılan dosya o anın kopyasıdır ve document değiştiğinde kendiliğinden güncellenmez; paylaşım dosya göndermeye dayanmaz.", "Part Studio'daki Feature list bozulmuştu ve dışa aktarma sırasında eski geometri kullanıldı; Feature list onarılmalıdır."], "correctIndex": 2, "explanation": "Dışa aktarılmış bir dosya, alındığı andaki geometrinin donmuş bir kopyasıdır. Document akşam değiştiğinde e-postadaki dosya eskidi ve kimseye bir uyarı gitmedi. Bu son gözlem kaynak sayfalarda yazmaz; dosya dışa aktarmanın genel bir özelliğidir ve modülün kendi yorumudur. Kaynağın bu duruma dair söylediği şey ise nettir: document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur, document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. Etkinlikte bunun karşılığı, imalatı yapan kişiye document erişimi vermektir. Birinci şık belirtiyle çelişir; atölyedeki kişi bir document değil bir dosya aldı, dolayısıyla izinler bu olaya hiç girmedi. İkinci ve dördüncü şıklar teknik sebepler uydurur. Bu drill ileriye bir soru da bırakır: canlı bir document'ı paylaşmak, hangi hâlin imal edileceği konusunda anlaşmakla aynı şey değildir. Onshape'in bu iş için ayrı bir mekanizması vardır ve ilerideki modüllerin konusudur.", "hint": "E-postadaki dosya, document akşam değiştiğinde ne oldu? Onu kim güncelleyecekti?", "difficulty": "pit", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/Document/documents.htm"}], "videoRefs": []};
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+const T={flip:"dokun ve çevir"};
+
+/* ---- shared component art: schematic, not photoreal ---- */
+const WP="var(--w-pos)", WN="var(--w-neg)", BX="var(--dia-fill)", ED="var(--dia-edge)",
+      IK="var(--dia-ink)", MU="var(--dia-mute)", PDC="var(--dia-pd)", BAND="var(--dia-band)";
+const t=(x,y,s,sz,c,an,w)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Sans,sans-serif" font-weight="${w||600}">${s}</text>`;
+const m=(x,y,s,sz,c,an)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Mono,monospace" font-weight="500">${s}</text>`;
+const wire=(d,c,w)=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+/* each part is drawn once and reused by both the example and the tray */
+const ART={
+ battery:(x,y)=>`<g>
+   <rect x="${x+14}" y="${y}" width="20" height="13" rx="3" fill="${WP}"/>
+   <rect x="${x+126}" y="${y}" width="20" height="13" rx="3" fill="${WN}"/>
+   <rect x="${x}" y="${y+11}" width="160" height="86" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+12}" y="${y+24}" width="136" height="3" rx="1.5" fill="${ED}"/>
+   ${t(x+80,y+56,"battery",14,IK)}${m(x+80,y+76,"12V · 18Ah",11,MU)}
+   ${m(x+24,y+9,"+",12,BX)}${m(x+136,y+9,"−",12,BX)}</g>`,
+ breaker:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="118" height="92" rx="10" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+38}" y="${y+22}" width="42" height="30" rx="6" fill="${WP}"/>
+   <circle cx="${x+59}" cy="${y+37}" r="5" fill="${BX}"/>
+   ${m(x+59,y+72,"120A",11.5,IK)}
+   <rect x="${x-7}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/>
+   <rect x="${x+116}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/></g>`,
+ pd:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="168" height="340" rx="11" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   ${t(x+84,y+30,"PD",16,IK)}${m(x+84,y+48,"güç dağıtımı",10.5,MU)}
+   <rect x="${x-8}" y="${y+52}" width="11" height="16" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+234}" width="11" height="16" rx="2" fill="${WN}"/>
+   ${m(x+15,y+65,"+",12,IK,"start")}${m(x+15,y+247,"−",12,IK,"start")}
+   <g>
+     <rect x="${x+96}" y="${y+55}"  width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+134}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+217}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+295}" width="60" height="24" rx="5" fill="${PDC}"/>
+   </g>
+   ${m(x+126,y+71,"10A",10.5,BX)}${m(x+126,y+150,"10A",10.5,BX)}
+   ${m(x+126,y+233,"40A",10.5,BX)}${m(x+126,y+311,"40A",10.5,BX)}
+   ${m(x+42,y+327,"kanallar",9.5,MU)}</g>`,
+ rio:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <g fill="${ED}"><rect x="${x+12}" y="${y+44}" width="14" height="6" rx="2"/>
+   <rect x="${x+32}" y="${y+44}" width="14" height="6" rx="2"/><rect x="${x+52}" y="${y+44}" width="14" height="6" rx="2"/></g>
+   <circle cx="${x+130}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+28,"roboRIO",13,IK)}${m(x+73,y+41,"beyin",9.5,MU)}</g>`,
+ radio:(x,y)=>`<g>
+   <rect x="${x+22}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x+118}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x}" y="${y}" width="146" height="48" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+24,"radio",13,IK)}${m(x+73,y+38,"kablosuz bağlantı",9.5,MU)}</g>`,
+ vrm:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="52" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   <rect x="${x+30}" y="${y-7}" width="10" height="8" rx="2" fill="${WP}"/>
+   <rect x="${x+46}" y="${y-7}" width="10" height="8" rx="2" fill="${WN}"/>
+   <rect x="${x+104}" y="${y+13}" width="30" height="9" rx="3" fill="${PDC}"/>
+   <rect x="${x+104}" y="${y+30}" width="30" height="9" rx="3" fill="${PDC}"/>
+   ${t(x+58,y+26,"VRM",13,IK)}${m(x+58,y+41,"12V regülatör",9,MU)}</g>`,
+ talon:(x,y,sub)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="62" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+24}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+34}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+30,"V+",8.5,MU,"start")}${m(x+13,y+41,"V−",8.5,MU,"start")}
+   ${t(x+84,y+28,"Talon FX",12.5,IK)}${m(x+84,y+43,sub,9,MU)}
+   ${m(x+84,y+56,"motor controller",8.5,MU)}</g>`,
+ mc:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+27,"V+",8.5,MU,"start")}${m(x+13,y+40,"V−",8.5,MU,"start")}
+   ${t(x+82,y+30,"motor controller",11.5,IK)}${m(x+82,y+45,"motoru sürer",9,MU)}</g>`
+};
+/* ---- cad modül 01 ek parçaları: Onshape temelleri ---- */
+const WHR="#0E7490", STP="#6D28D9";
+
+ART.ncard=(x,y,txt,sub,col,right,bad,two)=>{
+  const ts=Math.min(10.5,226/(txt.length*0.6)), ss=Math.min(9,218/((sub||"").length*0.6));
+  return `<g>
+  <rect x="${x}" y="${y}" width="248" height="${two?96:66}" rx="9" fill="${bad?"var(--no-soft)":BX}"
+    stroke="${bad?NO:col}" stroke-width="2"${bad?' stroke-dasharray="7 5"':''}/>
+  ${m(x+124,y+28,txt,ts,bad?NO:IK)}${m(x+124,y+47,sub,ss,MU)}
+  ${two?m(x+124,y+74,"iki işe birden bağlanır",8.5,MU):""}
+  ${right?`<rect x="${x+247}" y="${y+27}" width="10" height="12" rx="2" fill="${bad?NO:col}"/>`
+         :`<rect x="${x-9}" y="${y+(two?24:27)}" width="10" height="12" rx="2" fill="${bad?NO:col}"/>`}
+  ${two&&!right?`<rect x="${x-9}" y="${y+58}" width="10" height="12" rx="2" fill="${col}"/>`:""}</g>`;};
+
+ART.jSket=(x,y)=>ART.ncard(x,y,"sketch çizmek","geometrinin başladığı yer",WHR,1);
+ART.jPart=(x,y)=>ART.ncard(x,y,"part oluşturmak","katı gövde üretmek",WHR,1);
+ART.jMate=(x,y)=>ART.ncard(x,y,"mate kurmak","serbestlik derecesini kısıtlamak",WHR,1);
+ART.jInst=(x,y)=>ART.ncard(x,y,"instance eklemek","var olan part'ı yerleştirmek",WHR,1);
+ART.kPS =(x,y)=>ART.ncard(x,y,"Part Studio","part, surface ve sketch kabı",WHR,0,0,1);
+ART.kAS =(x,y)=>ART.ncard(x,y,"Assembly","instance ve mate kabı",WHR,0,0,1);
+
+ART.chn=(x,y,lab,sub,bad)=>{
+  const ns=Math.min(11,190/(lab.length*0.6)), ss=Math.min(9,190/((sub||"").length*0.6));
+  return `<g>
+  <rect x="${x}" y="${y}" width="212" height="66" rx="9" fill="${bad?"var(--no-soft)":BX}"
+    stroke="${bad?NO:STP}" stroke-width="2"${bad?' stroke-dasharray="7 5"':''}/>
+  ${m(x+106,y+27,lab,ns,bad?NO:IK)}${m(x+106,y+46,sub,ss,MU)}
+  <rect x="${x-9}" y="${y+27}" width="10" height="12" rx="2" fill="${bad?NO:STP}"/>
+  <rect x="${x+211}" y="${y+27}" width="10" height="12" rx="2" fill="${bad?NO:STP}"/></g>`;};
+ART.aIns=(x,y)=>ART.chn(x,y,"insert","part ve assembly eklenir");
+ART.aCon=(x,y)=>ART.chn(x,y,"mate connector","bağlantı noktası tanımlanır");
+ART.aMat=(x,y)=>ART.chn(x,y,"mate","instance'lar birbirine bağlanır");
+ART.aRel=(x,y)=>ART.chn(x,y,"relation","istenirse eklenir");
+ART.aBad=(x,y)=>ART.chn(x,y,"STEP dosyasını gönder","o anın kopyası, bağ kurmaz",1);
+
+const hint=(x,y,s,anchor)=>`<g><circle cx="${x-9}" cy="${y-4}" r="2.6" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y}" font-size="11" fill="${MU}" text-anchor="${anchor||"start"}" font-family="IBM Plex Sans,sans-serif">${s}</text></g>`;
+const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y+4.5}" font-size="12.5" fill="#fff" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600">${n}</text>`;
+/* ---- figure library: her biri tek bir fikri hatırlatmak için ---- */
+const NO="var(--no)", OKC="var(--ok)";
+const nb=(x,y,w,h,title,sub,fill)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+  fill="${fill||BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(x+w/2,y+(sub?h/2-1:h/2+5),title,13,IK)+(sub?m(x+w/2,y+h/2+15,sub,10,MU):"");
+const chip=(x,y,w,s,col)=>`<rect x="${x}" y="${y}" width="${w}" height="22" rx="5" fill="${col||PDC}"/>`+
+  m(x+w/2,y+15,s,10.5,BX);
+const cross=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${NO}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.5} ${y-r*0.5} L${x+r*0.5} ${y+r*0.5} M${x+r*0.5} ${y-r*0.5} L${x-r*0.5} ${y+r*0.5}"
+   stroke="${NO}" stroke-width="2.6" stroke-linecap="round"/>`;
+const tick=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${OKC}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.45} ${y} L${x-r*0.08} ${y+r*0.4} L${x+r*0.5} ${y-r*0.42}"
+   fill="none" stroke="${OKC}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+const svg=(w,h,inner,label)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
+
+const FIG={};
+
+/* ---- cad modül 01 görselleri ---- */
+
+FIG.doc=()=>svg(640,232,
+  m(20,26,"DOCUMENT VE TAB'LER",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="600" height="112" rx="11" fill="none" stroke="${PDC}" stroke-width="2.2"/>`+
+  m(320,70,"document",11.5,PDC)+
+  [["Part Studio","part · sketch"],["Assembly","instance · mate"],
+   ["Drawing","teknik resim"],["import","yabancı dosya"]]
+  .map(([a,b],i)=>{const x=36+i*146;
+    return `<rect x="${x}" y="86" width="132" height="54" rx="8" fill="${BX}" stroke="${ED}" stroke-width="1.4"/>`+
+      m(x+66,108,a,9.5,IK)+m(x+66,126,b,8,MU);}).join("")+
+  m(320,186,"Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri",10.5,IK)+
+  m(320,204,"ve görseller içerebilir; her biri kendi tab'inde durur.",10.5,IK)+
+  m(320,228,"Tab, document'ın içindeki bir bölmedir; ayrı bir dosya değildir.",9.5,MU),
+  "Document ve tab'ler");
+
+FIG.docMini=()=>svg(300,132,
+  `<rect x="16" y="20" width="268" height="62" rx="9" fill="none" stroke="${PDC}" stroke-width="1.8"/>`+
+  m(150,38,"document",9.5,PDC)+
+  ["Part Studio","Assembly","Drawing"].map((a,i)=>{const x=26+i*86;
+    return `<rect x="${x}" y="48" width="78" height="26" rx="6" fill="${BX}" stroke="${ED}" stroke-width="1.2"/>`+
+      m(x+39,65,a,8,IK);}).join("")+
+  m(150,104,"her biri kendi tab'inde",9.5,IK)+
+  m(150,122,"hepsi tek document içinde",9.5,MU),
+  "Document ve tab'ler");
+
+FIG.where=()=>svg(640,244,
+  m(20,26,"HANGİ İŞ HANGİ KAPTA",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="152" rx="9" fill="${BX}" stroke="${WHR}" stroke-width="2"/>`+
+  m(166,72,"Part Studio",11.5,WHR)+
+  ["sketch çizmek","part oluşturmak","surface oluşturmak"].map((a,i)=>
+    m(166,100+i*26,a,10,IK)).join("")+
+  m(166,182,"Feature list buradadır",9,MU)+
+  `<rect x="328" y="46" width="292" height="152" rx="9" fill="${BX}" stroke="${WHR}" stroke-width="2"/>`+
+  m(474,72,"Assembly",11.5,WHR)+
+  ["instance eklemek","mate connector","mate ve relation"].map((a,i)=>
+    m(474,100+i*26,a,10,IK)).join("")+
+  m(474,182,"serbestlik dereceleri buradadır",9,MU)+
+  m(320,230,"Assembly'de sketch aracı yoktur; sketch Part Studio'da çizilir.",10.5,IK)+
+  m(320,252,"Assembly, var olan instance'ların birleştirildiği yerdir.",9.5,MU),
+  "İşin yeri");
+
+FIG.whereMini=()=>svg(300,136,
+  `<rect x="16" y="20" width="128" height="62" rx="8" fill="${BX}" stroke="${WHR}" stroke-width="1.5"/>`+
+  m(80,40,"Part Studio",9.5,WHR)+m(80,58,"sketch",9,IK)+m(80,74,"part",9,IK)+
+  `<rect x="156" y="20" width="128" height="62" rx="8" fill="${BX}" stroke="${WHR}" stroke-width="1.5"/>`+
+  m(220,40,"Assembly",9.5,WHR)+m(220,58,"instance",9,IK)+m(220,74,"mate",9,IK)+
+  m(150,110,"Assembly'de sketch aracı yok",9.5,IK)+
+  m(150,128,"sketch Part Studio'da çizilir",9.5,MU),
+  "İşin yeri");
+
+FIG.size=()=>svg(640,258,
+  m(20,26,"PART STUDIO NE KADAR BÜYÜK OLMALI",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="104" rx="9" fill="var(--ok-soft)" stroke="${OKC}" stroke-width="2"/>`+
+  m(166,74,"ortak referans paylaşanlar",10.5,OKC)+
+  m(166,100,"dişli ve tutucu",11,IK)+m(166,124,"aynı delik çapı",9.5,MU)+
+  m(166,144,"aynı Part Studio",9.5,OKC)+
+  `<rect x="328" y="46" width="292" height="104" rx="9" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>`+
+  m(474,74,"bütün robot tek kapta",10.5,NO)+
+  m(474,100,"şasi · intake · kol · panel",10.5,IK)+m(474,124,"birbirine referans verir",9.5,MU)+
+  m(474,144,"biri değişince hepsi bozulur",9.5,NO)+
+  m(320,188,"Kaynak iki cümle yazar: bütün assembly'nin part'ları tek bir Part Studio'da",10.5,IK)+
+  m(320,206,"modellenmemelidir, ve yalnızca ortak referanslarını paylaşması gereken",10.5,IK)+
+  m(320,224,"part'lar aynı Part Studio içinde olmalıdır.",10.5,IK)+
+  m(320,246,"Çok sayıda part arasında ortak referans gerekiyorsa Derived part veya In context kullanılır.",9,MU),
+  "Part Studio boyutu");
+
+FIG.sizeMini=()=>svg(300,140,
+  `<rect x="16" y="20" width="128" height="56" rx="8" fill="var(--ok-soft)" stroke="${OKC}" stroke-width="1.5"/>`+
+  m(80,42,"ortak referans",9.5,OKC)+m(80,62,"aynı kap",9,MU)+
+  `<rect x="156" y="20" width="128" height="56" rx="8" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.5"/>`+
+  m(220,42,"bütün robot",9.5,NO)+m(220,62,"tek kapta",9,MU)+
+  m(150,106,"Part Studio'lar küçük tutulur;",9.5,IK)+
+  m(150,124,"büyük kapta bir değişiklik",9.5,IK)+
+  m(150,142,"ilgisiz part'ları bozar",9.5,IK),
+  "Part Studio boyutu");
+
+FIG.asmSteps=()=>svg(640,232,
+  m(20,26,"BİR ASSEMBLY KURMANIN ADIMLARI",11.5,PDC,"start")+
+  [["insert","part ve assembly"],["mate connector","bağlantı noktası"],
+   ["mate","instance'ları bağla"],["relation","istenirse"]]
+  .map(([a,b],i)=>{const x=20+i*156;
+    return nb(x,46,140,66,a,b)+(i<3?`<path d="M${x+146} 79 H${x+168}" stroke="${STP}" stroke-width="3"/>`:"");}).join("")+
+  m(320,150,"Part'lar aynı document'tan veya izinlere sahip olduğunuz ve",10.5,IK)+
+  m(320,168,"versiyonlanmış başka document'lardan instance edilebilir.",10.5,IK)+
+  m(320,198,"Varsayılan olarak bir subassembly'nin mate'leri üst seviye assembly",10.5,IK)+
+  m(320,216,"tarafından da geçerli sayılır.",10.5,IK),
+  "Assembly adımları");
+
+FIG.asmStepsMini=()=>svg(300,132,
+  ["insert","mate","relation"].map((a,i)=>{const x=16+i*94;
+    return `<rect x="${x}" y="20" width="80" height="40" rx="7" fill="${BX}" stroke="${STP}" stroke-width="1.3"/>`+
+      m(x+40,45,a,9.5,IK)+(i<2?`<path d="M${x+82} 40 H${x+92}" stroke="${STP}" stroke-width="2.4"/>`:"");}).join("")+
+  m(150,84,"arada mate connector",9,MU)+
+  m(150,112,"assembly var olan part'ları",9.5,IK)+
+  m(150,130,"birleştirir",9.5,IK),
+  "Assembly adımları");
+
+FIG.cloud=()=>svg(640,262,
+  m(20,26,"PAYLAŞMAK İLE GÖNDERMEK AYNI ŞEY DEĞİL",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="112" rx="9" fill="var(--ok-soft)" stroke="${OKC}" stroke-width="2"/>`+
+  m(166,74,"document'ı paylaş",11.5,OKC)+
+  m(166,102,"aynı document, aynı anda",10,IK)+
+  m(166,126,"herkes güncel geometriyi görür",10,IK)+
+  m(166,148,"izinleri sahip atar",9,MU)+
+  `<rect x="328" y="46" width="292" height="112" rx="9" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>`+
+  m(474,74,"dosyayı dışa aktar",11.5,NO)+
+  m(474,102,"o anın kopyası",10,IK)+
+  m(474,126,"document değişince kopya değişmez",9.5,IK)+
+  m(474,148,"karşı taraf eskiyle üretir",9,MU)+
+  m(320,192,"Document'ları kopyalayıp iş arkadaşlarınıza göndermenize gerek yoktur;",10.5,IK)+
+  m(320,210,"ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document",10.5,IK)+
+  m(320,228,"içinde aynı anda birlikte çalışabilirsiniz.",10.5,IK)+
+  m(320,250,"Bu fark, atölyeye yanlış parça çıkmasının en sık sebebidir.",9.5,MU),
+  "Bulut paylaşımı");
+
+FIG.cloudMini=()=>svg(300,138,
+  `<rect x="16" y="20" width="128" height="54" rx="8" fill="var(--ok-soft)" stroke="${OKC}" stroke-width="1.5"/>`+
+  m(80,42,"paylaş",9.5,OKC)+m(80,62,"tek doğru kopya",9,MU)+
+  `<rect x="156" y="20" width="128" height="54" rx="8" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.5"/>`+
+  m(220,42,"gönder",9.5,NO)+m(220,62,"donmuş kopya",9,MU)+
+  m(150,104,"dışa aktarılan dosya o anın",9.5,IK)+
+  m(150,122,"kopyasıdır, bağ kurmaz",9.5,IK),
+  "Bulut paylaşımı");
+
+FIG.perms=()=>svg(640,204,
+  m(20,26,"İZİNLER",11.5,PDC,"start")+
+  nb(20,46,190,72,"görüntüleme","açar ve görür")+
+  nb(226,46,190,72,"düzenleme","değiştirebilir")+
+  `<rect x="432" y="46" width="188" height="72" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.8"/>`+
+  m(526,76,"document sahibi",10.5,PDC)+m(526,98,"atar ve geri alabilir",9.5,PDC)+
+  m(320,158,"Bağlantının açılması, düzenleme hakkı verildiği anlamına gelmez.",10.5,IK)+
+  m(320,176,"Document açılıyor, her şey görünüyor, ama hiçbir şey değişmiyorsa",10.5,IK)+
+  m(320,194,"önce izin düzeyine bakılır.",10.5,IK),
+  "İzinler");
+
+
+
+
+
+$("#mt").textContent=D.title; $("#ms").textContent=D.summary;
+[["Sezon",D.season],["Drill",D.drills.length],["Kart",D.cards.length],
+ ["Süre",D.estimatedMinutes+" dk"],["Doğrulama",D.verifiedOn]]
+ .forEach(([k,v])=>{const c=el("span","chip");c.append(k+" ",Object.assign(el("b"),{textContent:v}));$("#mm").append(c);});
+const figure=(html,cap,cls)=>{const d=el("div","fig"+(cls?" "+cls:""));
+  const sc=el("div","sc"); sc.innerHTML=html; d.append(sc);
+  if(cap){const c=el("p","cap");
+    c.append(Object.assign(el("b"),{textContent:"→ yana kaydırın · "}),document.createTextNode(cap));
+    d.append(c);}
+  return d;};
+D.body.split("\n\n").forEach((p,i)=>{
+  $("#body").append(el("p",null,p));
+  if(i===0) $("#body").append(figure(FIG.doc(),
+    "Her şey bir document içinde yaşar; her biri kendi tab'inde durur.","conceptfig"));
+  if(i===1) $("#body").append(figure(FIG.size(),
+    "Yalnızca ortak referans paylaşan part'lar aynı Part Studio'da olmalıdır.","conceptfig"));
+  if(i===2) $("#body").append(figure(FIG.asmSteps(),
+    "Bir assembly kurmanın temel adımları.","conceptfig"));
+  if(i===3) $("#body").append(figure(FIG.cloud(),
+    "Paylaşmak ile dosya göndermek aynı şey değildir.","conceptfig"));
+});
+D.keyTerms.forEach(t=>$("#terms").append(el("span","term",t.term)));
+
+const RUNG={behaviour:"davranış",mechanism:"mekanizma",pit:"sahadaki bedeli"};
+D.cards.forEach(c=>{
+  const b=el("button","flip"); b.setAttribute("aria-pressed","false");
+  const inner=el("div","inner"),f=el("div","face front"),bk=el("div","face back");
+  const mk=()=>{const h=el("div","chead");
+    h.append(el("span","rung r-"+c.rung,RUNG[c.rung]),el("span","count",c.index+" / "+c.of));return h;};
+  f.append(mk(),el("p","cfront",c.front));
+  const tg=el("div","ctags"); c.tags.forEach(t=>tg.append(el("span","tag",t)));
+  f.append(tg,el("div","hintline",T.flip+" · "+c.estMinutes+" dk"));
+  bk.append(mk(),el("p","cback",c.back));
+  const CF={"cad-01-c1":"whereMini","cad-01-c2":"sizeMini","cad-01-c3":"cloudMini"};
+  if(CF[c.id]&&FIG[CF[c.id]]){const cf=el("div","cardfig"); cf.innerHTML=FIG[CF[c.id]](); bk.append(cf);}
+  bk.append(el("div","take",c.takeaway));
+  inner.append(f,bk); b.append(inner);
+  b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+  $("#cards").append(b);
+});
+requestAnimationFrame(()=>document.querySelectorAll(".flip").forEach(b=>{
+  const f=$(".front",b),bk=$(".back",b);
+  const h=Math.max(f.offsetHeight,Math.min(bk.scrollHeight+38,660))+"px";
+  b.style.minHeight=h; $(".inner",b).style.minHeight=h; f.style.minHeight=h;
+}));
+
+[["document","#6D28D9","CAD verisi ve destekleyici verinin tamamını barındıran kap"],
+ ["tab","#6D28D9","document içindeki bölme; Part Studio, Assembly, Drawing, import"],
+ ["Part Studio","#0E7490","part, surface ve sketch'lerin oluşturulduğu kap"],
+ ["Assembly","#0E7490","instance, mate ve relation'ların tanımlandığı kap"],
+ ["Feature list","#116334","varsayılan geometri ve bütün feature'lar; birden çok part'ı sürer"]]
+.forEach(([g,col,use])=>{const r=el("div","grow"),bar=el("div","gbar"),i=el("i");
+  i.style.height="10px"; i.style.background=col; bar.append(i);
+  r.append(el("span","glabel",g),bar,el("span","guse",use)); $("#gauges").append(r);});
+[
+ "Document, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran kaptır. Part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir. Bir alt sistem için ayrı document açmak zorunlu değildir; tek bir document birden çok part, assembly ve drawing barındırabilir.",
+ "Tab, document'ın içindeki bölmedir ve ayrı bir dosya değildir. Part Studio'lar, Assembly'ler ve içe aktarılan yabancı dosyalar arayüzde tab olarak görünür. Bir tab'den diğerine geçmek, başka bir dosya açmak değil aynı document'ın başka bir bölmesine bakmaktır.",
+ "Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan kaptır. Kaynak onu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı sayar. Sketch aracını Assembly'de aramanın sonuçsuz kalmasının sebebi budur.",
+ "Assembly, part ve subassembly instance'larından oluşan hiyerarşik yapının tanımlandığı yerdir; degrees of freedom ve relation'lar burada kurulur. Feature list ise Part Studio'ya aittir: varsayılan geometriyi ve oluşturduğunuz bütün feature'ları içerir ve tek bir Feature list birden çok part'ın şeklini sürer."
+].forEach(x=>$("#ipbody").append(el("p",null,x)));
+$("#ipfig").append(figure(FIG.where(),
+  "Assembly'de sketch aracı yoktur; sketch Part Studio'da çizilir.","conceptfig"));
+
+const DIA = `<svg viewBox="0 96 960 908" role="img" aria-label="Onshape document, tab'ler, Part Studio ve Assembly işleri, bulut paylaşımı">
+
+  ${m(24,128,"HER ŞEY BİR DOCUMENT İÇİNDE YAŞAR",10,PDC,"start")}
+  ${badge(300,124,1)}
+  <rect x="20" y="150" width="916" height="132" rx="12" fill="none" stroke="${PDC}" stroke-width="2.4"/>
+  ${m(478,176,"document",12,PDC)}
+  ${m(478,196,"CAD verisi ve projeyle ilgili bütün destekleyici veri",9.5,MU)}
+  ${[["Part Studio","part · surface · sketch"],["Assembly","instance · mate"],
+     ["Drawing","teknik resim"],["içe aktarılan dosya","yabancı format"]]
+    .map(([a,b],i)=>{const x=40+i*222;
+      return `<rect x="${x}" y="212" width="202" height="52" rx="8" fill="${BX}" stroke="${ED}" stroke-width="1.5"/>`+
+        m(x+101,234,a,10.5,IK)+m(x+101,252,b,8.5,MU);}).join("")}
+  ${m(478,304,"Bunların her biri kendi tab'inde durur; Part Studio'lar, Assembly'ler ve içe aktarılan yabancı dosyalar arayüzde tab olarak görünür.",9.5,IK)}
+
+  <line x1="24" y1="338" x2="936" y2="338" stroke="${ED}" stroke-width="1"/>
+  ${m(24,368,"HANGİ İŞ HANGİ KAPTA",10,PDC,"start")}
+  ${badge(228,364,2)}
+  <rect x="20" y="390" width="450" height="176" rx="10" fill="${BX}" stroke="${WHR}" stroke-width="2"/>
+  ${m(245,416,"PART STUDIO",10,WHR)}
+  ${[["sketch çizmek","geometrinin başladığı yer"],["part oluşturmak","katı gövde"],["surface oluşturmak","yüzey geometrisi"]]
+    .map(([a,b],i)=>{const y=432+i*42;
+      return `<rect x="40" y="${y}" width="410" height="34" rx="7" fill="var(--sunk)"/>`+
+        m(58,y+22,a,10,IK,"start")+m(432,y+22,b,8.5,MU,"end");}).join("")}
+  <rect x="490" y="390" width="446" height="176" rx="10" fill="${BX}" stroke="${WHR}" stroke-width="2"/>
+  ${m(713,416,"ASSEMBLY",10,WHR)}
+  ${[["instance eklemek","var olan part'ı yerleştirmek"],["mate connector","bağlantı noktası"],["mate ve relation","serbestlik derecesi"]]
+    .map(([a,b],i)=>{const y=432+i*42;
+      return `<rect x="510" y="${y}" width="406" height="34" rx="7" fill="var(--sunk)"/>`+
+        m(528,y+22,a,10,IK,"start")+m(898,y+22,b,8.5,MU,"end");}).join("")}
+  <rect x="20" y="582" width="916" height="58" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.5"/>
+  ${m(478,608,"Tek bir Feature list birden çok part'ın şeklini sürer. Bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir;",9.5,PDC)}
+  ${m(478,626,"yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır.",9.5,PDC)}
+
+  <line x1="24" y1="674" x2="936" y2="674" stroke="${ED}" stroke-width="1"/>
+  ${m(24,704,"BULUT: PAYLAŞMAK, DOSYA GÖNDERMEK DEĞİL",10,PDC,"start")}
+  ${badge(340,700,3)}
+  <rect x="20" y="726" width="450" height="132" rx="10" fill="var(--ok-soft)" stroke="${OKC}" stroke-width="2"/>
+  ${m(245,752,"DOCUMENT'I PAYLAŞ",10,OKC)}
+  ${m(245,782,"aynı document, aynı anda",11,IK)}
+  ${m(245,806,"herkes güncel geometriyi görür",10,IK)}
+  ${m(245,834,"izinleri sahip atar ve geri alabilir",9,MU)}
+  <rect x="490" y="726" width="446" height="132" rx="10" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>
+  ${m(713,752,"DOSYAYI DIŞA AKTAR VE GÖNDER",10,NO)}
+  ${m(713,782,"o anın kopyası",11,IK)}
+  ${m(713,806,"document değişince kopya değişmez",10,IK)}
+  ${m(713,834,"karşı taraf eski geometriyle üretir",9,MU)}
+  ${m(24,894,"Document'ları kopyalayıp göndermenize gerek yoktur; document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla",9.5,IK,"start")}
+  ${m(24,912,"paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz.",9.5,IK,"start")}
+
+  ${hint(24,962,"Part'lar aynı document'tan veya izinlere sahip olduğunuz ve versiyonlanmış başka document'lardan instance edilebilir.")}
+  ${hint(24,988,"Varsayılan olarak bir subassembly'nin mate'leri üst seviye assembly tarafından da geçerli sayılır.")}
+</svg>`;
+
+$("#dia").innerHTML = DIA;
+
+/* ---- kurulum içeriği ---- */
+const BUILD={
+  h:"Kur: iş nerede yapılır ve assembly sırası",
+  p:"İki iş var. Önce dört işi, yapıldıkları kaba bağlayın. Sonra bir assembly kurmanın temel adımlarını sıraya dizin. Tuvalde bir kart var ki hiçbir yere bağlanmaz; onu tepside bırakın.",
+  gate:"Başlayınca sayfa bu bölüme kilitlenir ve yukarıdaki örnek şemayı göremezsiniz. Bitirdiğinizde hangi bağlantıyı doğru, hangisini yanlış yaptığınızı ve 100 üzerinden puanınızı görürsünüz.",
+  start:"Kurmaya başla", done:"Tamamladım", reset:"Baştan dene", close:"Kapat",
+  after:"kontrol edildi",
+  warn:"Tuvalde fazla parça bırakmayın. Bağlanmayan her kart puandan düşer.",
+  emptyText:"Tuval boş. Yukarıdaki bir karta dokunarak başlayın. İş kartlarının sağında, kap kartlarının solunda nokta vardır; sıra kartlarının solunda giriş, sağında çıkış noktası vardır.",
+  partsLabel:"Parçalar",
+  wiresLabel:"Bağlantı tipi — önce tipi seçin, sonra iki noktaya dokunun",
+  perfect:"Dört iş doğru kaba, assembly adımları doğru sıraya bağlı ve tuvalde fazla kart yok.",
+  again:"Eksik bağlantılar yukarıda listelendi. Sketch'ler Part Studio'da oluşturulur; Assembly var olan instance'ların birleştirildiği yerdir.",
+  parts:[
+    {key:"jSk", label:"sketch çizmek", art:"jSket", w:270,h:82, ax:10,ay:8, pins:[["nerede",267,41]]},
+    {key:"jPt", label:"part oluşturmak", art:"jPart", w:270,h:82, ax:10,ay:8, pins:[["nerede",267,41]]},
+    {key:"jMt", label:"mate kurmak", art:"jMate", w:270,h:82, ax:10,ay:8, pins:[["nerede",267,41]]},
+    {key:"jIn", label:"instance eklemek", art:"jInst", w:270,h:82, ax:10,ay:8, pins:[["nerede",267,41]]},
+    {key:"kPS", label:"Part Studio", art:"kPS", w:270,h:112, ax:12,ay:8, pins:[["burada 1",8,40],["burada 2",8,74]]},
+    {key:"kAS", label:"Assembly", art:"kAS", w:270,h:112, ax:12,ay:8, pins:[["burada 1",8,40],["burada 2",8,74]]},
+    {key:"aIn", label:"insert", art:"aIns", w:234,h:82, ax:12,ay:8, pins:[["önceki",8,41],["sonraki",228,41]]},
+    {key:"aCo", label:"mate connector", art:"aCon", w:234,h:82, ax:12,ay:8, pins:[["önceki",8,41],["sonraki",228,41]]},
+    {key:"aMa", label:"mate", art:"aMat", w:234,h:82, ax:12,ay:8, pins:[["önceki",8,41],["sonraki",228,41]]},
+    {key:"aRe", label:"relation", art:"aRel", w:234,h:82, ax:12,ay:8, pins:[["önceki",8,41],["sonraki",228,41]]},
+    {key:"bad", label:"STEP dosyasını gönder", art:"aBad", w:234,h:82, ax:12,ay:8, pins:[["önceki",8,41],["sonraki",228,41]]}
+  ],
+  wires:[
+    {key:"where", label:"nerede yapılır", col:"#0E7490", th:3},
+    {key:"seq", label:"sonraki adım", col:"#6D28D9", th:4}
+  ],
+  need:[
+    {a:"jSk.nerede", b:"kPS.burada 1", type:"where"},
+    {a:"jPt.nerede", b:"kPS.burada 2", type:"where"},
+    {a:"jIn.nerede", b:"kAS.burada 1", type:"where"},
+    {a:"jMt.nerede", b:"kAS.burada 2", type:"where"},
+    {a:"aIn.sonraki", b:"aCo.önceki", type:"seq"},
+    {a:"aCo.sonraki", b:"aMa.önceki", type:"seq"},
+    {a:"aMa.sonraki", b:"aRe.önceki", type:"seq"}
+  ]
+};
+
+
+
+[["Her işin bir kabı var",
+  "Part Studio part'ları, surface'leri ve sketch'leri oluşturmak için kullanılır. Assembly ise part ve subassembly instance'larından oluşan hiyerarşik yapının tanımlandığı, degrees of freedom ve relation'ların kurulduğu yerdir. Assembly'de sketch aracı aramak sonuçsuz kalır."],
+ ["Part Studio'lar küçük tutulur",
+  "Tek bir Feature list birden çok part'ın şeklini sürer. Kaynağın iki cümlesi vardır: bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir, ve yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır."],
+ ["Paylaşmak, dosya göndermek değildir",
+  "Document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur; document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. İzinleri document sahibi atar ve dilediği zaman geri alabilir."]]
+.forEach(([h,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:h}),el("span",null,d));
+  li.append(w); $("#calls").append(li);});
+
+/* ---- kurulum tuvali: pinli bağlantı, kontrol ve skor ---- */
+if($("#bpanel") && typeof BUILD!=="undefined"){(()=>{
+  const B=BUILD, cvw=$("#bcanvas"), cv=$("#bboard"),
+    lay=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  lay.setAttribute("class","blines"); cv.append(lay);
+  const lblLayer=el("div","blbl"); cv.append(lblLayer);
+  $("#bpan").textContent=B.pan||"Tuval geniştir; sağa ve aşağı kaydırarak tamamını kullanabilirsiniz.";
+  const PK={}; B.parts.forEach(p=>PK[p.key]=p);
+  const WK={}; B.wires.forEach(w=>WK[w.key]=w);
+  let inst=[], links=[], seq=0, pick=null, wsel=B.wires[0].key, checked=false, zTop=1;
+
+  $("#bh").textContent=B.h; $("#bp").textContent=B.p;
+  $("#bgtext").textContent=B.gate; $("#bstart").textContent=B.start;
+  $("#bdone").textContent=B.done; $("#breset").textContent=B.reset; $("#bclose").textContent=B.close;
+  $("#bwarn").textContent=B.warn;
+
+  /* ---- raf ---- */
+  const tray=$("#btray");
+  const grp=(label,items,render)=>{
+    tray.append(el("p","tlabel",label));
+    const g=el("div","tgrid"); items.forEach(it=>g.append(render(it))); tray.append(g);
+  };
+  grp(B.partsLabel, B.parts, p=>{
+    const b=el("button","part");
+    const sc=Math.min(1, 112/p.h, 168/p.w);
+    b.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${Math.round(p.w*sc)}"
+      height="${Math.round(p.h*sc)}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    b.append(el("span",null,p.label));
+    b.onclick=()=>{ if(!checked) place(p.key); };
+    return b;
+  });
+  grp(B.wiresLabel, B.wires, w=>{
+    const b=el("button","part wchip"); b.dataset.k=w.key;
+    b.innerHTML=`<svg viewBox="0 0 110 14" width="110" height="14" aria-hidden="true">
+      <rect x="0" y="${7-w.th/2}" width="110" height="${w.th}" rx="${w.th/2}" fill="${w.col}"/>`+
+      (w.col2?`<path d="M0 7 H110" stroke="${w.col2}" stroke-width="${w.th}"
+        stroke-dasharray="8 8"/>`:"")+`</svg>`;
+    b.append(el("span",null,w.label));
+    b.onclick=()=>{ wsel=w.key; markWire(); };
+    return b;
+  });
+  const markWire=()=>tray.querySelectorAll(".wchip").forEach(c=>
+    c.setAttribute("aria-pressed", c.dataset.k===wsel));
+  markWire();
+
+  /* ---- parça yerleştirme ---- */
+  function slot(w,h,cw,ch){
+    const pad=18, padL=104, gx=96, gy=30;
+    const boxes=inst.map(i=>({x:parseFloat(i.node.style.left)||0, y:parseFloat(i.node.style.top)||0,
+      w:i.node.offsetWidth, h:i.node.offsetHeight}));
+    const hit=(x,y)=>boxes.some(b=>x<b.x+b.w+gx && x+w+gx>b.x && y<b.y+b.h+gy && y+h+gy>b.y);
+    const maxX=Math.max(padL, cw-w-pad), maxY=Math.max(pad, ch-h-pad);
+    for(let y=pad; y<=maxY; y+=22)
+      for(let x=padL; x<=maxX; x+=22)
+        if(!hit(x,y)) return [Math.round(x),Math.round(y)];
+    const k=inst.length%6;
+    return [Math.round(Math.min(maxX, padL+k*26)), Math.round(Math.min(maxY, pad+k*26))];
+  }
+  function place(key){
+    const p=PK[key], id=++seq, labs=[];
+    const n=el("div","placed"); n.dataset.id=id; n.dataset.key=key;
+    n.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w}" height="${p.h}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    const x=el("button","x","×"); x.setAttribute("aria-label",p.label+" kaldır");
+    x.onclick=e=>{e.stopPropagation(); if(checked) return;
+      links=links.filter(l=>l.a.id!==id&&l.b.id!==id);
+      inst=inst.filter(i=>i.id!==id); labs.forEach(o=>o.lb.remove());
+      n.remove(); paint(); sync();};
+    n.append(x);
+    p.pins.forEach(([nm,px,py])=>{
+      const d=el("button","pin"); d.style.left=px+"px"; d.style.top=py+"px";
+      d.dataset.pin=nm; d.setAttribute("aria-label",p.label+" "+nm);
+      d.onclick=e=>{e.stopPropagation(); tapPin(id,nm);};
+      const lb=el("span","pinlb",nm);
+      if(py<=p.h*0.2) lb.dataset.mode="top";
+      else if(px<=p.w*0.35) lb.classList.add("lft");
+      else if(px>=p.w*0.65) lb.classList.add("rgt");
+      else lb.dataset.mode="top";
+      lblLayer.append(lb); labs.push({lb,d});
+      n.append(d);
+    });
+    const r=cv.getBoundingClientRect();
+    const pos=slot(p.w,p.h,r.width,r.height);
+    n.style.left=pos[0]+"px"; n.style.top=pos[1]+"px"; n.style.zIndex=++zTop;
+    cv.append(n); inst.push({id,key,node:n,labs}); drag(n,id); paint(); sync();
+  }
+
+  function drag(n,id){
+    n.addEventListener("pointerdown",e=>{
+      if(checked||e.target.classList.contains("x")||e.target.classList.contains("pin")) return;
+      const r=cv.getBoundingClientRect(), bb=n.getBoundingClientRect();
+      const ox=e.clientX-bb.left, oy=e.clientY-bb.top;
+      try{n.setPointerCapture(e.pointerId);}catch(err){}
+      n.style.zIndex=++zTop;
+      const mv=ev=>{
+        n.style.left=Math.max(0,Math.min(r.width-bb.width, ev.clientX-r.left-ox))+"px";
+        n.style.top =Math.max(0,Math.min(r.height-bb.height, ev.clientY-r.top -oy))+"px";
+        paint();
+      };
+      const up=()=>{n.removeEventListener("pointermove",mv);n.removeEventListener("pointerup",up);};
+      n.addEventListener("pointermove",mv); n.addEventListener("pointerup",up);
+    });
+  }
+
+  /* ---- pin bağlama ---- */
+  const pinEl=(id,nm)=>{const i=inst.find(x=>x.id===id); return i&&i.node.querySelector(`.pin[data-pin="${CSS.escape(nm)}"]`);};
+  function tapPin(id,nm){
+    if(checked) return;
+    if(!pick){ pick={id,nm}; markPins(); return; }
+    if(pick.id===id && pick.nm===nm){ pick=null; markPins(); return; }
+    const a=pick, b={id,nm};
+    const same=l=>(l.a.id===a.id&&l.a.nm===a.nm&&l.b.id===b.id&&l.b.nm===b.nm)||
+                  (l.a.id===b.id&&l.a.nm===b.nm&&l.b.id===a.id&&l.b.nm===a.nm);
+    const ex=links.findIndex(same);
+    if(ex>=0) links.splice(ex,1); else links.push({a,b,type:wsel});
+    pick=null; markPins(); paint(); sync();
+  }
+  const markPins=()=>cv.querySelectorAll(".pin").forEach(d=>{
+    const i=+d.closest(".placed").dataset.id;
+    d.classList.toggle("on", !!pick && pick.id===i && pick.nm===d.dataset.pin);
+  });
+
+  /* ---- çizim ---- */
+  function paint(){
+    const r=cv.getBoundingClientRect();
+    lay.setAttribute("viewBox",`0 0 ${r.width} ${r.height}`);
+    lay.setAttribute("width",r.width); lay.setAttribute("height",r.height);
+    let g="";
+    links.forEach(l=>{
+      const ea=pinEl(l.a.id,l.a.nm), eb=pinEl(l.b.id,l.b.nm);
+      if(!ea||!eb) return;
+      const ra=ea.getBoundingClientRect(), rb=eb.getBoundingClientRect();
+      const x1=ra.left-r.left+ra.width/2, y1=ra.top-r.top+ra.height/2;
+      const x2=rb.left-r.left+rb.width/2, y2=rb.top-r.top+rb.height/2;
+      const w=WK[l.type]||B.wires[0];
+      const col = !checked ? w.col : (l.ok ? "var(--ok)" : "var(--no)");
+      const mx=(x1+x2)/2;
+      const d=`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      g+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w.th}"
+        stroke-linecap="round" opacity="${checked?1:0.95}"/>`;
+      if(w.col2 && !checked)
+        g+=`<path d="${d}" fill="none" stroke="${w.col2}" stroke-width="${w.th}"
+          stroke-linecap="butt" stroke-dasharray="8 8" opacity="0.95"/>`;
+    });
+    lay.innerHTML=g;
+    inst.forEach(i=>(i.labs||[]).forEach(({lb,d})=>{
+      const rd=d.getBoundingClientRect();
+      const cx=rd.left-r.left+rd.width/2, cy=rd.top-r.top+rd.height/2;
+      if(lb.classList.contains("lft")){ lb.style.left=(cx-11)+"px"; lb.style.top=cy+"px"; }
+      else if(lb.classList.contains("rgt")){ lb.style.left=(cx+11)+"px"; lb.style.top=cy+"px"; }
+      else { lb.style.left=cx+"px"; lb.style.top=(cy-3)+"px"; }
+    }));
+  }
+
+  const sync=()=>{
+    const need=B.need.length;
+    $("#bempty").classList.toggle("gone", inst.length>0);
+    $("#bnote").textContent = checked ? B.after
+      : inst.length+" parça · "+links.length+" / "+need+" bağlantı";
+    $("#bdone").disabled = checked || links.length===0;
+  };
+
+  /* ---- kontrol ---- */
+  const key=l=>[l.a,l.b].map(e=>{const i=inst.find(x=>x.id===e.id); return (i?i.key:"?")+"."+e.nm;}).sort().join(" ↔ ");
+  $("#bdone").onclick=()=>{
+    checked=true; pick=null; markPins();
+    const want=B.need.map(n=>({...n, k:[n.a,n.b].slice().sort().join(" ↔ ")}));
+    const used=new Set(); let got=0; const missing=[];
+    links.forEach(l=>{
+      const k=key(l);
+      const idx=want.findIndex((w,i)=>w.k===k && w.type===l.type && !used.has(i));
+      if(idx>=0){ used.add(idx); l.ok=true; got++; } else l.ok=false;
+    });
+    want.forEach((w,i)=>{ if(!used.has(i)) missing.push(w); });
+    const wrong=links.filter(l=>!l.ok).length;
+    const needKeys=new Set();
+    B.need.forEach(n=>{ needKeys.add(n.a.split(".")[0]); needKeys.add(n.b.split(".")[0]); });
+    const counts={}; inst.forEach(i=>counts[i.key]=(counts[i.key]||0)+1);
+    let extra=0; const extraList=[];
+    Object.keys(counts).forEach(k=>{
+      const allowed = needKeys.has(k) ? 1 : 0;
+      if(counts[k]>allowed){ extra+=counts[k]-allowed;
+        extraList.push(PK[k].label+" ×"+(counts[k]-allowed)); }
+    });
+    inst.forEach(i=>{ const dup=counts[i.key]>(needKeys.has(i.key)?1:0);
+      i.node.classList.add(dup?"bad":"fine"); });
+    paint();
+    const base=Math.round(got/B.need.length*100);
+    const pen=Math.min(base, wrong*6+extra*6);
+    const score=Math.max(0, base-pen);
+    /* İlk kurulum puanı kalıcıdır: tekrar denemek puanı değiştirmez. */
+    try{ if(state && state.__b==null){ state.__b={s:score, n:B.need.length}; save();
+      sunucuyaYaz("tuval",score); } }catch(e){}
+    const r=$("#bres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","kurulum kontrol edildi"));
+    r.append(el("div","big",score+" / 100"));
+    r.append(el("div","outof",got+" / "+B.need.length+" doğru bağlantı"+
+      (wrong?" · "+wrong+" hatalı":"")+(extra?" · "+extra+" fazla parça":"")));
+    if(pen) r.append(el("p","pen","Ceza: hatalı bağlantı ve fazla parça için toplam −"+pen+" puan."));
+    if(missing.length){
+      const ul=el("ul","miss");
+      const nice=e=>{const i=e.indexOf("."), k=e.slice(0,i), pn=e.slice(i+1);
+        return (PK[k]?PK[k].label:k)+" · "+pn;};
+      missing.forEach(w=>{const li=el("li");
+        li.append(Object.assign(el("b"),{textContent:"eksik: "}),
+          document.createTextNode(nice(w.a)+" ↔ "+nice(w.b)+"  ("+(WK[w.type]||{}).label+")"));
+        ul.append(li);});
+      r.append(ul);
+    }
+    if(extraList.length) r.append(el("p","pen","Tuvalde fazla kalan: "+extraList.join(", ")+"."));
+    r.append(el("p",null, score===100 ? B.perfect : B.again));
+    $("#bclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+
+  /* ---- kilit ve sıfırlama ---- */
+  const build=()=>{
+    inst.forEach(i=>i.node.remove()); lblLayer.textContent="";
+    inst=[]; links=[]; seq=0; pick=null; checked=false;
+    $("#bres").textContent=""; $("#bres").className=""; $("#bclose").hidden=true;
+    wsel=B.wires[0].key; markWire(); paint(); sync();
+  };
+  const lock=on=>{ $("#bpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on); if(on) $("#bpanel").scrollTop=0; };
+  $("#bstart").onclick=()=>{ $("#bgate").hidden=true; $("#bwrap").hidden=false; $("#bbar").hidden=false;
+    build(); lock(true); paint(); };
+  $("#breset").onclick=()=>build();
+  $("#bclose").onclick=()=>{ lock(false); $("#bres").scrollIntoView({block:"center"}); };
+  $("#bempty").textContent=B.emptyText;
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(cv);
+  sync();
+})();}
+
+/* ---- kontrol listesi: kurduktan sonra gözden geçirilecekler ---- */
+if($("#must")){
+[["Hangi tab açık","sketch çizecekseniz Part Studio'da mısınız"],
+ ["Bu part'lar neden aynı kapta","ortak referans paylaşıyorlar mı"],
+ ["Part Studio kaç part taşıyor","bütün robot tek kapta mı"],
+ ["Assembly adımları sırayla mı","insert, mate connector, mate, relation"],
+ ["Karşı taraf neyi görüyor","document mu, gönderilmiş bir kopya mı"],
+ ["İzin düzeyi ne","görüntüleme mi, düzenleme mi"]]
+.forEach(([t,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:t}),el("span",null,d));
+  li.append(w); $("#must").append(li);});
+
+$("#c2h").textContent="Sonra: tek bir şeyi değiştirin";
+$("#c2p").textContent="Şimdi Onshape'te deneyin. Bir document açıp içine bir Part Studio ve bir Assembly tab'i ekleyin, sonra Assembly'de sketch aracını arayın ve bulunamadığını görün. Ardından Part Studio'da iki basit part çizip birinin sketch'ini diğerinin kenarına referanslayın; ilk part'ı değiştirip ikincisine ne olduğunu yazın. En son document'ı bir arkadaşınızla görüntüleme izniyle paylaşın ve onun neyi yapıp neyi yapamadığını not edin.";
+
+}
+
+/* ---- eşleştirme paneli: kur, kontrol et, neyi yanlış yaptığını göster ---- */
+(()=>{
+  const box=$("#match");
+  if(!box||typeof MATCH==="undefined"||!MATCH.length){
+    const mp=$("#matchpanel"); if(mp) mp.remove(); return; }
+  const N=MATCH.length;
+  $("#mth").textContent=MT.h; $("#mtp").textContent=MT.p;
+  $("#mdone").textContent=MT.done;
+  $("#mgtext").textContent=MT.gate; $("#mstart").textContent=MT.start;
+  $("#mclose").textContent=MT.close;
+  let order=[], links={}, pick=null, checked=false;
+  const svgns="http://www.w3.org/2000/svg";
+  const lines=document.createElementNS(svgns,"svg"); lines.setAttribute("class","mlines");
+  const colL=el("div","mcol left"), colR=el("div","mcol right"), spacer=el("div");
+  const itemsL=[], itemsR=[], dotsL=[], dotsR=[];
+
+  const side=(txt,art)=>{const it=el("div","mitem");
+    if(art&&ART[art[0]]){const a=el("div","art");
+      a.innerHTML=`<svg viewBox="0 0 ${art[1]} ${art[2]}" aria-hidden="true">${ART[art[0]](art[3]||0,art[4]||0)}</svg>`;
+      it.append(a);}
+    const l=el("div"); l.append(Object.assign(el("span","lbl"),{textContent:txt})); it.append(l);
+    return it;};
+
+  const build=()=>{
+    box.textContent=""; itemsL.length=itemsR.length=dotsL.length=dotsR.length=0;
+    colL.textContent=""; colR.textContent="";
+    links={}; pick=null; checked=false;
+    order=[...Array(N).keys()];
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    MATCH.forEach((pr,i)=>{
+      const it=side(pr.l,pr.lart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.l+" — bağlantı noktası");
+      d.onclick=()=>tap("l",i); it.append(d);
+      colL.append(it); itemsL.push(it); dotsL.push(d);
+    });
+    order.forEach((pi,p)=>{
+      const pr=MATCH[pi]; const it=side(pr.r,pr.rart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.r+" — bağlantı noktası");
+      d.onclick=()=>tap("r",p); it.append(d);
+      colR.append(it); itemsR.push(it); dotsR.push(d);
+    });
+    box.append(lines,colL,spacer,colR);
+    $("#mres").textContent=""; $("#mres").className="";
+    paint(); sync();
+  };
+
+  const tap=(sd,i)=>{
+    if(checked) return;
+    if(!pick){ pick={sd,i}; mark(); return; }
+    if(pick.sd===sd){ pick={sd,i}; mark(); return; }
+    const l = sd==="l" ? i : pick.i, p = sd==="l" ? pick.i : i;
+    Object.keys(links).forEach(k=>{ if(links[k]===p) delete links[k]; });
+    if(links[l]===p) delete links[l]; else links[l]=p;
+    pick=null; mark(); paint(); sync();
+  };
+  const mark=()=>{
+    dotsL.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="l"&&pick.i===i));
+    dotsR.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="r"&&pick.i===i));
+  };
+  const paint=()=>{
+    const rb=box.getBoundingClientRect();
+    lines.setAttribute("viewBox",`0 0 ${rb.width} ${rb.height}`);
+    lines.setAttribute("width",rb.width); lines.setAttribute("height",rb.height);
+    let g="";
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k];
+      const a=dotsL[l].getBoundingClientRect(), b=dotsR[p].getBoundingClientRect();
+      const x1=a.left-rb.left+a.width/2, y1=a.top-rb.top+a.height/2;
+      const x2=b.left-rb.left+b.width/2, y2=b.top-rb.top+b.height/2;
+      const col = !checked ? "var(--acc)" : (order[p]===l ? "var(--ok)" : "var(--no)");
+      g+=`<path d="M${x1} ${y1} C ${x1+40} ${y1}, ${x2-40} ${y2}, ${x2} ${y2}" fill="none"
+        stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+    });
+    lines.innerHTML=g;
+  };
+  const sync=()=>{
+    const n=Object.keys(links).length;
+    $("#mdone").disabled = checked || n<N;
+    $("#mnote").textContent = checked ? MT.after : (n+" / "+N+" eşleştirildi");
+  };
+
+  $("#mdone").onclick=()=>{
+    checked=true; pick=null; mark();
+    let got=0;
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k], ok=order[p]===l;
+      if(ok) got++;
+      itemsL[l].classList.add(ok?"ok":"no"); dotsL[l].classList.add(ok?"ok":"no");
+      itemsR[p].classList.add(ok?"ok":"no"); dotsR[p].classList.add(ok?"ok":"no");
+      if(!ok) itemsL[l].querySelector("div").append(
+        Object.assign(el("span","mfix"),{textContent:"doğrusu: "+MATCH[l].r}));
+    });
+    paint();
+    const pct=Math.round(got/N*100);
+    const r=$("#mres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","eşleştirme kontrol edildi"));
+    r.append(el("div","big",got+" / "+N+" doğru · "+pct+" / 100"));
+    r.append(el("p",null, got===N ? MT.perfect : MT.again));
+    $("#mdone").disabled=true; $("#mclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+  const rs=$("#mreset");
+  if(MT.reset){ rs.textContent=MT.reset; rs.onclick=()=>build(); } else { rs.remove(); }
+
+  const lock=on=>{
+    $("#matchpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on);
+    if(on){ $("#matchpanel").scrollTop=0; }
+  };
+  $("#mstart").onclick=()=>{
+    $("#mgate").hidden=true; box.hidden=false; $("#mbar").hidden=false;
+    build(); lock(true); paint();
+  };
+  $("#mclose").onclick=()=>{ lock(false); $("#mres").scrollIntoView({block:"center"}); };
+  build();
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(box);
+})();
+
+/* ---- practice ---- */
+/* ---- video: sitede gömülü oynar, önizlemede bağlantı olarak görünür ---- */
+(()=>{
+  const host=$("#vids"), V=D.videoRefs||[];
+  if(!host) return;
+  if(!V.length){ host.remove(); return; }
+  V.forEach(v=>{
+    const w=el("div","vid"), h=el("div","vtop");
+    const lang=v.lang&&v.lang!=="tr"?" · video İngilizce":"";
+    h.append(Object.assign(el("b"),{textContent:v.label||v.title}),
+      el("span",null,(v.label?v.title+" · ":"")+v.channel+lang));
+    w.append(h);
+    const t=v.start?"?start="+v.start:"";
+    const watch="https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start:"");
+    if(window.__EMBED__){
+      const box=el("div","vframe");
+      const local=location.protocol==="file:";
+      const cover=document.createElement(local?"a":"button");
+      cover.className="vface";
+      cover.style.backgroundImage='url("https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg")';
+      const tri=el("div","vptri");
+      tri.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+      cover.append(tri);
+      if(local){
+        cover.href=watch; cover.target="_blank"; cover.rel="noopener";
+        cover.title="Yerel dosyadan açıldığı için video sayfada oynamaz; YouTube'da açılır.";
+      }else{
+        cover.type="button";
+        cover.setAttribute("aria-label",(v.label||v.title)+" videosunu oynat");
+        cover.onclick=()=>{
+          const fr=document.createElement("iframe");
+          fr.src="https://www.youtube-nocookie.com/embed/"+v.id+(v.start?"?start="+v.start+"&":"?")+"autoplay=1&rel=0";
+          fr.title=v.title; fr.allowFullscreen=true;
+          fr.referrerPolicy="strict-origin-when-cross-origin";
+          fr.setAttribute("allow","autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+          cover.replaceWith(fr);
+        };
+      }
+      box.append(cover); w.append(box);
+      const foot=el("p","vfoot");
+      const a2=document.createElement("a");
+      a2.href=watch; a2.target="_blank"; a2.rel="noopener"; a2.textContent="YouTube'da aç";
+      foot.append(document.createTextNode(local
+        ? "Bu dosya bilgisayardan açıldığı için video sayfa içinde oynamaz. Siteye yüklendiğinde burada oynar. "
+        : "Oynamazsa: "), a2);
+      w.append(foot);
+    }else{
+      const a=document.createElement("a");
+      a.className="vlink"; a.target="_blank"; a.rel="noopener";
+      a.href=watch;
+      a.textContent="videoyu YouTube'da aç";
+      w.append(a, el("p","vnote",
+        "Video sitenin kendi sayfasında bu kutunun içinde oynar. Bu önizlemede dış içerik engellendiği için yalnızca bağlantı görünür."));
+    }
+    if(v.note) w.append(el("p","vsrc",v.note));
+    host.append(w);
+  });
+})();
+
+const LET="ABCDE".split(""); let filter="all", state={};
+const SKEY="cp01", MODUL=D.id;
+try{state=JSON.parse(localStorage.getItem(SKEY)||"{}");}catch(e){state={};}
+const save=()=>{try{localStorage.setItem(SKEY,JSON.stringify(state));}catch(e){}};
+/* Sunucu ayarlanmışsa puanlar oraya da yazılır. Yazma tek yönlüdür:
+   aynı satır ikinci kez gönderilse bile veritabanı ilkini korur. */
+function sunucuyaYaz(tur,a,b){
+  if(!window.FRC || !FRC.acik) return;
+  if(tur==="tuval") FRC.tuvalYaz(MODUL,a); else FRC.cevapYaz(MODUL,a,b);
+}
+[["all","hepsi"],["core","core"],["stretch","stretch"],["pit","pit"]].forEach(([k,l])=>{
+  const b=el("button","filt",l); if(k!=="all") b.lang="en";
+  b.setAttribute("aria-pressed",k===filter);
+  b.onclick=()=>{filter=k;document.querySelectorAll(".filt").forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
+  $("#bar").append(b);});
+const scoreEl=el("span","score"); $("#bar").append(scoreEl);
+const ruleChips=(d,h)=>{if(!d.ruleRefs.length)return;const s=el("div","srcs");
+  d.ruleRefs.forEach(r=>s.append(el("span","rule",r.rule+" · "+r.season)));h.append(s);};
+const sourceRef=(d,h)=>{const dt=el("details","ref");dt.append(el("summary","kaynak"));
+  dt.append(el("p",null,d.source));h.append(dt);};
+const DFIG={
+ "cad-01-d1":["where","Part'lar, surface'ler ve sketch'ler Part Studio'da oluşturulur."],
+ "cad-01-d2":["where","Assembly var olan instance'ların birleştirildiği yerdir; sketch aracı yoktur."],
+ "cad-01-d3":["asmSteps","Part'lar izinli ve versiyonlanmış başka document'lardan da instance edilebilir."],
+ "cad-01-d4":["doc","Bir document birden çok part, assembly ve drawing barındırabilir."],
+ "cad-01-d5":["size","Aynı Part Studio'daki part'lar birbirine referans verince birlikte bozulur."],
+ "cad-01-d6":["size","Ortak referans paylaşması gereken part'lar aynı Part Studio içinde olmalıdır."],
+ "cad-01-d7":["perms","İzinleri document sahibi atar ve dilediği zaman geri alabilir."],
+ "cad-01-d8":["cloud","Dışa aktarılan dosya o anın kopyasıdır ve document ile bağı yoktur."]
+};
+const drillFig=(d,h)=>{const f=DFIG[d.id]; if(!f||!FIG[f[0]])return;
+  h.append(figure(FIG[f[0]](),f[1]));};
+
+function render(){
+  const box=$("#qs"); box.textContent="";
+  let got=0,done=0;
+  D.drills.forEach(d=>{if(state[d.id]){done++;if(state[d.id].ok)got++;}});
+  const live=done?Math.round(got/done*100):0;
+  scoreEl.textContent=done?("puan "+live+" / 100 · "+got+"/"+done+" doğru"):"puan 0 / 100";
+  D.drills.filter(d=>filter==="all"||d.difficulty===filter).forEach(d=>{
+    const q=el("div","q"),hd=el("div","qhead");
+    const pd1=el("span","pill "+d.difficulty,d.difficulty), pd2=el("span","pill",d.type.replace(/_/g," "));
+    pd1.lang="en"; pd2.lang="en"; hd.append(pd1,pd2);
+    q.append(hd);
+    if(d.symptom)q.append(el("p","sym",d.symptom));
+    if(d.scenario)q.append(el("p","sym",d.scenario));
+    q.append(el("p","qtext",d.prompt));
+    const ansBox=el("div"), prior=state[d.id];
+    const settle=(ok,txt)=>{state[d.id]={ok};save();sunucuyaYaz("cevap",d.id,ok);
+      ansBox.className="ans "+(ok?"good":"bad");
+      ansBox.append(el("span","verdict",ok?"doğru":"yanlış"),document.createTextNode(txt));
+      drillFig(d,ansBox);ruleChips(d,ansBox);sourceRef(d,ansBox);render();};
+    if(d.type==="numeric"){
+      const row=el("div","num");
+      const inp=Object.assign(el("input"),{type:"text",inputMode:"decimal",placeholder:"sayı"});
+      const go=el("button","btn","Kontrol et");
+      row.append(inp,go); if(d.unit)row.append(el("span","unit",d.unit));
+      go.onclick=()=>{const v=parseFloat(String(inp.value).replace(",","."));
+        const ok=Number.isFinite(v)&&Math.abs(v-d.answer)<=(d.tolerance||0);
+        inp.disabled=go.disabled=true;settle(ok,d.explanation);};
+      q.append(row);
+    } else if(d.type==="debug_code"){
+      const lines=String(d.code).split("\n");
+      const pre=el("div","code"); let chosen=null;
+      const lab=el("p","steplab","1 · hatalı satırı seçin");
+      const fix=el("div","fixrow");
+      const inp=Object.assign(el("input"),{type:"text",placeholder:"doğru satırı yazın",disabled:true});
+      const go=el("button","btn","Kontrol et"); go.disabled=true;
+      fix.append(inp,go);
+      lines.forEach((src,i)=>{
+        const b=el("button","ln");
+        b.append(el("span","no",String(i+1)),el("span","src",src||" "));
+        b.onclick=()=>{ if(chosen!==null) $$(".ln",pre)[chosen].classList.remove("pick");
+          chosen=i; b.classList.add("pick");
+          lab.textContent="2 · bu satırın doğrusunu yazın";
+          inp.disabled=go.disabled=false; inp.focus(); };
+        pre.append(b);});
+      const norm=x=>String(x).replace(/\s+/g," ").replace(/;\s*$/,"").trim().toLowerCase();
+      go.onclick=()=>{
+        const want=(d.acceptableAnswers&&d.acceptableAnswers.length?d.acceptableAnswers:[d.correctAnswer]).map(norm);
+        const lineOk = chosen===(d.buggyLine-1);
+        const textOk = want.includes(norm(inp.value));
+        const ok = lineOk && textOk;
+        $$(".ln",pre).forEach((x,j)=>{x.disabled=true;
+          if(j===d.buggyLine-1) x.classList.add(lineOk?"pick-ok":"reveal");
+          else if(j===chosen) x.classList.add("pick-no");});
+        inp.disabled=go.disabled=true; lab.remove();
+        const pre2 = lineOk&&!textOk ? "Satır doğru, yazdığınız düzeltme tutmadı. Doğrusu: "+d.correctAnswer+" "
+                   : !lineOk ? "Hatalı satır "+d.buggyLine+". satırdır; doğrusu: "+d.correctAnswer+" " : "";
+        settle(ok,pre2+d.explanation);};
+      q.append(lab,pre,fix);
+    } else if(d.type==="order_steps"){
+      const picked=[],w=el("div","opts");
+      d.steps.forEach((s,i)=>{const b=el("button","opt");
+        b.append(el("span","k","—"),el("span",null,s));
+        b.onclick=()=>{if(picked.includes(i))return;picked.push(i);
+          $(".k",b).textContent=picked.length;b.classList.add("taken");
+          if(picked.length===d.steps.length){
+            const ok=JSON.stringify(picked)===JSON.stringify(d.correctOrder);
+            w.querySelectorAll("button").forEach(x=>x.disabled=true);
+            settle(ok,(ok?"":"Doğru sıra: "+d.correctOrder.map(n=>n+1).join(" → ")+". ")+d.explanation);}};
+        w.append(b);});
+      q.append(w);
+    } else {
+      const items=d.elements||d.options, key=d.elements?d.faultIndex:d.correctIndex, w=el("div","opts");
+      items.forEach((o,i)=>{const b=el("button","opt");
+        b.append(el("span","k",LET[i]),el("span",null,o));
+        b.onclick=()=>{const ok=i===key;
+          w.querySelectorAll("button").forEach((x,j)=>{x.disabled=true;if(j===key&&!ok)x.classList.add("reveal");});
+          b.classList.add(ok?"pick-ok":"pick-no");settle(ok,d.explanation);};
+        w.append(b);});
+      q.append(w);
+    }
+    if(prior){
+      const dn=el("div","ans "+(prior.ok?"good":"bad"));
+      dn.append(el("span","verdict",prior.ok?"doğru — çözüldü":"yanlış — çözüldü"),
+        document.createTextNode(d.explanation));
+      drillFig(d,dn);ruleChips(d,dn);sourceRef(d,dn);
+      q.querySelectorAll(".opt,input,.btn").forEach(x=>x.disabled=true);
+      if(d.type==="debug_code"){
+        const lns=$$(".ln",q), tgt=lns[d.buggyLine-1];
+        if(tgt) tgt.classList.add(prior.ok?"pick-ok":"reveal");
+        const sl=$(".steplab",q); if(sl) sl.remove();
+        const fr=$(".fixrow",q); if(fr) fr.remove();
+      }
+      q.append(dn);
+    } else if(d.hint){ q.append(el("div","hintline","ipucu · "+d.hint)); }
+    q.append(ansBox); box.append(q);
+  });
+
+  if(done===D.drills.length && D.drills.length){
+    const score=Math.round(got/D.drills.length*100);
+    const band = score>=85 ? "Çok iyi"
+               : score>=70 ? "İyi"
+               : score>=50 ? "Geçer"
+               : "Tekrar edilmeli";
+    const f=el("div","finish");
+    f.append(el("div","cap","test tamamlandı"));
+    f.append(el("div","big",String(score)));
+    f.append(el("div","outof","100 üzerinden · "+got+" / "+D.drills.length+" doğru · "+band));
+    const bd=el("div","bd");
+    ["core","stretch","pit"].forEach(lv=>{
+      const set=D.drills.filter(d=>d.difficulty===lv);
+      if(!set.length) return;
+      const g=set.filter(d=>state[d.id]&&state[d.id].ok).length;
+      bd.append(el("span",null,lv+" "+g+"/"+set.length+" · %"+Math.round(g/set.length*100)));
+    });
+    f.append(bd);
+    f.append(el("p","sm", score===100
+      ? "Sekiz sorunun sekizini de doğru bildiniz. Şimdi işlerin yerini ve assembly adımlarını örneğe bakmadan kurun."
+      : score>=70
+      ? "Yanlış bildiğiniz soruların gerekçesini bir kez daha okuyun, sonra testi baştan çözün."
+      : "Puanınız 70'in altında. Kavram bölümünü ve kartları tekrar okuyup testi baştan çözmeniz önerilir."));
+    const r=el("button","retry","Testi baştan çöz");
+    r.onclick=()=>{ state={}; save(); render();
+      document.getElementById("bar").scrollIntoView({behavior:"smooth",block:"start"}); };
+    f.append(r);
+    box.append(f);
+  }
+}
+render();
+/* ---- sunucu oturumu ve ilerlemenin geri yüklenmesi ---- */
+if(window.FRC && FRC.acik){
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    return FRC.oku(MODUL).then(function(su){
+      if(!su) return;
+      var degisti=false;
+      if(su.tuval!==null && su.tuval!==undefined && state.__b==null){
+        state.__b={s:su.tuval,n:null}; degisti=true;
+      }
+      Object.keys(su.cevaplar).forEach(function(id){
+        if(!state[id]){ state[id]=su.cevaplar[id]; degisti=true; }
+      });
+      if(degisti){ save(); render(); }
+    });
+  });
+}
+
+</script>
+
+</body>
+</html>

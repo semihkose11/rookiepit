@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FRC Cad Modul 04 - Extrude operation type secimi, alti end type, merge scope kurali ve feature duzenlerken rollback. Kavram, uc kart, sema, kurulum tuvali ve sekiz soruluk test.">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>window.__EMBED__=true;</script>
+<meta property="og:title" content="Feature'lar ve Extrude'un End Condition'ları">
+<meta property="og:description" content="FRC Cad Modul 04 - kavram, kartlar, sema ve test.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}
+[hidden]:not([hidden=until-found]){display:none!important}</style>
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<title>Feature'lar ve Extrude'un End Condition'ları · FRC Cad Modül 04</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
+:root, :root[data-theme="dark"], :root[data-theme="light"]{
+  color-scheme:light;
+  --ground:#EFE9FB; --surface:#FFFFFF; --sunk:#E4DBF7;
+  --ink:#000000; --body:#141019; --mute:#463E58; --hair:#CFC2EC;
+  --acc:#5B21B6; --acc-soft:#EDE5FE;
+  --ok:#116336; --ok-soft:#E4F3EA; --no:#A5124A; --no-soft:#FBE6EE;
+  --rung-b:#7C3AED; --rung-m:#4C1D95; --rung-p:#000000; --rung-p-fg:#EFE9FB;
+  --w-pos:#6D28D9; --w-neg:#000000; --dia-fill:#FFFFFF; --dia-edge:#BFB0E0;
+  --dia-ink:#000000; --dia-mute:#463E58; --dia-pd:#5B21B6; --dia-band:#E7DDFC;
+  --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+  font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:40px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font:700 clamp(34px,8vw,52px)/1.02 var(--disp);letter-spacing:-.01em;margin:10px 0 0}
+.sub{margin:14px 0 0;max-width:60ch;font-size:15.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+section{padding:38px 0;border-bottom:1px solid var(--hair)}
+section:last-of-type{border-bottom:0}
+h2{font:600 clamp(23px,5vw,29px)/1.15 var(--disp);letter-spacing:.005em;margin:8px 0 6px}
+.lede{margin:0 0 22px;font-size:15px;color:var(--mute);max-width:62ch}
+.concept p{margin:0 0 14px;font-size:15.5px;line-height:1.72;max-width:66ch}
+.vids{margin-top:22px}
+.vid{border:1px solid var(--hair);border-radius:12px;background:var(--surface);overflow:hidden}
+.vid+.vid{margin-top:14px}
+.vtop{padding:12px 16px;border-bottom:1px solid var(--hair)}
+.vtop b{display:block;color:var(--ink);font:600 14.5px/1.35 var(--sans)}
+.vtop span{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.vframe{position:relative;width:100%;aspect-ratio:16/9;background:#1b1620}
+.vface{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
+  background-color:#1b1620;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;text-decoration:none}
+.vface:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+.vptri{width:74px;height:52px;border-radius:12px;background:rgba(20,16,24,.78);
+  display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.vface:hover .vptri{background:var(--acc)}
+.vptri svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.vlink{display:inline-block;margin:14px 16px 0;padding:9px 14px;border-radius:8px;
+  background:var(--acc);color:#fff;text-decoration:none;font:600 13px/1 var(--sans)}
+.vnote{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot a{color:var(--acc);font-weight:600}
+.vsrc{margin:8px 16px 14px;font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.terms{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.term{font:500 12.5px/1 var(--mono);color:var(--ink);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:5px;padding:7px 9px}
+.rail{display:flex;flex-direction:column;gap:14px}
+.flip{perspective:1400px;background:none;border:0;padding:0;width:100%;
+  text-align:left;font:inherit;cursor:pointer;border-radius:14px}
+.flip:focus-visible{outline:2.5px solid var(--acc);outline-offset:3px}
+.inner{position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1)}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+.face{border-radius:14px;border:1px solid var(--hair);background:var(--surface);
+  box-shadow:var(--shadow);padding:20px;backface-visibility:hidden}
+.face.back{position:absolute;inset:0;transform:rotateY(180deg);overflow:auto}
+.face.front{min-height:150px;display:flex;flex-direction:column}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.rung{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 9px;border-radius:5px;color:#fff}
+.r-behaviour{background:var(--rung-b)} .r-mechanism{background:var(--rung-m)}
+.r-pit{background:var(--rung-p);color:var(--rung-p-fg)}
+.count{font:500 12px/1 var(--mono);color:var(--mute)}
+.cfront{font:600 clamp(19px,4.2vw,23px)/1.3 var(--disp);color:var(--ink)}
+.ctags{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:400 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);padding:5px 8px;border-radius:4px}
+.hintline{margin-top:12px;font:500 12px/1.5 var(--mono);color:var(--acc)}
+.face.front .hintline{margin-top:auto;padding-top:18px}
+.cardfig svg{max-height:150px}
+@media(max-width:520px){
+  .cback{font-size:13.6px;line-height:1.56}
+  .cardfig{margin-top:12px}
+  .cardfig svg{max-height:116px}
+  .take{font-size:12.8px;padding:9px 11px;margin-top:12px}
+}
+.cback{font-size:14.5px;line-height:1.62;margin:0}
+.take{margin-top:14px;padding:11px 13px;border-radius:9px;background:var(--acc-soft);
+  color:var(--ink);font:600 13.5px/1.45 var(--sans)}
+.gauges{padding:16px 18px;background:var(--sunk);border:1px solid var(--hair);
+  border-radius:12px;display:grid;gap:11px}
+#ipbody{margin-top:24px}
+.grow{display:grid;grid-template-columns:132px 1fr auto;align-items:center;gap:12px}
+.glabel{font:500 13px/1 var(--mono);color:var(--ink)}
+.gbar{height:14px;display:flex;align-items:center}
+.gbar i{display:block;width:100%;border-radius:2px;background:var(--acc)}
+.guse{font:400 12px/1.3 var(--sans);color:var(--mute);text-align:right;max-width:20ch}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.ptop{padding:18px 20px;border-bottom:1px solid var(--hair)}
+.ptop h3{font:600 19px/1.25 var(--disp)}
+.ptop p{margin:7px 0 0;font-size:14.5px}
+.must{list-style:none;margin:0;padding:2px 0}
+.must li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.must li:last-child{border-bottom:0}
+.must .n{font:600 12px/22px var(--mono);color:#fff;background:var(--acc);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.must b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.must span{font-size:13px;color:var(--mute)}
+.pfoot{padding:14px 20px;background:var(--sunk);font-size:13.5px;color:var(--mute)}
+.pfoot code{font:500 12.5px var(--mono);color:var(--ink)}
+.howgrid{display:grid;gap:16px;padding:18px 20px}
+@media(min-width:640px){.howgrid{grid-template-columns:1fr 1fr;gap:24px}}
+.howgrid h4{margin:0 0 9px;font:600 11.5px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--acc)}
+.howgrid ol{margin:0;padding-left:19px;font-size:13.8px;line-height:1.62}
+.howgrid ol li{margin-bottom:6px}
+.howgrid p{margin:0 0 9px;font-size:13.8px;line-height:1.62}
+.swipe{display:none;font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--mute);margin:0 0 8px}
+@media(max-width:860px){.swipe{display:block}}
+.fig{margin:16px 0 6px;border:1px solid var(--hair);border-radius:11px;
+  background:var(--surface);padding:13px 14px 9px}
+.fig .sc{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig .sc svg{display:block;width:100%;height:auto;min-width:520px}
+.fig .cap{margin:9px 0 0;font:500 11.5px/1.45 var(--mono);color:var(--mute)}
+.fig .cap b{display:none;color:var(--acc);font-weight:600}
+@media(max-width:620px){.fig .cap b{display:inline}}
+.ans .fig,.cfront .fig{background:var(--surface)}
+.cardfig{margin:14px 0 0;border-radius:9px;overflow:hidden}
+.cardfig svg{display:block;width:100%;height:auto}
+.conceptfig{margin:6px 0 22px}
+.match[hidden],.mbar[hidden]{display:none!important}
+.bwarn{margin:0;padding:12px 20px;font:500 13px/1.5 var(--sans);color:var(--no);
+  background:var(--no-soft);border-bottom:1px solid var(--hair)}
+#bpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#bpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#bpanel.locked #bwrap,#bpanel.locked .mbar,#bpanel.locked #bres{width:100%;max-width:1120px;
+  margin-left:auto;margin-right:auto}
+#bpanel.locked .mbar{position:sticky;bottom:0;background:var(--ground);
+  border-top:1px solid var(--hair);padding:12px 20px}
+#bpanel.locked .canvas{height:min(64vh,560px)}
+.blines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.blbl{position:absolute;inset:0;pointer-events:none;z-index:6}
+.placed{z-index:2}
+.placed.bad{outline:2.5px solid var(--no);outline-offset:3px;border-radius:10px}
+.placed.fine{outline:2px solid var(--ok);outline-offset:3px;border-radius:10px}
+.pin{position:absolute;width:15px;height:15px;border-radius:50%;padding:0;transform:translate(-50%,-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;z-index:4;touch-action:none}
+.pin:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.pin:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.pin.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.pinlb.lft{transform:translate(-100%,-50%)}
+.pinlb.rgt{transform:translate(0,-50%)}
+.pinlb{position:absolute;transform:translate(-50%,-190%);font:600 9px/1 var(--mono);
+  color:var(--acc);background:var(--surface);border:1px solid var(--hair);border-radius:4px;
+  padding:2px 3px;pointer-events:none;z-index:5;white-space:nowrap}
+.wchip[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);
+  box-shadow:0 0 0 2px var(--acc-soft)}
+.mres .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.mres .pen{margin:10px 0 0;font:500 13px/1.55 var(--sans);color:var(--no)}
+.mres .miss{margin:12px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:var(--body)}
+.mres .miss b{color:var(--no);font-family:var(--mono);font-size:12px}
+.mgate{padding:20px}
+.mgate p{margin:0 0 14px;font-size:14.5px;line-height:1.62;max-width:62ch}
+body.mlock{overflow:hidden}
+#matchpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#matchpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#matchpanel.locked .match,#matchpanel.locked .mres{width:100%;max-width:880px;margin-left:auto;margin-right:auto}
+#matchpanel.locked .mbar{width:100%;max-width:880px;margin:0 auto;position:sticky;bottom:0;
+  background:var(--ground);border-top:1px solid var(--hair);padding:12px 20px}
+#matchpanel.locked .mres{margin-bottom:24px}
+.match{position:relative;display:grid;grid-template-columns:1fr 92px 1fr;padding:18px 20px 6px}
+@media(max-width:620px){.match{grid-template-columns:1fr 46px 1fr;padding:14px 12px 4px}}
+.mcol{display:flex;flex-direction:column;gap:13px}
+.mitem{position:relative;display:flex;align-items:center;gap:11px;background:var(--surface);
+  border:1.6px solid var(--hair);border-radius:12px;padding:11px 13px;min-height:60px}
+.mcol.left .mitem{padding-right:24px}
+.mcol.right .mitem{padding-left:24px}
+.mitem .lbl{font:500 14px/1.35 var(--sans);color:var(--ink)}
+@media(max-width:620px){.mitem{min-height:54px;padding:9px 10px;gap:8px}
+  .mcol.left .mitem{padding-right:20px}.mcol.right .mitem{padding-left:20px}
+  .mitem .lbl{font-size:12.8px}}
+.mitem .art{flex:none;width:66px}
+.mitem .art svg{display:block;width:100%;height:auto}
+@media(max-width:620px){.mitem .art{width:50px}}
+.mdot{position:absolute;top:50%;width:19px;height:19px;border-radius:50%;transform:translateY(-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;padding:0;z-index:3}
+.mcol.left .mdot{right:-10px}
+.mcol.right .mdot{left:-10px}
+.mdot:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.mdot:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.mdot.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.mdot.ok{border-color:var(--ok);background:var(--ok)}
+.mdot.no{border-color:var(--no);background:var(--no)}
+.mitem.ok{border-color:var(--ok);background:var(--ok-soft)}
+.mitem.no{border-color:var(--no);background:var(--no-soft)}
+.mlines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.mfix{display:block;margin-top:5px;font:500 12px/1.4 var(--mono);color:var(--no)}
+.mbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 20px 16px}
+.mbar .btn:disabled{opacity:.45;cursor:default}
+.mres{margin:0 20px 16px;padding:16px 18px;border-radius:12px;background:var(--sunk);
+  border-left:3px solid var(--acc)}
+.mres .big{font:700 30px/1 var(--disp);color:var(--ink)}
+.mres .cap{font:500 12px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:9px}
+.mres p{margin:9px 0 0;font-size:14px;line-height:1.6}
+.diawrap{overflow-x:auto;padding:6px 0 2px;-webkit-overflow-scrolling:touch}
+.tray{padding:16px 20px 4px}
+.tlabel{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin:0 0 11px}
+.tgrid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:9px;margin-bottom:16px}
+.part{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font:inherit;color:var(--body)}
+.part:hover{border-color:var(--acc);background:var(--acc-soft)}
+.part:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.part span{font:500 10.5px/1 var(--mono);color:var(--mute);white-space:nowrap}
+.bleed{width:100%}
+@media(min-width:880px){
+  .bleed{width:min(1160px,calc(100vw - 40px));margin-left:50%;transform:translateX(-50%)}
+  .bleed .canvas{height:min(74vh,620px)}
+}
+.canvas{position:relative;height:min(72vh,520px);margin:0 14px 14px;border-radius:12px;
+  border:1.5px dashed var(--hair);background:var(--sunk);overflow:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.board{position:relative;width:1080px;height:1040px}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--acc-soft) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--acc-soft) 1px,transparent 1px);
+  background-size:26px 26px;opacity:.75}
+.pan{margin:0 14px 12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+@media(max-width:700px){
+  .tgrid{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;font-size:13.5px;color:var(--mute);pointer-events:none}
+.empty.gone{display:none}
+.placed{position:absolute;cursor:grab;touch-action:none;user-select:none}
+.placed:active{cursor:grabbing}
+.placed .x{position:absolute;top:-9px;right:-9px;width:19px;height:19px;border-radius:50%;
+  background:var(--no);color:#fff;border:0;font:600 11px/19px var(--sans);cursor:pointer;padding:0}
+.placed .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.wireel{position:absolute;inset:0;pointer-events:none}
+.wireel .seg{position:absolute;height:20px;transform-origin:0 50%;pointer-events:auto;
+  cursor:grab;touch-action:none}
+.wireel .seg:active{cursor:grabbing}
+.wireel .seg i{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);border-radius:99px}
+.wireel .h{position:absolute;width:20px;height:20px;border-radius:50%;padding:0;
+  background:var(--surface);border:2.5px solid var(--acc);transform:translate(-50%,-50%);
+  cursor:crosshair;touch-action:none;pointer-events:auto;z-index:2;
+  opacity:0;transition:opacity .14s ease}
+.wireel .h:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.wireel .h.m{width:17px;height:17px;background:var(--acc);border-color:var(--surface);
+  box-shadow:0 0 0 2px var(--acc)}
+.wireel:hover .h,.wireel.sel .h,.wireel:focus-within .h{opacity:1}
+@media (prefers-reduced-motion:reduce){.wireel .h{transition:none}}
+.wireel .wtag{position:absolute;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:5px;pointer-events:auto;z-index:3;
+  font:600 10.5px/1 var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:4px 5px 4px 7px;white-space:nowrap}
+.wireel .x{position:static;width:16px;height:16px;flex:none;
+  border-radius:50%;background:var(--no);color:#fff;border:0;font:600 10px/16px var(--sans);
+  cursor:pointer;padding:0}
+.wireel .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:0 20px 16px}
+.mini{font:600 12px/1 var(--mono);background:var(--surface);color:var(--body);
+  border:1px solid var(--hair);padding:9px 13px;border-radius:999px;cursor:pointer}
+.mini:hover{border-color:var(--acc)} .mini:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cnote{font-size:12.5px;color:var(--mute);margin-left:auto;font-family:var(--mono)}
+.diawrap svg{display:block;min-width:790px;width:100%;height:auto}
+.diacap{padding:0 20px 16px;font-size:13px;color:var(--mute)}
+.calls{list-style:none;margin:0;padding:2px 0}
+.calls li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.calls li:last-child{border-bottom:0}
+.calls .n{font:600 12px/22px var(--mono);color:#fff;background:var(--dia-pd);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.calls b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.calls span{font-size:13px;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+.filt{font:600 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  background:var(--surface);color:var(--body);border:1px solid var(--hair);
+  padding:9px 13px;border-radius:999px;cursor:pointer}
+.filt[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.filt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.score{margin-left:auto;font:600 13px/1 var(--mono);color:var(--mute)}
+.q{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:13px}
+.pill{font:600 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 8px;border-radius:4px;border:1px solid var(--hair);color:var(--mute)}
+.pill.core{color:var(--rung-b);border-color:currentColor}
+.pill.stretch{color:var(--acc);border-color:currentColor}
+.pill.pit{color:var(--no);border-color:currentColor}
+.sym{margin:0 0 12px;padding:12px 14px;background:var(--sunk);border-radius:9px;font-size:14px;line-height:1.6}
+.qtext{margin:0 0 15px;color:var(--ink);font:500 16.5px/1.42 var(--sans)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;text-align:left;
+  font:400 14.5px/1.5 var(--sans);color:var(--body);background:var(--surface);
+  border:1px solid var(--hair);border-radius:10px;padding:12px 13px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--acc);background:var(--acc-soft)}
+.opt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.opt:disabled{cursor:default}
+.opt .k{font:600 12px/1.45 var(--mono);color:var(--mute)}
+.opt.pick-ok{background:var(--ok-soft);border-color:var(--ok)} .opt.pick-ok .k{color:var(--ok)}
+.opt.pick-no{background:var(--no-soft);border-color:var(--no)} .opt.pick-no .k{color:var(--no)}
+.opt.reveal{border-color:var(--ok);border-style:dashed}
+.opt.taken{opacity:.55}
+.num{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.num input{font:500 16px var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:9px;padding:11px 13px;width:130px}
+.num input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.btn{font:600 13px/1 var(--sans);background:var(--ink);color:var(--ground);border:0;
+  border-radius:9px;padding:12px 17px;cursor:pointer}
+.btn:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.unit{font:500 13px var(--mono);color:var(--mute)}
+/* debug_code: satır numaralı kod bloğu, hatalı satır seçilir ve doğrusu yazılır */
+.code{margin:0 0 12px;border:1px solid var(--hair);border-radius:10px;background:var(--surface);
+  overflow:auto}
+.code .ln{display:grid;grid-template-columns:38px 1fr;align-items:stretch;width:100%;
+  border:0;border-left:3px solid transparent;background:none;text-align:left;cursor:pointer;
+  font:400 13.5px/1.62 var(--mono);color:var(--body);padding:0}
+.code .ln:hover:not(:disabled){background:var(--acc-soft)}
+.code .ln:focus-visible{outline:2.5px solid var(--acc);outline-offset:-2px}
+.code .ln:disabled{cursor:default}
+.code .ln .no{color:var(--mute);text-align:right;padding:0 9px 0 0;user-select:none;
+  background:var(--sunk);font-size:12px}
+.code .ln .src{padding:0 12px;white-space:pre}
+.code .ln.pick{border-left-color:var(--acc);background:var(--acc-soft)}
+.code .ln.pick-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.code .ln.pick-no{border-left-color:var(--no);background:var(--no-soft)}
+.code .ln.reveal{border-left-color:var(--ok);border-left-style:dashed}
+.fixrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fixrow input{flex:1 1 320px;min-width:0;font:500 13.5px var(--mono);color:var(--ink);
+  background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:11px 13px}
+.fixrow input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.steplab{margin:0 0 9px;font:500 12px/1.5 var(--mono);color:var(--mute)}
+.ans{margin-top:14px;padding:14px 15px;border-radius:10px;font-size:14.5px;line-height:1.62;
+  background:var(--sunk);border-left:3px solid var(--acc)}
+.ans .verdict{display:block;font:600 13px/1 var(--mono);letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:9px}
+.ans.good .verdict{color:var(--ok)} .ans.bad .verdict{color:var(--no)}
+.srcs{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.rule{font:500 11px/1 var(--mono);color:var(--mute);border:1px solid var(--hair);
+  border-radius:4px;padding:4px 7px}
+details.ref{margin-top:11px}
+details.ref summary{font:500 12.5px var(--mono);color:var(--mute);cursor:pointer}
+details.ref summary:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+details.ref p{margin:9px 0 0;font-size:13.5px;color:var(--mute);word-break:break-word}
+.finish{background:var(--surface);border:1.5px solid var(--acc);border-radius:14px;
+  box-shadow:var(--shadow);padding:24px 20px;text-align:center}
+.finish .big{font:700 46px/1 var(--disp);color:var(--ink);letter-spacing:-.01em}
+.finish .cap{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:12px}
+.finish .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.finish .sm{font:400 14px/1.5 var(--sans);color:var(--body);margin:10px auto 0;max-width:44ch}
+.finish .bd{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:16px 0 20px}
+.finish .bd span{font:500 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 10px}
+.retry{margin-top:18px;font:600 14px/1 var(--sans);background:var(--acc);color:var(--ground);border:0;
+  border-radius:10px;padding:14px 24px;cursor:pointer}
+.retry:hover{filter:brightness(1.08)}
+.retry:focus-visible{outline:2.5px solid var(--ink);outline-offset:3px}
+footer{padding:28px 0 0;font-size:13px;color:var(--mute)}
+.cright{margin:0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap" lang="tr">
+<header>
+  <div class="eyebrow" lang="en">cad · modül 04</div>
+  <h1 id="mt"></h1>
+  <p class="sub" id="ms"></p>
+  <div class="meta" id="mm"></div>
+</header>
+
+<section class="concept">
+  <div class="eyebrow">kavram</div>
+  <h2>Feature nedir ve Extrude ne yapar</h2>
+  <div id="body"></div>
+  <div class="vids" id="vids"></div>
+  <div class="terms" id="terms"></div>
+</section>
+
+<section>
+  <div class="eyebrow">basamak</div>
+  <h2>Davranıştan bedele</h2>
+  <p class="lede">Aynı konu üç basamakta: önce ne olduğu, sonra neden olduğu, en sonda sahada neye mal olduğu. Çevirmek için karta dokunun.</p>
+  <div class="rail" id="cards"></div>
+</section>
+
+<section>
+  <div class="eyebrow">referans</div>
+  <h2>Hangi kavram ne demek</h2>
+  <p class="lede">Bu modülün kavramları. Extrude'un ne yaptığı, malzemeye ne olduğu, nerede durduğu ve hangi part'larla birleştiği.</p>
+  <div class="gauges" id="gauges"></div>
+  <div class="concept" id="ipbody"></div>
+  <div id="ipfig"></div>
+</section>
+
+<section>
+  <div class="eyebrow" lang="en">mechanism map</div>
+  <h2>Kur: operation, end type ve Symmetric</h2>
+  <p class="lede">Önce kurulmuş bir örnek okuyun. Sonra aynısını, örneğe bakmadan kendiniz kurun.</p>
+  <div class="panel bleed">
+    <div class="ptop"><h3>Örnek: operation type'lar, end type'lar ve Symmetric</h3>
+      <p>Üstte feature ile Extrude'un tanımı, ortada dört operation type ve merge scope, altta altı end type ile Symmetric ve Second end position farkı.</p></div>
+    <p class="swipe">→ şemayı yana kaydırarak tamamını görün</p>
+    <div class="diawrap" id="dia"></div>
+    <ol class="calls" id="calls"></ol>
+  </div>
+
+  <div class="panel bleed" id="matchpanel">
+    <div class="ptop"><h3 id="mth"></h3><p id="mtp"></p></div>
+    <div class="mgate" id="mgate">
+      <p id="mgtext"></p>
+      <button class="btn" id="mstart"></button>
+    </div>
+    <div class="match" id="match" hidden></div>
+    <div class="mbar" id="mbar" hidden>
+      <button class="btn" id="mdone"></button>
+      <button class="mini" id="mreset"></button>
+      <button class="mini" id="mclose" hidden></button>
+      <span class="cnote" id="mnote"></span>
+    </div>
+    <div id="mres"></div>
+  </div>
+
+  <div class="panel bleed" id="bpanel">
+    <div class="ptop"><h3 id="bh"></h3><p id="bp"></p></div>
+    <div class="mgate" id="bgate">
+      <p id="bgtext"></p>
+      <button class="btn" id="bstart"></button>
+    </div>
+    <div id="bwrap" hidden>
+      <p class="bwarn" id="bwarn"></p>
+      <div class="tray" id="btray"></div>
+      <div class="canvas" id="bcanvas"><div class="board" id="bboard"></div>
+        <div class="empty" id="bempty"></div></div>
+      <p class="pan" id="bpan"></p>
+    </div>
+    <div class="mbar" id="bbar" hidden>
+      <button class="btn" id="bdone"></button>
+      <button class="mini" id="breset"></button>
+      <button class="mini" id="bclose" hidden></button>
+      <span class="cnote" id="bnote"></span>
+    </div>
+    <div id="bres"></div>
+    <ol class="must" id="must"></ol>
+    <div class="ptop" style="border-top:1px solid var(--hair);border-bottom:0">
+      <h3 id="c2h"></h3><p id="c2p"></p>
+    </div>
+  </div>
+
+<section>
+  <div class="eyebrow">alıştırma</div>
+  <h2>Sorular</h2>
+  <p class="lede">Bir şık seçin; gerekçe hemen açılır. Puanınız cihazınızda saklanır.</p>
+  <div class="bar" id="bar"></div>
+  <div id="qs"></div>
+</section>
+
+<footer id="foot"><p class="cright">© 2026 Semih Tuna Köse</p></footer>
+</div>
+
+<script>
+const D = {"id": "cad-04-features", "title": "Feature'lar ve Extrude'un End Condition'ları", "summary": "Extrude'un dört operation type'ını, altı end type'ını, Symmetric ile second end position seçeneklerini, merge scope kuralını ve bir feature düzenlenirken modelin neden geri sarılmış göründüğünü öğretir.", "season": "2026", "verifiedOn": "2026-09-02", "estimatedMinutes": 35, "body": "Feature, geometriyi oluşturan veya değiştiren bir tasarım adımıdır ve parametrik olarak saklanır, yani Feature list'te kendi entity'si olarak görünür. Kaynak Extrude'u şöyle tarif eder: seçilen bir bölgeye veya düz bir face'e düz bir yol boyunca derinlik ekler; yeni bir part ya da surface oluşturur veya var olanı malzeme ekleyerek, çıkararak ya da kesiştirerek değiştirir.\n\nDört operation type vardır. New, yeni bir part ile sonuçlanan yeni malzeme oluşturur. Add, var olan malzemeye eklenen malzeme oluşturur. Remove, bir part'tan malzeme çıkarır. Intersect, yalnızca kesişimlerin bulunduğu yerde malzeme bırakır. Remove ile Intersect surface'ler için kullanılamaz. Merge scope, yeni malzemenin hangi part'larla birleşeceğini belirler; geometri tek bir part'a değiyorsa o part kendiliğinden eklenir, birden çoğuna değiyorsa belirsizlik oluşur ve seçim gerekir. Varsayılan olarak Merge all seçilidir. Kaynağın notu şudur: Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir; New için merge scope yoktur.\n\nEnd type, extrude'un nerede duracağını belirler ve altı seçenek içerir: Blind belirtilen bir mesafeye kadar, Up to next karşılaşılan bir sonraki face veya face'lere kadar, Up to face seçilen face'in altında yatan sonsuz face'e kadar, Up to part bir sonraki part veya surface'e kadar, Up to vertex seçilen bir noktaya veya Mate connector'a kadar, Through all ise seçilen bütün part'ların içinden geçer. Up to next sonlanmazsa Extrude başarısız olur. Symmetric bir end type değil, ayrı bir onay kutusudur ve yalnızca Blind ile Through all için kullanılabilir. Symmetric yerine Second end position işaretlenerek karşı uca farklı bir derinlik verilebilir ve bu seçenek aynı end type'ların hepsini sunar.", "keyTerms": [{"term": "Extrude", "glossTr": "bir bölgeye düz bir yol boyunca derinlik ekleyen feature"}, {"term": "operation type", "glossTr": "extrude'un malzemeyi ne yapacağını belirleyen seçim"}, {"term": "New", "glossTr": "yeni bir part ile sonuçlanan yeni malzeme oluşturan operation"}, {"term": "Add", "glossTr": "var olan malzemeye malzeme ekleyen operation"}, {"term": "Remove", "glossTr": "bir part'tan malzeme çıkaran operation"}, {"term": "Intersect", "glossTr": "yalnızca kesişimlerin bulunduğu yerde malzeme bırakan operation"}, {"term": "merge scope", "glossTr": "yeni malzemenin hangi part'larla birleştirileceğini belirleyen kapsam; New dışındaki operation'larda gerekir"}, {"term": "end type", "glossTr": "extrude'un nerede sonlanacağını belirleyen seçim"}, {"term": "Blind", "glossTr": "belirtilen bir mesafeye kadar giden end condition"}, {"term": "Through all", "glossTr": "seçilen bütün part'ların içinden geçen end condition"}, {"term": "Up to next", "glossTr": "karşılaşılan bir sonraki face'e kadar giden end condition"}, {"term": "rollback", "glossTr": "modelin feature geçmişinde daha erken bir hâline geri sarılması"}, {"term": "Symmetric", "glossTr": "extrude'u plane'in iki yanında simetrik yapan onay kutusu"}, {"term": "Second end position", "glossTr": "karşı uca ayrı bir derinlik ve end condition veren seçenek"}, {"term": "face", "glossTr": "bir part'ın sınırını oluşturan yüzey; Onshape'te surface'ten ayrı bir kavramdır"}], "cards": [{"id": "cad-04-c1", "rung": "behaviour", "index": 1, "of": 3, "label": "FEATURE", "front": "Extrude dialog'unda iki ayrı seçim vardır ve ikisi birbirinden bağımsızdır.", "back": "Feature, geometriyi oluşturan veya değiştiren bir tasarım adımıdır ve parametrik olarak saklanır. Extrude seçilen bir bölgeye düz bir yol boyunca derinlik ekler. Dialog iki şey sorar. Operation type malzemeye ne olacağını belirler: New yeni bir part ile sonuçlanan yeni malzeme oluşturur, Add var olan malzemeye malzeme ekler, Remove bir part'tan malzeme çıkarır, Intersect yalnızca kesişimlerin bulunduğu yerde malzeme bırakır. End type ise nerede duracağını belirler ve altı seçeneği vardır. Bir delik açmak malzeme çıkarmaktır, yani Remove'dur; New seçilirse plakanın içine bir silindir konur ve iki ayrı part elde edilir. Remove ile Intersect surface'ler için kullanılamaz.", "takeaway": "Extrude açarken önce malzemeye ne olacağını, sonra nerede duracağını ayrı ayrı seçin", "tags": ["Extrude", "operation type", "end type"], "estMinutes": 2, "derivedFrom": ["cad-04-d1", "cad-04-d2"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}, {"id": "cad-04-c2", "rung": "mechanism", "index": 2, "of": 3, "label": "FEATURE", "front": "Merge scope kaç operation'ı ilgilendirir?", "back": "Merge scope, yeni malzemenin hangi part'larla birleşeceğini belirler. Geometri yalnızca tek bir part'a değiyor veya onunla kesişiyorsa o part merge scope'a kendiliğinden eklenir. Birden çok part'a değiyor veya kesişiyorsa belirsizlik oluşur ve hangi part'larla birleştirileceğini kullanıcının seçmesi gerekir; bu bir hata değil, tanımlı bir davranıştır. Varsayılan olarak Merge all seçilidir ve Merge with all kısayolu değen veya kesişen bütün part'ları kapsama ekler. Kaynağın notu şudur: Boolean Add, Remove veya Intersect olarak ayarlanmışsa ve merge scope'ta hiçbir şey seçilmemişse feature hata verir. Merge scope'u olmayan tek operation New'dur. Yani kapsam üç operation'ı birden ilgilendirir; bunu ters bilen bir öğrenci Remove ile delik açarken kapsamı boş bırakır ve hatanın sebebini başka yerde arar.", "takeaway": "New dışında bir operation seçtiyseniz merge scope'u boş bırakmayın", "tags": ["merge scope", "Add", "Remove"], "estMinutes": 3, "derivedFrom": ["cad-04-d3", "cad-04-d5"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}, {"id": "cad-04-c3", "rung": "pit", "index": 3, "of": 3, "label": "FEATURE", "front": "Plaka 3 mm'den 5 mm'ye çıktı, delikler plakayı delip geçmedi.", "back": "Blind, belirtilen bir mesafeye kadar gider; yani 3 sayısı bir ilişkiyi değil, o anki bir ölçüyü kaydetti. Plaka kalınlığı 5 mm'ye çıkınca delik hâlâ 3 mm derinliğe gitti ve bu ancak parça imal edildikten sonra görüldü. Geometriye bakan end type'lar bu sorunu çözer. Bu senaryoda doğru seçim Through all'dur; seçilen bütün part'ların içinden geçer, dolayısıyla kalınlık değişse de deliği takip eder. Up to next de işe yarardı, çünkü karşılaşılan bir sonraki face'e kadar gider ve plakanın alt face'i o rolü üstlenir. Up to part burada işe yaramazdı; bir sonraki part veya surface'e kadar gider ve deliğin yolunda başka part yoktur. Geometriye bağlı olmak tek başına yetmez, koşulun dayandığı geometrinin gerçekten orada olması gerekir.", "takeaway": "Bir end type seçerken, o mesafenin gelecekte de doğru kalıp kalmayacağını sorun", "tags": ["Blind", "Through all", "pit"], "estMinutes": 3, "derivedFrom": ["cad-04-d8", "cad-04-d6"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}], "drills": [{"id": "cad-04-d1", "type": "multiple_choice", "prompt": "Var olan bir plakanın içinden geçen bir delik açılacak. Sketch'te çember çizildi ve Extrude açılıyor. Hangi operation type seçilmelidir?", "options": ["Remove; bir part'tan malzeme çıkarır ve surface'ler için kullanılamaz.", "New; delik yeni bir geometri olduğu için sonuç yeni bir part olarak oluşturulur.", "Intersect; çemberin plakayla kesiştiği yeri bırakır, yani delik yerine sadece o bölge kalır.", "Add; deliğin kenarları var olan malzemeye eklenerek tanımlanır."], "correctIndex": 0, "explanation": "Kaynağın tanımı doğrudan bu işi tarif eder: Remove, bir part'tan malzeme çıkarır. Delik açmak bir malzeme çıkarma işlemidir, dolayısıyla operation type Remove'dur. İkinci şık yaygın bir yeni başlayan hatasıdır; New yeni bir part oluşturur, yani delik yerine plakanın içine bir silindir konur ve iki ayrı part elde edilir. Üçüncü şık Intersect'i yanlış anlar; Intersect yalnızca kesişimin bulunduğu yerde malzeme bırakır, yani sonuç plakanın delik olması gereken yerindeki silindir olurdu ve plakanın geri kalanı yok olurdu. Dördüncü şık Add'in tanımına aykırıdır; Add malzeme ekler, çıkarmaz. Kaynak ayrıca Remove ve Intersect'in surface'ler için kullanılamadığını belirtir, bu yüzden bu iki operation yalnızca katı part'lar üzerinde çalışır.", "hint": "Delik açmak malzemeye ne yapar?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"}, {"id": "cad-04-d2", "type": "diagnose", "symptom": "Bir öğrenci bir plakanın üzerine delik açmak için Extrude dialog'unu açıyor ve end type olarak Up to next seçiyor. Dialog başlığı kırmızıya dönüyor ve preview oluşmuyor. Sketch tamamen siyah ve doğru yerde. Deliğin açılacağı yönde plakanın ötesinde başka geometri yok.", "prompt": "Neden başarısız oluyor?", "options": ["Sketch'in bir part face üzerine çizilmiş olması gerekir; plane üzerine çizilen sketch'ler Up to next ile kullanılamaz.", "Up to next belirtilen yönde karşılaşılan bir sonraki face'e kadar gider; tam olarak sonlanmazsa Extrude başarısız olur.", "Up to next yalnızca Add operation'ı ile çalışır; Remove seçildiğinde bu end condition devre dışı kalır.", "Merge scope belirlenmemiştir; birden çok part olduğu için Onshape hangisine uygulanacağını bilemiyordur."], "correctIndex": 1, "explanation": "Kaynak Up to next'i tarif ederken sonucunu da söyler: belirtilen yönde karşılaşılan bir sonraki face veya face'lere kadar gider, ve tam olarak sonlanmazsa Extrude başarısız olur. Belirtideki kritik ayrıntı son cümledir; deliğin açılacağı yönde plakanın ötesinde başka geometri yoktur, yani extrude'un duracağı bir sonraki face de yoktur. Kırmızı başlık bir doğrulama işaretidir ve yalnızca dialog açıkken görünür; kaynak başlığın, bilgiler eksikse veya girilen bilgi bir hataya yol açtıysa kırmızı olduğunu söyler. Commit edilmiş bir feature'ın sonradan başarısız olması ayrı bir mekanizmadır ve kaynak sayfaları onu anlatmaz. Çözüm end type'ı değiştirmektir; bu senaryoda Through all uygundur. Birinci şık kaynakta karşılığı olmayan bir kısıt uydurur. Üçüncü şık da uydurmadır; end type ile operation type birbirinden bağımsız seçimlerdir. Dördüncü şık belirtiyle uyuşmaz; ortada tek bir plaka var, yani merge scope'ta belirsizlik yaratacak birden çok part yok. Kaynak merge scope'un Add, Remove ve Intersect için gerekli olduğunu belirtir, yalnızca New için yoktur.", "hint": "Belirtinin son cümlesi ne söylüyor? Extrude nerede duracaktı?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm", "sourceNote": "Dialog başlık renkleri: https://cad.onshape.com/help/Content/PartStudio/feature_basics.htm"}, {"id": "cad-04-d3", "type": "find_the_fault", "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.", "scenario": "Bir CAD ekibi Extrude'u anlatan bir başvuru kartı hazırlıyor.", "elements": ["New, yeni bir part ile sonuçlanan yeni malzeme oluşturur.", "Remove ve Intersect surface'ler için kullanılamaz.", "Through all, seçilen bütün part'ların içinden geçer.", "Merge scope yalnızca Add operation'ında gerekir; Remove ve Intersect merge scope istemez.", "Up to vertex, seçilen bir noktaya veya bir Mate connector'a kadar gider."], "faultIndex": 3, "explanation": "Kaynak bir not ile bunun tersini söyler: Boolean Add, Remove veya Intersect olarak ayarlanmışsa ve merge scope'ta hiçbir şey seçilmemişse feature hata verir; merge scope'u olmayan tek operation New'dur, çünkü New sonucu boolean'lamaz. Yani merge scope üç operation'ı birden ilgilendirir. Bu ayrımı ters bilmek pratikte hata üretir: bir öğrenci Remove ile delik açarken merge scope'un kendisini ilgilendirmediğini sanıp boş bırakırsa feature hata verir ve sebebini başka yerde arar. Diğer dört ifade kaynağın yazdığı gibidir.", "hint": "İfadelerden biri bir ayarın hangi operation'larda gerektiğini söylüyor. Kaynağın notu kaç operation sayıyor?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"}, {"id": "cad-04-d4", "type": "multiple_choice", "prompt": "Bir öğrenci bir sketch'i, sketch plane'inin iki yanına eşit uzunlukta uzatmak istiyor ve end type olarak Up to face seçtikten sonra Symmetric seçeneğini arıyor ama bulamıyor. Neden bulamıyor?", "options": ["Symmetric yalnızca sketch bir part face üzerine çizildiğinde kullanılabilir; plane üzerindeki sketch'lerde gizlenir.", "Symmetric seçeneği yalnızca Remove operation'ında görünür; New seçildiğinde arayüzden kaldırılır.", "Symmetric yalnızca Blind ve Through all end type'ları için kullanılabilir; Up to face bu ikisinden biri değildir.", "Symmetric ayrı bir feature'dır ve Extrude dialog'unun içinde değil, Feature toolbar'ında bulunur."], "correctIndex": 2, "explanation": "Kaynağın Symmetric ifadesi hem ne yaptığını hem nerede kullanılabileceğini söyler: seçilen plane veya sketch'in iki yanında simetrik extrude yapar, ve yalnızca Blind ile Through all end type'ları için kullanılabilir. Öğrenci Up to face seçtiği için o birleşim mevcut değildir ve onay kutusu görünmez. Kaynak alternatifi de verir: Symmetric yerine Second end position işaretlenerek karşı uca ayrı bir derinlik verilebilir ve bu seçenek aynı end condition'ların hepsini sunar, yani Up to face iki yönde de kullanılabilir. Birinci şık sketch plane türüyle ilgili kaynakta bulunmayan bir kısıt uydurur. İkinci şık Symmetric'i operation type'a bağlar; oysa Symmetric end type seçimine bağlı bir onay kutusudur. Dördüncü şık Symmetric'i ayrı bir feature sayar; kaynak onu Extrude dialog'unun içinde bir seçenek olarak tarif eder.", "hint": "Kaynak Symmetric'i tarif ederken kaç end type adı sayıyor?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"}, {"id": "cad-04-d5", "type": "diagnose", "symptom": "Bir Part Studio'da üç ayrı part var. Öğrenci Add operation'ı ile yeni bir malzeme ekliyor ve eklediği geometri bu part'lardan birden fazlasına değiyor. Onshape hangi part'larla birleştirileceğini soruyor. Öğrenci bunu bir hata sanıyor.", "prompt": "Onshape ne istiyor ve neden?", "options": ["Sketch'in hangi plane üzerinde olduğunu istiyor; birden çok part varken sketch plane'i belirsiz kalır.", "Hangi operation type'ın kullanılacağını istiyor; Add birden çok part varlığında geçerli bir seçim değildir.", "Hangi end condition'ın kullanılacağını istiyor; birden çok part varken Blind dışındaki koşullar belirsizleşir.", "Hangi part'larla birleştirileceğini istiyor; birden çok part değiyorsa merge scope belirsizleşir."], "correctIndex": 3, "explanation": "Kaynak bu davranışı adıyla tarif eder ve iki durumu ayırır. Geometri yalnızca tek bir part'a değiyor veya onunla kesişiyorsa o part merge scope'a kendiliğinden eklenir. Birden çok part değiyor veya kesişiyorsa belirsizlik oluşur ve hangi part'larla birleştirileceğini kullanıcının seçmesi gerekir. Yani bu bir hata değil, tanımlı bir davranıştır. Kaynak kolaylık yollarını da verir: varsayılan olarak Merge all seçilidir ve Merge with all kısayolu değen veya kesişen bütün part'ları kapsama ekler. Ayrıca bir not vardır: Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir. Bu ayrımı bilmek pratikte önemlidir, çünkü yanlış part seçilirse iki ayrı parça tek bir parça hâline gelebilir; bu son cümle kaynakta yazmayan bir uyarıdır. Diğer üç şık belirsizliği yanlış yerlere bağlar; sketch plane, operation type ve end type zaten seçilmiştir ve hiçbiri part sayısına göre belirsizleşmez.", "hint": "Öğrenci Add seçti, yani malzeme ekliyor. Eklenen malzeme neye katılacak?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"}, {"id": "cad-04-d6", "type": "multiple_choice", "prompt": "Bir öğrenci end type olarak Up to face seçiyor ve küçük bir yüzeyi tıklıyor. Extrude, o yüzeyin kenarlarının çok ötesine, yüzeyin uzantısı boyunca ilerliyor. Kaynağın Up to face tanımına göre bu davranış nedir?", "options": ["Beklenen davranıştır; Up to face seçilen yüzeyin altında yatan sonsuz face'e kadar gider.", "Bir hatadır; Up to face seçilen yüzeyin sınırlarında durmalıdır ve feature yeniden oluşturulmalıdır.", "Beklenen davranıştır; Up to face aslında Through all ile aynı işi yapar ve bütün part'ları geçer.", "Bir hatadır; küçük yüzeyler Up to face için geçersizdir ve daha büyük bir yüzey seçilmelidir."], "correctIndex": 0, "explanation": "Kaynağın tanımındaki tek kelime bütün farkı yaratıyor: Up to face, seçilen face'in veya plane'in altında yatan sonsuz face'e kadar gider. Yani Onshape face'in kendisini değil, onun matematiksel olarak sonsuza uzatılmış hâlini kullanır. Küçük bir face seçildiğinde extrude o küçük parçanın sınırlarında durmaz; uzantı nerede kesişiyorsa orada durur. Bu, beklenmediğinde şaşırtıcı görünen ama tanımdan doğrudan çıkan bir davranıştır. Gerçek sınırlarda durmak isteniyorsa kaynağın face sınırlarına bakan koşulu Up to next'tir; o, karşılaşılan bir sonraki face veya face'lere kadar gider. Üçüncü şık iki koşulu birbirine karıştırır; Through all seçilen bütün part'ların içinden geçer ve bir yüzey referansı almaz. İkinci ve dördüncü şıklar tanımdan doğan davranışı hata sayar; oysa kaynak sonsuz yüzey ifadesini bilerek kullanır.", "hint": "Kaynağın tanımında bir sıfat var. Hangi kelime beklenenden farklı bir davranışı haber veriyor?", "difficulty": "stretch", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"}, {"id": "cad-04-d7", "type": "diagnose", "symptom": "Bir öğrenci Feature list'in ortasındaki eski bir extrude feature'ını düzenlemek için çift tıklıyor. Ekranda modelin sonraki feature'ları kayboluyor ve part yarım görünüyor. Öğrenci sonraki feature'ların silindiğini düşünüp panikliyor.", "prompt": "Ne oluyor?", "options": ["Sonraki feature'lar gerçekten silinmiştir; bir feature düzenlendiğinde ondan sonrakiler geçersiz olur ve yeniden oluşturulmalıdır.", "Onshape modeli o feature oluşturulduğu andaki hâline geri sarar ve sonrakileri gizler; Final düğmesi son sonucu gösterir.", "Model bozulmuştur; Feature list'in ortasındaki bir feature düzenlenemez ve düzenleme yalnızca listenin sonundan yapılabilir.", "Sonraki feature'lar hata verdiği için gizlenmiştir; düzenleme iptal edilip önce o hataların çözülmesi gerekir."], "correctIndex": 1, "explanation": "Kaynak bu davranışı açıkça tarif eder: bir feature düzenlendiğinde Onshape varsayılan olarak modeli o feature oluşturulduğu andaki hâline geri sarılmış olarak gösterir ve sonraki bütün feature'ları gizler. Kaynak sebebini yazmaz; parametrik modellemenin genel mantığından çıkan yorum şudur: o feature'ı oluştururken hangi geometrinin mevcut olduğunu görmeniz gerekir. Kaynak aynı zamanda çıkış yolunu da verir: Final düğmesi, siz feature'ı düzenlemeye devam ederken son sonucu gösterir. Yani hiçbir şey silinmemiştir; kaynağın ifadesiyle sonraki feature'lar gizlenmiştir. Birinci şık öğrencinin korkusunu doğrular ve yanlıştır. Üçüncü şık kaynakta karşılığı olmayan bir kısıt uydurur; Feature list'in ortasındaki bir feature düzenlenebilir, zaten parametrik modellemenin anlamı budur. Dördüncü şık da gizlenmenin sebebini yanlış yere bağlar.", "hint": "Model, düzenlenen feature'ın hangi anına ait hâlini gösteriyor olabilir?", "difficulty": "stretch", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/feature_basics.htm"}, {"id": "cad-04-d8", "type": "diagnose", "symptom": "Etkinlikte bir bracket 3 mm alüminyum yerine 5 mm alüminyumdan yeniden yapılacak. Tasarımcı plakayı oluşturan extrude'un depth değerini 5 mm yapıyor. Delikler ise Blind end type ile 3 mm derinliğe extrude edilmişti. Yeni parça imal ediliyor ve delikler plakayı delip geçmiyor.", "prompt": "Ne oldu ve doğru yaklaşım neydi?", "options": ["Merge scope yanlış seçilmişti; delik extrude'u yanlış part ile birleştirildiği için derinlik korunmadı.", "Sketch underconstrained kaldığı için delik derinliği sürüklenme sonucu değişti; sketch tam kısıtlanmalıydı.", "Delik derinliği sabit bir sayıydı; kalınlıktan bağımsız kalmaması için geometriye bağlı bir end condition gerekirdi.", "Blind end condition surface'ler için kullanılamaz; delikler bu yüzden tam oluşmadı ve Remove operation'ı seçilmeliydi."], "correctIndex": 2, "explanation": "Bu, modül üçteki dersin katı modelleme tarafındaki karşılığıdır. Blind, kaynağın tanımıyla belirtilen bir mesafeye kadar gider; yani 3 sayısı bir ilişkiyi değil, o anki bir ölçüyü kaydetti. Plaka kalınlığı 5 mm'ye çıkınca delik hâlâ 3 mm derinliğe gitti. Kaynağın geometriye bakan end type'ları bu sorunu çözebilir. Bu senaryoda doğru seçim Through all'dur; seçilen bütün part'ların içinden geçer, dolayısıyla kalınlık değişse de deliği takip eder. Up to next de işe yarardı, çünkü karşılaşılan bir sonraki face'e kadar gider ve plakanın alt face'i o rolü üstlenir. Up to part burada işe yaramazdı; tanımı gereği bir sonraki part veya surface'e kadar gider ve deliğin yolunda başka part yoktur. Bu son ayrım, geometriye bağlı olmanın tek başına yetmediğini gösterir; koşulun dayandığı geometrinin gerçekten orada olması gerekir. Buradaki alışkanlık şudur: bir end type seçerken, o mesafenin gelecekte de doğru kalıp kalmayacağını sorun. Birinci şık merge scope'u yanlış yere bağlar; merge scope hangi part'larla birleşileceğini belirler, derinliği değil. Dördüncü şık da yanlıştır; surface kısıtı Blind'e değil, Remove ile Intersect'e aittir. İkinci şık belirtiyle uyuşmaz; sorun sketch'te değil, extrude'un end type'ındadır.", "hint": "3 sayısı neyi kaydetti? Plaka kalınlığı değişince o sayı ne yaptı?", "difficulty": "pit", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"}], "videoRefs": []};
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+const T={flip:"dokun ve çevir"};
+
+/* ---- shared component art: schematic, not photoreal ---- */
+const WP="var(--w-pos)", WN="var(--w-neg)", BX="var(--dia-fill)", ED="var(--dia-edge)",
+      IK="var(--dia-ink)", MU="var(--dia-mute)", PDC="var(--dia-pd)", BAND="var(--dia-band)";
+const t=(x,y,s,sz,c,an,w)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Sans,sans-serif" font-weight="${w||600}">${s}</text>`;
+const m=(x,y,s,sz,c,an)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Mono,monospace" font-weight="500">${s}</text>`;
+const wire=(d,c,w)=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+/* each part is drawn once and reused by both the example and the tray */
+const ART={
+ battery:(x,y)=>`<g>
+   <rect x="${x+14}" y="${y}" width="20" height="13" rx="3" fill="${WP}"/>
+   <rect x="${x+126}" y="${y}" width="20" height="13" rx="3" fill="${WN}"/>
+   <rect x="${x}" y="${y+11}" width="160" height="86" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+12}" y="${y+24}" width="136" height="3" rx="1.5" fill="${ED}"/>
+   ${t(x+80,y+56,"battery",14,IK)}${m(x+80,y+76,"12V · 18Ah",11,MU)}
+   ${m(x+24,y+9,"+",12,BX)}${m(x+136,y+9,"−",12,BX)}</g>`,
+ breaker:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="118" height="92" rx="10" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+38}" y="${y+22}" width="42" height="30" rx="6" fill="${WP}"/>
+   <circle cx="${x+59}" cy="${y+37}" r="5" fill="${BX}"/>
+   ${m(x+59,y+72,"120A",11.5,IK)}
+   <rect x="${x-7}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/>
+   <rect x="${x+116}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/></g>`,
+ pd:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="168" height="340" rx="11" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   ${t(x+84,y+30,"PD",16,IK)}${m(x+84,y+48,"güç dağıtımı",10.5,MU)}
+   <rect x="${x-8}" y="${y+52}" width="11" height="16" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+234}" width="11" height="16" rx="2" fill="${WN}"/>
+   ${m(x+15,y+65,"+",12,IK,"start")}${m(x+15,y+247,"−",12,IK,"start")}
+   <g>
+     <rect x="${x+96}" y="${y+55}"  width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+134}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+217}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+295}" width="60" height="24" rx="5" fill="${PDC}"/>
+   </g>
+   ${m(x+126,y+71,"10A",10.5,BX)}${m(x+126,y+150,"10A",10.5,BX)}
+   ${m(x+126,y+233,"40A",10.5,BX)}${m(x+126,y+311,"40A",10.5,BX)}
+   ${m(x+42,y+327,"kanallar",9.5,MU)}</g>`,
+ rio:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <g fill="${ED}"><rect x="${x+12}" y="${y+44}" width="14" height="6" rx="2"/>
+   <rect x="${x+32}" y="${y+44}" width="14" height="6" rx="2"/><rect x="${x+52}" y="${y+44}" width="14" height="6" rx="2"/></g>
+   <circle cx="${x+130}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+28,"roboRIO",13,IK)}${m(x+73,y+41,"beyin",9.5,MU)}</g>`,
+ radio:(x,y)=>`<g>
+   <rect x="${x+22}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x+118}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x}" y="${y}" width="146" height="48" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+24,"radio",13,IK)}${m(x+73,y+38,"kablosuz bağlantı",9.5,MU)}</g>`,
+ vrm:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="52" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   <rect x="${x+30}" y="${y-7}" width="10" height="8" rx="2" fill="${WP}"/>
+   <rect x="${x+46}" y="${y-7}" width="10" height="8" rx="2" fill="${WN}"/>
+   <rect x="${x+104}" y="${y+13}" width="30" height="9" rx="3" fill="${PDC}"/>
+   <rect x="${x+104}" y="${y+30}" width="30" height="9" rx="3" fill="${PDC}"/>
+   ${t(x+58,y+26,"VRM",13,IK)}${m(x+58,y+41,"12V regülatör",9,MU)}</g>`,
+ talon:(x,y,sub)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="62" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+24}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+34}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+30,"V+",8.5,MU,"start")}${m(x+13,y+41,"V−",8.5,MU,"start")}
+   ${t(x+84,y+28,"Talon FX",12.5,IK)}${m(x+84,y+43,sub,9,MU)}
+   ${m(x+84,y+56,"motor controller",8.5,MU)}</g>`,
+ mc:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+27,"V+",8.5,MU,"start")}${m(x+13,y+40,"V−",8.5,MU,"start")}
+   ${t(x+82,y+30,"motor controller",11.5,IK)}${m(x+82,y+45,"motoru sürer",9,MU)}</g>`
+};
+/* ---- cad modül 04 ek parçaları: feature'lar ve end condition'lar ---- */
+const OPB="#1D4ED8", FTP="#6D28D9", ENC="#0E7490", SYG="#116334";
+
+ART.ochip=(x,y,lab,col,dark)=>`<g>
+  <rect x="${x}" y="${y}" width="212" height="66" rx="9" fill="${BX}" stroke="${col}" stroke-width="2.4"/>
+  <rect x="${x+18}" y="${y+22}" width="46" height="22" rx="5" fill="${col}"/>
+  ${m(x+134,y+38,lab,11.5,dark?IK:col)}
+  <rect x="${x+211}" y="${y+27}" width="10" height="12" rx="2" fill="${col}"/></g>`;
+
+ART.ncard=(x,y,txt,sub,col,right,bad,two)=>{
+  const ts=Math.min(10.5,226/(txt.length*0.6)), ss=Math.min(9,222/((sub||"").length*0.6));
+  return `<g>
+  <rect x="${x}" y="${y}" width="248" height="${two?96:66}" rx="9" fill="${bad?"var(--no-soft)":BX}"
+    stroke="${bad?NO:col}" stroke-width="2"${bad?' stroke-dasharray="7 5"':''}/>
+  ${m(x+124,y+28,txt,ts,bad?NO:IK)}${m(x+124,y+47,sub,ss,MU)}
+  ${two?m(x+124,y+74,two,8.5,MU):""}
+  ${right?`<rect x="${x+247}" y="${y+27}" width="10" height="12" rx="2" fill="${bad?NO:col}"/>`
+         :`<rect x="${x-9}" y="${y+(two?24:27)}" width="10" height="12" rx="2" fill="${col}"/>`}
+  ${two&&!right?`<rect x="${x-9}" y="${y+58}" width="10" height="12" rx="2" fill="${col}"/>`:""}</g>`;};
+
+/* operation type kartları */
+ART.oNew=(x,y)=>ART.ochip(x,y,"New",OPB);
+ART.oRem=(x,y)=>ART.ochip(x,y,"Remove",OPB);
+ART.oInt=(x,y)=>ART.ochip(x,y,"Intersect",OPB);
+/* operation'ın malzemeye yaptığı */
+ART.eNew=(x,y)=>ART.ncard(x,y,"yeni bir part oluşur","yeni malzeme oluşturur",OPB);
+ART.eRem=(x,y)=>ART.ncard(x,y,"part'tan malzeme çıkarır","surface'ler için kullanılamaz",OPB);
+ART.eInt=(x,y)=>ART.ncard(x,y,"kesişimde malzeme bırakır","yalnızca kesişimlerin olduğu yerde",OPB);
+/* end type kartları */
+ART.tNext=(x,y)=>ART.ncard(x,y,"Up to next","end type",ENC,1);
+ART.tFace=(x,y)=>ART.ncard(x,y,"Up to face","end type",ENC,1);
+ART.sNext=(x,y)=>ART.ncard(x,y,"bir sonraki face'e kadar","sonlanmazsa Extrude başarısız olur",ENC);
+ART.sFace=(x,y)=>ART.ncard(x,y,"altında yatan sonsuz face'e kadar","seçilen face'in uzantısı",ENC);
+/* Symmetric ile kullanılabilen end type'lar */
+ART.yBli=(x,y)=>ART.ncard(x,y,"Blind","belirtilen bir mesafeye kadar",SYG,1);
+ART.yThr=(x,y)=>ART.ncard(x,y,"Through all","bütün part'ların içinden geçer",SYG,1);
+ART.ySym=(x,y)=>ART.ncard(x,y,"Symmetric ile kullanılabilir","bir end type değil, onay kutusudur",SYG,0,0,"iki end type'ı birden kabul eder");
+/* tuzak */
+ART.bad=(x,y)=>ART.ncard(x,y,"yalnızca Add merge scope ister","kaynak bunun tersini söyler",NO,1,1);
+
+const hint=(x,y,s,anchor)=>`<g><circle cx="${x-9}" cy="${y-4}" r="2.6" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y}" font-size="11" fill="${MU}" text-anchor="${anchor||"start"}" font-family="IBM Plex Sans,sans-serif">${s}</text></g>`;
+const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y+4.5}" font-size="12.5" fill="#fff" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600">${n}</text>`;
+/* ---- figure library: her biri tek bir fikri hatırlatmak için ---- */
+const NO="var(--no)", OKC="var(--ok)";
+const nb=(x,y,w,h,title,sub,fill)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+  fill="${fill||BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(x+w/2,y+(sub?h/2-1:h/2+5),title,13,IK)+(sub?m(x+w/2,y+h/2+15,sub,10,MU):"");
+const chip=(x,y,w,s,col)=>`<rect x="${x}" y="${y}" width="${w}" height="22" rx="5" fill="${col||PDC}"/>`+
+  m(x+w/2,y+15,s,10.5,BX);
+const cross=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${NO}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.5} ${y-r*0.5} L${x+r*0.5} ${y+r*0.5} M${x+r*0.5} ${y-r*0.5} L${x-r*0.5} ${y+r*0.5}"
+   stroke="${NO}" stroke-width="2.6" stroke-linecap="round"/>`;
+const tick=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${OKC}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.45} ${y} L${x-r*0.08} ${y+r*0.4} L${x+r*0.5} ${y-r*0.42}"
+   fill="none" stroke="${OKC}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+const svg=(w,h,inner,label)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
+
+const FIG={};
+
+/* ---- cad modül 04 görselleri ---- */
+
+FIG.feature=()=>svg(640,244,
+  m(20,26,"FEATURE VE EXTRUDE",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="600" height="110" rx="9" fill="${BX}" stroke="${ED}" stroke-width="1.4"/>`+
+  `<path d="M150 76 H240 V126 H150 Z" fill="none" stroke="${OPB}" stroke-width="2.6"/>`+
+  `<path d="M268 101 H316" stroke="${MU}" stroke-width="2"/>`+
+  `<path d="M326 101 L312 94 V108 Z" fill="${MU}"/>`+
+  `<path d="M360 84 H466 V134 H360 Z" fill="none" stroke="${FTP}" stroke-width="2.6"/>`+
+  `<path d="M360 84 L386 62 H492 L466 84" fill="none" stroke="${FTP}" stroke-width="2.6"/>`+
+  `<path d="M466 134 L492 112 V62" fill="none" stroke="${FTP}" stroke-width="2.6"/>`+
+  m(297,92,"derinlik",9,MU)+
+  m(195,150,"seçilen bölge",9,MU)+
+  m(426,150,"yeni part",9,MU)+
+  m(320,180,"Feature, geometriyi oluşturan veya değiştiren bir tasarım",10.5,IK)+
+  m(320,198,"adımıdır ve parametrik olarak saklanır.",10.5,IK)+
+  m(320,220,"Extrude seçilen bir bölgeye düz bir yol boyunca derinlik ekler.",9.5,MU)+
+  m(320,236,"Feature list'te kendi entity'si olarak görünür.",9,MU),
+  "Feature ve Extrude");
+
+FIG.ops=()=>svg(640,276,
+  m(20,26,"DÖRT OPERATION TYPE",11.5,PDC,"start")+
+  [["New","yeni bir part ile sonuçlanan yeni malzeme oluşturur"],
+   ["Add","var olan malzemeye eklenen malzeme oluşturur"],
+   ["Remove","bir part'tan malzeme çıkarır"],
+   ["Intersect","yalnızca kesişimlerin bulunduğu yerde malzeme bırakır"]]
+  .map(([a,b],i)=>{const y=46+i*44;
+    return `<rect x="20" y="${y}" width="600" height="38" rx="8" fill="${BX}" stroke="${OPB}" stroke-width="1.8"/>`+
+      m(36,y+24,a,10.5,OPB,"start")+m(604,y+24,b,9,MU,"end");}).join("")+
+  m(320,246,"Remove ile Intersect surface'ler için kullanılamaz.",10.5,IK)+
+  m(320,268,"Operation type malzemeye ne olacağını seçer, nerede duracağını değil.",9.5,MU),
+  "Dört operation type");
+
+FIG.merge=()=>svg(640,298,
+  m(20,26,"MERGE SCOPE NE ZAMAN SORULUR",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="112" rx="9" fill="${BX}" stroke="${OKC}" stroke-width="2"/>`+
+  `<rect x="86" y="68" width="80" height="30" rx="3" fill="none" stroke="${ED}" stroke-width="2"/>`+
+  `<rect x="166" y="74" width="56" height="20" rx="3" fill="none" stroke="${OPB}" stroke-width="2.4"/>`+
+  m(166,126,"tek part'a değiyor",9.5,IK)+
+  m(166,144,"o part kendiliğinden eklenir",9,MU)+
+  `<rect x="328" y="46" width="292" height="112" rx="9" fill="${BX}" stroke="${NO}" stroke-width="2"/>`+
+  `<rect x="394" y="60" width="64" height="22" rx="3" fill="none" stroke="${ED}" stroke-width="2"/>`+
+  `<rect x="394" y="86" width="64" height="22" rx="3" fill="none" stroke="${ED}" stroke-width="2"/>`+
+  `<rect x="458" y="72" width="52" height="24" rx="3" fill="none" stroke="${OPB}" stroke-width="2.4"/>`+
+  m(474,126,"birden çoğuna değiyor",9.5,IK)+
+  m(474,144,"belirsizlik oluşur, seçim gerekir",9,MU)+
+  `<rect x="20" y="176" width="600" height="44" rx="8" fill="${BAND}" stroke="${PDC}" stroke-width="1.4"/>`+
+  m(320,196,"Boolean Add, Remove veya Intersect iken merge scope boş",10,PDC)+
+  m(320,214,"bırakılırsa feature hata verir.",10,PDC)+
+  m(320,250,"Varsayılan olarak Merge all seçilidir ve Merge with all kısayolu",10.5,IK)+
+  m(320,268,"değen veya kesişen bütün part'ları kapsama ekler.",10.5,IK)+
+  m(320,290,"Merge scope'u olmayan tek operation New'dur.",9.5,MU),
+  "Merge scope ne zaman sorulur");
+
+FIG.ends=()=>svg(640,300,
+  m(20,26,"ALTI END TYPE",11.5,PDC,"start")+
+  [["Blind","belirtilen bir mesafeye kadar"],
+   ["Up to next","karşılaşılan bir sonraki face veya face'lere kadar"],
+   ["Up to face","seçilen face'in altında yatan sonsuz face'e kadar"],
+   ["Up to part","bir sonraki part veya surface'e kadar"],
+   ["Up to vertex","seçilen bir noktaya veya Mate connector'a kadar"],
+   ["Through all","seçilen bütün part'ların içinden geçer"]]
+  .map(([a,b],i)=>{const y=46+i*34;
+    return `<rect x="20" y="${y}" width="600" height="28" rx="7" fill="${BX}" stroke="${ENC}" stroke-width="1.6"/>`+
+      m(36,y+19,a,9.5,ENC,"start")+m(604,y+19,b,8.5,MU,"end");}).join("")+
+  m(320,270,"Up to next sonlanmazsa Extrude başarısız olur.",10.5,IK)+
+  m(320,292,"Up to face, seçilen face'in sınırlarında değil, uzantısında durur.",9.5,MU),
+  "Altı end type");
+
+FIG.sym=()=>svg(640,244,
+  m(20,26,"SYMMETRIC VE SECOND END POSITION",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="112" rx="9" fill="${BX}" stroke="${SYG}" stroke-width="2"/>`+
+  m(166,72,"Symmetric",11,SYG)+
+  m(166,98,"bir end type değil, onay kutusudur",9.5,IK)+
+  m(166,120,"plane'in iki yanında simetrik yapar",9.5,IK)+
+  m(166,144,"yalnızca Blind ile Through all",8.5,MU)+
+  `<rect x="328" y="46" width="292" height="112" rx="9" fill="${BX}" stroke="${SYG}" stroke-width="2"/>`+
+  m(474,72,"Second end position",11,SYG)+
+  m(474,98,"karşı uca farklı bir derinlik verir",9.5,IK)+
+  m(474,120,"aynı end type'ların hepsini sunar",9.5,IK)+
+  m(474,144,"Symmetric yerine işaretlenir",8.5,MU)+
+  m(320,190,"Up to face seçiliyken Symmetric onay kutusu bulunamaz;",10.5,IK)+
+  m(320,208,"o birleşim mevcut değildir.",10.5,IK)+
+  m(320,232,"Symmetric ayrı bir feature değil, dialog içinde bir seçenektir.",9.5,MU),
+  "Symmetric ve Second end position");
+
+FIG.rollback=()=>svg(640,288,
+  m(20,26,"FEATURE DÜZENLENİRKEN MODEL GERİ SARILIR",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="140" rx="9" fill="${BX}" stroke="${ED}" stroke-width="1.4"/>`+
+  m(166,66,"Feature list",9,MU)+
+  [0,1,2,3,4].map(i=>{const y=74+i*21, on=i<2, cur=i===2;
+    return `<rect x="40" y="${y}" width="252" height="18" rx="4" fill="${cur?PDC:(on?"var(--sunk)":"none")}"`+
+      `${on||cur?"":` stroke="${ED}" stroke-width="1" stroke-dasharray="4 4"`}/>`+
+      m(52,y+13,cur?"düzenlenen feature":(on?"önceki feature":"sonraki feature"),8.5,cur?BX:(on?IK:MU),"start");}).join("")+
+  `<rect x="328" y="46" width="292" height="140" rx="9" fill="${BX}" stroke="${ED}" stroke-width="1.4"/>`+
+  `<path d="M368 92 H500 V150 H368 Z" fill="none" stroke="${FTP}" stroke-width="2.6"/>`+
+  `<path d="M510 92 H580 V150 H510 Z" fill="none" stroke="${MU}" stroke-width="2" stroke-dasharray="6 5"/>`+
+  m(474,74,"model o andaki hâliyle görünür",9,MU)+
+  m(545,170,"gizlenen kısım",8.5,MU)+
+  m(320,214,"Onshape modeli o feature oluşturulduğu andaki hâline geri",10.5,IK)+
+  m(320,232,"sarar ve sonraki bütün feature'ları gizler.",10.5,IK)+
+  m(320,256,"Hiçbir şey silinmemiştir; sonraki feature'lar gizlenmiştir.",9.5,MU)+
+  m(320,276,"Final düğmesi, düzenlemeye devam ederken son sonucu gösterir.",9,MU),
+  "Feature düzenlenirken rollback");
+
+FIG.blind=()=>svg(640,260,
+  m(20,26,"BLIND BİR SAYIYI KAYDEDER",11.5,PDC,"start")+
+  `<rect x="20" y="46" width="292" height="112" rx="9" fill="${BX}" stroke="${OKC}" stroke-width="2"/>`+
+  `<rect x="60" y="88" width="212" height="26" rx="2" fill="none" stroke="${ED}" stroke-width="2"/>`+
+  `<rect x="140" y="88" width="52" height="26" rx="2" fill="var(--ok-soft)" stroke="${OKC}" stroke-width="2.4"/>`+
+  m(166,74,"3 mm plaka · 3 mm delik",9,MU)+
+  m(166,140,"delik plakayı geçiyor",9.5,IK)+
+  `<rect x="328" y="46" width="292" height="112" rx="9" fill="${BX}" stroke="${NO}" stroke-width="2"/>`+
+  `<rect x="368" y="80" width="212" height="42" rx="2" fill="none" stroke="${ED}" stroke-width="2"/>`+
+  `<rect x="448" y="80" width="52" height="26" rx="2" fill="var(--no-soft)" stroke="${NO}" stroke-width="2.4"/>`+
+  m(474,70,"5 mm plaka · hâlâ 3 mm delik",9,MU)+
+  m(474,140,"delik plakayı geçmiyor",9.5,IK)+
+  m(320,190,"Blind belirtilen bir mesafeye kadar gider; 3 sayısı bir ilişkiyi",10.5,IK)+
+  m(320,208,"değil, o anki bir ölçüyü kaydetti.",10.5,IK)+
+  m(320,232,"Through all seçilen bütün part'ların içinden geçer ve kalınlık",9.5,MU)+
+  m(320,250,"değişse de deliği takip eder.",9.5,MU),
+  "Blind bir sayıyı kaydeder");
+
+FIG.choiceMini=()=>svg(300,152,
+  [["operation type","malzemeye ne olur",OPB],["end type","nerede durur",ENC]]
+  .map(([a,b,col],i)=>{const y=16+i*40;
+    return `<rect x="16" y="${y}" width="268" height="34" rx="6" fill="${BX}" stroke="${col}" stroke-width="1.5"/>`+
+      m(30,y+22,a,9.5,col,"start")+m(270,y+22,b,9,MU,"end");}).join("")+
+  m(150,116,"Extrude dialog'unda iki ayrı seçim",9.5,IK)+
+  m(150,132,"vardır ve ikisi bağımsızdır",9.5,IK)+
+  m(150,148,"biri malzemeyi, biri mesafeyi sürer",9,MU),
+  "İki ayrı seçim");
+
+FIG.mergeMini=()=>svg(300,148,
+  [["tek part'a değiyor","kendiliğinden eklenir",OKC],["birden çoğuna değiyor","seçim gerekir",NO]]
+  .map(([a,b,col],i)=>{const y=16+i*34;
+    return `<rect x="16" y="${y}" width="268" height="28" rx="6" fill="${BX}" stroke="${col}" stroke-width="1.4"/>`+
+      m(30,y+19,a,9,IK,"start")+m(270,y+19,b,8.5,MU,"end");}).join("")+
+  m(150,108,"merge scope Add, Remove ve",9.5,IK)+
+  m(150,124,"Intersect için gerekir",9.5,IK)+
+  m(150,140,"boş bırakılırsa feature hata verir",9,MU),
+  "Merge scope kuralı");
+
+FIG.blindMini=()=>svg(300,144,
+  [["3 mm plaka","delik geçiyor",OKC],["5 mm plaka","delik geçmiyor",NO]]
+  .map(([a,b,col],i)=>{const y=16+i*32;
+    return `<rect x="16" y="${y}" width="268" height="26" rx="6" fill="${BX}" stroke="${col}" stroke-width="1.4"/>`+
+      m(30,y+18,a,9,IK,"start")+m(270,y+18,b,8.5,col,"end");}).join("")+
+  m(150,104,"Blind bir mesafeyi kaydeder",9.5,IK)+
+  m(150,120,"Through all geometriyi takip eder",9.5,IK)+
+  m(150,136,"sayı kalınlık değişince yanlışlanır",9,MU),
+  "Blind bir sayıyı kaydeder");
+
+
+
+
+
+$("#mt").textContent=D.title; $("#ms").textContent=D.summary;
+[["Sezon",D.season],["Drill",D.drills.length],["Kart",D.cards.length],
+ ["Süre",D.estimatedMinutes+" dk"],["Doğrulama",D.verifiedOn]]
+ .forEach(([k,v])=>{const c=el("span","chip");c.append(k+" ",Object.assign(el("b"),{textContent:v}));$("#mm").append(c);});
+const figure=(html,cap,cls)=>{const d=el("div","fig"+(cls?" "+cls:""));
+  const sc=el("div","sc"); sc.innerHTML=html; d.append(sc);
+  if(cap){const c=el("p","cap");
+    c.append(Object.assign(el("b"),{textContent:"→ yana kaydırın · "}),document.createTextNode(cap));
+    d.append(c);}
+  return d;};
+D.body.split("\n\n").forEach((p,i)=>{
+  $("#body").append(el("p",null,p));
+  if(i===0) $("#body").append(figure(FIG.feature(),
+    "Feature parametrik bir tasarım adımıdır; Extrude bölgeye derinlik ekler.","conceptfig"));
+  if(i===1) $("#body").append(figure(FIG.ops(),
+    "Dört operation type: New, Add, Remove ve Intersect.","conceptfig"));
+  if(i===1) $("#body").append(figure(FIG.merge(),
+    "Geometri birden çok part'a değiyorsa merge scope belirsizleşir.","conceptfig"));
+  if(i===2) $("#body").append(figure(FIG.ends(),
+    "Altı end type ve her birinin nerede durduğu.","conceptfig"));
+});
+D.keyTerms.forEach(t=>$("#terms").append(el("span","term",t.term)));
+
+const RUNG={behaviour:"davranış",mechanism:"mekanizma",pit:"sahadaki bedeli"};
+D.cards.forEach(c=>{
+  const b=el("button","flip"); b.setAttribute("aria-pressed","false");
+  const inner=el("div","inner"),f=el("div","face front"),bk=el("div","face back");
+  const mk=()=>{const h=el("div","chead");
+    h.append(el("span","rung r-"+c.rung,RUNG[c.rung]),el("span","count",c.index+" / "+c.of));return h;};
+  f.append(mk(),el("p","cfront",c.front));
+  const tg=el("div","ctags"); c.tags.forEach(t=>tg.append(el("span","tag",t)));
+  f.append(tg,el("div","hintline",T.flip+" · "+c.estMinutes+" dk"));
+  bk.append(mk(),el("p","cback",c.back));
+  const CF={"cad-04-c1":"choiceMini","cad-04-c2":"mergeMini","cad-04-c3":"blindMini"};
+  if(CF[c.id]&&FIG[CF[c.id]]){const cf=el("div","cardfig"); cf.innerHTML=FIG[CF[c.id]](); bk.append(cf);}
+  bk.append(el("div","take",c.takeaway));
+  inner.append(f,bk); b.append(inner);
+  b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+  $("#cards").append(b);
+});
+requestAnimationFrame(()=>document.querySelectorAll(".flip").forEach(b=>{
+  const f=$(".front",b),bk=$(".back",b);
+  const h=Math.max(f.offsetHeight,Math.min(bk.scrollHeight+38,660))+"px";
+  b.style.minHeight=h; $(".inner",b).style.minHeight=h; f.style.minHeight=h;
+}));
+
+[["feature","#6D28D9","geometriyi oluşturan veya değiştiren tasarım adımı"],
+ ["operation type","#1D4ED8","New, Add, Remove, Intersect; malzemeye ne olacağını seçer"],
+ ["merge scope","#B42318","yeni malzemenin hangi part'larla birleşeceğini belirler"],
+ ["end type","#0E7490","extrude'un nerede sonlanacağını belirler; altı seçenek vardır"],
+ ["Symmetric","#116334","end type değil; yalnızca Blind ve Through all ile kullanılır"]]
+.forEach(([g,col,use])=>{const r=el("div","grow"),bar=el("div","gbar"),i=el("i");
+  i.style.height="10px"; i.style.background=col; bar.append(i);
+  r.append(el("span","glabel",g),bar,el("span","guse",use)); $("#gauges").append(r);});
+[
+ "Feature, geometriyi oluşturan veya değiştiren bir tasarım adımıdır ve parametrik olarak saklanır, yani Feature list'te kendi entity'si olarak görünür. Kaynak Extrude'u şöyle tarif eder: seçilen bir bölgeye veya düz bir face'e düz bir yol boyunca derinlik ekler; yeni bir part ya da surface oluşturur veya var olanı malzeme ekleyerek, çıkararak ya da kesiştirerek değiştirir.",
+ "Dört operation type vardır. New, yeni bir part ile sonuçlanan yeni malzeme oluşturur. Add, var olan malzemeye eklenen malzeme oluşturur. Remove, bir part'tan malzeme çıkarır. Intersect, yalnızca kesişimlerin bulunduğu yerde malzeme bırakır. Remove ile Intersect surface'ler için kullanılamaz.",
+ "Merge scope, yeni malzemenin hangi part'larla birleşeceğini belirler. Geometri tek bir part'a değiyorsa o part kendiliğinden eklenir; birden çoğuna değiyorsa belirsizlik oluşur ve seçim gerekir. Varsayılan olarak Merge all seçilidir. Kaynağın notu şudur: Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir; New için merge scope yoktur.",
+ "End type, extrude'un nerede duracağını belirler ve altı seçenek içerir: Blind belirtilen bir mesafeye kadar, Up to next karşılaşılan bir sonraki face veya face'lere kadar, Up to face seçilen face'in altında yatan sonsuz face'e kadar, Up to part bir sonraki part veya surface'e kadar, Up to vertex seçilen bir noktaya veya Mate connector'a kadar, Through all ise seçilen bütün part'ların içinden geçer. Up to next sonlanmazsa Extrude başarısız olur. Symmetric bir end type değil, ayrı bir onay kutusudur ve yalnızca Blind ile Through all için kullanılabilir; yerine Second end position işaretlenerek karşı uca farklı bir derinlik verilebilir."
+].forEach(x=>$("#ipbody").append(el("p",null,x)));
+$("#ipfig").append(figure(FIG.ops(),
+  "New yeni bir part oluşturur; Add, Remove ve Intersect var olanı değiştirir.","conceptfig"));
+
+const DIA = `<svg viewBox="0 96 960 1012" role="img" aria-label="Feature ve Extrude tanımı, dört operation type ile merge scope, altı end type ve Symmetric ile Second end position">
+
+  ${m(24,128,"FEATURE VE EXTRUDE",10,PDC,"start")}
+  ${badge(154,124,1)}
+  <rect x="20" y="150" width="300" height="140" rx="10" fill="${BX}" stroke="${ED}" stroke-width="1.5"/>
+  <path d="M50 205 H120 V249 H50 Z" fill="none" stroke="${OPB}" stroke-width="2.6"/>
+  <path d="M136 227 H170" stroke="${MU}" stroke-width="2"/>
+  <path d="M178 227 L166 221 V233 Z" fill="${MU}"/>
+  <path d="M196 205 H266 V249 H196 Z" fill="none" stroke="${FTP}" stroke-width="2.6"/>
+  <path d="M196 205 L218 187 H288 L266 205" fill="none" stroke="${FTP}" stroke-width="2.6"/>
+  <path d="M266 249 L288 231 V187" fill="none" stroke="${FTP}" stroke-width="2.6"/>
+  ${m(85,268,"seçilen bölge",8.5,MU)}
+  ${m(242,268,"yeni part",8.5,MU)}
+  ${m(170,284,"Extrude düz bir yol boyunca derinlik ekler",8.5,MU)}
+  ${[["feature","geometriyi oluşturan veya değiştiren tasarım adımı",FTP],
+     ["parametrik","Feature list'te kendi entity'si olarak görünür",FTP],
+     ["Extrude","seçilen bölgeye düz bir yol boyunca derinlik ekler",OPB]]
+    .map(([a,b,col],i)=>{const y=152+i*46;
+      return `<rect x="340" y="${y}" width="596" height="42" rx="8" fill="var(--sunk)"/>`+
+        m(356,y+26,a,10.5,col,"start")+m(920,y+26,b,9.5,MU,"end");}).join("")}
+  <rect x="20" y="302" width="916" height="42" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.5"/>
+  ${m(478,328,"Extrude yeni bir part ya da surface oluşturur veya var olanı malzeme ekleyerek, çıkararak ya da kesiştirerek değiştirir.",9.5,PDC)}
+
+  <line x1="24" y1="360" x2="936" y2="360" stroke="${ED}" stroke-width="1"/>
+  ${m(24,390,"DÖRT OPERATION TYPE VE MERGE SCOPE",10,PDC,"start")}
+  ${badge(250,386,2)}
+  ${[["New","yeni bir part ile","sonuçlanan yeni malzeme"],
+     ["Add","var olan malzemeye","eklenen malzeme oluşturur"],
+     ["Remove","bir part'tan malzeme","çıkarır"],
+     ["Intersect","yalnızca kesişimlerin","bulunduğu yerde malzeme bırakır"]]
+    .map(([a,b,c],i)=>{const x=20+i*232;
+      return `<rect x="${x}" y="412" width="220" height="76" rx="9" fill="${BX}" stroke="${OPB}" stroke-width="2"/>`+
+        m(x+110,440,a,11.5,OPB)+m(x+110,462,b,9,MU)+m(x+110,478,c,9,MU);}).join("")}
+  ${m(478,508,"Remove ile Intersect surface'ler için kullanılamaz.",9.5,MU)}
+  <rect x="20" y="524" width="916" height="86" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.5"/>
+  ${m(478,548,"Merge scope yeni malzemenin hangi part'larla birleşeceğini belirler. Geometri tek bir part'a değiyorsa o part kendiliğinden eklenir.",9.5,PDC)}
+  ${m(478,570,"Birden çoğuna değiyorsa belirsizlik oluşur ve seçim gerekir. Varsayılan olarak Merge all seçilidir.",9.5,PDC)}
+  ${m(478,592,"Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir; New için merge scope yoktur.",9.5,PDC)}
+
+  <line x1="24" y1="638" x2="936" y2="638" stroke="${ED}" stroke-width="1"/>
+  ${m(24,668,"ALTI END TYPE",10,PDC,"start")}
+  ${badge(124,664,3)}
+  ${[["Blind","belirtilen bir mesafeye kadar"],
+     ["Up to next","karşılaşılan bir sonraki face veya face'lere kadar"],
+     ["Up to face","seçilen face'in altında yatan sonsuz face'e kadar"],
+     ["Up to part","bir sonraki part veya surface'e kadar"],
+     ["Up to vertex","seçilen bir noktaya veya Mate connector'a kadar"],
+     ["Through all","seçilen bütün part'ların içinden geçer"]]
+    .map(([a,b],i)=>{const x=20+(i%2)*466, y=690+Math.floor(i/2)*46;
+      return `<rect x="${x}" y="${y}" width="450" height="40" rx="9" fill="${BX}" stroke="${ENC}" stroke-width="2"/>`+
+        m(x+16,y+25,a,10.5,ENC,"start")+m(x+434,y+25,b,8.5,MU,"end");}).join("")}
+  ${m(478,850,"Up to next sonlanmazsa Extrude başarısız olur. Symmetric bir end type değil, ayrı bir onay kutusudur.",9.5,IK)}
+
+  <line x1="24" y1="876" x2="936" y2="876" stroke="${ED}" stroke-width="1"/>
+  ${m(24,906,"SYMMETRIC VE SECOND END POSITION",10,PDC,"start")}
+  ${badge(238,902,4)}
+  <rect x="20" y="928" width="450" height="88" rx="10" fill="${BX}" stroke="${SYG}" stroke-width="2"/>
+  ${m(245,956,"SYMMETRIC",10,SYG)}
+  ${m(245,982,"plane'in iki yanında simetrik extrude yapar",10,IK)}
+  ${m(245,1004,"yalnızca Blind ile Through all için kullanılabilir",9.5,MU)}
+  <rect x="486" y="928" width="450" height="88" rx="10" fill="${BX}" stroke="${SYG}" stroke-width="2"/>
+  ${m(711,956,"SECOND END POSITION",10,SYG)}
+  ${m(711,982,"karşı uca farklı bir derinlik verir",10,IK)}
+  ${m(711,1004,"aynı end type'ların hepsini sunar",9.5,MU)}
+
+  ${hint(24,1044,"Bir feature düzenlendiğinde Onshape modeli o feature oluşturulduğu andaki hâline geri sarar ve sonraki feature'ları gizler.")}
+  ${hint(24,1070,"Final düğmesi, siz feature'ı düzenlemeye devam ederken son sonucu gösterir.")}
+  ${hint(24,1096,"Merge with all kısayolu, değen veya kesişen bütün part'ları merge scope'a ekler.")}
+</svg>`;
+
+$("#dia").innerHTML = DIA;
+
+/* ---- kurulum içeriği ---- */
+const BUILD={
+  h:"Kur: operation, end type ve Symmetric",
+  p:"Üç iş var. Önce her operation type'ı malzemeye yaptığı şeye bağlayın. Sonra iki end type'ı nerede durduklarına bağlayın. En son Symmetric ile kullanılabilen iki end type'ı yerine bağlayın. Tuvalde bir kart var ki hiçbir yere bağlanmaz; onu tepside bırakın.",
+  gate:"Başlayınca sayfa bu bölüme kilitlenir ve yukarıdaki örnek şemayı göremezsiniz. Bitirdiğinizde hangi bağlantıyı doğru, hangisini yanlış yaptığınızı ve 100 üzerinden puanınızı görürsünüz.",
+  start:"Kurmaya başla", done:"Tamamladım", reset:"Baştan dene", close:"Kapat",
+  after:"kontrol edildi",
+  warn:"Tuvalde fazla parça bırakmayın. Bağlanmayan her kart puandan düşer.",
+  emptyText:"Tuval boş. Yukarıdaki bir karta dokunarak başlayın. Operation ve end type kartlarının sağında, sonuç kartlarının solunda nokta vardır.",
+  partsLabel:"Parçalar",
+  wiresLabel:"Bağlantı tipi — önce tipi seçin, sonra iki noktaya dokunun",
+  perfect:"Üç operation doğru sonuca, iki end type doğru durma kuralına ve iki end type Symmetric'e bağlı; tuvalde fazla kart yok.",
+  again:"Eksik bağlantılar yukarıda listelendi. Operation type malzemeye ne olacağını, end type ise nerede duracağını belirler.",
+  parts:[
+    {key:"oNew", label:"New", art:"oNew", w:234,h:82, ax:12,ay:8, pins:[["sonuç",228,41]]},
+    {key:"oRem", label:"Remove", art:"oRem", w:234,h:82, ax:12,ay:8, pins:[["sonuç",228,41]]},
+    {key:"oInt", label:"Intersect", art:"oInt", w:234,h:82, ax:12,ay:8, pins:[["sonuç",228,41]]},
+    {key:"eNew", label:"yeni bir part oluşur", art:"eNew", w:270,h:82, ax:10,ay:8, pins:[["operation",8,41]]},
+    {key:"eRem", label:"part'tan malzeme çıkarır", art:"eRem", w:270,h:82, ax:10,ay:8, pins:[["operation",8,41]]},
+    {key:"eInt", label:"kesişimde malzeme bırakır", art:"eInt", w:270,h:82, ax:10,ay:8, pins:[["operation",8,41]]},
+    {key:"tNext", label:"Up to next", art:"tNext", w:270,h:82, ax:10,ay:8, pins:[["nerede",267,41]]},
+    {key:"tFace", label:"Up to face", art:"tFace", w:270,h:82, ax:10,ay:8, pins:[["nerede",267,41]]},
+    {key:"sNext", label:"bir sonraki face'e kadar", art:"sNext", w:270,h:82, ax:10,ay:8, pins:[["end type",8,41]]},
+    {key:"sFace", label:"altında yatan sonsuz face'e kadar", art:"sFace", w:270,h:82, ax:10,ay:8, pins:[["end type",8,41]]},
+    {key:"yBli", label:"Blind", art:"yBli", w:270,h:82, ax:10,ay:8, pins:[["nereye",267,41]]},
+    {key:"yThr", label:"Through all", art:"yThr", w:270,h:82, ax:10,ay:8, pins:[["nereye",267,41]]},
+    {key:"ySym", label:"Symmetric ile kullanılabilir", art:"ySym", w:270,h:112, ax:10,ay:8, pins:[["end type 1",8,40],["end type 2",8,74]]},
+    {key:"bad", label:"yalnızca Add merge scope ister", art:"bad", w:270,h:82, ax:10,ay:8, pins:[["nereye",267,41]]}
+  ],
+  wires:[
+    {key:"islem", label:"bu operation şunu yapar", col:"#1D4ED8", th:3},
+    {key:"durur", label:"bu end type burada durur", col:"#0E7490", th:3},
+    {key:"symm", label:"Symmetric ile kullanılabilir", col:"#116334", th:4}
+  ],
+  need:[
+    {a:"oNew.sonuç", b:"eNew.operation", type:"islem"},
+    {a:"oRem.sonuç", b:"eRem.operation", type:"islem"},
+    {a:"oInt.sonuç", b:"eInt.operation", type:"islem"},
+    {a:"tNext.nerede", b:"sNext.end type", type:"durur"},
+    {a:"tFace.nerede", b:"sFace.end type", type:"durur"},
+    {a:"yBli.nereye", b:"ySym.end type 1", type:"symm"},
+    {a:"yThr.nereye", b:"ySym.end type 2", type:"symm"}
+  ]
+};
+
+
+
+[["Operation type ile end type ayrı seçimlerdir",
+  "Operation type extrude'un malzemeyi ne yapacağını belirler: New yeni bir part ile sonuçlanan yeni malzeme oluşturur, Add var olan malzemeye malzeme ekler, Remove bir part'tan malzeme çıkarır, Intersect yalnızca kesişimlerin bulunduğu yerde malzeme bırakır. End type ise nerede sonlanacağını belirler. İkisi birbirinden bağımsız seçimlerdir; Remove ile Intersect ayrıca surface'ler için kullanılamaz."],
+ ["Merge scope üç operation'ı birden ilgilendirir",
+  "Merge scope yeni malzemenin hangi part'larla birleşeceğini belirler. Geometri tek bir part'a değiyorsa o part kendiliğinden eklenir; birden çoğuna değiyorsa belirsizlik oluşur ve seçim gerekir. Varsayılan olarak Merge all seçilidir ve Merge with all kısayolu değen veya kesişen bütün part'ları kapsama ekler. Kaynağın notu şudur: Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir; merge scope'u olmayan tek operation New'dur."],
+ ["Bir feature düzenlendiğinde model geri sarılır",
+  "Bir feature düzenlendiğinde Onshape varsayılan olarak modeli o feature oluşturulduğu andaki hâline geri sarılmış olarak gösterir ve sonraki bütün feature'ları gizler. Sonraki feature'lar silinmemiştir, yalnızca gizlenmiştir. Final düğmesi, siz feature'ı düzenlemeye devam ederken son sonucu gösterir. Feature list'in ortasındaki bir feature düzenlenebilir; parametrik modellemenin anlamı budur."]]
+.forEach(([h,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:h}),el("span",null,d));
+  li.append(w); $("#calls").append(li);});
+
+/* ---- kurulum tuvali: pinli bağlantı, kontrol ve skor ---- */
+if($("#bpanel") && typeof BUILD!=="undefined"){(()=>{
+  const B=BUILD, cvw=$("#bcanvas"), cv=$("#bboard"),
+    lay=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  lay.setAttribute("class","blines"); cv.append(lay);
+  const lblLayer=el("div","blbl"); cv.append(lblLayer);
+  $("#bpan").textContent=B.pan||"Tuval geniştir; sağa ve aşağı kaydırarak tamamını kullanabilirsiniz.";
+  const PK={}; B.parts.forEach(p=>PK[p.key]=p);
+  const WK={}; B.wires.forEach(w=>WK[w.key]=w);
+  let inst=[], links=[], seq=0, pick=null, wsel=B.wires[0].key, checked=false, zTop=1;
+
+  $("#bh").textContent=B.h; $("#bp").textContent=B.p;
+  $("#bgtext").textContent=B.gate; $("#bstart").textContent=B.start;
+  $("#bdone").textContent=B.done; $("#breset").textContent=B.reset; $("#bclose").textContent=B.close;
+  $("#bwarn").textContent=B.warn;
+
+  /* ---- raf ---- */
+  const tray=$("#btray");
+  const grp=(label,items,render)=>{
+    tray.append(el("p","tlabel",label));
+    const g=el("div","tgrid"); items.forEach(it=>g.append(render(it))); tray.append(g);
+  };
+  grp(B.partsLabel, B.parts, p=>{
+    const b=el("button","part");
+    const sc=Math.min(1, 112/p.h, 168/p.w);
+    b.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${Math.round(p.w*sc)}"
+      height="${Math.round(p.h*sc)}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    b.append(el("span",null,p.label));
+    b.onclick=()=>{ if(!checked) place(p.key); };
+    return b;
+  });
+  grp(B.wiresLabel, B.wires, w=>{
+    const b=el("button","part wchip"); b.dataset.k=w.key;
+    b.innerHTML=`<svg viewBox="0 0 110 14" width="110" height="14" aria-hidden="true">
+      <rect x="0" y="${7-w.th/2}" width="110" height="${w.th}" rx="${w.th/2}" fill="${w.col}"/>`+
+      (w.col2?`<path d="M0 7 H110" stroke="${w.col2}" stroke-width="${w.th}"
+        stroke-dasharray="8 8"/>`:"")+`</svg>`;
+    b.append(el("span",null,w.label));
+    b.onclick=()=>{ wsel=w.key; markWire(); };
+    return b;
+  });
+  const markWire=()=>tray.querySelectorAll(".wchip").forEach(c=>
+    c.setAttribute("aria-pressed", c.dataset.k===wsel));
+  markWire();
+
+  /* ---- parça yerleştirme ---- */
+  function slot(w,h,cw,ch){
+    const pad=18, padL=104, gx=96, gy=30;
+    const boxes=inst.map(i=>({x:parseFloat(i.node.style.left)||0, y:parseFloat(i.node.style.top)||0,
+      w:i.node.offsetWidth, h:i.node.offsetHeight}));
+    const hit=(x,y)=>boxes.some(b=>x<b.x+b.w+gx && x+w+gx>b.x && y<b.y+b.h+gy && y+h+gy>b.y);
+    const maxX=Math.max(padL, cw-w-pad), maxY=Math.max(pad, ch-h-pad);
+    for(let y=pad; y<=maxY; y+=22)
+      for(let x=padL; x<=maxX; x+=22)
+        if(!hit(x,y)) return [Math.round(x),Math.round(y)];
+    const k=inst.length%6;
+    return [Math.round(Math.min(maxX, padL+k*26)), Math.round(Math.min(maxY, pad+k*26))];
+  }
+  function place(key){
+    const p=PK[key], id=++seq, labs=[];
+    const n=el("div","placed"); n.dataset.id=id; n.dataset.key=key;
+    n.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w}" height="${p.h}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    const x=el("button","x","×"); x.setAttribute("aria-label",p.label+" kaldır");
+    x.onclick=e=>{e.stopPropagation(); if(checked) return;
+      links=links.filter(l=>l.a.id!==id&&l.b.id!==id);
+      inst=inst.filter(i=>i.id!==id); labs.forEach(o=>o.lb.remove());
+      n.remove(); paint(); sync();};
+    n.append(x);
+    p.pins.forEach(([nm,px,py])=>{
+      const d=el("button","pin"); d.style.left=px+"px"; d.style.top=py+"px";
+      d.dataset.pin=nm; d.setAttribute("aria-label",p.label+" "+nm);
+      d.onclick=e=>{e.stopPropagation(); tapPin(id,nm);};
+      const lb=el("span","pinlb",nm);
+      if(py<=p.h*0.2) lb.dataset.mode="top";
+      else if(px<=p.w*0.35) lb.classList.add("lft");
+      else if(px>=p.w*0.65) lb.classList.add("rgt");
+      else lb.dataset.mode="top";
+      lblLayer.append(lb); labs.push({lb,d});
+      n.append(d);
+    });
+    const r=cv.getBoundingClientRect();
+    const pos=slot(p.w,p.h,r.width,r.height);
+    n.style.left=pos[0]+"px"; n.style.top=pos[1]+"px"; n.style.zIndex=++zTop;
+    cv.append(n); inst.push({id,key,node:n,labs}); drag(n,id); paint(); sync();
+  }
+
+  function drag(n,id){
+    n.addEventListener("pointerdown",e=>{
+      if(checked||e.target.classList.contains("x")||e.target.classList.contains("pin")) return;
+      const r=cv.getBoundingClientRect(), bb=n.getBoundingClientRect();
+      const ox=e.clientX-bb.left, oy=e.clientY-bb.top;
+      try{n.setPointerCapture(e.pointerId);}catch(err){}
+      n.style.zIndex=++zTop;
+      const mv=ev=>{
+        n.style.left=Math.max(0,Math.min(r.width-bb.width, ev.clientX-r.left-ox))+"px";
+        n.style.top =Math.max(0,Math.min(r.height-bb.height, ev.clientY-r.top -oy))+"px";
+        paint();
+      };
+      const up=()=>{n.removeEventListener("pointermove",mv);n.removeEventListener("pointerup",up);};
+      n.addEventListener("pointermove",mv); n.addEventListener("pointerup",up);
+    });
+  }
+
+  /* ---- pin bağlama ---- */
+  const pinEl=(id,nm)=>{const i=inst.find(x=>x.id===id); return i&&i.node.querySelector(`.pin[data-pin="${CSS.escape(nm)}"]`);};
+  function tapPin(id,nm){
+    if(checked) return;
+    if(!pick){ pick={id,nm}; markPins(); return; }
+    if(pick.id===id && pick.nm===nm){ pick=null; markPins(); return; }
+    const a=pick, b={id,nm};
+    const same=l=>(l.a.id===a.id&&l.a.nm===a.nm&&l.b.id===b.id&&l.b.nm===b.nm)||
+                  (l.a.id===b.id&&l.a.nm===b.nm&&l.b.id===a.id&&l.b.nm===a.nm);
+    const ex=links.findIndex(same);
+    if(ex>=0) links.splice(ex,1); else links.push({a,b,type:wsel});
+    pick=null; markPins(); paint(); sync();
+  }
+  const markPins=()=>cv.querySelectorAll(".pin").forEach(d=>{
+    const i=+d.closest(".placed").dataset.id;
+    d.classList.toggle("on", !!pick && pick.id===i && pick.nm===d.dataset.pin);
+  });
+
+  /* ---- çizim ---- */
+  function paint(){
+    const r=cv.getBoundingClientRect();
+    lay.setAttribute("viewBox",`0 0 ${r.width} ${r.height}`);
+    lay.setAttribute("width",r.width); lay.setAttribute("height",r.height);
+    let g="";
+    links.forEach(l=>{
+      const ea=pinEl(l.a.id,l.a.nm), eb=pinEl(l.b.id,l.b.nm);
+      if(!ea||!eb) return;
+      const ra=ea.getBoundingClientRect(), rb=eb.getBoundingClientRect();
+      const x1=ra.left-r.left+ra.width/2, y1=ra.top-r.top+ra.height/2;
+      const x2=rb.left-r.left+rb.width/2, y2=rb.top-r.top+rb.height/2;
+      const w=WK[l.type]||B.wires[0];
+      const col = !checked ? w.col : (l.ok ? "var(--ok)" : "var(--no)");
+      const mx=(x1+x2)/2;
+      const d=`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      g+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w.th}"
+        stroke-linecap="round" opacity="${checked?1:0.95}"/>`;
+      if(w.col2 && !checked)
+        g+=`<path d="${d}" fill="none" stroke="${w.col2}" stroke-width="${w.th}"
+          stroke-linecap="butt" stroke-dasharray="8 8" opacity="0.95"/>`;
+    });
+    lay.innerHTML=g;
+    inst.forEach(i=>(i.labs||[]).forEach(({lb,d})=>{
+      const rd=d.getBoundingClientRect();
+      const cx=rd.left-r.left+rd.width/2, cy=rd.top-r.top+rd.height/2;
+      if(lb.classList.contains("lft")){ lb.style.left=(cx-11)+"px"; lb.style.top=cy+"px"; }
+      else if(lb.classList.contains("rgt")){ lb.style.left=(cx+11)+"px"; lb.style.top=cy+"px"; }
+      else { lb.style.left=cx+"px"; lb.style.top=(cy-3)+"px"; }
+    }));
+  }
+
+  const sync=()=>{
+    const need=B.need.length;
+    $("#bempty").classList.toggle("gone", inst.length>0);
+    $("#bnote").textContent = checked ? B.after
+      : inst.length+" parça · "+links.length+" / "+need+" bağlantı";
+    $("#bdone").disabled = checked || links.length===0;
+  };
+
+  /* ---- kontrol ---- */
+  const key=l=>[l.a,l.b].map(e=>{const i=inst.find(x=>x.id===e.id); return (i?i.key:"?")+"."+e.nm;}).sort().join(" ↔ ");
+  $("#bdone").onclick=()=>{
+    checked=true; pick=null; markPins();
+    const want=B.need.map(n=>({...n, k:[n.a,n.b].slice().sort().join(" ↔ ")}));
+    const used=new Set(); let got=0; const missing=[];
+    links.forEach(l=>{
+      const k=key(l);
+      const idx=want.findIndex((w,i)=>w.k===k && w.type===l.type && !used.has(i));
+      if(idx>=0){ used.add(idx); l.ok=true; got++; } else l.ok=false;
+    });
+    want.forEach((w,i)=>{ if(!used.has(i)) missing.push(w); });
+    const wrong=links.filter(l=>!l.ok).length;
+    const needKeys=new Set();
+    B.need.forEach(n=>{ needKeys.add(n.a.split(".")[0]); needKeys.add(n.b.split(".")[0]); });
+    const counts={}; inst.forEach(i=>counts[i.key]=(counts[i.key]||0)+1);
+    let extra=0; const extraList=[];
+    Object.keys(counts).forEach(k=>{
+      const allowed = needKeys.has(k) ? 1 : 0;
+      if(counts[k]>allowed){ extra+=counts[k]-allowed;
+        extraList.push(PK[k].label+" ×"+(counts[k]-allowed)); }
+    });
+    inst.forEach(i=>{ const dup=counts[i.key]>(needKeys.has(i.key)?1:0);
+      i.node.classList.add(dup?"bad":"fine"); });
+    paint();
+    const base=Math.round(got/B.need.length*100);
+    const pen=Math.min(base, wrong*6+extra*6);
+    const score=Math.max(0, base-pen);
+    /* İlk kurulum puanı kalıcıdır: tekrar denemek puanı değiştirmez. */
+    try{ if(state && state.__b==null){ state.__b={s:score, n:B.need.length}; save();
+      sunucuyaYaz("tuval",score); } }catch(e){}
+    const r=$("#bres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","kurulum kontrol edildi"));
+    r.append(el("div","big",score+" / 100"));
+    r.append(el("div","outof",got+" / "+B.need.length+" doğru bağlantı"+
+      (wrong?" · "+wrong+" hatalı":"")+(extra?" · "+extra+" fazla parça":"")));
+    if(pen) r.append(el("p","pen","Ceza: hatalı bağlantı ve fazla parça için toplam −"+pen+" puan."));
+    if(missing.length){
+      const ul=el("ul","miss");
+      const nice=e=>{const i=e.indexOf("."), k=e.slice(0,i), pn=e.slice(i+1);
+        return (PK[k]?PK[k].label:k)+" · "+pn;};
+      missing.forEach(w=>{const li=el("li");
+        li.append(Object.assign(el("b"),{textContent:"eksik: "}),
+          document.createTextNode(nice(w.a)+" ↔ "+nice(w.b)+"  ("+(WK[w.type]||{}).label+")"));
+        ul.append(li);});
+      r.append(ul);
+    }
+    if(extraList.length) r.append(el("p","pen","Tuvalde fazla kalan: "+extraList.join(", ")+"."));
+    r.append(el("p",null, score===100 ? B.perfect : B.again));
+    $("#bclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+
+  /* ---- kilit ve sıfırlama ---- */
+  const build=()=>{
+    inst.forEach(i=>i.node.remove()); lblLayer.textContent="";
+    inst=[]; links=[]; seq=0; pick=null; checked=false;
+    $("#bres").textContent=""; $("#bres").className=""; $("#bclose").hidden=true;
+    wsel=B.wires[0].key; markWire(); paint(); sync();
+  };
+  const lock=on=>{ $("#bpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on); if(on) $("#bpanel").scrollTop=0; };
+  $("#bstart").onclick=()=>{ $("#bgate").hidden=true; $("#bwrap").hidden=false; $("#bbar").hidden=false;
+    build(); lock(true); paint(); };
+  $("#breset").onclick=()=>build();
+  $("#bclose").onclick=()=>{ lock(false); $("#bres").scrollIntoView({block:"center"}); };
+  $("#bempty").textContent=B.emptyText;
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(cv);
+  sync();
+})();}
+
+/* ---- kontrol listesi: kurduktan sonra gözden geçirilecekler ---- */
+if($("#must")){
+[["Malzemeye ne olacak","New, Add, Remove veya Intersect"],
+ ["Surface üzerinde mi çalışıyorsunuz","Remove ve Intersect surface'ler için kullanılamaz"],
+ ["Merge scope dolu mu","Add, Remove ve Intersect boş bırakılırsa feature hata verir"],
+ ["Extrude nerede duracak","altı end type'tan biri seçilir"],
+ ["Mesafe gelecekte de doğru kalacak mı","Blind bir sayı tutar, Through all geometriyi takip eder"],
+ ["Symmetric görünmüyor mu","yalnızca Blind ve Through all ile kullanılabilir"]]
+.forEach(([t,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:t}),el("span",null,d));
+  li.append(w); $("#must").append(li);});
+
+$("#c2h").textContent="Sonra: tek bir şeyi değiştirin";
+$("#c2p").textContent="Şimdi Onshape'te deneyin. Bir Part Studio açıp bir dikdörtgen çizin ve New ile extrude edip bir plaka oluşturun. Üzerine bir çember çizip Remove ile delik açın ve end type olarak Blind seçip 3 mm verin; sonra plakayı oluşturan extrude'un depth değerini 5 mm yapıp deliğin plakayı geçmediğini görün. Aynı deliği Through all ile yeniden yapın ve kalınlığı bir kez daha değiştirin. Ardından ikinci bir part ekleyip Add ile ikisine birden değen bir malzeme oluşturun; Onshape'in hangi part'larla birleştirileceğini sorduğu anı görün. Sonra bir sketch'i Blind ile extrude ederken Symmetric onay kutusunu işaretleyin, end type'ı Up to face yapıp onay kutusunun kaybolduğunu görün ve yerine Second end position'ı kullanın. En son Feature list'in ortasındaki bir extrude'u çift tıklayıp modelin geri sarıldığını ve Final düğmesinin son sonucu gösterdiğini görün.";
+
+}
+
+/* ---- eşleştirme paneli: kur, kontrol et, neyi yanlış yaptığını göster ---- */
+(()=>{
+  const box=$("#match");
+  if(!box||typeof MATCH==="undefined"||!MATCH.length){
+    const mp=$("#matchpanel"); if(mp) mp.remove(); return; }
+  const N=MATCH.length;
+  $("#mth").textContent=MT.h; $("#mtp").textContent=MT.p;
+  $("#mdone").textContent=MT.done;
+  $("#mgtext").textContent=MT.gate; $("#mstart").textContent=MT.start;
+  $("#mclose").textContent=MT.close;
+  let order=[], links={}, pick=null, checked=false;
+  const svgns="http://www.w3.org/2000/svg";
+  const lines=document.createElementNS(svgns,"svg"); lines.setAttribute("class","mlines");
+  const colL=el("div","mcol left"), colR=el("div","mcol right"), spacer=el("div");
+  const itemsL=[], itemsR=[], dotsL=[], dotsR=[];
+
+  const side=(txt,art)=>{const it=el("div","mitem");
+    if(art&&ART[art[0]]){const a=el("div","art");
+      a.innerHTML=`<svg viewBox="0 0 ${art[1]} ${art[2]}" aria-hidden="true">${ART[art[0]](art[3]||0,art[4]||0)}</svg>`;
+      it.append(a);}
+    const l=el("div"); l.append(Object.assign(el("span","lbl"),{textContent:txt})); it.append(l);
+    return it;};
+
+  const build=()=>{
+    box.textContent=""; itemsL.length=itemsR.length=dotsL.length=dotsR.length=0;
+    colL.textContent=""; colR.textContent="";
+    links={}; pick=null; checked=false;
+    order=[...Array(N).keys()];
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    MATCH.forEach((pr,i)=>{
+      const it=side(pr.l,pr.lart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.l+" — bağlantı noktası");
+      d.onclick=()=>tap("l",i); it.append(d);
+      colL.append(it); itemsL.push(it); dotsL.push(d);
+    });
+    order.forEach((pi,p)=>{
+      const pr=MATCH[pi]; const it=side(pr.r,pr.rart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.r+" — bağlantı noktası");
+      d.onclick=()=>tap("r",p); it.append(d);
+      colR.append(it); itemsR.push(it); dotsR.push(d);
+    });
+    box.append(lines,colL,spacer,colR);
+    $("#mres").textContent=""; $("#mres").className="";
+    paint(); sync();
+  };
+
+  const tap=(sd,i)=>{
+    if(checked) return;
+    if(!pick){ pick={sd,i}; mark(); return; }
+    if(pick.sd===sd){ pick={sd,i}; mark(); return; }
+    const l = sd==="l" ? i : pick.i, p = sd==="l" ? pick.i : i;
+    Object.keys(links).forEach(k=>{ if(links[k]===p) delete links[k]; });
+    if(links[l]===p) delete links[l]; else links[l]=p;
+    pick=null; mark(); paint(); sync();
+  };
+  const mark=()=>{
+    dotsL.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="l"&&pick.i===i));
+    dotsR.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="r"&&pick.i===i));
+  };
+  const paint=()=>{
+    const rb=box.getBoundingClientRect();
+    lines.setAttribute("viewBox",`0 0 ${rb.width} ${rb.height}`);
+    lines.setAttribute("width",rb.width); lines.setAttribute("height",rb.height);
+    let g="";
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k];
+      const a=dotsL[l].getBoundingClientRect(), b=dotsR[p].getBoundingClientRect();
+      const x1=a.left-rb.left+a.width/2, y1=a.top-rb.top+a.height/2;
+      const x2=b.left-rb.left+b.width/2, y2=b.top-rb.top+b.height/2;
+      const col = !checked ? "var(--acc)" : (order[p]===l ? "var(--ok)" : "var(--no)");
+      g+=`<path d="M${x1} ${y1} C ${x1+40} ${y1}, ${x2-40} ${y2}, ${x2} ${y2}" fill="none"
+        stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+    });
+    lines.innerHTML=g;
+  };
+  const sync=()=>{
+    const n=Object.keys(links).length;
+    $("#mdone").disabled = checked || n<N;
+    $("#mnote").textContent = checked ? MT.after : (n+" / "+N+" eşleştirildi");
+  };
+
+  $("#mdone").onclick=()=>{
+    checked=true; pick=null; mark();
+    let got=0;
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k], ok=order[p]===l;
+      if(ok) got++;
+      itemsL[l].classList.add(ok?"ok":"no"); dotsL[l].classList.add(ok?"ok":"no");
+      itemsR[p].classList.add(ok?"ok":"no"); dotsR[p].classList.add(ok?"ok":"no");
+      if(!ok) itemsL[l].querySelector("div").append(
+        Object.assign(el("span","mfix"),{textContent:"doğrusu: "+MATCH[l].r}));
+    });
+    paint();
+    const pct=Math.round(got/N*100);
+    const r=$("#mres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","eşleştirme kontrol edildi"));
+    r.append(el("div","big",got+" / "+N+" doğru · "+pct+" / 100"));
+    r.append(el("p",null, got===N ? MT.perfect : MT.again));
+    $("#mdone").disabled=true; $("#mclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+  const rs=$("#mreset");
+  if(MT.reset){ rs.textContent=MT.reset; rs.onclick=()=>build(); } else { rs.remove(); }
+
+  const lock=on=>{
+    $("#matchpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on);
+    if(on){ $("#matchpanel").scrollTop=0; }
+  };
+  $("#mstart").onclick=()=>{
+    $("#mgate").hidden=true; box.hidden=false; $("#mbar").hidden=false;
+    build(); lock(true); paint();
+  };
+  $("#mclose").onclick=()=>{ lock(false); $("#mres").scrollIntoView({block:"center"}); };
+  build();
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(box);
+})();
+
+/* ---- practice ---- */
+/* ---- video: sitede gömülü oynar, önizlemede bağlantı olarak görünür ---- */
+(()=>{
+  const host=$("#vids"), V=D.videoRefs||[];
+  if(!host) return;
+  if(!V.length){ host.remove(); return; }
+  V.forEach(v=>{
+    const w=el("div","vid"), h=el("div","vtop");
+    const lang=v.lang&&v.lang!=="tr"?" · video İngilizce":"";
+    h.append(Object.assign(el("b"),{textContent:v.label||v.title}),
+      el("span",null,(v.label?v.title+" · ":"")+v.channel+lang));
+    w.append(h);
+    const t=v.start?"?start="+v.start:"";
+    const watch="https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start:"");
+    if(window.__EMBED__){
+      const box=el("div","vframe");
+      const local=location.protocol==="file:";
+      const cover=document.createElement(local?"a":"button");
+      cover.className="vface";
+      cover.style.backgroundImage='url("https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg")';
+      const tri=el("div","vptri");
+      tri.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+      cover.append(tri);
+      if(local){
+        cover.href=watch; cover.target="_blank"; cover.rel="noopener";
+        cover.title="Yerel dosyadan açıldığı için video sayfada oynamaz; YouTube'da açılır.";
+      }else{
+        cover.type="button";
+        cover.setAttribute("aria-label",(v.label||v.title)+" videosunu oynat");
+        cover.onclick=()=>{
+          const fr=document.createElement("iframe");
+          fr.src="https://www.youtube-nocookie.com/embed/"+v.id+(v.start?"?start="+v.start+"&":"?")+"autoplay=1&rel=0";
+          fr.title=v.title; fr.allowFullscreen=true;
+          fr.referrerPolicy="strict-origin-when-cross-origin";
+          fr.setAttribute("allow","autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+          cover.replaceWith(fr);
+        };
+      }
+      box.append(cover); w.append(box);
+      const foot=el("p","vfoot");
+      const a2=document.createElement("a");
+      a2.href=watch; a2.target="_blank"; a2.rel="noopener"; a2.textContent="YouTube'da aç";
+      foot.append(document.createTextNode(local
+        ? "Bu dosya bilgisayardan açıldığı için video sayfa içinde oynamaz. Siteye yüklendiğinde burada oynar. "
+        : "Oynamazsa: "), a2);
+      w.append(foot);
+    }else{
+      const a=document.createElement("a");
+      a.className="vlink"; a.target="_blank"; a.rel="noopener";
+      a.href=watch;
+      a.textContent="videoyu YouTube'da aç";
+      w.append(a, el("p","vnote",
+        "Video sitenin kendi sayfasında bu kutunun içinde oynar. Bu önizlemede dış içerik engellendiği için yalnızca bağlantı görünür."));
+    }
+    if(v.note) w.append(el("p","vsrc",v.note));
+    host.append(w);
+  });
+})();
+
+const LET="ABCDE".split(""); let filter="all", state={};
+const SKEY="cp04", MODUL=D.id;
+try{state=JSON.parse(localStorage.getItem(SKEY)||"{}");}catch(e){state={};}
+const save=()=>{try{localStorage.setItem(SKEY,JSON.stringify(state));}catch(e){}};
+/* Sunucu ayarlanmışsa puanlar oraya da yazılır. Yazma tek yönlüdür:
+   aynı satır ikinci kez gönderilse bile veritabanı ilkini korur. */
+function sunucuyaYaz(tur,a,b){
+  if(!window.FRC || !FRC.acik) return;
+  if(tur==="tuval") FRC.tuvalYaz(MODUL,a); else FRC.cevapYaz(MODUL,a,b);
+}
+[["all","hepsi"],["core","core"],["stretch","stretch"],["pit","pit"]].forEach(([k,l])=>{
+  const b=el("button","filt",l); if(k!=="all") b.lang="en";
+  b.setAttribute("aria-pressed",k===filter);
+  b.onclick=()=>{filter=k;document.querySelectorAll(".filt").forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
+  $("#bar").append(b);});
+const scoreEl=el("span","score"); $("#bar").append(scoreEl);
+const ruleChips=(d,h)=>{if(!d.ruleRefs.length)return;const s=el("div","srcs");
+  d.ruleRefs.forEach(r=>s.append(el("span","rule",r.rule+" · "+r.season)));h.append(s);};
+const sourceRef=(d,h)=>{const dt=el("details","ref");dt.append(el("summary","kaynak"));
+  dt.append(el("p",null,d.source));h.append(dt);};
+const DFIG={
+ "cad-04-d1":["ops","Delik açmak malzeme çıkarmaktır; Remove bir part'tan malzeme çıkarır."],
+ "cad-04-d2":["ends","Up to next karşılaşılan bir sonraki face'e kadar gider; sonlanmazsa başarısız olur."],
+ "cad-04-d3":["merge","Merge scope Add, Remove ve Intersect için gerekir; yalnızca New'da yoktur."],
+ "cad-04-d4":["sym","Symmetric yalnızca Blind ve Through all end type'ları için kullanılabilir."],
+ "cad-04-d5":["merge","Birden çok part'a değen geometride merge scope belirsizleşir ve seçim gerekir."],
+ "cad-04-d6":["ends","Up to face, seçilen face'in altında yatan sonsuz face'e kadar gider."],
+ "cad-04-d7":["rollback","Model o feature oluşturulduğu andaki hâline geri sarılır; hiçbir şey silinmez."],
+ "cad-04-d8":["blind","Blind bir mesafeyi kaydeder; kalınlık değişince o sayı yanlışlanır."]
+};
+const drillFig=(d,h)=>{const f=DFIG[d.id]; if(!f||!FIG[f[0]])return;
+  h.append(figure(FIG[f[0]](),f[1]));};
+
+function render(){
+  const box=$("#qs"); box.textContent="";
+  let got=0,done=0;
+  D.drills.forEach(d=>{if(state[d.id]){done++;if(state[d.id].ok)got++;}});
+  const live=done?Math.round(got/done*100):0;
+  scoreEl.textContent=done?("puan "+live+" / 100 · "+got+"/"+done+" doğru"):"puan 0 / 100";
+  D.drills.filter(d=>filter==="all"||d.difficulty===filter).forEach(d=>{
+    const q=el("div","q"),hd=el("div","qhead");
+    const pd1=el("span","pill "+d.difficulty,d.difficulty), pd2=el("span","pill",d.type.replace(/_/g," "));
+    pd1.lang="en"; pd2.lang="en"; hd.append(pd1,pd2);
+    q.append(hd);
+    if(d.symptom)q.append(el("p","sym",d.symptom));
+    if(d.scenario)q.append(el("p","sym",d.scenario));
+    q.append(el("p","qtext",d.prompt));
+    const ansBox=el("div"), prior=state[d.id];
+    const settle=(ok,txt)=>{state[d.id]={ok};save();sunucuyaYaz("cevap",d.id,ok);
+      ansBox.className="ans "+(ok?"good":"bad");
+      ansBox.append(el("span","verdict",ok?"doğru":"yanlış"),document.createTextNode(txt));
+      drillFig(d,ansBox);ruleChips(d,ansBox);sourceRef(d,ansBox);render();};
+    if(d.type==="numeric"){
+      const row=el("div","num");
+      const inp=Object.assign(el("input"),{type:"text",inputMode:"decimal",placeholder:"sayı"});
+      const go=el("button","btn","Kontrol et");
+      row.append(inp,go); if(d.unit)row.append(el("span","unit",d.unit));
+      go.onclick=()=>{const v=parseFloat(String(inp.value).replace(",","."));
+        const ok=Number.isFinite(v)&&Math.abs(v-d.answer)<=(d.tolerance||0);
+        inp.disabled=go.disabled=true;settle(ok,d.explanation);};
+      q.append(row);
+    } else if(d.type==="debug_code"){
+      const lines=String(d.code).split("\n");
+      const pre=el("div","code"); let chosen=null;
+      const lab=el("p","steplab","1 · hatalı satırı seçin");
+      const fix=el("div","fixrow");
+      const inp=Object.assign(el("input"),{type:"text",placeholder:"doğru satırı yazın",disabled:true});
+      const go=el("button","btn","Kontrol et"); go.disabled=true;
+      fix.append(inp,go);
+      lines.forEach((src,i)=>{
+        const b=el("button","ln");
+        b.append(el("span","no",String(i+1)),el("span","src",src||" "));
+        b.onclick=()=>{ if(chosen!==null) $$(".ln",pre)[chosen].classList.remove("pick");
+          chosen=i; b.classList.add("pick");
+          lab.textContent="2 · bu satırın doğrusunu yazın";
+          inp.disabled=go.disabled=false; inp.focus(); };
+        pre.append(b);});
+      const norm=x=>String(x).replace(/\s+/g," ").replace(/;\s*$/,"").trim().toLowerCase();
+      go.onclick=()=>{
+        const want=(d.acceptableAnswers&&d.acceptableAnswers.length?d.acceptableAnswers:[d.correctAnswer]).map(norm);
+        const lineOk = chosen===(d.buggyLine-1);
+        const textOk = want.includes(norm(inp.value));
+        const ok = lineOk && textOk;
+        $$(".ln",pre).forEach((x,j)=>{x.disabled=true;
+          if(j===d.buggyLine-1) x.classList.add(lineOk?"pick-ok":"reveal");
+          else if(j===chosen) x.classList.add("pick-no");});
+        inp.disabled=go.disabled=true; lab.remove();
+        const pre2 = lineOk&&!textOk ? "Satır doğru, yazdığınız düzeltme tutmadı. Doğrusu: "+d.correctAnswer+" "
+                   : !lineOk ? "Hatalı satır "+d.buggyLine+". satırdır; doğrusu: "+d.correctAnswer+" " : "";
+        settle(ok,pre2+d.explanation);};
+      q.append(lab,pre,fix);
+    } else if(d.type==="order_steps"){
+      const picked=[],w=el("div","opts");
+      d.steps.forEach((s,i)=>{const b=el("button","opt");
+        b.append(el("span","k","—"),el("span",null,s));
+        b.onclick=()=>{if(picked.includes(i))return;picked.push(i);
+          $(".k",b).textContent=picked.length;b.classList.add("taken");
+          if(picked.length===d.steps.length){
+            const ok=JSON.stringify(picked)===JSON.stringify(d.correctOrder);
+            w.querySelectorAll("button").forEach(x=>x.disabled=true);
+            settle(ok,(ok?"":"Doğru sıra: "+d.correctOrder.map(n=>n+1).join(" → ")+". ")+d.explanation);}};
+        w.append(b);});
+      q.append(w);
+    } else {
+      const items=d.elements||d.options, key=d.elements?d.faultIndex:d.correctIndex, w=el("div","opts");
+      items.forEach((o,i)=>{const b=el("button","opt");
+        b.append(el("span","k",LET[i]),el("span",null,o));
+        b.onclick=()=>{const ok=i===key;
+          w.querySelectorAll("button").forEach((x,j)=>{x.disabled=true;if(j===key&&!ok)x.classList.add("reveal");});
+          b.classList.add(ok?"pick-ok":"pick-no");settle(ok,d.explanation);};
+        w.append(b);});
+      q.append(w);
+    }
+    if(prior){
+      const dn=el("div","ans "+(prior.ok?"good":"bad"));
+      dn.append(el("span","verdict",prior.ok?"doğru — çözüldü":"yanlış — çözüldü"),
+        document.createTextNode(d.explanation));
+      drillFig(d,dn);ruleChips(d,dn);sourceRef(d,dn);
+      q.querySelectorAll(".opt,input,.btn").forEach(x=>x.disabled=true);
+      if(d.type==="debug_code"){
+        const lns=$$(".ln",q), tgt=lns[d.buggyLine-1];
+        if(tgt) tgt.classList.add(prior.ok?"pick-ok":"reveal");
+        const sl=$(".steplab",q); if(sl) sl.remove();
+        const fr=$(".fixrow",q); if(fr) fr.remove();
+      }
+      q.append(dn);
+    } else if(d.hint){ q.append(el("div","hintline","ipucu · "+d.hint)); }
+    q.append(ansBox); box.append(q);
+  });
+
+  if(done===D.drills.length && D.drills.length){
+    const score=Math.round(got/D.drills.length*100);
+    const band = score>=85 ? "Çok iyi"
+               : score>=70 ? "İyi"
+               : score>=50 ? "Geçer"
+               : "Tekrar edilmeli";
+    const f=el("div","finish");
+    f.append(el("div","cap","test tamamlandı"));
+    f.append(el("div","big",String(score)));
+    f.append(el("div","outof","100 üzerinden · "+got+" / "+D.drills.length+" doğru · "+band));
+    const bd=el("div","bd");
+    ["core","stretch","pit"].forEach(lv=>{
+      const set=D.drills.filter(d=>d.difficulty===lv);
+      if(!set.length) return;
+      const g=set.filter(d=>state[d.id]&&state[d.id].ok).length;
+      bd.append(el("span",null,lv+" "+g+"/"+set.length+" · %"+Math.round(g/set.length*100)));
+    });
+    f.append(bd);
+    f.append(el("p","sm", score===100
+      ? "Sekiz sorunun sekizini de doğru bildiniz. Şimdi operation type'ları, end type'ları ve Symmetric'i örneğe bakmadan kurun."
+      : score>=70
+      ? "Yanlış bildiğiniz soruların gerekçesini bir kez daha okuyun, sonra testi baştan çözün."
+      : "Puanınız 70'in altında. Kavram bölümünü ve kartları tekrar okuyup testi baştan çözmeniz önerilir."));
+    const r=el("button","retry","Testi baştan çöz");
+    r.onclick=()=>{ state={}; save(); render();
+      document.getElementById("bar").scrollIntoView({behavior:"smooth",block:"start"}); };
+    f.append(r);
+    box.append(f);
+  }
+}
+render();
+/* ---- sunucu oturumu ve ilerlemenin geri yüklenmesi ---- */
+if(window.FRC && FRC.acik){
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    return FRC.oku(MODUL).then(function(su){
+      if(!su) return;
+      var degisti=false;
+      if(su.tuval!==null && su.tuval!==undefined && state.__b==null){
+        state.__b={s:su.tuval,n:null}; degisti=true;
+      }
+      Object.keys(su.cevaplar).forEach(function(id){
+        if(!state[id]){ state[id]=su.cevaplar[id]; degisti=true; }
+      });
+      if(degisti){ save(); render(); }
+    });
+  });
+}
+
+</script>
+
+</body>
+</html>
