@@ -391,8 +391,73 @@ details.ref p{margin:9px 0 0;font-size:13.5px;color:var(--mute);word-break:break
 footer{padding:28px 0 0;font-size:13px;color:var(--mute)}
 .cright{margin:0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
 </style>
+
+<style>
+/* ---- sol ust menu (gezinme) ---------------------------------------- */
+body{padding-top:56px}
+.nvbtn{position:fixed;left:14px;top:10px;z-index:70;width:44px;height:40px;
+  display:flex;flex-direction:column;justify-content:center;gap:5px;
+  padding:0 10px;border:1px solid var(--hair);border-radius:10px;
+  background:var(--surface);cursor:pointer;box-shadow:var(--shadow,0 1px 2px rgba(40,24,80,.09))}
+.nvbtn span{display:block;height:2px;border-radius:2px;background:var(--ink)}
+.nvbtn:hover{border-color:var(--acc)}
+.nvbtn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.nvback{position:fixed;inset:0;z-index:80;background:rgba(20,16,25,.44)}
+.nvpanel{position:fixed;left:0;top:0;bottom:0;z-index:90;width:min(330px,86vw);
+  overflow-y:auto;background:var(--surface);border-right:1px solid var(--hair);
+  padding:18px 16px 28px;box-shadow:0 0 40px rgba(40,24,80,.22)}
+.nvhead{font:600 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--acc);padding:0 4px 14px}
+.nvtop{display:flex;flex-direction:column;gap:2px;padding:0 0 10px;
+  border-bottom:1px solid var(--hair);margin-bottom:12px}
+.nvtop a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;
+  color:var(--body);font:500 14.5px/1.3 var(--sans)}
+.nvtop a:hover{background:var(--acc-soft);color:var(--acc)}
+.nvdept{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mute);padding:14px 4px 7px}
+.nvlist a{display:grid;grid-template-columns:30px 1fr auto;align-items:baseline;gap:8px;
+  padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--body)}
+.nvlist a:hover{background:var(--acc-soft)}
+.nvnum{font:600 12px/1.4 var(--mono);color:var(--mute)}
+.nvttl{font:500 14.5px/1.35 var(--sans)}
+.nvok{font:600 10px/1.4 var(--mono);color:var(--ok);text-transform:uppercase;letter-spacing:.06em}
+.nvhere{background:var(--sunk)}
+.nvhere .nvttl{font-weight:700;color:var(--ink)}
+.nvhere .nvnum{color:var(--acc)}
+.nvlock{margin:6px 4px 0;font:400 12.5px/1.5 var(--sans);color:var(--mute)}
+.nvnote{margin:14px 4px 0;padding-top:12px;border-top:1px solid var(--hair);
+  font:400 12.5px/1.55 var(--sans);color:var(--mute)}
+.nvbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 0 12px}
+.nvbar .nvhead{padding:0 4px}
+.nvx{width:34px;height:34px;flex:none;border:1px solid var(--hair);border-radius:8px;
+  background:var(--surface);color:var(--mute);font:400 20px/1 var(--sans);cursor:pointer}
+.nvx:hover{border-color:var(--acc);color:var(--acc)}
+.nvx:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media print{.nvbtn,.nvpanel,.nvback{display:none}body{padding-top:0}}
+</style>
 </head>
 <body>
+<button id="nvbtn" class="nvbtn" type="button" aria-label="Menü" aria-expanded="false" aria-controls="nvpanel">
+  <span></span><span></span><span></span>
+</button>
+<div id="nvback" class="nvback" hidden></div>
+<nav id="nvpanel" class="nvpanel" aria-label="Modüller arası geçiş" hidden>
+  <div class="nvbar">
+    <span class="nvhead">FRC Çalışma Programı</span>
+    <button id="nvkapat" class="nvx" type="button" aria-label="Menüyü kapat">×</button>
+  </div>
+  <div class="nvtop">
+    <a href="index.html">Ana sayfa</a>
+    <a href="moduller.html">Modül listesi</a>
+  </div>
+  <div id="nvlist" class="nvlist"></div>
+  <div id="nvkoc" class="nvtop" style="border:0;border-top:1px solid var(--hair);padding:12px 0 0;margin:14px 0 0" hidden>
+    <a href="koc.html">Antrenör tablosu</a>
+    <a href="admin.html">Yönetim paneli</a>
+  </div>
+  <p class="nvnote" id="nvnote"></p>
+</nav>
+
 <div class="wrap" lang="tr">
 <header>
   <div class="eyebrow" lang="en">cad · modül 11</div>
@@ -1573,5 +1638,109 @@ if(window.FRC && FRC.acik){
 
 </script>
 
+
+<script>
+/* Sol ust menu: bolum bolum modul gecisi. Kilitli modul listelenmez;
+   olcut modul listesindekiyle aynidir, (tuval + test) / 2 >= 70. */
+(function(){
+  var MENU = [{"d":"electrical","n":"00","k":"ep00","f":"electrical-00-tools.html","t":"Aletler: Elektrik Ekibinin Takım Çantası","q":8,"v":0,"i":"electrical-00-tools"},{"d":"electrical","n":"01","k":"ep01","f":"electrical-01-power-path.html","t":"Power Path: Battery'den PD'ye","q":9,"v":1,"i":"electrical-01-power-path"},{"d":"electrical","n":"02","k":"ep02","f":"electrical-02-circuit-protection.html","t":"Circuit Protection: Branch Breaker ve Fuse Seçimi","q":8,"v":1,"i":"electrical-02-circuit-protection"},{"d":"electrical","n":"03","k":"ep03","f":"electrical-03-can-bus.html","t":"CAN Bus: Zincir, Termination ve Device ID","q":8,"v":1,"i":"electrical-03-can-bus"},{"d":"electrical","n":"04","k":"ep04","f":"electrical-04-radio.html","t":"Radio: Besleme, Bağlantı ve Status Lights","q":8,"v":1,"i":"electrical-04-radio"},{"d":"electrical","n":"05","k":"ep05","f":"electrical-05-brownout.html","t":"Brownout: Voltage Sag ve Current Draw","q":8,"v":1,"i":"electrical-05-brownout"},{"d":"electrical","n":"06","k":"ep06","f":"electrical-06-status-lights.html","t":"Status Lights: roboRIO, RSL ve PD","q":8,"v":1,"i":"electrical-06-status-lights"},{"d":"electrical","n":"07","k":"ep07","f":"electrical-07-pneumatics.html","t":"Pneumatics: Basınç Bölgeleri, Koruma ve Besleme","q":8,"v":1,"i":"electrical-07-pneumatics"},{"d":"electrical","n":"08","k":"ep08","f":"electrical-08-motors.html","t":"Motorlar ve Motor Controller'lar","q":8,"v":1,"i":"electrical-08-motors"},{"d":"electrical","n":"09","k":"ep09","f":"electrical-09-custom-circuits.html","t":"Custom Circuit'ler ve Legal Wiring","q":8,"v":1,"i":"electrical-09-custom-circuits"},{"d":"electrical","n":"10","k":"ep10","f":"electrical-10-wire-management.html","t":"Wire Management, Strain Relief ve Bakım","q":8,"v":1,"i":"electrical-10-wire-management"},{"d":"electrical","n":"11","k":"ep11","f":"electrical-11-control-system.html","t":"Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor","q":8,"v":1,"i":"electrical-11-control-system"},{"d":"electrical","n":"12","k":"ep12","f":"electrical-12-inspection.html","t":"Inspection Points: Elektrik Denetimi Baştan Sona","q":8,"v":1,"i":"electrical-12-inspection"},{"d":"programming","n":"00","k":"pp00","f":"programming-00-java-vscode.html","t":"Temel Java ve VS Code","q":8,"v":1,"i":"programming-00-java-vscode"},{"d":"programming","n":"00b","k":"pp00b","f":"programming-00b-wpilib-temelleri.html","t":"WPILib Temelleri","q":8,"v":1,"i":"programming-00b-wpilib-temelleri"},{"d":"programming","n":"01","k":"pp01","f":"programming-01-project-structure.html","t":"Proje Yapısı ve Robot Yaşam Döngüsü","q":8,"v":1,"i":"programming-01-project-structure"},{"d":"programming","n":"02","k":"pp02","f":"programming-02-deploy.html","t":"Deploy ve Driver Station Bağlantısı","q":8,"v":1,"i":"programming-02-deploy"},{"d":"programming","n":"03","k":"pp03","f":"programming-03-command-based.html","t":"Command-Based Temelleri","q":8,"v":1,"i":"programming-03-command-based"},{"d":"programming","n":"04","k":"pp04","f":"programming-04-subsystems.html","t":"Subsystem'ler ve Default Command'ler","q":8,"v":1,"i":"programming-04-subsystems"},{"d":"programming","n":"05","k":"pp05","f":"programming-05-motor-controllers.html","t":"Motor Controller'ları Koddan Sürmek","q":8,"v":1,"i":"programming-05-motor-controllers"},{"d":"programming","n":"06","k":"pp06","f":"programming-06-triggers.html","t":"Joystick ve Tuş Bağlamaları","q":8,"v":1,"i":"programming-06-triggers"},{"d":"programming","n":"07","k":"pp07","f":"programming-07-sensors.html","t":"Sensor'ler: Encoder, Limit Switch ve Gyro","q":8,"v":1,"i":"programming-07-sensors"},{"d":"programming","n":"08","k":"pp08","f":"programming-08-pid.html","t":"Closed-Loop Kontrol ve PIDController","q":8,"v":1,"i":"programming-08-pid"},{"d":"programming","n":"09","k":"pp09","f":"programming-09-telemetry.html","t":"Telemetry ve Driver Station Loglarıyla Hata Ayıklama","q":8,"v":1,"i":"programming-09-telemetry"},{"d":"programming","n":"10","k":"pp10","f":"programming-10-autonomous.html","t":"Autonomous Rutinleri ve SendableChooser","q":8,"v":1,"i":"programming-10-autonomous"},{"d":"programming","n":"11","k":"pp11","f":"programming-11-simulation.html","t":"Simulation ve Unit Test","q":8,"v":1,"i":"programming-11-simulation"},{"d":"programming","n":"12","k":"pp12","f":"programming-12-competition.html","t":"Yarışmaya Hazırlık ve Yazılım Denetimi","q":8,"v":1,"i":"programming-12-competition"},{"d":"cad","n":"01","k":"cp01","f":"cad-01-onshape-basics.html","t":"Onshape'e Giriş: Document, Part Studio ve Assembly","q":8,"v":1,"i":"cad-01-onshape-basics"},{"d":"cad","n":"02","k":"cp02","f":"cad-02-sketching.html","t":"Sketch Temelleri ve Kısıtlanma Durumu","q":8,"v":1,"i":"cad-02-sketching"},{"d":"cad","n":"03","k":"cp03","f":"cad-03-constraints.html","t":"Sketch Constraint'leri ve Tasarım Niyeti","q":8,"v":1,"i":"cad-03-constraints"},{"d":"cad","n":"04","k":"cp04","f":"cad-04-features.html","t":"Feature'lar ve Extrude'un End Condition'ları","q":8,"v":1,"i":"cad-04-features"},{"d":"cad","n":"05","k":"cp05","f":"cad-05-variables-configurations.html","t":"Variable'lar ve Configuration'lar","q":8,"v":1,"i":"cad-05-variables-configurations"},{"d":"cad","n":"06","k":"cp06","f":"cad-06-in-context.html","t":"Multi-Part Part Studio ve In-Context Tasarım","q":8,"v":1,"i":"cad-06-in-context"},{"d":"cad","n":"07","k":"cp07","f":"cad-07-mates.html","t":"Assembly Mate'leri ve Mate Connector","q":8,"v":1,"i":"cad-07-mates"},{"d":"cad","n":"08","k":"cp08","f":"cad-08-versions-branches.html","t":"Version, Branch ve Merge","q":8,"v":1,"i":"cad-08-versions-branches"},{"d":"cad","n":"09","k":"cp09","f":"cad-09-drawings.html","t":"Drawing: Teknik Resim ve Güncelleme","q":8,"v":1,"i":"cad-09-drawings"},{"d":"cad","n":"10","k":"cp10","f":"cad-10-cots-imports.html","t":"COTS Parçalar, Import ve Linked Document","q":8,"v":1,"i":"cad-10-cots-imports"},{"d":"cad","n":"11","k":"cp11","f":"cad-11-robot-rules.html","t":"Robot Kuralları ve CAD","q":8,"v":1,"i":"cad-11-robot-rules"},{"d":"cad","n":"12","k":"cp12","f":"cad-12-design-review.html","t":"Capstone: CAD Tasarım İncelemesi","q":8,"v":1,"i":"cad-12-design-review"}];
+  var LAB = {electrical:"Elektrik ve Kablolama", programming:"Programlama", cad:"CAD"};
+  var DEPT = ["electrical","programming","cad"];
+  var PASS = 70;
+  var HERE = (location.pathname.split("/").pop() || "index.html");
+  var SUNUCU = null;
+
+  function yerel(k){ try{ return JSON.parse(localStorage.getItem(k)||"{}"); }catch(e){ return {}; } }
+  function sorular(r){ var a=[],i; for(i=1;i<=r.q;i++) a.push(r.d+"-"+r.n+"-d"+i); return a; }
+  function durum(r){
+    if(SUNUCU){
+      var s = SUNUCU[r.i] || {tuval:null, cevaplar:{}}, st = {}, k;
+      for(k in s.cevaplar) st[k] = s.cevaplar[k];
+      if(s.tuval!==null && s.tuval!==undefined) st.__b = {s:s.tuval};
+      return st;
+    }
+    return yerel(r.k);
+  }
+  function gecti(r){
+    var st=durum(r), ds=sorular(r), done=0, got=0, i, s;
+    for(i=0;i<ds.length;i++){ s=st[ds[i]]; if(s){ done++; if(s.ok) got++; } }
+    var board = (st.__b && typeof st.__b.s==="number") ? st.__b.s : null;
+    var bitti = done===r.q;
+    var test = bitti ? Math.round(got/r.q*100) : null;
+    var ort = r.v ? ((bitti && board!==null) ? Math.round((test+board)/2) : null)
+                  : (bitti ? test : null);
+    return ort!==null && ort>=PASS;
+  }
+
+  var btn=document.getElementById("nvbtn"), pnl=document.getElementById("nvpanel"),
+      bck=document.getElementById("nvback"), box=document.getElementById("nvlist"),
+      note=document.getElementById("nvnote");
+
+  function ekle(t,c,x){ var n=document.createElement(t); if(c)n.className=c;
+    if(x!=null)n.textContent=x; return n; }
+
+  function ciz(){
+    box.innerHTML="";
+    var kilitli=0;
+    DEPT.forEach(function(d){
+      var rows = MENU.filter(function(r){ return r.d===d; });
+      var acik=[], i;
+      for(i=0;i<rows.length;i++){ acik.push(rows[i]); if(!gecti(rows[i])) break; }
+      /* Ogrenci kilitli bir sayfayi adresten actiysa o modul de listelenir. */
+      for(i=0;i<rows.length;i++){
+        if(rows[i].f===HERE && acik.indexOf(rows[i])<0) acik.push(rows[i]);
+      }
+      kilitli += rows.length - acik.length;
+      box.appendChild(ekle("div","nvdept",LAB[d]));
+      acik.forEach(function(r){
+        var a=ekle("a","nvitem"+(r.f===HERE?" nvhere":""));
+        a.href=r.f;
+        a.appendChild(ekle("span","nvnum",r.n));
+        a.appendChild(ekle("span","nvttl",r.t));
+        if(gecti(r)) a.appendChild(ekle("span","nvok","geçti"));
+        if(r.f===HERE) a.setAttribute("aria-current","page");
+        box.appendChild(a);
+      });
+      var kalan = rows.length - acik.length;
+      if(kalan>0) box.appendChild(ekle("p","nvlock",
+        kalan===1 ? "1 modül kilitli" : kalan+" modül kilitli"));
+    });
+    note.textContent = kilitli>0
+      ? "Bir modül, tuval ile test puanının ortalaması %70'e ulaşınca geçilmiş sayılır ve sıradaki modül burada görünür."
+      : "Bütün modüller açık.";
+  }
+
+  var son=null;
+  function ac(){
+    son = document.activeElement;
+    ciz();
+    pnl.hidden=false; bck.hidden=false;
+    btn.setAttribute("aria-expanded","true");
+    var ilk = pnl.querySelector("a"); if(ilk) ilk.focus();
+  }
+  function kapat(){
+    pnl.hidden=true; bck.hidden=true;
+    btn.setAttribute("aria-expanded","false");
+    if(son && son.focus) son.focus();
+  }
+  btn.addEventListener("click", function(){ pnl.hidden ? ac() : kapat(); });
+  bck.addEventListener("click", kapat);
+  document.getElementById("nvkapat").addEventListener("click", kapat);
+  document.addEventListener("keydown", function(e){
+    if(e.key==="Escape" && !pnl.hidden) kapat();
+  });
+
+  /* Sunucu acikken ilerleme sunucudan okunur; boylece ogrenci baska bir
+     bilgisayardan girdiginde menu de dogru modulleri gosterir. */
+  if(window.FRC && FRC.acik && FRC.hazir){
+    FRC.hazir.then(function(){
+      var u = FRC.kullanici && FRC.kullanici();
+      if(u && u.rol==="koc"){ document.getElementById("nvkoc").hidden=false; }
+      if(!u) return null;
+      return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; if(!pnl.hidden) ciz(); } });
+    })["catch"](function(){});
+  }
+})();
+</script>
 </body>
 </html>
