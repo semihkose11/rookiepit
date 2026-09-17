@@ -1,0 +1,21 @@
+# İşletim sistemi
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editör
+.vscode/
+.idea/
+*.swp
+*~
+
+# Yerel ayar denemeleri
+#
+# Dikkat: config.js yoksayılmaz, depoya girer. Site çalışmak için o dosyaya
+# ihtiyaç duyar ve içindeki anon anahtarı gizli değildir; tarayıcıda görünmek
+# üzere tasarlanmıştır. service_role anahtarını o dosyaya asla yazmayın.
+config.local.js
+
+# Üretim artıkları
+node_modules/
+*.log

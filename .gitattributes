@@ -1,0 +1,15 @@
+# Satır sonlarını depoda LF olarak tut. Windows'ta çalışan bir düzenleyici
+# dosyayı CRLF ile kaydetse bile depo tutarlı kalır ve sahte değişiklikler
+# görünmez.
+* text=auto eol=lf
+
+# İkili dosyalar dönüştürülmez.
+*.png binary
+*.jpg binary
+*.pdf binary
+*.pptx binary
+
+# GitHub'ın dil istatistiği: üretilmiş modül sayfaları ve kaynak JSON'ları
+# depoyu HTML/JSON projesi gibi göstermesin.
+*.html linguist-documentation
+modules/** linguist-generated

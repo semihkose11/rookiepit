@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="FRC Calisma Programi giris ve kayit sayfasi.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Giriş · FRC Çalışma Programı</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{color-scheme:light;
+ --ground:#EFE9FB;--surface:#FFFFFF;--sunk:#E4DBF7;
+ --ink:#000;--body:#141019;--mute:#463E58;--hair:#CFC2EC;
+ --acc:#5B21B6;--acc-soft:#EDE5FE;
+ --ok:#116336;--ok-soft:#E4F3EA;--no:#A5124A;--no-soft:#FBE6EE;
+ --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+ --disp:"Barlow Condensed",system-ui,sans-serif;
+ --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+ font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased;
+ min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 20px 60px}
+.card{width:100%;max-width:420px}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+h1{font:700 clamp(32px,8vw,44px)/1.04 var(--disp);color:var(--ink);margin:10px 0 0;letter-spacing:-.01em}
+.sub{margin:10px 0 0;font-size:14.5px;color:var(--mute)}
+.box{margin-top:22px;background:var(--surface);border:1px solid var(--hair);
+ border-radius:16px;padding:6px 20px 22px;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:6px;margin:14px 0 18px}
+.tab{flex:1;font:600 13px/1 var(--mono);color:var(--mute);background:transparent;
+ border:1px solid var(--hair);border-radius:999px;padding:11px 8px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+label{display:block;font:600 12px/1 var(--mono);letter-spacing:.04em;
+ text-transform:uppercase;color:var(--mute);margin:0 0 7px}
+input{width:100%;font:400 15.5px/1.4 var(--sans);color:var(--ink);background:var(--sunk);
+ border:1px solid var(--hair);border-radius:10px;padding:12px 13px}
+input:focus{outline:2px solid var(--acc);outline-offset:1px;background:#fff}
+.field+.field{margin-top:15px}
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+ font:600 14.5px/1 var(--sans);color:var(--ink);background:#fff;
+ border:1px solid var(--hair);border-radius:11px;padding:14px;cursor:pointer}
+.gbtn:hover{background:var(--sunk)}
+.gbtn:disabled{opacity:.6;cursor:default}
+.gbtn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.gbtn svg{width:18px;height:18px;display:block;flex:0 0 auto}
+.ayir{display:flex;align-items:center;gap:12px;margin:18px 0 16px;
+ font:500 11.5px/1 var(--mono);color:var(--mute);text-transform:lowercase}
+.ayir::before,.ayir::after{content:"";flex:1;height:1px;background:var(--hair)}
+.hint{margin:6px 0 0;font:400 12px/1.5 var(--sans);color:var(--mute)}
+button.go{width:100%;margin-top:20px;font:600 15px/1 var(--sans);color:#fff;background:var(--ink);
+ border:0;border-radius:11px;padding:15px;cursor:pointer}
+button.go:hover{background:var(--acc)}
+button.go:disabled{opacity:.55;cursor:default}
+button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.msg{margin:16px 0 0;padding:12px 14px;border-radius:10px;font-size:13.5px;display:none}
+.msg.show{display:block}
+.msg.bad{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
+.msg.good{background:var(--ok-soft);color:var(--ok);border:1px solid #A9D6BC}
+.msg.warn{background:#FDF0DC;color:#8A5A00;border:1px solid #E8C68A}
+.foot{margin:18px 0 0;font:400 12.5px/1.6 var(--sans);color:var(--mute);text-align:center}
+.foot a{color:var(--acc)}
+.cright{margin:16px 0 0;font:500 11.5px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<main class="card" lang="tr">
+  <div class="eyebrow" lang="en">FRC · rookie practice</div>
+  <h1>FRC Çalışma Programı</h1>
+  <p class="sub">İlerlemeniz hesabınıza kaydedilir. Hangi bilgisayardan girerseniz girin
+  kaldığınız modülden devam edersiniz.</p>
+
+  <div class="box">
+    <div class="tabs" role="tablist">
+      <button class="tab" id="t-giris" role="tab" aria-selected="true" aria-controls="form">Giriş yap</button>
+      <button class="tab" id="t-kayit" role="tab" aria-selected="false" aria-controls="form">Hesap aç</button>
+    </div>
+
+    <div id="gwrap" hidden>
+      <button class="gbtn" id="gbtn" type="button">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.2 17.7 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-2.8-.4-4.1H24v8.4h12.5c-.3 2.1-1.6 5.2-4.6 7.3l7.6 5.9c4.5-4.2 6.6-10.2 6.6-17.5z"/>
+          <path fill="#FBBC05" d="M10.4 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.6 10.8l7.8-6.1z"/>
+          <path fill="#34A853" d="M24 48c6.2 0 11.5-2 15.5-5.6l-7.6-5.9c-2 1.4-4.7 2.4-7.9 2.4-6.3 0-11.7-3.7-13.6-9.2l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/>
+        </svg>
+        <span id="gtxt">Google ile devam et</span>
+      </button>
+      <div class="ayir" lang="tr">veya e-posta ile</div>
+    </div>
+
+    <form id="form" novalidate>
+      <div class="field" id="f-ad" hidden>
+        <label for="ad">Ad ve soyad</label>
+        <input id="ad" name="ad" type="text" autocomplete="name" maxlength="60">
+        <p class="hint">Antrenörünüzün listede sizi tanıyacağı isim.</p>
+      </div>
+      <div class="field">
+        <label for="eposta">E-posta</label>
+        <input id="eposta" name="eposta" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="sifre">Şifre</label>
+        <input id="sifre" name="sifre" type="password" autocomplete="current-password" required>
+        <p class="hint" id="sifre-ipucu" hidden>En az 6 karakter.</p>
+      </div>
+      <button class="go" id="gonder" type="submit">Giriş yap</button>
+    </form>
+
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </div>
+
+  <p class="foot" id="foot"></p>
+  <p class="foot"><a href="index.html">Ana sayfaya dön</a></p>
+  <p class="cright">© 2026 Semih Tuna Köse</p>
+</main>
+
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s);};
+  var mod="giris";
+  var msg=$("#msg"), gonder=$("#gonder"), form=$("#form");
+  var donus=(new URLSearchParams(location.search).get("donus")||"moduller.html")
+            .replace(/[^A-Za-z0-9._-]/g,"") || "moduller.html";
+
+  function goster(tip, metin){
+    msg.className="msg show "+tip; msg.textContent=metin;
+  }
+  function gizle(){ msg.className="msg"; msg.textContent=""; }
+
+  function modSec(yeni){
+    mod=yeni;
+    $("#t-giris").setAttribute("aria-selected", mod==="giris");
+    $("#t-kayit").setAttribute("aria-selected", mod==="kayit");
+    $("#f-ad").hidden = mod!=="kayit";
+    $("#ad").required = mod==="kayit";
+    $("#sifre-ipucu").hidden = mod!=="kayit";
+    $("#sifre").setAttribute("autocomplete", mod==="kayit"?"new-password":"current-password");
+    gonder.textContent = mod==="kayit" ? "Hesap aç" : "Giriş yap";
+    gizle();
+  }
+  $("#t-giris").onclick=function(){modSec("giris");};
+  $("#t-kayit").onclick=function(){modSec("kayit");};
+  if((new URLSearchParams(location.search).get("mod")||"")==="kayit") modSec("kayit");
+
+  form.onsubmit=function(ev){
+    ev.preventDefault();
+    gizle();
+    var eposta=$("#eposta").value.trim(), sifre=$("#sifre").value, ad=$("#ad").value.trim();
+    if(!eposta || eposta.indexOf("@")<0) return goster("bad","Geçerli bir e-posta adresi yazın.");
+    if(!sifre) return goster("bad","Şifre alanı boş bırakılamaz.");
+    if(mod==="kayit"){
+      if(ad.length<2) return goster("bad","Ad ve soyadınızı yazın.");
+      if(sifre.length<6) return goster("bad","Şifre en az 6 karakter olmalıdır.");
+    }
+    gonder.disabled=true;
+    gonder.textContent = mod==="kayit" ? "Hesap açılıyor" : "Giriş yapılıyor";
+
+    var is = mod==="kayit"
+      ? FRC.kayitOl(eposta,sifre,ad).then(function(r){
+          if(r.oturumAcildi) return FRC.girisYap(eposta,sifre);
+          goster("good","Hesap açıldı. E-postanıza gelen doğrulama bağlantısına tıklayın, sonra giriş yapın.");
+          modSec("giris");
+          return null;
+        })
+      : FRC.girisYap(eposta,sifre);
+
+    is.then(function(k){
+      if(!k) return;
+      location.replace(k.rol==="koc" ? "admin.html" : donus);
+    }).catch(function(h){
+      goster("bad", FRC.okunurHata(h));
+    }).then(function(){
+      gonder.disabled=false;
+      gonder.textContent = mod==="kayit" ? "Hesap aç" : "Giriş yap";
+    });
+  };
+
+  /* sync.js yüklenmemişse sebebini yaz ve dur. */
+  if(!window.FRC){
+    goster("bad","Bu sayfa tek başına çalışmaz: yanında config.js ve sync.js dosyaları bulunmalıdır. Dosyayı indirip tek başına açtıysanız, bunun yerine programın klasörünü açıp aynı klasördeki sayfayı kullanın.");
+    gonder.disabled=true;
+    return;
+  }
+
+  /* Google düğmesi yalnızca sunucuda bu sağlayıcı açıksa görünür. */
+  var gbtn=$("#gbtn"), gwrap=$("#gwrap");
+  gbtn.onclick=function(){
+    gizle();
+    gbtn.disabled=true; $("#gtxt").textContent="Google'a yönlendiriliyor";
+    FRC.googleIleGir("giris.html?donus="+encodeURIComponent(donus))
+      .catch(function(h){
+        goster("bad", (h && h.mesaj) || FRC.okunurHata(h));
+        gbtn.disabled=false; $("#gtxt").textContent="Google ile devam et";
+      });
+  };
+  if(FRC.acik){
+    FRC.saglayicilar().then(function(sg){ gwrap.hidden = !sg.google; });
+  }
+  /* Sağlayıcı dönüşünde hata geldiyse göster. */
+  if(FRC.oauthHatasi) goster("bad","Google ile giriş tamamlanamadı: "+FRC.oauthHatasi);
+
+  /* Sunucu ayarlanmamışsa bunu saklamak yerine açıkça söyle. */
+  if(!FRC.acik){
+    goster("warn","Sunucu henüz ayarlanmamış. config.js dosyasındaki url ve key alanları doldurulana kadar giriş çalışmaz; program ilerlemeyi yalnızca bu tarayıcıya kaydeder.");
+    gonder.disabled=true;
+    $("#foot").innerHTML='<a href="moduller.html">Girişsiz devam et</a>';
+  } else {
+    FRC.hazir.then(function(k){
+      if(k) location.replace(k.rol==="koc" ? "admin.html" : donus);
+    });
+  }
+})();
+</script>
+</body>
+</html>

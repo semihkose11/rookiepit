@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="FRC Calisma Programi yonetim paneli: gorev olusturma ve ogrencilere atama.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Yönetim Paneli · FRC Çalışma Programı</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{color-scheme:light;
+ --ground:#EFE9FB;--surface:#FFF;--sunk:#E4DBF7;
+ --ink:#000;--body:#141019;--mute:#463E58;--hair:#CFC2EC;
+ --acc:#5B21B6;--acc-soft:#EDE5FE;
+ --ok:#116336;--ok-soft:#E4F3EA;--no:#A5124A;--no-soft:#FBE6EE;
+ --warn:#8A5A00;--warn-soft:#FDF0DC;
+ --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+ --disp:"Barlow Condensed",system-ui,sans-serif;
+ --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);font:400 16px/1.6 var(--sans)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px 80px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+a{color:inherit}
+header{padding:34px 0 20px;border-bottom:1px solid var(--hair);
+ display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+h1{font:700 clamp(30px,6vw,46px)/1.04 var(--disp);margin:8px 0 0}
+.who{font:500 12.5px/1.5 var(--mono);color:var(--mute);text-align:right}
+.who b{display:block;color:var(--ink);font-size:14px}
+.lnk{font:500 12.5px/1 var(--mono);color:var(--body);background:var(--surface);
+ border:1px solid var(--hair);border-radius:999px;padding:9px 13px;cursor:pointer;
+ text-decoration:none;display:inline-block;margin:8px 0 0 6px}
+.lnk:hover{background:var(--sunk)}
+nav.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+.tab{font:600 13px/1 var(--mono);color:var(--body);background:var(--surface);
+ border:1px solid var(--hair);border-radius:999px;padding:11px 15px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+section.panel{padding:26px 0 0}
+section.panel[hidden]{display:none}
+h2{font:600 clamp(22px,4.5vw,28px)/1.15 var(--disp);margin:0 0 4px}
+.lede{margin:0 0 18px;color:var(--mute);font-size:14.5px;max-width:64ch}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+ padding:20px;box-shadow:var(--shadow)}
+.card+.card{margin-top:12px}
+label{display:block;font:600 11.5px/1 var(--mono);letter-spacing:.04em;
+ text-transform:uppercase;color:var(--mute);margin:0 0 7px}
+input,select,textarea{width:100%;font:400 15px/1.45 var(--sans);color:var(--ink);
+ background:var(--sunk);border:1px solid var(--hair);border-radius:10px;padding:11px 12px}
+textarea{min-height:82px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px;background:#fff}
+.grid2{display:grid;gap:14px}
+@media (min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+.f+.f{margin-top:14px}
+.hint{margin:6px 0 0;font:400 12px/1.5 var(--sans);color:var(--mute)}
+.go{font:600 14.5px/1 var(--sans);color:#fff;background:var(--ink);border:0;
+ border-radius:11px;padding:14px 20px;cursor:pointer;margin-top:18px}
+.go:hover{background:var(--acc)}
+.go:disabled{opacity:.55;cursor:default}
+.go.ikincil{background:var(--surface);color:var(--body);border:1px solid var(--hair)}
+.go.ikincil:hover{background:var(--sunk)}
+.go.tehlike{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
+.go.mini{font-size:12.5px;padding:9px 12px;margin-top:0;border-radius:9px}
+.msg{margin:16px 0 0;padding:12px 14px;border-radius:10px;font-size:13.5px;display:none}
+.msg.show{display:block}
+.msg.bad{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
+.msg.good{background:var(--ok-soft);color:var(--ok);border:1px solid #A9D6BC}
+.msg.warn{background:var(--warn-soft);color:var(--warn);border:1px solid #E8C68A}
+
+/* öğrenci listesi */
+.ogr{display:grid;gap:10px;margin:0}
+.orow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+ background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:13px 16px}
+.orow .ad{font:600 15px/1.3 var(--sans);color:var(--ink)}
+.orow .alt{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.rolet{font:600 11px/1 var(--mono);border-radius:999px;padding:6px 9px;
+ background:var(--sunk);color:var(--mute)}
+.rolet.koc{background:var(--acc-soft);color:var(--acc)}
+
+/* görev listesi */
+.gorev{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+ padding:18px;box-shadow:var(--shadow)}
+.gorev+.gorev{margin-top:12px}
+.gorev.kapali{opacity:.7}
+.gtop{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;justify-content:space-between}
+.gorev h3{font:600 17px/1.3 var(--sans)}
+.gmeta{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:7px}
+.tg{font:500 11px/1 var(--mono);color:var(--mute);background:var(--sunk);
+ border-radius:999px;padding:5px 9px;white-space:nowrap}
+.tg.tur{background:var(--acc-soft);color:var(--acc)}
+.tg.gec{background:var(--no-soft);color:var(--no)}
+.gorev p.ac{margin:12px 0 0;font-size:14px;color:var(--mute);line-height:1.6}
+.gorev a.bag{display:inline-block;margin:10px 0 0;font:500 12.5px/1 var(--mono);color:var(--acc)}
+.atali{margin:14px 0 0;padding:14px 0 0;border-top:1px solid var(--hair)}
+.atali h4{margin:0 0 10px;font:600 11.5px/1 var(--mono);letter-spacing:.04em;
+ text-transform:uppercase;color:var(--mute)}
+.aday{display:flex;flex-wrap:wrap;gap:8px}
+.aday label{display:flex;align-items:center;gap:7px;margin:0;font:500 12.5px/1 var(--mono);
+ text-transform:none;letter-spacing:0;color:var(--body);background:var(--sunk);
+ border:1px solid var(--hair);border-radius:999px;padding:8px 12px;cursor:pointer}
+.aday input{width:auto;margin:0;padding:0}
+.durum{display:grid;gap:8px;margin:12px 0 0}
+.drow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+ background:var(--sunk);border-radius:10px;padding:10px 13px;font-size:13.5px}
+.drow b{color:var(--ink);font-weight:600}
+.drow .st{font:600 11px/1 var(--mono);border-radius:999px;padding:6px 9px}
+.st.bek{background:var(--warn-soft);color:var(--warn)}
+.st.yap{background:var(--ok-soft);color:var(--ok)}
+.puanla{display:flex;gap:6px;align-items:center}
+.puanla input{width:76px;padding:8px 10px;font-size:13px;background:#fff}
+.bos{padding:30px 20px;text-align:center;color:var(--mute);font-size:14px;
+ border:1px dashed var(--hair);border-radius:13px}
+.cright{margin:44px 0 0;padding:20px 0 0;border-top:1px solid var(--hair);
+ font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap" lang="tr">
+
+<header>
+  <div>
+    <div class="eyebrow" lang="en">FRC · admin</div>
+    <h1>Yönetim Paneli</h1>
+  </div>
+  <div class="who"><b id="kim"></b><span id="eposta"></span><br>
+    <a class="lnk" href="koc.html">İlerleme tablosu</a>
+    <a class="lnk" href="moduller.html">Modüller</a>
+    <button class="lnk" id="cikis">Çıkış yap</button></div>
+</header>
+
+<div id="uyari"></div>
+
+<nav class="tabs" role="tablist" id="tabs" hidden>
+  <button class="tab" data-p="gorevler" aria-selected="true">Görevler</button>
+  <button class="tab" data-p="yeni" aria-selected="false">Yeni görev</button>
+  <button class="tab" data-p="ogrenciler" aria-selected="false">Öğrenciler</button>
+</nav>
+
+<section class="panel" id="p-gorevler" hidden>
+  <h2>Görevler</h2>
+  <p class="lede">Oluşturduğunuz görevler ve kime atandıkları. Bir görevi öğrenciye
+  atadığınızda o görev öğrencinin modül listesinin en üstünde görünür.</p>
+  <div id="gliste"></div>
+</section>
+
+<section class="panel" id="p-yeni" hidden>
+  <h2>Yeni görev</h2>
+  <p class="lede">Görev oluşturduktan sonra Görevler sekmesinden öğrencilere
+  atayabilirsiniz. Ders içeriği hazır olmasa da görev oluşturulabilir.</p>
+  <div class="card">
+    <form id="yform" novalidate>
+      <div class="grid2">
+        <div class="f">
+          <label for="tur">Görev türü</label>
+          <select id="tur">
+            <option value="odev">Ödev</option>
+            <option value="modul">Modül çalışması</option>
+            <option value="okuma">Okuma</option>
+            <option value="serbest">Serbest çalışma</option>
+          </select>
+          <p class="hint" id="turH">Öğrencinin yapıp işaretlediği bir iş.</p>
+        </div>
+        <div class="f">
+          <label for="son">Son tarih</label>
+          <input id="son" type="date">
+          <p class="hint">Boş bırakılabilir.</p>
+        </div>
+      </div>
+      <div class="f" id="modulF" hidden>
+        <label for="modul">Hangi modül</label>
+        <select id="modul"></select>
+      </div>
+      <div class="f">
+        <label for="baslik">Başlık</label>
+        <input id="baslik" type="text" maxlength="120" placeholder="Örnek: Battery bakım kontrolü">
+      </div>
+      <div class="f">
+        <label for="aciklama">Açıklama</label>
+        <textarea id="aciklama" maxlength="2000" placeholder="Ne yapılacak, neye dikkat edilecek."></textarea>
+      </div>
+      <div class="f">
+        <label for="baglanti">Bağlantı</label>
+        <input id="baglanti" type="url" placeholder="https://...">
+        <p class="hint">Ödev dosyası veya okunacak sayfanın adresi. Boş bırakılabilir.</p>
+      </div>
+      <button class="go" id="kaydet" type="submit">Görevi oluştur</button>
+    </form>
+    <p class="msg" id="ymsg" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="panel" id="p-ogrenciler" hidden>
+  <h2>Öğrenciler</h2>
+  <p class="lede">Hesap açan herkes burada görünür. Bir hesabı antrenör yaptığınızda
+  o kişi bu panele ve ilerleme tablosuna erişir.</p>
+  <div class="ogr" id="oliste"></div>
+  <p class="msg" id="omsg" role="status" aria-live="polite"></p>
+</section>
+
+<p class="cright">© 2026 Semih Tuna Köse</p>
+</div>
+
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<script>
+var MODS=[{"id":"electrical-00-tools","ad":"Elektrik 00 · Aletler: Elektrik Ekibinin Takım Çantası"},{"id":"electrical-01-power-path","ad":"Elektrik 01 · Power Path: Battery'den PD'ye"},{"id":"electrical-02-circuit-protection","ad":"Elektrik 02 · Circuit Protection: Branch Breaker ve Fuse Seçimi"},{"id":"electrical-03-can-bus","ad":"Elektrik 03 · CAN Bus: Zincir, Termination ve Device ID"},{"id":"electrical-04-radio","ad":"Elektrik 04 · Radio: Besleme, Bağlantı ve Status Lights"},{"id":"electrical-05-brownout","ad":"Elektrik 05 · Brownout: Voltage Sag ve Current Draw"},{"id":"electrical-06-status-lights","ad":"Elektrik 06 · Status Lights: roboRIO, RSL ve PD"},{"id":"electrical-07-pneumatics","ad":"Elektrik 07 · Pneumatics: Basınç Bölgeleri, Koruma ve Besleme"},{"id":"electrical-08-motors","ad":"Elektrik 08 · Motorlar ve Motor Controller'lar"},{"id":"electrical-09-custom-circuits","ad":"Elektrik 09 · Custom Circuit'ler ve Legal Wiring"},{"id":"electrical-10-wire-management","ad":"Elektrik 10 · Wire Management, Strain Relief ve Bakım"},{"id":"electrical-11-control-system","ad":"Elektrik 11 · Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor"},{"id":"electrical-12-inspection","ad":"Elektrik 12 · Inspection Points: Elektrik Denetimi Baştan Sona"},{"id":"programming-00-java-vscode","ad":"Programlama 00 · Temel Java ve VS Code"},{"id":"programming-00b-wpilib-temelleri","ad":"Programlama 00b · WPILib Temelleri"},{"id":"programming-01-project-structure","ad":"Programlama 01 · Proje Yapısı ve Robot Yaşam Döngüsü"},{"id":"programming-02-deploy","ad":"Programlama 02 · Deploy ve Driver Station Bağlantısı"},{"id":"programming-03-command-based","ad":"Programlama 03 · Command-Based Temelleri"},{"id":"programming-04-subsystems","ad":"Programlama 04 · Subsystem'ler ve Default Command'ler"},{"id":"programming-05-motor-controllers","ad":"Programlama 05 · Motor Controller'ları Koddan Sürmek"},{"id":"programming-06-triggers","ad":"Programlama 06 · Joystick ve Tuş Bağlamaları"},{"id":"programming-07-sensors","ad":"Programlama 07 · Sensor'ler: Encoder, Limit Switch ve Gyro"},{"id":"programming-08-pid","ad":"Programlama 08 · Closed-Loop Kontrol ve PIDController"},{"id":"programming-09-telemetry","ad":"Programlama 09 · Telemetry ve Driver Station Loglarıyla Hata Ayıklama"},{"id":"programming-10-autonomous","ad":"Programlama 10 · Autonomous Rutinleri ve SendableChooser"},{"id":"programming-11-simulation","ad":"Programlama 11 · Simulation ve Unit Test"},{"id":"programming-12-competition","ad":"Programlama 12 · Yarışmaya Hazırlık ve Yazılım Denetimi"},{"id":"cad-01-onshape-basics","ad":"CAD 01 · Onshape'e Giriş: Document, Part Studio ve Assembly"},{"id":"cad-02-sketching","ad":"CAD 02 · Sketch Temelleri ve Kısıtlanma Durumu"},{"id":"cad-03-constraints","ad":"CAD 03 · Sketch Constraint'leri ve Tasarım Niyeti"},{"id":"cad-04-features","ad":"CAD 04 · Feature'lar ve Extrude'un End Condition'ları"},{"id":"cad-05-variables-configurations","ad":"CAD 05 · Variable'lar ve Configuration'lar"},{"id":"cad-06-in-context","ad":"CAD 06 · Multi-Part Part Studio ve In-Context Tasarım"},{"id":"cad-07-mates","ad":"CAD 07 · Assembly Mate'leri ve Mate Connector"},{"id":"cad-08-versions-branches","ad":"CAD 08 · Version, Branch ve Merge"},{"id":"cad-09-drawings","ad":"CAD 09 · Drawing: Teknik Resim ve Güncelleme"},{"id":"cad-10-cots-imports","ad":"CAD 10 · COTS Parçalar, Import ve Linked Document"},{"id":"cad-11-robot-rules","ad":"CAD 11 · Robot Kuralları ve CAD"},{"id":"cad-12-design-review","ad":"CAD 12 · Capstone: CAD Tasarım İncelemesi"}];
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s));};
+var el=function(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+var MODAD={}; MODS.forEach(function(m){MODAD[m.id]=m.ad;});
+var VERI=null, OGR=[], BEN=null;
+
+function uyar(tip,metin){
+  var k=$("#uyari"); k.innerHTML="";
+  var p=el("p","msg show "+tip,metin); k.appendChild(p);
+}
+function bildir(id,tip,metin){
+  var m=$(id); m.className="msg show "+tip; m.textContent=metin;
+  if(tip==="good") setTimeout(function(){ m.className="msg"; }, 4000);
+}
+function tarih(t){
+  if(!t) return "";
+  var d=new Date(t+(t.length===10?"T00:00:00":""));
+  if(isNaN(d)) return t;
+  return d.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
+}
+function gecmis(d){
+  if(!d) return false;
+  var bugun=new Date(); bugun.setHours(0,0,0,0);
+  return new Date(d+"T00:00:00") < bugun;
+}
+var TURAD={odev:"ödev",modul:"modül",okuma:"okuma",serbest:"serbest"};
+
+/* ---- sekmeler ---- */
+$$(".tab").forEach(function(b){
+  b.onclick=function(){
+    $$(".tab").forEach(function(x){x.setAttribute("aria-selected", x===b?"true":"false");});
+    ["gorevler","yeni","ogrenciler"].forEach(function(p){
+      $("#p-"+p).hidden = p!==b.dataset.p;
+    });
+  };
+});
+
+/* ---- yeni görev formu ---- */
+var msel=$("#modul");
+MODS.forEach(function(m){ var o=el("option",null,m.ad); o.value=m.id; msel.appendChild(o); });
+var TURH={odev:"Öğrencinin yapıp işaretlediği bir iş.",
+  modul:"Belirli bir modülün çalışılması. Öğrenciye modülün bağlantısı gösterilir.",
+  okuma:"Bir belgenin veya sayfanın okunması.",
+  serbest:"Kalıba girmeyen her iş."};
+$("#tur").onchange=function(){
+  var v=$("#tur").value;
+  $("#modulF").hidden = v!=="modul";
+  $("#turH").textContent = TURH[v]||"";
+};
+
+$("#yform").onsubmit=function(ev){
+  ev.preventDefault();
+  var g={ tur:$("#tur").value, baslik:$("#baslik").value.trim(),
+    aciklama:$("#aciklama").value.trim()||null,
+    baglanti:$("#baglanti").value.trim()||null,
+    son_tarih:$("#son").value||null,
+    modul: $("#tur").value==="modul" ? $("#modul").value : null };
+  if(g.baslik.length<3) return bildir("#ymsg","bad","Başlık en az 3 karakter olmalı.");
+  if(g.baglanti && !/^https?:\/\//.test(g.baglanti))
+    return bildir("#ymsg","bad","Bağlantı http:// veya https:// ile başlamalı.");
+  $("#kaydet").disabled=true;
+  FRC.gorevOlustur(g).then(function(){
+    $("#yform").reset(); $("#modulF").hidden=true; $("#turH").textContent=TURH.odev;
+    bildir("#ymsg","good","Görev oluşturuldu. Görevler sekmesinden öğrencilere atayabilirsiniz.");
+    return yukle();
+  }).catch(function(h){ bildir("#ymsg","bad", FRC.okunurHata(h)); })
+    .then(function(){ $("#kaydet").disabled=false; });
+};
+
+/* ---- görev listesi ---- */
+function gorevCiz(){
+  var k=$("#gliste"); k.innerHTML="";
+  if(!VERI.gorev.length){
+    k.appendChild(el("p","bos","Henüz görev yok. Yeni görev sekmesinden ilk görevi oluşturun."));
+    return;
+  }
+  VERI.gorev.forEach(function(g){
+    var atananlar=VERI.atama.filter(function(a){return a.gorev===g.id;});
+    var kart=el("div","gorev"+(g.kapali?" kapali":""));
+
+    var top=el("div","gtop");
+    var sol=el("div");
+    sol.appendChild(el("h3",null,g.baslik));
+    var meta=el("div","gmeta");
+    meta.appendChild(el("span","tg tur",TURAD[g.tur]||g.tur));
+    if(g.modul) meta.appendChild(el("span","tg",MODAD[g.modul]||g.modul));
+    if(g.son_tarih) meta.appendChild(el("span","tg"+(gecmis(g.son_tarih)?" gec":""),
+      "son tarih "+tarih(g.son_tarih)));
+    meta.appendChild(el("span","tg",atananlar.length+" öğrenci"));
+    if(g.kapali) meta.appendChild(el("span","tg","kapalı"));
+    sol.appendChild(meta);
+    top.appendChild(sol);
+
+    var sag=el("div");
+    var kb=el("button","go mini ikincil",g.kapali?"Yeniden aç":"Kapat");
+    kb.onclick=function(){ kb.disabled=true;
+      FRC.gorevGuncelle(g.id,{kapali:!g.kapali}).then(yukle)
+        .catch(function(h){ uyar("bad",FRC.okunurHata(h)); kb.disabled=false; }); };
+    var sb=el("button","go mini tehlike","Sil");
+    sb.style.marginLeft="6px";
+    sb.onclick=function(){
+      if(!confirm("\""+g.baslik+"\" görevi ve bütün atamaları silinecek. Emin misiniz?")) return;
+      sb.disabled=true;
+      FRC.gorevSil(g.id).then(yukle)
+        .catch(function(h){ uyar("bad",FRC.okunurHata(h)); sb.disabled=false; });
+    };
+    sag.appendChild(kb); sag.appendChild(sb);
+    top.appendChild(sag);
+    kart.appendChild(top);
+
+    if(g.aciklama) kart.appendChild(el("p","ac",g.aciklama));
+    if(g.baglanti){
+      var a=el("a","bag",g.baglanti); a.href=g.baglanti;
+      a.target="_blank"; a.rel="noopener noreferrer"; kart.appendChild(a);
+    }
+
+    /* atama */
+    var at=el("div","atali");
+    at.appendChild(el("h4",null,"Kimlere atanacak"));
+    var aday=el("div","aday");
+    var secili=[];
+    OGR.filter(function(o){return o.rol!=="koc";}).forEach(function(o){
+      var lb=el("label");
+      var cb=el("input"); cb.type="checkbox";
+      cb.checked = atananlar.some(function(a){return a.ogrenci===o.id;});
+      cb.onchange=function(){};
+      lb.appendChild(cb); lb.appendChild(document.createTextNode(o.ad));
+      aday.appendChild(lb);
+      secili.push({o:o,cb:cb,vardi:cb.checked});
+    });
+    if(!secili.length) aday.appendChild(el("span","tg","kayıtlı öğrenci yok"));
+    at.appendChild(aday);
+
+    var ab=el("button","go mini","Atamayı kaydet");
+    ab.style.marginTop="12px";
+    ab.onclick=function(){
+      var ekle=secili.filter(function(x){return x.cb.checked && !x.vardi;}).map(function(x){return x.o.id;});
+      var cikar=secili.filter(function(x){return !x.cb.checked && x.vardi;});
+      if(!ekle.length && !cikar.length) return;
+      ab.disabled=true;
+      FRC.ata(g.id, ekle)
+        .then(function(){ return Promise.all(cikar.map(function(x){
+          return FRC.atamaKaldir(g.id, x.o.id); })); })
+        .then(yukle)
+        .catch(function(h){ uyar("bad",FRC.okunurHata(h)); ab.disabled=false; });
+    };
+    at.appendChild(ab);
+    kart.appendChild(at);
+
+    /* teslim durumu */
+    if(atananlar.length){
+      var dl=el("div","durum");
+      atananlar.forEach(function(a){
+        var o=OGR.filter(function(x){return x.id===a.ogrenci;})[0];
+        var t=VERI.teslim.filter(function(x){return x.gorev===g.id && x.ogrenci===a.ogrenci;})[0];
+        var d=VERI.degerlendirme.filter(function(x){return x.gorev===g.id && x.ogrenci===a.ogrenci;})[0];
+        var r=el("div","drow");
+        var isim=el("span"); isim.appendChild(Object.assign(el("b"),{textContent:(o&&o.ad)||"?"}));
+        if(t && t.aciklama) isim.appendChild(document.createTextNode(" · "+t.aciklama));
+        r.appendChild(isim);
+        var sagK=el("span","puanla");
+        sagK.appendChild(el("span","st "+(t?"yap":"bek"), t?("yapıldı "+tarih(t.teslim)):"bekliyor"));
+        if(t){
+          var pi=el("input"); pi.type="number"; pi.min="0"; pi.max="100";
+          pi.placeholder="puan"; pi.value = (d && d.puan!=null) ? d.puan : "";
+          var pb=el("button","go mini","Kaydet");
+          pb.onclick=function(){ pb.disabled=true;
+            FRC.degerlendir(g.id, a.ogrenci, pi.value, null).then(yukle)
+              .catch(function(h){ uyar("bad",FRC.okunurHata(h)); pb.disabled=false; }); };
+          sagK.appendChild(pi); sagK.appendChild(pb);
+        }
+        r.appendChild(sagK);
+        dl.appendChild(r);
+      });
+      kart.appendChild(dl);
+    }
+
+    k.appendChild(kart);
+  });
+}
+
+/* ---- öğrenci listesi ---- */
+function ogrenciCiz(){
+  var k=$("#oliste"); k.innerHTML="";
+  if(!OGR.length){ k.appendChild(el("p","bos","Henüz kayıtlı hesap yok.")); return; }
+  OGR.forEach(function(o){
+    var r=el("div","orow");
+    var sol=el("div");
+    sol.appendChild(el("div","ad",o.ad));
+    var kac=VERI.atama.filter(function(a){return a.ogrenci===o.id;}).length;
+    var kacT=VERI.teslim.filter(function(t){return t.ogrenci===o.id;}).length;
+    sol.appendChild(el("div","alt", o.rol==="koc" ? "antrenör"
+      : (kac+" görev · "+kacT+" teslim")));
+    r.appendChild(sol);
+    var sag=el("div");
+    sag.appendChild(el("span","rolet"+(o.rol==="koc"?" koc":""), o.rol==="koc"?"antrenör":"öğrenci"));
+    if(o.id!==BEN.id){
+      var b=el("button","go mini ikincil", o.rol==="koc"?"Öğrenci yap":"Antrenör yap");
+      b.style.marginLeft="8px";
+      b.onclick=function(){
+        var yeni = o.rol==="koc" ? "ogrenci" : "koc";
+        if(!confirm(o.ad+" hesabı "+(yeni==="koc"?"antrenör":"öğrenci")+" yapılacak. Emin misiniz?")) return;
+        b.disabled=true;
+        FRC.rolDegistir(o.id, yeni).then(yukle)
+          .catch(function(h){ bildir("#omsg","bad",FRC.okunurHata(h)); b.disabled=false; });
+      };
+      sag.appendChild(b);
+    }
+    r.appendChild(sag);
+    k.appendChild(r);
+  });
+}
+
+/* ---- veri ---- */
+function yukle(){
+  return Promise.all([FRC.ozet(), FRC.gorevler()]).then(function(r){
+    OGR = (r[0] && r[0].ogrenciler) || [];
+    VERI = r[1] || {gorev:[],atama:[],teslim:[],degerlendirme:[]};
+    gorevCiz(); ogrenciCiz();
+  });
+}
+
+$("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
+
+if(!window.FRC){
+  /* sync.js yüklenmemiş: sayfa yanındaki dosyalar olmadan açılmış. */
+  uyar("bad","Bu sayfa tek başına çalışmaz: yanında config.js ve sync.js dosyaları bulunmalıdır. Dosyayı indirip tek başına açtıysanız, bunun yerine programın klasörünü açıp aynı klasördeki sayfayı kullanın.");
+} else if(!FRC.acik){
+  uyar("warn","Sunucu ayarlanmamış. config.js dosyasındaki url ve key alanları doldurulmadan yönetim paneli çalışmaz.");
+} else {
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    BEN=FRC.kullanici();
+    $("#kim").textContent=BEN.ad; $("#eposta").textContent=BEN.eposta;
+    if(BEN.rol!=="koc"){
+      uyar("bad","Bu sayfa yalnızca antrenör hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
+      return;
+    }
+    $("#tabs").hidden=false;
+    $("#p-gorevler").hidden=false;
+    return yukle();
+  }).catch(function(h){ uyar("bad", FRC.okunurHata(h)); });
+}
+</script>
+</body>
+</html>

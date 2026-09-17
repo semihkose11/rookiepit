@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="FRC'ye yeni katilan lise ogrencileri icin Turkce calisma programi. Uc bolum, 39 modul: elektrik ve kablolama, programlama, CAD.">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta property="og:title" content="FRC Çalışma Programı">
+<meta property="og:description" content="Robota dokunmadan önce kaynağı okumayı öğreten bir program. Üç bölüm, 39 modül.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<title>FRC Çalışma Programı</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{color-scheme:light;
+ --ground:#EFE9FB;--surface:#FFFFFF;--sunk:#E4DBF7;
+ --ink:#000000;--body:#141019;--mute:#463E58;--hair:#CFC2EC;
+ --acc:#5B21B6;--acc-soft:#EDE5FE;
+ --ok:#116336;--ok-soft:#E4F3EA;--no:#A5124A;
+ --elec:#B45309;--elec-soft:#FDF0DC;
+ --prog:#0E7490;--prog-soft:#DDF1F5;
+ --cad:#6D28D9;--cad-soft:#EDE5FE;
+ --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+ --disp:"Barlow Condensed",system-ui,sans-serif;
+ --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+ font:400 16px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+a{color:inherit}
+
+/* ---- üst bar: solda ad, sağ üst köşede giriş seçenekleri ---- */
+.topbar{border-bottom:1px solid var(--hair)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:16px 20px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none}
+.mark svg{width:30px;height:30px;border-radius:8px;display:block;flex:0 0 auto}
+.mark b{font:600 15.5px/1.1 var(--disp);letter-spacing:.01em;color:var(--ink);
+ font-size:19px;white-space:nowrap}
+.auth{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.btn{font:600 13px/1 var(--sans);border-radius:999px;padding:11px 15px;
+ text-decoration:none;white-space:nowrap;cursor:pointer;border:1px solid var(--hair);
+ background:var(--surface);color:var(--body)}
+.btn:hover{background:var(--sunk)}
+.btn.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.solid:hover{background:var(--acc);border-color:var(--acc)}
+.btn:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.who{font:500 12px/1.4 var(--mono);color:var(--mute);text-align:right}
+.who b{display:block;color:var(--ink);font-size:13px}
+
+/* ---- hero ---- */
+header.hero{padding:54px 0 44px}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+h1{font:700 clamp(38px,9vw,64px)/1.0 var(--disp);letter-spacing:-.015em;margin:12px 0 0}
+.tag{margin:16px 0 0;font:500 clamp(17px,3.4vw,21px)/1.45 var(--sans);color:var(--ink);max-width:34ch}
+.misyon{margin:22px 0 0;font-size:16.5px;line-height:1.75;max-width:66ch}
+.misyon strong{color:var(--ink);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 0}
+.cta .btn{font-size:14.5px;padding:14px 20px}
+.nums{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+ border:1px solid var(--hair);border-radius:999px;padding:8px 12px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+
+section{padding:40px 0;border-top:1px solid var(--hair)}
+h2{font:600 clamp(25px,5.5vw,33px)/1.12 var(--disp);letter-spacing:.005em}
+.lede{margin:12px 0 0;color:var(--mute);font-size:15.5px;max-width:64ch}
+
+/* ---- bölümler ---- */
+.depts{display:grid;gap:12px;margin:24px 0 0}
+@media (min-width:720px){.depts{grid-template-columns:repeat(3,1fr)}}
+.dept{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+ padding:20px;box-shadow:var(--shadow)}
+.dept .ico{width:36px;height:36px;border-radius:10px;display:block}
+.dept h3{margin:14px 0 0;font:600 18px/1.25 var(--sans)}
+.dept .n{margin:4px 0 0;font:500 11.5px/1 var(--mono);color:var(--mute)}
+.dept p{margin:10px 0 0;font-size:14px;color:var(--mute);line-height:1.6}
+.dept ul{margin:12px 0 0;padding:0;list-style:none}
+.dept li{font:500 12.5px/1.9 var(--mono);color:var(--body)}
+.dept li::before{content:"·";color:var(--acc);font-weight:700;margin-right:7px}
+
+/* ---- nasıl çalışır ---- */
+.steps{display:grid;gap:12px;margin:24px 0 0;counter-reset:s}
+@media (min-width:720px){.steps{grid-template-columns:repeat(3,1fr)}}
+.step{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+ padding:20px;box-shadow:var(--shadow);counter-increment:s}
+.step .no{width:28px;height:28px;border-radius:8px;background:var(--ink);color:#fff;
+ display:flex;align-items:center;justify-content:center;font:600 13px/1 var(--mono)}
+.step .no::before{content:counter(s)}
+.step h3{margin:13px 0 0;font:600 16.5px/1.3 var(--sans)}
+.step p{margin:8px 0 0;font-size:14px;color:var(--mute);line-height:1.6}
+
+/* ---- kaynak ---- */
+.src{margin:22px 0 0;display:grid;gap:10px}
+@media (min-width:640px){.src{grid-template-columns:repeat(2,1fr)}}
+.src div{background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:15px 17px}
+.src b{display:block;font:600 14px/1.35 var(--sans);color:var(--ink)}
+.src span{display:block;margin-top:5px;font:400 13px/1.55 var(--sans);color:var(--mute)}
+
+footer{padding:34px 0 60px;border-top:1px solid var(--hair);
+ font-size:13.5px;color:var(--mute)}
+footer nav{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 16px}
+footer nav a{font:500 13px/1 var(--mono);color:var(--acc);text-decoration:none}
+footer nav a:hover{text-decoration:underline}
+footer p{margin:0 0 10px;max-width:70ch;line-height:1.7}
+.kopuk{margin:22px 0 0;padding:15px 17px;border-radius:12px;background:#FBE6EE;
+ border:1px solid #EBB3C9;color:#6D0B31;font:400 14px/1.65 var(--sans)}
+.cright{margin:18px 0 0;padding:18px 0 0;border-top:1px solid var(--hair);
+ font:500 12px/1.6 var(--mono);color:var(--mute)}
+/* Dar ekranda ad kisalir, dugmeler kosede kalir. */
+.mark b{overflow:hidden;text-overflow:ellipsis}
+@media (max-width:560px){
+ .top{padding:14px 16px;gap:10px}
+ .mark b{font-size:16px}
+ .mark{min-width:0}
+ .btn{padding:10px 12px;font-size:12.5px}
+ .wrap{padding:0 16px}
+}
+@media (max-width:430px){
+ .mark b{display:none}
+ .auth{gap:6px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="top">
+    <a class="mark" href="index.html">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <rect width="100" height="100" rx="22" fill="#5B21B6"/>
+        <path d="M56 14 L30 56 h18 l-6 30 26-42 h-18 z" fill="#fff"/>
+      </svg>
+      <b>FRC Çalışma Programı</b>
+    </a>
+    <div class="auth" id="auth">
+      <a class="btn" href="giris.html" id="bGiris">Giriş yap</a>
+      <a class="btn solid" href="giris.html?mod=kayit" id="bKayit">Hesap aç</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" lang="tr">
+
+  <p class="kopuk" id="kopuk" hidden></p>
+
+  <header class="hero">
+    <div class="eyebrow" lang="en">FRC · rookie practice</div>
+    <h1>Robota dokunmadan önce kaynağı okuyun</h1>
+    <p class="tag">Üç bölüm, 39 modül. Türkçe anlatım, İngilizce teknik terimler.</p>
+
+    <p class="misyon">Bir FRC takımında yeni üye genellikle işi kopyalayarak öğrenir:
+    biri kabloyu şöyle bağlamıştır, o da öyle bağlar. Bu yolla robot çalışır ama bir şey
+    bozulduğunda kimse nedenini bilmez, çünkü kimse kuralı okumamıştır. Bu program o
+    boşluğu kapatmak için yazıldı. <strong>Amacı bilgi vermek değil, bilginin nereden
+    geldiğini göstermek</strong> ve öğrenciyi kaynağı okumadan ilerlemekten alıkoymaktır.
+    Her modül bir kavramı anlatır, sonra onu bir şema üzerinde kurdurur, sonra sorar.
+    Bir seferde tek bir modül açıktır ve sıradaki ancak yeterli puan alınınca görünür;
+    hızlı geçmenin bir yolu yoktur. Her sorunun altında dayandığı resmî belgenin adresi
+    durur, çünkü bir iddianın doğru olması yeterli değildir, nereden geldiğinin
+    bilinmesi gerekir.</p>
+
+    <div class="cta">
+      <a class="btn solid" href="moduller.html">Programa başla</a>
+      <a class="btn" href="#nasil">Nasıl çalışır</a>
+    </div>
+
+    <div class="nums">
+      <span class="chip"><b>39</b> modül</span>
+      <span class="chip"><b>313</b> soru</span>
+      <span class="chip"><b>117</b> kart</span>
+      <span class="chip"><b>3</b> bölüm</span>
+      <span class="chip">yaklaşık <b>17</b> saat</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Üç bölüm</h2>
+    <p class="lede">Bölümler birbirinden bağımsızdır; her biri kendi içinde sırayla
+    ilerler. İstediğiniz bölümden başlayabilirsiniz.</p>
+
+    <div class="depts">
+      <div class="dept">
+        <svg class="ico" viewBox="0 0 100 100" aria-hidden="true">
+          <rect width="100" height="100" rx="22" fill="#FDF0DC"/>
+          <path d="M56 14 L30 56 h18 l-6 30 26-42 h-18 z" fill="#B45309"/>
+        </svg>
+        <h3>Elektrik ve Kablolama</h3>
+        <div class="n">13 modül · 105 soru</div>
+        <p>Battery'den motor controller'a uzanan güç yolu, koruma değerleri, CAN hattı
+        ve denetimde neye bakıldığı.</p>
+        <ul>
+          <li>power path ve breaker seçimi</li>
+          <li>CAN bus ve termination</li>
+          <li>brownout ve status lights</li>
+          <li>inspection points</li>
+        </ul>
+      </div>
+
+      <div class="dept">
+        <svg class="ico" viewBox="0 0 100 100" aria-hidden="true">
+          <rect width="100" height="100" rx="22" fill="#DDF1F5"/>
+          <path d="M38 28 L18 50 l20 22 M62 28 L82 50 l-20 22 M54 22 L46 78"
+            fill="none" stroke="#0E7490" stroke-width="9"
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h3>Programlama</h3>
+        <div class="n">14 modül · 112 soru</div>
+        <p>Temel Java ve VS Code'dan başlayarak WPILib, command-based yapı, sensor'ler
+        ve closed-loop kontrol.</p>
+        <ul>
+          <li>proje yapısı ve yaşam döngüsü</li>
+          <li>command-based ve subsystem'ler</li>
+          <li>encoder, gyro, PIDController</li>
+          <li>simulation ve unit test</li>
+        </ul>
+      </div>
+
+      <div class="dept">
+        <svg class="ico" viewBox="0 0 100 100" aria-hidden="true">
+          <rect width="100" height="100" rx="22" fill="#EDE5FE"/>
+          <path d="M20 34 L50 18 L80 34 L80 66 L50 82 L20 66 Z M20 34 L50 50 L80 34 M50 50 L50 82"
+            fill="none" stroke="#6D28D9" stroke-width="7" stroke-linejoin="round"/>
+        </svg>
+        <h3>CAD</h3>
+        <div class="n">12 modül · 96 soru</div>
+        <p>Onshape'te document ve Part Studio ayrımından başlayıp sketch kısıtlarına,
+        assembly mate'lerine ve robot kurallarına.</p>
+        <ul>
+          <li>sketch ve constraint'ler</li>
+          <li>feature'lar ve configuration'lar</li>
+          <li>mate'ler ve version yönetimi</li>
+          <li>robot kuralları ve CAD karşılıkları</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="nasil">
+    <h2>Nasıl çalışır</h2>
+    <p class="lede">Her modül aynı üç adımdan geçer. Adımların sırası önemlidir:
+    önce okunur, sonra kurulur, en son sorulur.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="no"></div>
+        <h3>Oku</h3>
+        <p>Kavram anlatımı, hangi terimin ne demek olduğunu gösteren bir referans
+        şeridi ve o modülün ana şeması. Üç kart davranışı, altındaki mekanizmayı ve
+        sahada bilmemenin bedelini anlatır.</p>
+      </div>
+      <div class="step">
+        <div class="no"></div>
+        <h3>Kur</h3>
+        <p>Kurulum tuvalinde parçaları kendiniz bağlarsınız. Tuval başladığında örnek
+        şema kapanır; ezberden değil anladığınızdan kurarsınız. Puan, doğru bağlantı
+        sayısından ve fazla bıraktığınız parçalardan çıkar.</p>
+      </div>
+      <div class="step">
+        <div class="no"></div>
+        <h3>Sınan</h3>
+        <p>Sekiz soru. Her şıkkın ardından neden doğru veya yanlış olduğu açılır ve
+        dayandığı kaynağın adresi görünür. Sorular ezber değil teşhis sorar: bir
+        belirti verilir, sebebi istenir.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Neye dayanıyor</h2>
+    <p class="lede">Bu programın yazımında bir kural bağlayıcı oldu: hafızadan
+    yazılmadı. Doğrulanamayan bir olgu programa girmedi.</p>
+
+    <div class="src">
+      <div><b>FIRST oyun el kitabı ve denetim listeleri</b>
+        <span>Robot kuralları, ölçü ve ağırlık sınırları, denetimde bakılan maddeler.</span></div>
+      <div><b>WPILib belgeleri</b>
+        <span>Kontrol sistemi, kütüphane davranışı, command-based yapı ve araçlar.</span></div>
+      <div><b>Onshape Learning Center</b>
+        <span>Sketch, feature, assembly ve version yönetiminin resmî tanımları.</span></div>
+      <div><b>Oracle Java belgeleri</b>
+        <span>Dilin temelleri: tip, değişken, metot ve sınıf yapısı.</span></div>
+    </div>
+
+    <p class="lede" style="margin-top:20px">Her sorunun altında dayandığı sayfanın
+    adresi durur. Kaynaklar arasında bir çelişki görüldüğünde çelişki gizlenmedi,
+    kayda geçirildi ve hangi metnin geçerli sayıldığı yazıldı.</p>
+  </section>
+
+  <footer>
+    <nav>
+      <a href="moduller.html">Modüller</a>
+      <a href="giris.html">Giriş yap</a>
+      <a href="giris.html?mod=kayit">Hesap aç</a>
+    </nav>
+    <p>FIRST®, FRC® ve ilgili markalar For Inspiration and Recognition of Science and
+    Technology'ye aittir. Bu proje bağımsız bir çalışmadır; FIRST tarafından
+    desteklenmemekte veya onaylanmamaktadır. Kural metinleri özet ve öğretim amacıyla
+    kullanılmıştır; yarışmada geçerli olan tek metin yürürlükteki resmî oyun el
+    kitabıdır.</p>
+    <p class="cright">© 2026 Semih Tuna Köse · Tüm hakları saklıdır</p>
+  </footer>
+
+</div>
+
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<script>
+/* Oturum açıksa sağ üst köşe giriş düğmeleri yerine kullanıcıyı gösterir.
+   Bu sayfa giriş istemez; karşılama sayfası herkese açıktır. */
+(function(){
+  /* sync.js yüklenmediyse sayfa kendi klasöründe değil. */
+  if(!window.FRC){
+    var u=document.getElementById("kopuk");
+    u.hidden=false;
+    u.textContent="Bu sayfa kendi klasöründen açılmadı: yanında olması gereken dosyalar yok. Modül bağlantıları bu hâlde çalışmaz. Programın klasörünü açıp oradaki index.html veya moduller.html dosyasını kullanın.";
+    return;
+  }
+  if(!FRC.acik) return;
+  FRC.hazir.then(function(k){
+    if(!k) return;
+    var kutu=document.getElementById("auth");
+    kutu.innerHTML="";
+    var who=document.createElement("div"); who.className="who";
+    var b=document.createElement("b"); b.textContent=k.ad; who.appendChild(b);
+    who.appendChild(document.createTextNode(k.rol==="koc"?"antrenör":"öğrenci"));
+    var git=document.createElement("a");
+    git.className="btn solid";
+    git.href=k.rol==="koc"?"admin.html":"moduller.html";
+    git.textContent=k.rol==="koc"?"Yönetim paneli":"Programa devam et";
+    kutu.appendChild(who); kutu.appendChild(git);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="description" content="FRC calisma programi ana ekrani: her bolumde yalnizca acik olan modul gorunur, sonraki modul tuval ve test ortalamasi %70 olunca acilir.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<title>Modüller · FRC Çalışma Programı</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}
+:root{color-scheme:light;
+ --ground:#EFE9FB;--surface:#FFFFFF;--sunk:#E4DBF7;
+ --ink:#000000;--body:#141019;--mute:#463E58;--hair:#CFC2EC;
+ --acc:#5B21B6;--acc-soft:#EDE5FE;
+ --ok:#116336;--ok-soft:#E4F3EA;--no:#A5124A;--no-soft:#FBE6EE;
+ --warn:#8A5A00;--warn-soft:#FDF0DC;
+ --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+ --disp:"Barlow Condensed",system-ui,sans-serif;
+ --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+ font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px 80px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+a{color:inherit}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:40px 0 26px;border-bottom:1px solid var(--hair)}
+h1{font:700 clamp(36px,9vw,58px)/1.02 var(--disp);letter-spacing:-.01em;margin:10px 0 0}
+a.home{color:inherit;text-decoration:none}
+a.home:hover{color:var(--acc)}
+.sub{margin:14px 0 0;max-width:62ch;font-size:15.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+ border:1px solid var(--hair);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+
+.note{margin:14px 0 0;font:400 12.5px/1.6 var(--sans);color:var(--no)}
+.kopuk{margin:22px 0 0;padding:15px 17px;border-radius:12px;background:var(--no-soft);
+ border:1px solid #EBB3C9;color:#6D0B31;font:400 14px/1.65 var(--sans)}
+/* ---- antrenörün atadığı görevler ---- */
+#gorevSec{padding:30px 0 0}
+.gbas{font:600 clamp(23px,5vw,29px)/1.15 var(--disp);margin:0 0 16px}
+.gkart{background:var(--surface);border:2px solid var(--ink);border-radius:14px;
+ padding:18px;box-shadow:var(--shadow)}
+.gkart+.gkart{margin-top:10px}
+.gkart.bitti{border-color:#A9D6BC;background:#FBFDFB}
+.gkart h3{font:600 17px/1.3 var(--sans)}
+.gkart .gm{margin:7px 0 0;display:flex;flex-wrap:wrap;gap:7px}
+.gkart .tg{font:500 11px/1 var(--mono);color:var(--mute);background:var(--sunk);
+ border-radius:999px;padding:5px 9px;white-space:nowrap}
+.gkart .tg.tur{background:var(--acc-soft);color:var(--acc)}
+.gkart .tg.gec{background:var(--no-soft);color:var(--no)}
+.gkart .tg.pu{background:var(--ok-soft);color:var(--ok)}
+.gkart p.ga{margin:12px 0 0;font-size:14.5px;color:var(--mute);line-height:1.65}
+.gkart .gbag{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0;align-items:center}
+.gkart a.gb,.gkart button.gb{font:600 13px/1 var(--sans);border-radius:10px;padding:11px 15px;
+ text-decoration:none;cursor:pointer;border:1px solid var(--hair);background:var(--surface);color:var(--body)}
+.gkart a.gb.solid,.gkart button.gb.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+.gkart a.gb:hover,.gkart button.gb:hover{background:var(--sunk)}
+.gkart a.gb.solid:hover,.gkart button.gb.solid:hover{background:var(--acc);border-color:var(--acc)}
+.gkart .gnot{margin:10px 0 0;font:400 13px/1.6 var(--sans);color:var(--mute)}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.who{text-align:right;font:500 12px/1.5 var(--mono);color:var(--mute)}
+.who b{display:block;color:var(--ink);font-size:13.5px}
+button.lnk{font:500 11.5px/1 var(--mono);color:var(--body);background:var(--surface);
+ border:1px solid var(--hair);border-radius:999px;padding:8px 11px;cursor:pointer;margin-top:6px}
+button.lnk:hover{background:var(--sunk)}
+button.lnk:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+section{padding:34px 0 0}
+.dhead{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.dico{width:38px;height:38px;border-radius:10px;flex:0 0 auto;display:block}
+.dhead h2{font:600 clamp(24px,5.5vw,30px)/1.1 var(--disp)}
+.dmeta{font:500 12px/1 var(--mono);color:var(--mute);margin-top:6px}
+.dbar{height:8px;border-radius:999px;background:var(--sunk);overflow:hidden;margin:14px 0 18px;display:flex}
+.dbar i{display:block;height:100%}
+
+ol.mods{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+li.mod{background:var(--surface);border:1px solid var(--hair);border-radius:13px;
+ box-shadow:var(--shadow);overflow:hidden}
+li.mod[hidden]{display:none}
+li.mod.now{border-color:var(--ink);border-width:2px}
+li.mod.pass{background:#FBFDFB}
+a.mrow{display:grid;grid-template-columns:52px 1fr auto;gap:14px;align-items:start;
+ padding:15px 16px;text-decoration:none;color:inherit}
+a.mrow:hover{background:var(--acc-soft)}
+a.mrow:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.num{font:600 15px/1 var(--mono);color:#fff;background:var(--ink);border-radius:8px;
+ width:52px;height:34px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em}
+li.mod.pass .num{background:var(--ok)}
+.mtitle{display:block;font:600 16px/1.35 var(--sans);color:var(--ink);margin:0}
+.msum{display:block;margin:5px 0 0;font:400 13.5px/1.55 var(--sans);color:var(--mute)}
+.mfoot{margin:9px 0 0;display:flex;flex-wrap:wrap;gap:7px}
+.tag{font:500 11px/1 var(--mono);color:var(--mute);background:var(--sunk);
+ border-radius:999px;padding:5px 9px;white-space:nowrap}
+.state{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:84px}
+.badge{font:600 11px/1 var(--mono);border-radius:999px;padding:6px 9px;white-space:nowrap;
+ border:1px solid transparent}
+.b-new{background:var(--sunk);color:var(--mute)}
+.b-go{background:var(--warn-soft);color:var(--warn);border-color:#E8C68A}
+.b-ok{background:var(--ok-soft);color:var(--ok);border-color:#A9D6BC}
+.b-re{background:var(--no-soft);color:var(--no);border-color:#EBB3C9}
+.dots{display:flex;gap:3px}
+.dots i{width:7px;height:7px;border-radius:2px;background:var(--sunk);display:block}
+.dots i.ok{background:var(--ok)}
+.dots i.no{background:var(--no)}
+.gate{margin:0;padding:11px 16px 13px;border-top:1px solid var(--hair);
+ background:var(--sunk);font:400 12.5px/1.6 var(--sans);color:var(--mute)}
+.gate b{color:var(--ink);font-weight:600}
+.gate.bad{background:var(--no-soft);color:#6D0B31}
+.gate.bad b{color:#6D0B31}
+.locked{margin:10px 0 0;padding:13px 16px;border:1px dashed var(--hair);border-radius:12px;
+ font:500 12.5px/1.5 var(--mono);color:var(--mute);text-align:center;background:transparent}
+.donedept{margin:10px 0 0;padding:14px 16px;border:1px solid #A9D6BC;border-radius:12px;
+ background:var(--ok-soft);color:var(--ok);font:600 13.5px/1.5 var(--sans);text-align:center}
+
+.cright{margin:44px 0 0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+@media (max-width:480px){
+ a.mrow{grid-template-columns:46px 1fr;gap:12px}
+ .num{width:46px}
+ .state{grid-column:2;flex-direction:row;align-items:center;justify-content:flex-start;margin-top:4px}
+}
+</style>
+<script src="config.js"></script>
+<script src="sync.js"></script>
+</head>
+<body>
+<div class="wrap" lang="tr">
+
+<header>
+  <div class="topbar">
+    <div class="eyebrow" lang="en">FRC · rookie practice</div>
+    <div class="who" id="who" hidden><b id="whoad"></b>
+      <button class="lnk" id="cikis">Çıkış yap</button></div>
+  </div>
+  <h1><a href="index.html" class="home">FRC Çalışma Programı</a></h1>
+  <p class="sub">Üç bölüm, 39 modül. Her bölümde bir seferde tek bir modül açıktır.
+  Açık modülü geçmeden sıradaki modül görünmez; böylece şemaları ve metinleri okumadan
+  ilerlemek mümkün olmaz.</p>
+  <p class="note" id="snote" hidden>Tarayıcı bu sayfada yerel kayda izin vermiyor; ilerleme okunamadı.</p>
+  <div class="meta">
+    <span class="chip"><b>39</b> modül</span>
+    <span class="chip"><b>313</b> soru</span>
+    <span class="chip"><b>1044</b> dakika</span>
+    <span class="chip">3 bölüm</span>
+  </div>
+
+</header>
+
+<p class="kopuk" id="kopuk" hidden></p>
+
+<section id="gorevSec" hidden>
+  <h2 class="gbas">Size atanan görevler</h2>
+  <div id="gorevListe"></div>
+</section>
+
+<section id="sec-electrical">
+<div class="dhead">
+<svg class="dico" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#FDF0DC"/><g fill="#B45309" stroke="#B45309"><path d="M56 14 L30 56 h18 l-6 30 26-42 h-18 z"/></g></svg>
+<div><h2>Elektrik ve Kablolama</h2><div class="dmeta" id="dm-electrical"></div></div>
+</div>
+<div class="dbar" id="bar-electrical"></div>
+<ol class="mods">
+<li class="mod" id="m-electrical-00" hidden><a class="mrow" href="electrical-00-tools.html"><span class="num">00</span><span><span class="mtitle">Aletler: Elektrik Ekibinin Takım Çantası</span><span class="msum">Kablolamada kullanılan aletleri, her birinin hangi iş için olduğunu ve bir bağlantının sıkı olup olmadığının neden gözle değil aletle anlaşıldığını öğretir.</span><span class="mfoot"><span class="tag">12 dakika</span><span class="tag">8 soru</span><span class="tag">1 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-01" hidden><a class="mrow" href="electrical-01-power-path.html"><span class="num">01</span><span><span class="mtitle">Power Path: Battery&#x27;den PD&#x27;ye</span><span class="msum">Robotun tek enerji kaynağı olan battery&#x27;den main breaker üzerinden power distribution device&#x27;a uzanan zorunlu güç yolunu, bu yolun kablo ve koruma gereksinimlerini ve enerji vermeden önceki polarite kontrolünü öğretir.</span><span class="mfoot"><span class="tag">14 dakika</span><span class="tag">9 soru</span><span class="tag">tuval</span><span class="tag">2 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-02" hidden><a class="mrow" href="electrical-02-circuit-protection.html"><span class="num">02</span><span><span class="mtitle">Circuit Protection: Branch Breaker ve Fuse Seçimi</span><span class="msum">PD&#x27;den çıkan her hattın tam olarak bir breaker veya fuse ile nasıl korunduğunu, cihaz türüne göre izin verilen koruma değerlerini ve kablo kalınlığının neden koruma değerine göre seçildiğini öğretir.</span><span class="mfoot"><span class="tag">13 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">3 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-03" hidden><a class="mrow" href="electrical-03-can-bus.html"><span class="num">03</span><span><span class="mtitle">CAN Bus: Zincir, Termination ve Device ID</span><span class="msum">roboRIO ile motor controller&#x27;lar ve diğer cihazlar arasındaki CAN hattının nasıl kurulduğunu, iki uçtaki termination&#x27;ın neden zorunlu olduğunu ve her cihazın neden benzersiz bir CAN ID&#x27;ye ihtiyaç duyduğunu öğretir.</span><span class="mfoot"><span class="tag">15 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">4 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-04" hidden><a class="mrow" href="electrical-04-radio.html"><span class="num">04</span><span><span class="mtitle">Radio: Besleme, Bağlantı ve Status Lights</span><span class="msum">Robotun tek kablosuz haberleşme cihazı olan radio&#x27;nun nereden besleneceğini, roboRIO&#x27;ya nasıl bağlanacağını, nasıl monte edileceğini ve status LED&#x27;lerinin ne anlattığını öğretir.</span><span class="mfoot"><span class="tag">14 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">5 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-05" hidden><a class="mrow" href="electrical-05-brownout.html"><span class="num">05</span><span><span class="mtitle">Brownout: Voltage Sag ve Current Draw</span><span class="msum">Battery geriliminin yük altında neden düştüğünü, roboRIO&#x27;nun hangi eşiklerde hangi çıkışları kapattığını, brownout&#x27;un sahada nasıl tanınacağını ve battery bakımının bu zincirdeki yerini öğretir.</span><span class="mfoot"><span class="tag">16 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">6 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-06" hidden><a class="mrow" href="electrical-06-status-lights.html"><span class="num">06</span><span><span class="mtitle">Status Lights: roboRIO, RSL ve PD</span><span class="msum">roboRIO, Robot Signal Light ve power distribution device üzerindeki durum ledlerinin ne anlattığını ve bir arızayı kablo sökmeden önce ledlerden nasıl daraltacağınızı öğretir.</span><span class="mfoot"><span class="tag">15 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">7 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-07" hidden><a class="mrow" href="electrical-07-pneumatics.html"><span class="num">07</span><span><span class="mtitle">Pneumatics: Basınç Bölgeleri, Koruma ve Besleme</span><span class="msum">Pnömatik devrenin stored ve working olmak üzere iki basınç bölgesini, her bölgenin sınırlarını, zorunlu güvenlik bileşenlerini ve PCM ile PH&#x27;in PD üzerinden nasıl beslendiğini öğretir.</span><span class="mfoot"><span class="tag">16 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">8 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-08" hidden><a class="mrow" href="electrical-08-motors.html"><span class="num">08</span><span><span class="mtitle">Motorlar ve Motor Controller&#x27;lar</span><span class="msum">Hangi motorların kullanılabileceğini, bir motor controller&#x27;a kaç motor bağlanabileceğini, PWM ve CAN cihazlarının roboRIO ile nasıl ilişkilendiğini ve motor çıkışlarının nereye bağlanamayacağını öğretir.</span><span class="mfoot"><span class="tag">15 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">9 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-09" hidden><a class="mrow" href="electrical-09-custom-circuits.html"><span class="num">09</span><span><span class="mtitle">Custom Circuit&#x27;ler ve Legal Wiring</span><span class="msum">Bir devrenin ne zaman custom circuit sayıldığını, nereden besleneceğini, kablo renklerinin neden kural olduğunu ve hangi ara elemanların hatta konabileceğini öğretir.</span><span class="mfoot"><span class="tag">15 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">10 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-10" hidden><a class="mrow" href="electrical-10-wire-management.html"><span class="num">10</span><span><span class="mtitle">Wire Management, Strain Relief ve Bakım</span><span class="msum">Kabloların bağlantı noktalarında neden gevşek pay bırakılarak sabitlendiğini, hangi bağlantının nasıl test edildiğini ve etkinlik boyunca hangi kontrollerin hangi sıklıkla yapılacağını öğretir.</span><span class="mfoot"><span class="tag">14 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">11 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-11" hidden><a class="mrow" href="electrical-11-control-system.html"><span class="num">11</span><span><span class="mtitle">Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor</span><span class="msum">Core control system birimlerine neden dokunulamayacağını, hangi değişikliklerin buna rağmen serbest olduğunu, komutların nereden doğmak zorunda olduğunu ve MXP ile co-processor kullanımının sınırlarını öğretir.</span><span class="mfoot"><span class="tag">15 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">12 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-electrical-12" hidden><a class="mrow" href="electrical-12-inspection.html"><span class="num">12</span><span><span class="mtitle">Inspection Points: Elektrik Denetimi Baştan Sona</span><span class="msum">Denetimde elektrik tarafında tam olarak nelere bakıldığını, bu maddelerin hangi modüldeki bilgiye dayandığını ve robotu denetime hazır hâle getiren son kontrolleri birleştirir.</span><span class="mfoot"><span class="tag">18 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">13 / 13</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+</ol>
+<p class="locked" id="lk-electrical" hidden></p>
+<p class="donedept" id="dn-electrical" hidden>Bu bölümün bütün modülleri geçildi.</p>
+</section>
+<section id="sec-programming">
+<div class="dhead">
+<svg class="dico" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#DDF1F5"/><g fill="#0E7490" stroke="#0E7490"><path d="M38 28 L18 50 l20 22 M62 28 L82 50 l-20 22 M54 22 L46 78" fill="none" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></g></svg>
+<div><h2>Programlama</h2><div class="dmeta" id="dm-programming"></div></div>
+</div>
+<div class="dbar" id="bar-programming"></div>
+<ol class="mods">
+<li class="mod" id="m-programming-00" hidden><a class="mrow" href="programming-00-java-vscode.html"><span class="num">00</span><span><span class="mtitle">Temel Java ve VS Code</span><span class="msum">Robot kodunu okumak için gereken en küçük Java kümesini, değişken ile sabit arasındaki farkı, metot bildiriminin parçalarını ve WPILib&#x27;in VS Code kurulumunda işlerin nereden yapıldığını öğretir.</span><span class="mfoot"><span class="tag">18 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">1 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-00b" hidden><a class="mrow" href="programming-00b-wpilib-temelleri.html"><span class="num">00b</span><span><span class="mtitle">WPILib Temelleri</span><span class="msum">WPILib&#x27;in ne olduğunu ve ne sağladığını, hangi robot base class&#x27;ın hangi iş için olduğunu, vendor library&#x27;lerin nasıl eklendiğini ve ölçü birimlerinin koda nasıl taşındığını öğretir.</span><span class="mfoot"><span class="tag">18 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">2 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-01" hidden><a class="mrow" href="programming-01-project-structure.html"><span class="num">01</span><span><span class="mtitle">Proje Yapısı ve Robot Yaşam Döngüsü</span><span class="msum">Bir WPILib projesindeki dosyaların hangi işten sorumlu olduğunu, TimedRobot&#x27;un yaşam döngüsü metotlarının ne zaman çağrıldığını ve kodun neden Robot.java&#x27;ya değil kendi yerine yazıldığını öğretir.</span><span class="mfoot"><span class="tag">16 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">3 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-02" hidden><a class="mrow" href="programming-02-deploy.html"><span class="num">02</span><span><span class="mtitle">Deploy ve Driver Station Bağlantısı</span><span class="msum">Kodun robota nasıl gönderildiğini, driver station üzerindeki üç durum göstergesinin tam olarak neyi bildirdiğini ve bir bağlantı sorununun bu göstergelerden nasıl daraltılacağını öğretir.</span><span class="mfoot"><span class="tag">25 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">4 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-03" hidden><a class="mrow" href="programming-03-command-based.html"><span class="num">03</span><span><span class="mtitle">Command-Based Temelleri</span><span class="msum">Command yaşam döngüsünü, requirement kavramının kaynak çakışmalarını nasıl çözdüğünü ve command composition&#x27;larının hangi kuralla kırıldığını öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">5 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-04" hidden><a class="mrow" href="programming-04-subsystems.html"><span class="num">04</span><span><span class="mtitle">Subsystem&#x27;ler ve Default Command&#x27;ler</span><span class="msum">Subsystem&#x27;in ne olduğunu, periodic metodunun dar tanımlı görevini ve default command mekanizmasının requirement sistemi üzerine nasıl kurulduğunu öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">6 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-05" hidden><a class="mrow" href="programming-05-motor-controllers.html"><span class="num">05</span><span><span class="mtitle">Motor Controller&#x27;ları Koddan Sürmek</span><span class="msum">set metodunun ne anlama geldiğini, inversion sorumluluğunun kime ait olduğunu, drive sınıflarının uyguladığı squaring ile deadband işlemlerini ve Motor Safety&#x27;nin hangi nesnelerde açık olduğunu öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">7 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-06" hidden><a class="mrow" href="programming-06-triggers.html"><span class="num">06</span><span><span class="mtitle">Joystick ve Tuş Bağlamaları</span><span class="msum">Trigger kavramını, onTrue ile whileTrue ile toggleOnTrue arasındaki davranış farklarını ve bir bağlamanın hangi durumlarda beklenmedik sonuç ürettiğini öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">8 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-07" hidden><a class="mrow" href="programming-07-sensors.html"><span class="num">07</span><span><span class="mtitle">Sensor&#x27;ler: Encoder, Limit Switch ve Gyro</span><span class="msum">Digital input&#x27;ların pull-up nedeniyle ters okunmasını, encoder ham sayısının anlamlı birime çevrilmesini ve gyro ölçümünün neye göre sıfır olduğunu öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">9 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-08" hidden><a class="mrow" href="programming-08-pid.html"><span class="num">08</span><span><span class="mtitle">Closed-Loop Kontrol ve PIDController</span><span class="msum">Error kavramını, üç terimin neye tepki verdiğini, calculate metodunun düzenli çağrılma şartını ve integral gain&#x27;in FRC&#x27;de neden önerilmediğini öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">10 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-09" hidden><a class="mrow" href="programming-09-telemetry.html"><span class="num">09</span><span><span class="mtitle">Telemetry ve Driver Station Loglarıyla Hata Ayıklama</span><span class="msum">Basit değer ile Sendable arasındaki farkı, her birinin koda nereye konulacağını ve Driver Station log grafiğinin dört kanalının birlikte nasıl okunacağını öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">11 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-10" hidden><a class="mrow" href="programming-10-autonomous.html"><span class="num">10</span><span><span class="mtitle">Autonomous Rutinleri ve SendableChooser</span><span class="msum">RobotContainer&#x27;ın sorumluluğunu, autonomous rutininin dashboard&#x27;dan nasıl seçildiğini ve autonomous ile teleop arasındaki devir teslimin nerede bozulduğunu öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">12 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-11" hidden><a class="mrow" href="programming-11-simulation.html"><span class="num">11</span><span><span class="mtitle">Simulation ve Unit Test</span><span class="msum">Robot olmadan kodu denemenin yollarını, test dosyalarının nerede durduğunu, donanım nesnelerinin testler arasında nasıl kapatıldığını ve bir testin neyi doğrulayamayacağını öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">13 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-programming-12" hidden><a class="mrow" href="programming-12-competition.html"><span class="num">12</span><span><span class="mtitle">Yarışmaya Hazırlık ve Yazılım Denetimi</span><span class="msum">Sürücü bilgisayarının maça hazırlanmasını, maç öncesi bağlantı sırasını ve departman boyunca öğrenilen olguların bir belirti karşısında birlikte nasıl kullanıldığını öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">14 / 14</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+</ol>
+<p class="locked" id="lk-programming" hidden></p>
+<p class="donedept" id="dn-programming" hidden>Bu bölümün bütün modülleri geçildi.</p>
+</section>
+<section id="sec-cad">
+<div class="dhead">
+<svg class="dico" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#EDE5FE"/><g fill="#6D28D9" stroke="#6D28D9"><path d="M20 34 L50 18 L80 34 L80 66 L50 82 L20 66 Z M20 34 L50 50 L80 34 M50 50 L50 82" fill="none" stroke-width="7" stroke-linejoin="round"/></g></svg>
+<div><h2>CAD</h2><div class="dmeta" id="dm-cad"></div></div>
+</div>
+<div class="dbar" id="bar-cad"></div>
+<ol class="mods">
+<li class="mod" id="m-cad-01" hidden><a class="mrow" href="cad-01-onshape-basics.html"><span class="num">01</span><span><span class="mtitle">Onshape&#x27;e Giriş: Document, Part Studio ve Assembly</span><span class="msum">Onshape&#x27;in üç temel kabını, hangi işin hangisinde yapıldığını, tek bir Feature list&#x27;in birden çok part&#x27;ı nasıl sürdüğünü ve bulut tabanlı paylaşımın dosya göndermekten neden farklı olduğunu öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">1 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-02" hidden><a class="mrow" href="cad-02-sketching.html"><span class="num">02</span><span><span class="mtitle">Sketch Temelleri ve Kısıtlanma Durumu</span><span class="msum">Sketch&#x27;in ne olduğunu, üzerine çizilebilecek yüzeyleri, mavi siyah ve kırmızı renklerin ne bildirdiğini ve tam kısıtlanmamış bir sketch&#x27;in neden bir ölçü belgesi sayılamayacağını öğretir.</span><span class="mfoot"><span class="tag">30 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">2 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-03" hidden><a class="mrow" href="cad-03-constraints.html"><span class="num">03</span><span><span class="mtitle">Sketch Constraint&#x27;leri ve Tasarım Niyeti</span><span class="msum">Onshape&#x27;in constraint&#x27;lerinin her birinin ne yaptığını, benzer görünenlerin nerede ayrıldığını ve tam kısıtlanmış bir sketch&#x27;in neden doğru sketch anlamına gelmediğini öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">3 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-04" hidden><a class="mrow" href="cad-04-features.html"><span class="num">04</span><span><span class="mtitle">Feature&#x27;lar ve Extrude&#x27;un End Condition&#x27;ları</span><span class="msum">Extrude&#x27;un dört operation type&#x27;ını, altı end type&#x27;ını, Symmetric ile second end position seçeneklerini, merge scope kuralını ve bir feature düzenlenirken modelin neden geri sarılmış göründüğünü öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">4 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-05" hidden><a class="mrow" href="cad-05-variables-configurations.html"><span class="num">05</span><span><span class="mtitle">Variable&#x27;lar ve Configuration&#x27;lar</span><span class="msum">Bir variable&#x27;ın nasıl tanımlanıp dimension içinde nasıl çağrıldığını, Feature list&#x27;teki yerinin neden önemli olduğunu ve configuration&#x27;ların tek bir part&#x27;tan nasıl varyasyonlar ürettiğini öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">5 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-06" hidden><a class="mrow" href="cad-06-in-context.html"><span class="num">06</span><span><span class="mtitle">Multi-Part Part Studio ve In-Context Tasarım</span><span class="msum">Bir part&#x27;ı assembly bağlamında tasarlamayı, context&#x27;in canlı bir bağ değil bir snapshot olduğunu, güncellemenin neden hiçbir zaman kendiliğinden yapılmadığını ve bunun etkinlikte ne anlama geldiğini öğretir.</span><span class="mfoot"><span class="tag">35 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">6 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-07" hidden><a class="mrow" href="cad-07-mates.html"><span class="num">07</span><span><span class="mtitle">Assembly Mate&#x27;leri ve Mate Connector</span><span class="msum">Part&#x27;ları assembly&#x27;de bağlamayı, mate türünün hangi serbestlik derecelerini bıraktığını, mate connector&#x27;ın ne olduğunu ve Group&#x27;un mate&#x27;ten farkını öğretir.</span><span class="mfoot"><span class="tag">40 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">7 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-08" hidden><a class="mrow" href="cad-08-versions-branches.html"><span class="num">08</span><span><span class="mtitle">Version, Branch ve Merge</span><span class="msum">Bir tasarımın belirli bir hâlini dondurmayı, paralel çalışmak için branch açmayı, branch&#x27;leri merge ile birleştirmeyi ve merge&#x27;ün hangi sınırlarla çalıştığını öğretir.</span><span class="mfoot"><span class="tag">40 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">8 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-09" hidden><a class="mrow" href="cad-09-drawings.html"><span class="num">09</span><span><span class="mtitle">Drawing: Teknik Resim ve Güncelleme</span><span class="msum">Drawing template seçimini, view&#x27;ları, drawing&#x27;in ne zaman ve nasıl güncellendiğini, kırmızı dangling ölçüleri ve altı çizili overridden ölçülerin taşıdığı riski öğretir.</span><span class="mfoot"><span class="tag">40 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">9 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-10" hidden><a class="mrow" href="cad-10-cots-imports.html"><span class="num">10</span><span><span class="mtitle">COTS Parçalar, Import ve Linked Document</span><span class="msum">Satın alınmış parçaları başka bir document&#x27;tan bağlamayı, referansların ne zaman güncellendiğini, pin ve Update all&#x27;ın etkisini, import edilmiş geometrinin parametric history taşımadığını öğretir.</span><span class="mfoot"><span class="tag">40 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">10 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-11" hidden><a class="mrow" href="cad-11-robot-rules.html"><span class="num">11</span><span><span class="mtitle">Robot Kuralları ve CAD</span><span class="msum">Boyut, ağırlık, ROBOT PERIMETER, starting configuration ve uzama sınırlarının CAD tarafında nasıl kontrol edileceğini; hangi ölçünün nereden alındığını ve hangi kuralların CAD&#x27;de görünmediğini öğretir.</span><span class="mfoot"><span class="tag">45 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">11 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+<li class="mod" id="m-cad-12" hidden><a class="mrow" href="cad-12-design-review.html"><span class="num">12</span><span><span class="mtitle">Capstone: CAD Tasarım İncelemesi</span><span class="msum">Bölümün tamamını birleştirir: bir robot CAD&#x27;ini imalata ve denetime göndermeden önce hangi kontrollerin hangi sırayla yapılacağını ve hangi kusurların CAD&#x27;de sessiz kaldığını gerçek inceleme kararları üzerinden çalıştırır.</span><span class="mfoot"><span class="tag">50 dakika</span><span class="tag">8 soru</span><span class="tag">tuval</span><span class="tag">12 / 12</span></span></span><span class="state"><span class="badge b-new">başlanmadı</span><span class="dots"></span></span></a><p class="gate"></p></li>
+</ol>
+<p class="locked" id="lk-cad" hidden></p>
+<p class="donedept" id="dn-cad" hidden>Bu bölümün bütün modülleri geçildi.</p>
+</section>
+
+<p class="cright">© 2026 Semih Tuna Köse</p>
+
+</div>
+<script>
+const ROWS=[{"dept":"electrical","i":0,"n":"00","key":"ep00","file":"electrical-00-tools.html","title":"Aletler: Elektrik Ekibinin Takım Çantası","summary":"Kablolamada kullanılan aletleri, her birinin hangi iş için olduğunu ve bir bağlantının sıkı olup olmadığının neden gözle değil aletle anlaşıldığını öğretir.","min":12,"q":8,"drills":["electrical-00-d1","electrical-00-d2","electrical-00-d3","electrical-00-d4","electrical-00-d5","electrical-00-d6","electrical-00-d7","electrical-00-d8"],"id":"electrical-00-tools","tuval":false},{"dept":"electrical","i":1,"n":"01","key":"ep01","file":"electrical-01-power-path.html","title":"Power Path: Battery'den PD'ye","summary":"Robotun tek enerji kaynağı olan battery'den main breaker üzerinden power distribution device'a uzanan zorunlu güç yolunu, bu yolun kablo ve koruma gereksinimlerini ve enerji vermeden önceki polarite kontrolünü öğretir.","min":14,"q":9,"drills":["electrical-01-d1","electrical-01-d2","electrical-01-d3","electrical-01-d4","electrical-01-d5","electrical-01-d6","electrical-01-d7","electrical-01-d8","electrical-01-d9"],"id":"electrical-01-power-path","tuval":true},{"dept":"electrical","i":2,"n":"02","key":"ep02","file":"electrical-02-circuit-protection.html","title":"Circuit Protection: Branch Breaker ve Fuse Seçimi","summary":"PD'den çıkan her hattın tam olarak bir breaker veya fuse ile nasıl korunduğunu, cihaz türüne göre izin verilen koruma değerlerini ve kablo kalınlığının neden koruma değerine göre seçildiğini öğretir.","min":13,"q":8,"drills":["electrical-02-d1","electrical-02-d2","electrical-02-d3","electrical-02-d4","electrical-02-d5","electrical-02-d6","electrical-02-d7","electrical-02-d8"],"id":"electrical-02-circuit-protection","tuval":true},{"dept":"electrical","i":3,"n":"03","key":"ep03","file":"electrical-03-can-bus.html","title":"CAN Bus: Zincir, Termination ve Device ID","summary":"roboRIO ile motor controller'lar ve diğer cihazlar arasındaki CAN hattının nasıl kurulduğunu, iki uçtaki termination'ın neden zorunlu olduğunu ve her cihazın neden benzersiz bir CAN ID'ye ihtiyaç duyduğunu öğretir.","min":15,"q":8,"drills":["electrical-03-d1","electrical-03-d2","electrical-03-d3","electrical-03-d4","electrical-03-d5","electrical-03-d6","electrical-03-d7","electrical-03-d8"],"id":"electrical-03-can-bus","tuval":true},{"dept":"electrical","i":4,"n":"04","key":"ep04","file":"electrical-04-radio.html","title":"Radio: Besleme, Bağlantı ve Status Lights","summary":"Robotun tek kablosuz haberleşme cihazı olan radio'nun nereden besleneceğini, roboRIO'ya nasıl bağlanacağını, nasıl monte edileceğini ve status LED'lerinin ne anlattığını öğretir.","min":14,"q":8,"drills":["electrical-04-d1","electrical-04-d2","electrical-04-d3","electrical-04-d4","electrical-04-d5","electrical-04-d6","electrical-04-d7","electrical-04-d8"],"id":"electrical-04-radio","tuval":true},{"dept":"electrical","i":5,"n":"05","key":"ep05","file":"electrical-05-brownout.html","title":"Brownout: Voltage Sag ve Current Draw","summary":"Battery geriliminin yük altında neden düştüğünü, roboRIO'nun hangi eşiklerde hangi çıkışları kapattığını, brownout'un sahada nasıl tanınacağını ve battery bakımının bu zincirdeki yerini öğretir.","min":16,"q":8,"drills":["electrical-05-d1","electrical-05-d2","electrical-05-d3","electrical-05-d4","electrical-05-d5","electrical-05-d6","electrical-05-d7","electrical-05-d8"],"id":"electrical-05-brownout","tuval":true},{"dept":"electrical","i":6,"n":"06","key":"ep06","file":"electrical-06-status-lights.html","title":"Status Lights: roboRIO, RSL ve PD","summary":"roboRIO, Robot Signal Light ve power distribution device üzerindeki durum ledlerinin ne anlattığını ve bir arızayı kablo sökmeden önce ledlerden nasıl daraltacağınızı öğretir.","min":15,"q":8,"drills":["electrical-06-d1","electrical-06-d2","electrical-06-d3","electrical-06-d4","electrical-06-d5","electrical-06-d6","electrical-06-d7","electrical-06-d8"],"id":"electrical-06-status-lights","tuval":true},{"dept":"electrical","i":7,"n":"07","key":"ep07","file":"electrical-07-pneumatics.html","title":"Pneumatics: Basınç Bölgeleri, Koruma ve Besleme","summary":"Pnömatik devrenin stored ve working olmak üzere iki basınç bölgesini, her bölgenin sınırlarını, zorunlu güvenlik bileşenlerini ve PCM ile PH'in PD üzerinden nasıl beslendiğini öğretir.","min":16,"q":8,"drills":["electrical-07-d1","electrical-07-d2","electrical-07-d3","electrical-07-d4","electrical-07-d5","electrical-07-d6","electrical-07-d7","electrical-07-d8"],"id":"electrical-07-pneumatics","tuval":true},{"dept":"electrical","i":8,"n":"08","key":"ep08","file":"electrical-08-motors.html","title":"Motorlar ve Motor Controller'lar","summary":"Hangi motorların kullanılabileceğini, bir motor controller'a kaç motor bağlanabileceğini, PWM ve CAN cihazlarının roboRIO ile nasıl ilişkilendiğini ve motor çıkışlarının nereye bağlanamayacağını öğretir.","min":15,"q":8,"drills":["electrical-08-d1","electrical-08-d2","electrical-08-d3","electrical-08-d4","electrical-08-d5","electrical-08-d6","electrical-08-d7","electrical-08-d8"],"id":"electrical-08-motors","tuval":true},{"dept":"electrical","i":9,"n":"09","key":"ep09","file":"electrical-09-custom-circuits.html","title":"Custom Circuit'ler ve Legal Wiring","summary":"Bir devrenin ne zaman custom circuit sayıldığını, nereden besleneceğini, kablo renklerinin neden kural olduğunu ve hangi ara elemanların hatta konabileceğini öğretir.","min":15,"q":8,"drills":["electrical-09-d1","electrical-09-d2","electrical-09-d3","electrical-09-d4","electrical-09-d5","electrical-09-d6","electrical-09-d7","electrical-09-d8"],"id":"electrical-09-custom-circuits","tuval":true},{"dept":"electrical","i":10,"n":"10","key":"ep10","file":"electrical-10-wire-management.html","title":"Wire Management, Strain Relief ve Bakım","summary":"Kabloların bağlantı noktalarında neden gevşek pay bırakılarak sabitlendiğini, hangi bağlantının nasıl test edildiğini ve etkinlik boyunca hangi kontrollerin hangi sıklıkla yapılacağını öğretir.","min":14,"q":8,"drills":["electrical-10-d1","electrical-10-d2","electrical-10-d3","electrical-10-d4","electrical-10-d5","electrical-10-d6","electrical-10-d7","electrical-10-d8"],"id":"electrical-10-wire-management","tuval":true},{"dept":"electrical","i":11,"n":"11","key":"ep11","file":"electrical-11-control-system.html","title":"Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor","summary":"Core control system birimlerine neden dokunulamayacağını, hangi değişikliklerin buna rağmen serbest olduğunu, komutların nereden doğmak zorunda olduğunu ve MXP ile co-processor kullanımının sınırlarını öğretir.","min":15,"q":8,"drills":["electrical-11-d1","electrical-11-d2","electrical-11-d3","electrical-11-d4","electrical-11-d5","electrical-11-d6","electrical-11-d7","electrical-11-d8"],"id":"electrical-11-control-system","tuval":true},{"dept":"electrical","i":12,"n":"12","key":"ep12","file":"electrical-12-inspection.html","title":"Inspection Points: Elektrik Denetimi Baştan Sona","summary":"Denetimde elektrik tarafında tam olarak nelere bakıldığını, bu maddelerin hangi modüldeki bilgiye dayandığını ve robotu denetime hazır hâle getiren son kontrolleri birleştirir.","min":18,"q":8,"drills":["electrical-12-d1","electrical-12-d2","electrical-12-d3","electrical-12-d4","electrical-12-d5","electrical-12-d6","electrical-12-d7","electrical-12-d8"],"id":"electrical-12-inspection","tuval":true},{"dept":"programming","i":0,"n":"00","key":"pp00","file":"programming-00-java-vscode.html","title":"Temel Java ve VS Code","summary":"Robot kodunu okumak için gereken en küçük Java kümesini, değişken ile sabit arasındaki farkı, metot bildiriminin parçalarını ve WPILib'in VS Code kurulumunda işlerin nereden yapıldığını öğretir.","min":18,"q":8,"drills":["programming-00-d1","programming-00-d2","programming-00-d3","programming-00-d4","programming-00-d5","programming-00-d6","programming-00-d7","programming-00-d8"],"id":"programming-00-java-vscode","tuval":true},{"dept":"programming","i":1,"n":"00b","key":"pp00b","file":"programming-00b-wpilib-temelleri.html","title":"WPILib Temelleri","summary":"WPILib'in ne olduğunu ve ne sağladığını, hangi robot base class'ın hangi iş için olduğunu, vendor library'lerin nasıl eklendiğini ve ölçü birimlerinin koda nasıl taşındığını öğretir.","min":18,"q":8,"drills":["programming-00b-d1","programming-00b-d2","programming-00b-d3","programming-00b-d4","programming-00b-d5","programming-00b-d6","programming-00b-d7","programming-00b-d8"],"id":"programming-00b-wpilib-temelleri","tuval":true},{"dept":"programming","i":2,"n":"01","key":"pp01","file":"programming-01-project-structure.html","title":"Proje Yapısı ve Robot Yaşam Döngüsü","summary":"Bir WPILib projesindeki dosyaların hangi işten sorumlu olduğunu, TimedRobot'un yaşam döngüsü metotlarının ne zaman çağrıldığını ve kodun neden Robot.java'ya değil kendi yerine yazıldığını öğretir.","min":16,"q":8,"drills":["programming-01-d1","programming-01-d2","programming-01-d3","programming-01-d4","programming-01-d5","programming-01-d6","programming-01-d7","programming-01-d8"],"id":"programming-01-project-structure","tuval":true},{"dept":"programming","i":3,"n":"02","key":"pp02","file":"programming-02-deploy.html","title":"Deploy ve Driver Station Bağlantısı","summary":"Kodun robota nasıl gönderildiğini, driver station üzerindeki üç durum göstergesinin tam olarak neyi bildirdiğini ve bir bağlantı sorununun bu göstergelerden nasıl daraltılacağını öğretir.","min":25,"q":8,"drills":["programming-02-d1","programming-02-d2","programming-02-d3","programming-02-d4","programming-02-d5","programming-02-d6","programming-02-d7","programming-02-d8"],"id":"programming-02-deploy","tuval":true},{"dept":"programming","i":4,"n":"03","key":"pp03","file":"programming-03-command-based.html","title":"Command-Based Temelleri","summary":"Command yaşam döngüsünü, requirement kavramının kaynak çakışmalarını nasıl çözdüğünü ve command composition'larının hangi kuralla kırıldığını öğretir.","min":30,"q":8,"drills":["programming-03-d1","programming-03-d2","programming-03-d3","programming-03-d4","programming-03-d5","programming-03-d6","programming-03-d7","programming-03-d8"],"id":"programming-03-command-based","tuval":true},{"dept":"programming","i":5,"n":"04","key":"pp04","file":"programming-04-subsystems.html","title":"Subsystem'ler ve Default Command'ler","summary":"Subsystem'in ne olduğunu, periodic metodunun dar tanımlı görevini ve default command mekanizmasının requirement sistemi üzerine nasıl kurulduğunu öğretir.","min":30,"q":8,"drills":["programming-04-d1","programming-04-d2","programming-04-d3","programming-04-d4","programming-04-d5","programming-04-d6","programming-04-d7","programming-04-d8"],"id":"programming-04-subsystems","tuval":true},{"dept":"programming","i":6,"n":"05","key":"pp05","file":"programming-05-motor-controllers.html","title":"Motor Controller'ları Koddan Sürmek","summary":"set metodunun ne anlama geldiğini, inversion sorumluluğunun kime ait olduğunu, drive sınıflarının uyguladığı squaring ile deadband işlemlerini ve Motor Safety'nin hangi nesnelerde açık olduğunu öğretir.","min":30,"q":8,"drills":["programming-05-d1","programming-05-d2","programming-05-d3","programming-05-d4","programming-05-d5","programming-05-d6","programming-05-d7","programming-05-d8"],"id":"programming-05-motor-controllers","tuval":true},{"dept":"programming","i":7,"n":"06","key":"pp06","file":"programming-06-triggers.html","title":"Joystick ve Tuş Bağlamaları","summary":"Trigger kavramını, onTrue ile whileTrue ile toggleOnTrue arasındaki davranış farklarını ve bir bağlamanın hangi durumlarda beklenmedik sonuç ürettiğini öğretir.","min":30,"q":8,"drills":["programming-06-d1","programming-06-d2","programming-06-d3","programming-06-d4","programming-06-d5","programming-06-d6","programming-06-d7","programming-06-d8"],"id":"programming-06-triggers","tuval":true},{"dept":"programming","i":8,"n":"07","key":"pp07","file":"programming-07-sensors.html","title":"Sensor'ler: Encoder, Limit Switch ve Gyro","summary":"Digital input'ların pull-up nedeniyle ters okunmasını, encoder ham sayısının anlamlı birime çevrilmesini ve gyro ölçümünün neye göre sıfır olduğunu öğretir.","min":30,"q":8,"drills":["programming-07-d1","programming-07-d2","programming-07-d3","programming-07-d4","programming-07-d5","programming-07-d6","programming-07-d7","programming-07-d8"],"id":"programming-07-sensors","tuval":true},{"dept":"programming","i":9,"n":"08","key":"pp08","file":"programming-08-pid.html","title":"Closed-Loop Kontrol ve PIDController","summary":"Error kavramını, üç terimin neye tepki verdiğini, calculate metodunun düzenli çağrılma şartını ve integral gain'in FRC'de neden önerilmediğini öğretir.","min":35,"q":8,"drills":["programming-08-d1","programming-08-d2","programming-08-d3","programming-08-d4","programming-08-d5","programming-08-d6","programming-08-d7","programming-08-d8"],"id":"programming-08-pid","tuval":true},{"dept":"programming","i":10,"n":"09","key":"pp09","file":"programming-09-telemetry.html","title":"Telemetry ve Driver Station Loglarıyla Hata Ayıklama","summary":"Basit değer ile Sendable arasındaki farkı, her birinin koda nereye konulacağını ve Driver Station log grafiğinin dört kanalının birlikte nasıl okunacağını öğretir.","min":30,"q":8,"drills":["programming-09-d1","programming-09-d2","programming-09-d3","programming-09-d4","programming-09-d5","programming-09-d6","programming-09-d7","programming-09-d8"],"id":"programming-09-telemetry","tuval":true},{"dept":"programming","i":11,"n":"10","key":"pp10","file":"programming-10-autonomous.html","title":"Autonomous Rutinleri ve SendableChooser","summary":"RobotContainer'ın sorumluluğunu, autonomous rutininin dashboard'dan nasıl seçildiğini ve autonomous ile teleop arasındaki devir teslimin nerede bozulduğunu öğretir.","min":35,"q":8,"drills":["programming-10-d1","programming-10-d2","programming-10-d3","programming-10-d4","programming-10-d5","programming-10-d6","programming-10-d7","programming-10-d8"],"id":"programming-10-autonomous","tuval":true},{"dept":"programming","i":12,"n":"11","key":"pp11","file":"programming-11-simulation.html","title":"Simulation ve Unit Test","summary":"Robot olmadan kodu denemenin yollarını, test dosyalarının nerede durduğunu, donanım nesnelerinin testler arasında nasıl kapatıldığını ve bir testin neyi doğrulayamayacağını öğretir.","min":35,"q":8,"drills":["programming-11-d1","programming-11-d2","programming-11-d3","programming-11-d4","programming-11-d5","programming-11-d6","programming-11-d7","programming-11-d8"],"id":"programming-11-simulation","tuval":true},{"dept":"programming","i":13,"n":"12","key":"pp12","file":"programming-12-competition.html","title":"Yarışmaya Hazırlık ve Yazılım Denetimi","summary":"Sürücü bilgisayarının maça hazırlanmasını, maç öncesi bağlantı sırasını ve departman boyunca öğrenilen olguların bir belirti karşısında birlikte nasıl kullanıldığını öğretir.","min":35,"q":8,"drills":["programming-12-d1","programming-12-d2","programming-12-d3","programming-12-d4","programming-12-d5","programming-12-d6","programming-12-d7","programming-12-d8"],"id":"programming-12-competition","tuval":true},{"dept":"cad","i":0,"n":"01","key":"cp01","file":"cad-01-onshape-basics.html","title":"Onshape'e Giriş: Document, Part Studio ve Assembly","summary":"Onshape'in üç temel kabını, hangi işin hangisinde yapıldığını, tek bir Feature list'in birden çok part'ı nasıl sürdüğünü ve bulut tabanlı paylaşımın dosya göndermekten neden farklı olduğunu öğretir.","min":30,"q":8,"drills":["cad-01-d1","cad-01-d2","cad-01-d3","cad-01-d4","cad-01-d5","cad-01-d6","cad-01-d7","cad-01-d8"],"id":"cad-01-onshape-basics","tuval":true},{"dept":"cad","i":1,"n":"02","key":"cp02","file":"cad-02-sketching.html","title":"Sketch Temelleri ve Kısıtlanma Durumu","summary":"Sketch'in ne olduğunu, üzerine çizilebilecek yüzeyleri, mavi siyah ve kırmızı renklerin ne bildirdiğini ve tam kısıtlanmamış bir sketch'in neden bir ölçü belgesi sayılamayacağını öğretir.","min":30,"q":8,"drills":["cad-02-d1","cad-02-d2","cad-02-d3","cad-02-d4","cad-02-d5","cad-02-d6","cad-02-d7","cad-02-d8"],"id":"cad-02-sketching","tuval":true},{"dept":"cad","i":2,"n":"03","key":"cp03","file":"cad-03-constraints.html","title":"Sketch Constraint'leri ve Tasarım Niyeti","summary":"Onshape'in constraint'lerinin her birinin ne yaptığını, benzer görünenlerin nerede ayrıldığını ve tam kısıtlanmış bir sketch'in neden doğru sketch anlamına gelmediğini öğretir.","min":35,"q":8,"drills":["cad-03-d1","cad-03-d2","cad-03-d3","cad-03-d4","cad-03-d5","cad-03-d6","cad-03-d7","cad-03-d8"],"id":"cad-03-constraints","tuval":true},{"dept":"cad","i":3,"n":"04","key":"cp04","file":"cad-04-features.html","title":"Feature'lar ve Extrude'un End Condition'ları","summary":"Extrude'un dört operation type'ını, altı end type'ını, Symmetric ile second end position seçeneklerini, merge scope kuralını ve bir feature düzenlenirken modelin neden geri sarılmış göründüğünü öğretir.","min":35,"q":8,"drills":["cad-04-d1","cad-04-d2","cad-04-d3","cad-04-d4","cad-04-d5","cad-04-d6","cad-04-d7","cad-04-d8"],"id":"cad-04-features","tuval":true},{"dept":"cad","i":4,"n":"05","key":"cp05","file":"cad-05-variables-configurations.html","title":"Variable'lar ve Configuration'lar","summary":"Bir variable'ın nasıl tanımlanıp dimension içinde nasıl çağrıldığını, Feature list'teki yerinin neden önemli olduğunu ve configuration'ların tek bir part'tan nasıl varyasyonlar ürettiğini öğretir.","min":35,"q":8,"drills":["cad-05-d1","cad-05-d2","cad-05-d3","cad-05-d4","cad-05-d5","cad-05-d6","cad-05-d7","cad-05-d8"],"id":"cad-05-variables-configurations","tuval":true},{"dept":"cad","i":5,"n":"06","key":"cp06","file":"cad-06-in-context.html","title":"Multi-Part Part Studio ve In-Context Tasarım","summary":"Bir part'ı assembly bağlamında tasarlamayı, context'in canlı bir bağ değil bir snapshot olduğunu, güncellemenin neden hiçbir zaman kendiliğinden yapılmadığını ve bunun etkinlikte ne anlama geldiğini öğretir.","min":35,"q":8,"drills":["cad-06-d1","cad-06-d2","cad-06-d3","cad-06-d4","cad-06-d5","cad-06-d6","cad-06-d7","cad-06-d8"],"id":"cad-06-in-context","tuval":true},{"dept":"cad","i":6,"n":"07","key":"cp07","file":"cad-07-mates.html","title":"Assembly Mate'leri ve Mate Connector","summary":"Part'ları assembly'de bağlamayı, mate türünün hangi serbestlik derecelerini bıraktığını, mate connector'ın ne olduğunu ve Group'un mate'ten farkını öğretir.","min":40,"q":8,"drills":["cad-07-d1","cad-07-d2","cad-07-d3","cad-07-d4","cad-07-d5","cad-07-d6","cad-07-d7","cad-07-d8"],"id":"cad-07-mates","tuval":true},{"dept":"cad","i":7,"n":"08","key":"cp08","file":"cad-08-versions-branches.html","title":"Version, Branch ve Merge","summary":"Bir tasarımın belirli bir hâlini dondurmayı, paralel çalışmak için branch açmayı, branch'leri merge ile birleştirmeyi ve merge'ün hangi sınırlarla çalıştığını öğretir.","min":40,"q":8,"drills":["cad-08-d1","cad-08-d2","cad-08-d3","cad-08-d4","cad-08-d5","cad-08-d6","cad-08-d7","cad-08-d8"],"id":"cad-08-versions-branches","tuval":true},{"dept":"cad","i":8,"n":"09","key":"cp09","file":"cad-09-drawings.html","title":"Drawing: Teknik Resim ve Güncelleme","summary":"Drawing template seçimini, view'ları, drawing'in ne zaman ve nasıl güncellendiğini, kırmızı dangling ölçüleri ve altı çizili overridden ölçülerin taşıdığı riski öğretir.","min":40,"q":8,"drills":["cad-09-d1","cad-09-d2","cad-09-d3","cad-09-d4","cad-09-d5","cad-09-d6","cad-09-d7","cad-09-d8"],"id":"cad-09-drawings","tuval":true},{"dept":"cad","i":9,"n":"10","key":"cp10","file":"cad-10-cots-imports.html","title":"COTS Parçalar, Import ve Linked Document","summary":"Satın alınmış parçaları başka bir document'tan bağlamayı, referansların ne zaman güncellendiğini, pin ve Update all'ın etkisini, import edilmiş geometrinin parametric history taşımadığını öğretir.","min":40,"q":8,"drills":["cad-10-d1","cad-10-d2","cad-10-d3","cad-10-d4","cad-10-d5","cad-10-d6","cad-10-d7","cad-10-d8"],"id":"cad-10-cots-imports","tuval":true},{"dept":"cad","i":10,"n":"11","key":"cp11","file":"cad-11-robot-rules.html","title":"Robot Kuralları ve CAD","summary":"Boyut, ağırlık, ROBOT PERIMETER, starting configuration ve uzama sınırlarının CAD tarafında nasıl kontrol edileceğini; hangi ölçünün nereden alındığını ve hangi kuralların CAD'de görünmediğini öğretir.","min":45,"q":8,"drills":["cad-11-d1","cad-11-d2","cad-11-d3","cad-11-d4","cad-11-d5","cad-11-d6","cad-11-d7","cad-11-d8"],"id":"cad-11-robot-rules","tuval":true},{"dept":"cad","i":11,"n":"12","key":"cp12","file":"cad-12-design-review.html","title":"Capstone: CAD Tasarım İncelemesi","summary":"Bölümün tamamını birleştirir: bir robot CAD'ini imalata ve denetime göndermeden önce hangi kontrollerin hangi sırayla yapılacağını ve hangi kusurların CAD'de sessiz kaldığını gerçek inceleme kararları üzerinden çalıştırır.","min":50,"q":8,"drills":["cad-12-d1","cad-12-d2","cad-12-d3","cad-12-d4","cad-12-d5","cad-12-d6","cad-12-d7","cad-12-d8"],"id":"cad-12-design-review","tuval":true}], LAB={"electrical": "Elektrik ve Kablolama", "programming": "Programlama", "cad": "CAD"}, ACC={"electrical": "#B45309", "programming": "#0E7490", "cad": "#6D28D9"}, PASS=70;
+const DEPT=["electrical","programming","cad"];
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+
+let STORAGE_OK=true;
+let SUNUCU=null;          /* sunucudan gelen ilerleme, modul id'sine gore */
+function readState(key){
+  try{ return JSON.parse(localStorage.getItem(key)||"{}"); }
+  catch(e){ STORAGE_OK=false; return {}; }
+}
+/* Sunucu ayarlanmissa kayit oradan okunur; tarayici kaydi yalnizca
+   sunucu yokken veya cevrimdisi kalindiginda kullanilir. */
+function durumu(r){
+  if(SUNUCU){
+    const s=SUNUCU[r.id]||{tuval:null,cevaplar:{}};
+    const st=Object.assign({},s.cevaplar);
+    if(s.tuval!==null && s.tuval!==undefined) st.__b={s:s.tuval};
+    return st;
+  }
+  return readState(r.key);
+}
+
+/* Bir modülün iki puanı: tuval ve test. Geçiş ölçütü ikisinin ortalamasıdır. */
+function scoreOf(r){
+  const st=durumu(r);
+  let done=0, got=0;
+  const marks=r.drills.map(id=>{
+    const s=st[id];
+    if(!s) return 0;
+    done++; if(s.ok){got++; return 1;} return -1;
+  });
+  const board = (st.__b && typeof st.__b.s==="number") ? st.__b.s : null;
+  const testDone = done===r.q;
+  const test = testDone ? Math.round(got/r.q*100) : null;
+  /* Kurulum tuvali olmayan modulde olcut yalnizca test puanidir. */
+  const avg = r.tuval
+    ? ((testDone && board!==null) ? Math.round((test+board)/2) : null)
+    : (testDone ? test : null);
+  const passed = avg!==null && avg>=PASS;
+  return {done,got,marks,board,test,testDone,avg,passed,
+          started: done>0 || board!==null};
+}
+
+function render(){
+  const agg={done:0,got:0,q:0,passed:0,open:0};
+  const sn=$("#snote");
+  DEPT.forEach(d=>{
+    const rs=ROWS.filter(r=>r.dept===d);
+    let cursor=0;            /* açık olan modülün sırası */
+    const st=rs.map(r=>scoreOf(r));
+    while(cursor<rs.length && st[cursor].passed) cursor++;
+    let dPassed=0, dDone=0, dGot=0, dQ=0;
+    rs.forEach((r,i)=>{
+      const s=st[i];
+      dQ+=r.q; dDone+=s.done; dGot+=s.got; if(s.passed)dPassed++;
+      agg.q+=r.q; agg.done+=s.done; agg.got+=s.got; if(s.passed)agg.passed++;
+      const li=$("#m-"+r.dept+"-"+r.n);
+      if(!li) return;
+      const visible = i<=cursor;
+      li.hidden=!visible;
+      li.classList.toggle("now", i===cursor);
+      li.classList.toggle("pass", s.passed);
+      if(!visible) return;
+
+      const b=$(".badge",li);
+      if(s.passed){ b.className="badge b-ok"; b.textContent="geçti · %"+s.avg; }
+      else if(s.avg!==null){ b.className="badge b-re"; b.textContent="%"+s.avg+" · tekrar"; }
+      else if(s.started){ b.className="badge b-go"; b.textContent="devam"; }
+      else { b.className="badge b-new"; b.textContent="başlanmadı"; }
+
+      const dots=$(".dots",li);
+      dots.innerHTML="";
+      s.marks.forEach(m=>{const n=el("i");if(m===1)n.className="ok";if(m===-1)n.className="no";dots.append(n);});
+
+      /* Kapı metni: ne eksik, sonrakinin açılması için ne gerekiyor. */
+      const g=$(".gate",li);
+      g.textContent=""; g.className="gate";
+      const put=(...kids)=>kids.forEach(k=>g.append(k));
+      const puanMetni = r.tuval
+        ? ("Tuval "+s.board+", test "+s.test+" · ortalama ")
+        : ("Test ");
+      const olcut = r.tuval
+        ? "tuval ile test puanının ortalaması"
+        : "test puanı";
+      if(s.passed){
+        put(document.createTextNode(puanMetni),
+            Object.assign(el("b"),{textContent:"%"+s.avg}),
+            document.createTextNode(". Bir sonraki modül açıldı."));
+      } else if(s.avg!==null){
+        g.className="gate bad";
+        put(document.createTextNode(puanMetni),
+            Object.assign(el("b"),{textContent:"%"+s.avg}),
+            document.createTextNode(". Geçmek için %"+PASS+" gerekiyor. Modülü yeniden okuyun; ilk puanlar kalıcıdır, bir sonraki modül açılmaz."));
+      } else {
+        const eksik=[];
+        if(r.tuval && s.board===null) eksik.push("kurulum tuvali");
+        if(!s.testDone) eksik.push("test ("+s.done+" / "+r.q+" soru)");
+        put(document.createTextNode("Bekleyen: "),
+            Object.assign(el("b"),{textContent:eksik.join(" ve ")}),
+            document.createTextNode(". Bir sonraki modül, "+olcut+" %"+PASS+" veya üzeri olunca açılır."));
+      }
+      if(i===cursor) agg.open++;
+    });
+
+    /* departman şeridi ve kilit satırı */
+    const bar=$("#bar-"+d); bar.innerHTML="";
+    const w1=rs.length?dPassed/rs.length*100:0;
+    const a=el("i");a.style.width=w1+"%";a.style.background=ACC[d];bar.append(a);
+    $("#dm-"+d).textContent = dPassed+" / "+rs.length+" modül geçildi · "
+      + (cursor<rs.length ? ("şu an modül "+rs[cursor].n) : "bölüm tamamlandı");
+    const lk=$("#lk-"+d), dn=$("#dn-"+d);
+    const kalan=rs.length-cursor-1;
+    if(cursor>=rs.length){ lk.hidden=true; dn.hidden=false; }
+    else { dn.hidden=true; lk.hidden=kalan<=0;
+      lk.textContent=kalan+" modül kilitli · açık olan modül geçilince sıradaki görünür"; }
+  });
+  if(sn) sn.hidden = STORAGE_OK;
+
+}
+
+render();
+
+/* sync.js yüklenmediyse sayfa kendi klasöründe değil; modül bağlantıları
+   çalışmayacağı için bunu baştan söyle. */
+if(!window.FRC){
+  const u=$("#kopuk");
+  u.hidden=false;
+  u.textContent="Bu sayfa kendi klasöründen açılmadı: yanında olması gereken dosyalar yok. Modül bağlantıları bu hâlde çalışmaz. Programın klasörünü açıp oradaki index.html veya moduller.html dosyasını kullanın.";
+}
+
+if(window.FRC && FRC.acik){
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    const k=FRC.kullanici();
+    const w=$("#who"); w.hidden=false;
+    $("#whoad").textContent=k.ad+(k.rol==="koc"?" · antrenör":"");
+    $("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
+    return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; render(); } })
+      .then(function(){ return gorevleriGoster(k); });
+  });
+}
+
+/* ---- antrenörün atadığı görevler ----
+   Öğrenci yalnızca kendisine atanmış görevleri görür; bunu veritabanı
+   kuralları uygular. Kapatılmış görevler listelenmez.               */
+const TURAD={odev:"ödev",modul:"modül",okuma:"okuma",serbest:"serbest"};
+function trTarih(t){
+  if(!t) return "";
+  const d=new Date(t.length===10 ? t+"T00:00:00" : t);
+  return isNaN(d) ? t : d.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
+}
+function gecmisMi(d){
+  if(!d) return false;
+  const b=new Date(); b.setHours(0,0,0,0);
+  return new Date(d+"T00:00:00") < b;
+}
+function gorevleriGoster(k){
+  if(!window.FRC || !FRC.acik || !k) return;
+  return FRC.gorevler().then(function(v){
+    if(!v) return;
+    const acik=v.gorev.filter(g=>!g.kapali);
+    const sec=$("#gorevSec"), kutu=$("#gorevListe");
+    sec.hidden = acik.length===0;
+    if(!acik.length) return;
+    kutu.innerHTML="";
+    acik.forEach(function(g){
+      const t=v.teslim.find(x=>x.gorev===g.id);
+      const d=v.degerlendirme.find(x=>x.gorev===g.id);
+      const kart=el("div","gkart"+(t?" bitti":""));
+      kart.append(el("h3",null,g.baslik));
+      const m=el("div","gm");
+      m.append(el("span","tg tur",TURAD[g.tur]||g.tur));
+      if(g.son_tarih) m.append(el("span","tg"+(gecmisMi(g.son_tarih)&&!t?" gec":""),
+        "son tarih "+trTarih(g.son_tarih)));
+      if(t) m.append(el("span","tg","yapıldı "+trTarih(t.teslim)));
+      if(d && d.puan!=null) m.append(el("span","tg pu","puan %"+d.puan));
+      kart.append(m);
+      if(g.aciklama) kart.append(el("p","ga",g.aciklama));
+      if(d && d.yorum) kart.append(el("p","gnot","Antrenör notu: "+d.yorum));
+
+      const sat=el("div","gbag");
+      const mod=g.modul && ROWS.find(r=>r.id===g.modul);
+      if(mod){ const a=el("a","gb","Modülü aç"); a.href=mod.file; sat.append(a); }
+      if(g.baglanti){
+        const a=el("a","gb","Bağlantıyı aç"); a.href=g.baglanti;
+        a.target="_blank"; a.rel="noopener noreferrer"; sat.append(a);
+      }
+      const b=el("button","gb"+(t?"":" solid"), t?"Geri al":"Yapıldı olarak işaretle");
+      b.onclick=function(){
+        b.disabled=true;
+        (t ? FRC.teslimGeriAl(g.id) : FRC.teslimEt(g.id, null))
+          .then(function(){ return gorevleriGoster(k); })
+          .catch(function(){ b.disabled=false; });
+      };
+      sat.append(b);
+      kart.append(sat);
+      kutu.append(kart);
+    });
+  }).catch(function(){});
+}
+
+addEventListener("pageshow",render);
+addEventListener("focus",render);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)render();});
+</script>
+</body>
+</html>
