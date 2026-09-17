@@ -236,6 +236,13 @@ function ciz(){
 
 $("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
 
+/* Verilen seciciye uyan ogeleri gizler; yoksa sessizce gecer. */
+function gizle(seciciler){
+  seciciler.forEach(function(s){
+    var n=document.querySelectorAll(s);
+    for(var i=0;i<n.length;i++){ n[i].hidden=true; n[i].style.display="none"; }
+  });
+}
 if(!window.FRC){
   /* sync.js yüklenmemiş: sayfa yanındaki dosyalar olmadan açılmış. */
   uyar("bad","Bu sayfa tek başına çalışmaz: yanında config.js ve sync.js dosyaları bulunmalıdır. Dosyayı indirip tek başına açtıysanız, bunun yerine programın klasörünü açıp aynı klasördeki sayfayı kullanın.");
@@ -247,6 +254,8 @@ if(!window.FRC){
     var k=FRC.kullanici();
     $("#kim").textContent=k.ad; $("#rol").textContent=k.eposta;
     if(k.rol!=="koc"){
+      /* Ogrenci hesabinda sayfa iskeleti de gorunmesin: yalnizca uyari kalir. */
+      gizle(['.who .lnk[href="admin.html"]', '.tools', '.key', '#scroll', '#bos']);
       uyar("bad","Bu sayfa yalnızca antrenör hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
     }

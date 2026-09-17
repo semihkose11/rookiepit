@@ -25,6 +25,7 @@
   var ACIK = !!(C.url && C.key);              /* sunucu yapılandırıldı mı */
   var OTURUM_ANAHTARI = "frc_oturum";
   var KUYRUK_ANAHTARI = "frc_kuyruk";
+  var SAHIP_ANAHTARI = "frc_sahip";   /* yerel kaydin hangi hesaba ait oldugu */
 
   var oturum = null;    /* {access_token, refresh_token, expires_at, user} */
   var profil = null;    /* {id, ad, rol} */
@@ -38,6 +39,44 @@
     try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
   }
   function yerelSil(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+  /* ---- hesap değişince yerel ilerlemeyi silme ---------------------- */
+  /* Bir bilgisayarı birden çok öğrenci kullanabilir. Modül sayfaları
+     cevapları tarayıcıya da kaydettiği için, hesap değiştiğinde önceki
+     öğrencinin cevapları yeni öğrencide görünürdü. Modül kayıt
+     anahtarları ep00..ep12, pp00..pp12 ve cp01..cp12 kalıbındadır;
+     yalnızca bu kalıba uyanlar ve gönderilmemiş kuyruk silinir.
+     Sunucudaki puanlar etkilenmez, onlar hesaba bağlıdır ve
+     değiştirilemez. */
+  var ILERLEME_KALIBI = /^(ep|pp|cp)\d{2}b?$/;
+
+  function ilerlemeyiSil() {
+    try {
+      var atilacak = [], i, k;
+      for (i = 0; i < localStorage.length; i++) {
+        k = localStorage.key(i);
+        if (k && ILERLEME_KALIBI.test(k)) atilacak.push(k);
+      }
+      for (i = 0; i < atilacak.length; i++) localStorage.removeItem(atilacak[i]);
+      localStorage.removeItem(KUYRUK_ANAHTARI);
+    } catch (e) {}
+  }
+
+  function sahibiDenetle(id) {
+    if (!id) return;
+    var onceki = null;
+    try { onceki = localStorage.getItem(SAHIP_ANAHTARI); } catch (e) {}
+    if (onceki === id) return;
+    ilerlemeyiSil();
+    try { localStorage.setItem(SAHIP_ANAHTARI, id); } catch (e) {}
+  }
+
+  /* Denetim sayfanın kendi betiği çalışmadan önce, eşzamanlı yapılır:
+     modül sayfası durumu localStorage'dan okuyup hemen çiziyor. */
+  (function () {
+    var o = yerelOku(OTURUM_ANAHTARI, null);
+    sahibiDenetle(o && o.user && o.user.id);
+  })();
 
   function hata(yanit, govde) {
     var m = (govde && (govde.msg || govde.error_description || govde.message || govde.error)) || "";
@@ -224,6 +263,9 @@
     cikisYap: function () {
       var s = oturum;
       oturumKapat();
+      /* Bilgisayar paylaşılıyorsa sıradaki öğrenci temiz başlar. */
+      ilerlemeyiSil();
+      try { localStorage.removeItem(SAHIP_ANAHTARI); } catch (e) {}
       if (!ACIK || !s) return Promise.resolve();
       return fetch(C.url.replace(/\/+$/, "") + "/auth/v1/logout", {
         method: "POST",
@@ -439,6 +481,7 @@
     if (gelen) {
       oturumKaydet(gelen);
       return kullaniciCek()
+        .then(function () { sahibiDenetle(oturum && oturum.user && oturum.user.id); })
         .then(profilOku).then(kuyruguBosalt)
         .then(function () { return FRC.kullanici(); })
         .catch(function () { oturumKapat(); return null; });
