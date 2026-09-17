@@ -1,0 +1,349 @@
+{
+  "id": "electrical-03-can-bus",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 3,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "CAN Bus: Zincir, Termination ve Device ID",
+  "summary": "roboRIO ile motor controller'lar ve diğer cihazlar arasındaki CAN hattının nasıl kurulduğunu, iki uçtaki termination'ın neden zorunlu olduğunu ve her cihazın neden benzersiz bir CAN ID'ye ihtiyaç duyduğunu öğretir.",
+  "prerequisites": [
+    "electrical-01-power-path",
+    "electrical-02-circuit-protection"
+  ],
+  "estimatedMinutes": 15,
+  "concept": {
+    "body": "Robot üzerindeki motor controller'lar, PDH, PH ve birçok sensor roboRIO ile CAN bus (CAN veri yolu) üzerinden haberleşir. CAN iki kablolu bir hattır: sarı kablo CAN-High, yeşil kablo CAN-Low taşır. Bu iki kablo tüm cihazlar boyunca kesintisiz devam eder.\n\nÖnerilen topoloji daisy chain'dir (zincir dizilimi): hat roboRIO'nun CAN portundan başlar, her cihaza girip çıkarak sırayla ilerler ve PDH'te biter. Kurallar yalnızca pasif iletkenlerden oluşan star düzenlerine de izin verir; yasak olan, hat üzerine haberleşmeyi değiştiren veya engelleyen bir cihaz koymaktır. Her Weidmuller CAN terminaline yalnızca tek bir kablo sokulur.\n\nHattın iki ucunda 120 Ω terminating resistor (sonlandırma direnci) bulunmalıdır. Bu dirençlerden biri roboRIO içinde hazır gelir. PDH'te sonlandırma cihaz üzerinden yapılandırılır: PDH zincirin sonundaysa sonlandırması etkin bırakılır. PDH zincirin ortasına alınırsa sonlandırması devre dışı bırakılır ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılır. Belirleyici olan cihazın kimliği değil, hattaki konumudur.\n\nSon olarak her cihazın kendi CAN ID'si vardır. SPARK MAX kutudan 0 ID'si ile çıkar; aynı hatta aynı tipteki iki cihaz aynı ID'yi kullanamaz. Kullanılabilir aralık 1-62'dir ve ID'ler REV Hardware Client gibi araçlarla değiştirilir.",
+    "keyTerms": [
+      {
+        "term": "CAN bus",
+        "glossTr": "cihazların roboRIO ile haberleştiği iki kablolu veri yolu"
+      },
+      {
+        "term": "CAN-High / CAN-Low",
+        "glossTr": "CAN hattının iki sinyal kablosu; sarı High, yeşil Low"
+      },
+      {
+        "term": "daisy chain",
+        "glossTr": "zincir dizilimi; hattın her cihaza girip çıkarak ilerlemesi"
+      },
+      {
+        "term": "terminating resistor",
+        "glossTr": "hattın iki ucuna takılan 120 Ω sonlandırma direnci"
+      },
+      {
+        "term": "Weidmuller connector",
+        "glossTr": "yaylı, vidasız kablo terminali"
+      },
+      {
+        "term": "CAN ID (device ID)",
+        "glossTr": "her cihazın hat üzerindeki adres numarası"
+      },
+      {
+        "term": "REV Hardware Client",
+        "glossTr": "REV cihazlarının ayarlarını değiştiren Windows uygulaması"
+      },
+      {
+        "term": "CANivore",
+        "glossTr": "CTR Electronics'in USB-to-CAN adaptörü; ek CAN hattı ekler"
+      },
+      {
+        "term": "passive conductor",
+        "glossTr": "sinyali işlemeden yalnızca ileten pasif iletken"
+      }
+    ],
+    "videoRefs": [
+      {
+        "provider": "youtube",
+        "id": "SfkmyN9mYLA",
+        "start": 39,
+        "label": "Yaylı terminale kablo nasıl sokulur",
+        "title": "Handling - PCB Terminal LSF-SMT 3.50 / 5.00 / 7.50",
+        "channel": "Weidmüller",
+        "lang": "en",
+        "note": "WPILib'in Introduction to FRC Robot Wiring sayfasında 39. saniyeden başlatılarak gömülü olan üretici videosu. Yaylı terminale kablonun nasıl sokulup çıkarıldığını gösterir.",
+        "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html",
+        "verifiedOn": "2026-09-12"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-03-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CAN BUS",
+      "front": "CAN hattı bütün cihazlara girip çıkan tek bir seri zincirdir.",
+      "back": "Motor controller'lar, PDH, PH ve birçok sensor roboRIO ile iki kablo üzerinden haberleşir: sarı kablo CAN-High, yeşil kablo CAN-Low. Önerilen topoloji daisy chain'dir; hat roboRIO'nun CAN portundan başlar, her cihaza girip çıkarak sırayla ilerler ve PDH'te biter. İki kablo tüm cihazlar boyunca kesintisiz devam eder. Her Weidmuller terminaline yalnızca tek bir kablo sokulur, çünkü terminalin yayı tek bir iletken için tasarlanmıştır.",
+      "takeaway": "İki kablo, tek zincir: roboRIO'da başlar, PDH'te biter",
+      "tags": [
+        "daisy chain",
+        "CAN-High",
+        "CAN-Low",
+        "Weidmuller"
+      ],
+      "estMinutes": 1,
+      "derivedFrom": [
+        "electrical-03-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R716",
+          "season": "2026",
+          "topic": "her Weidmuller CAN terminaline yalnızca tek bir kablo sokulur"
+        }
+      ]
+    },
+    {
+      "id": "electrical-03-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CAN BUS",
+      "front": "PDH zincirin ortasına alınırsa sonlandırmaya ne olur?",
+      "back": "Sonlandırma dirençleri hattın iki ucunda bulunmak zorundadır ve toplam iki adettir. Bunlardan biri roboRIO içinde hazır gelir; PDH'te sonlandırma cihaz üzerinden yapılandırılır ve PDH zincirin sonundaysa etkin bırakılır. PDH ortaya alındığında kendi sonlandırması artık bir uçta değil, hattın ortasında kalır. Bu yüzden cihaz üzerinden devre dışı bırakılır ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılır. Belirleyici olan cihazın kimliği değil, hattaki konumudur.",
+      "takeaway": "Direnç cihaza değil, hattın ucuna aittir",
+      "tags": [
+        "terminating resistor",
+        "sonlandırma",
+        "120 Ω"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-03-d2",
+        "electrical-03-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-03-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CAN BUS",
+      "front": "Maçın ortasında iki mekanizma birden sustu, pit'te her şey normal. Nereye bakarsınız?",
+      "back": "İki cihazın aynı anda düşmesi ve arızanın kendiliğinden geçmesi ayar ya da kod sorununa işaret etmez: yanlış bir CAN ID veya bir kod hatası maçın ortasında ortaya çıkmaz ve kendiliğinden düzelmez. Daisy chain seri bir hat olduğu için titreşimle gevşeyen tek bir kablo, o noktadan sonraki her cihazı aynı anda hattan düşürür; robot durduğunda bağlantı yeniden oturur ve pit'te arıza tekrarlanmaz. Bu yüzden önce, hâlâ çalışan cihazlardan sonra gelen ilk CAN bağlantısına bakılır.",
+      "takeaway": "Aynı anda düşen cihazlar mekanik bir bağlantıyı işaret eder, ayarı değil",
+      "tags": [
+        "teşhis",
+        "titreşim",
+        "daisy chain"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-03-d8",
+        "electrical-03-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-03-d1",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki kurulumda kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takım CAN zincirini kurmuş ve kontrol için size gösteriyor. Kurulumun öğeleri aşağıda listelenmiştir.",
+      "elements": [
+        "Zincir roboRIO'nun CAN portundan başlıyor ve PDH'te bitiyor.",
+        "Her cihazda sarı kablo CAN-High, yeşil kablo CAN-Low terminaline bağlanmış.",
+        "İki motor controller'a giden kablolar, ara bir noktada tek bir Weidmuller terminaline birlikte sokulmuş.",
+        "PDH zincirin son cihazı ve sonlandırması cihaz üzerinden etkin bırakılmış.",
+        "roboRIO ile PDH arasındaki diğer CAN cihazları zincire sırayla eklenmiş."
+      ],
+      "faultIndex": 2,
+      "explanation": "Kural, her Weidmuller CAN terminaline yalnızca tek bir kablo sokulmasını ister. İki kabloyu aynı terminale sıkıştırmak her iki bağlantıyı da güvenilmez hâle getirir: terminalin yayı tek bir iletken için tasarlanmıştır ve iki kablodan biri zamanla gevşer. Zincir seri bir hat olduğu için o noktada oluşan bir kopukluk yalnızca o cihazı değil, kendisinden sonraki tüm cihazları da hattan düşürür. Doğru çözüm zinciri o cihazın giriş ve çıkış terminal çiftlerinden geçirmektir. Diğer dört öğe doğrudur.",
+      "hint": "Öğeleri tek tek okuyun ve bir terminale kaç kablo girebileceğini sorun.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R716",
+          "season": "2026",
+          "topic": "her Weidmuller CAN terminaline yalnızca tek kablo"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Zincir topolojisi ve kablo renkleri: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"
+    },
+    {
+      "id": "electrical-03-d2",
+      "type": "multiple_choice",
+      "prompt": "Takım, PDH'i CAN zincirinin ortasına almak ve üzerindeki iki connector çiftini de kullanmak istiyor. PDH'in sonlandırması şu anda etkin. Ne yapılmalıdır?",
+      "options": [
+        "PDH'in sonlandırması devre dışı bırakılmalı ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılmalıdır.",
+        "Sonlandırma etkin kalmalıdır; PDH zincirin neresinde olursa olsun hattı sonlandırmaya devam eder.",
+        "Sonlandırma devre dışı bırakılmalıdır; hattın diğer ucundaki roboRIO direnci tek başına yeterlidir.",
+        "PDH zincirin ortasına alınamaz; iki connector çifti olsa bile son cihaz olmak zorundadır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Terminating resistor'lar hattın iki ucunda bulunmak zorundadır. PDH ortaya alındığında kendi sonlandırması artık bir uçta değil, hattın ortasında kalır; bu nedenle cihaz üzerinden devre dışı bırakılır ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılır. Üçüncü şık yanlıştır çünkü hat tek uçtan sonlandırılamaz; iki uç da gerekir. Dördüncü şık da yanlıştır: dokümantasyon power distribution device'ı zincirin son cihazı olarak bırakmayı önerir, ancak ortaya alınması durumunda ne yapılacağını açıkça tarif eder. Öneri ile zorunluluk aynı şey değildir.",
+      "hint": "Dirençler hattın neresinde olmak zorunda? PDH ortaya alınınca kendi sonlandırması nerede kalıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html",
+      "sourceNote": "PDH'te sonlandırmanın cihaz üzerinden yapılandırıldığı REV dokümantasyonundan doğrulandı: https://docs.revrobotics.com/ion-control/pdh/overview — \"Configurable CAN termination on device\". Kaynaklar sonlandırmanın cihaz üzerinde hangi arayüzle açılıp kapatıldığını belirtmiyor, bu nedenle metin o ayrıntıya girmiyor."
+    },
+    {
+      "id": "electrical-03-d3",
+      "type": "numeric",
+      "prompt": "Bir robotta CAN zinciri roboRIO'da başlıyor, sırayla altı cihazdan geçiyor ve PDH'te bitiyor. Doğru kurulmuş bir hatta kaç adet terminating resistor etkin olmalıdır? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 2,
+      "tolerance": 0,
+      "unit": "adet",
+      "explanation": "CAN hattı iki ucundan sonlandırılır; toplam iki adet 120 Ω direnç etkin olur. Bu örnekte uçlardan biri roboRIO'dur ve direnci dahilidir, diğeri PDH'tir ve sonlandırma cihaz üzerinden yapılandırılır. Aradaki altı cihazda sonlandırma etkinleştirilmez. Cevap cihaz sayısına değil, hattın uç sayısına bağlıdır: zincire cihaz eklemek bu sayıyı değiştirmez.",
+      "hint": "Direnç sayısı cihaz sayısına mı, yoksa hattın uç sayısına mı bağlı?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html",
+      "sourceNote": "PDH'in sonlandırmasının cihaz üzerinden yapılandırıldığı bilgisi: https://docs.revrobotics.com/ion-control/pdh/overview"
+    },
+    {
+      "id": "electrical-03-d4",
+      "type": "multiple_choice",
+      "prompt": "Takım dört yeni SPARK MAX taktı ve hiçbirinin ayarını değiştirmeden robotu çalıştırdı. Bu kurulumun sorunu nedir?",
+      "options": [
+        "SPARK MAX cihazlarının CAN ID'si yoktur; adresleme zincirdeki sıraya göre otomatik yapılır.",
+        "Dördü de kutudan 0 CAN ID'si ile çıkar; aynı hatta aynı tipteki her cihazın benzersiz bir CAN ID'si olması gerekir.",
+        "Sorun yoktur; CAN ID'leri yalnızca zincirde beşten fazla cihaz varsa değiştirilir.",
+        "Dördünün de ID'si aynı olmalıdır; CAN ID cihazın markasını ve tipini belirtir."
+      ],
+      "correctIndex": 1,
+      "explanation": "SPARK MAX kutudan 0 device ID'si ile çıkar ve üretici hattaki her cihaza benzersiz bir CAN ID atanmasını ister; kullanılabilir aralık 1-62'dir. ID'ler cihaz bir Windows bilgisayara bağlanarak REV Hardware Client ile değiştirilir. Protokol tarafında device number altı bitlik bir alandır ve aynı cihaz tipi içinde benzersiz olmak zorundadır; bu nedenle aynı tipteki dört SPARK MAX aynı numarayı paylaşamaz. Adresleme zincirdeki fiziksel sıraya göre otomatik yapılmaz; cihazın konumu ile ID'si arasında bir bağ yoktur.",
+      "hint": "Kutudan çıkan iki cihazın ID'si birbirinden farklı mı? Farklı değilse hat onları nasıl ayırt eder?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.revrobotics.com/brushless/spark-max/control-interfaces",
+      "sourceNote": "Device number'ın altı bitlik olduğu ve cihaz tipi içinde benzersiz olması gerektiği: https://docs.wpilib.org/en/stable/docs/software/can-devices/can-addressing.html"
+    },
+    {
+      "id": "electrical-03-d5",
+      "type": "diagnose",
+      "symptom": "CAN zinciri roboRIO'dan başlıyor ve şu sırayla ilerliyor: SPARK MAX 1, SPARK MAX 2, SPARK MAX 3, SPARK MAX 4, PH, PDH. Robot açıldığında SPARK MAX 1, 2 ve 3 haberleşiyor; SPARK MAX 4, PH ve PDH hiç görünmüyor. Tüm cihazların besleme bağlantıları sağlam ve LED'leri güç aldıklarını gösteriyor.",
+      "prompt": "Arıza büyük olasılıkla nerededir?",
+      "options": [
+        "SPARK MAX 4'ün CAN ID'si yanlış ayarlanmıştır.",
+        "PDH'in sonlandırması cihaz üzerinden devre dışı bırakılmış olarak kalmıştır.",
+        "SPARK MAX 3 ile SPARK MAX 4 arasındaki CAN bağlantısında kopukluk vardır.",
+        "roboRIO'nun CAN portu arızalıdır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Daisy chain seri bir hattır: bir noktada oluşan kopukluk hattı ikiye böler. Kopukluktan önceki cihazlar roboRIO ile haberleşmeye devam eder, sonrasındaki her şey hattan düşer. Burada çalışanlar ile çalışmayanlar tam olarak SPARK MAX 3 ile SPARK MAX 4 arasında ayrılmaktadır; arıza bu segmenttedir. Birinci şık elenir çünkü yanlış bir CAN ID yalnızca o cihazı etkiler, PH ve PDH'i de hattan düşürmez. Dördüncü şık elenir çünkü roboRIO'nun portu arızalı olsaydı hiçbir cihaz haberleşmezdi. LED'lerin yanıyor olması arızanın besleme tarafında değil, CAN kablo çiftinde olduğunu gösterir.",
+      "hint": "Çalışan cihazlar ile çalışmayanlar zincirde hangi noktada ayrılıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"
+    },
+    {
+      "id": "electrical-03-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, CAN trafiğini bölmek için CTR Electronics CANivore USB-to-CAN adaptörünü ekliyor ve PH'i bu yeni CAN hattına taşımayı planlıyor. Bu plan uygun mudur?",
+      "options": [
+        "Uygundur. Kurallar ek CAN hatları eklemeye izin verir ve her cihaz bu hatlara taşınabilir.",
+        "Uygundur. PH yalnızca pnömatik sistemi kontrol ettiği için hangi CAN hattına bağlandığı serbesttir.",
+        "Uygun değildir. CANivore gibi USB-to-CAN adaptörleri robot üzerinde hiçbir şekilde kullanılamaz.",
+        "Uygun değildir. Kurallar ek CAN hattı eklemeye izin verir, ancak PH'in roboRIO'nun dahili CAN hattı üzerinden kontrol edilmesi zorunludur."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kurallar CANivore adaptörü ile roboRIO'ya ek CAN hatları eklenmesine adıyla izin verir. Ancak PCM, PH ve Servo Hub için ayrı bir madde vardır: bu cihazların sinyal girişleri roboRIO'dan gelmeli ve roboRIO'nun dahili CAN hattı üzerinden taşınmalıdır. Motor controller'lar için böyle bir kısıt yoktur; onlar ek hatta taşınabilir. Üçüncü şık yanlıştır çünkü adaptör açıkça izin verilen cihazlar arasında sayılmıştır. Bu ayrım, CAN yükünü bölmek isteyen takımların planını doğrudan etkiler: bölme yapılabilir, ancak pnömatik kontrol birimleri dahili hatta kalmak zorundadır.",
+      "hint": "Ek CAN hattı eklemek serbest mi? Serbestse, her cihaz o hatta taşınabilir mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R715",
+          "season": "2026",
+          "topic": "PCM, PH ve Servo Hub roboRIO'nun dahili CAN hattından kontrol edilir"
+        },
+        {
+          "rule": "R717",
+          "season": "2026",
+          "topic": "CANivore ile ek CAN hattı eklenebilir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-03-d7",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki dört uygulamadan üçü kurallara uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Bir takım CAN hattını yeniden düzenlemiş ve yaptığı değişiklikleri aşağıdaki gibi anlatıyor.",
+      "elements": [
+        "Motor controller'lar, yalnızca pasif iletkenlerden oluşan bir dağıtım bloğu üzerinden star biçiminde bağlanmış.",
+        "roboRIO ile motor controller'lar arasına, sinyali tazelediği söylenen aktif bir CAN tekrarlayıcı kart yerleştirilmiş.",
+        "CAN kabloları 22 AWG kesitinde; sinyal seviyesi devreler için istenen minimum kalınlığın üzerinde.",
+        "PH, roboRIO'nun dahili CAN hattı üzerinden kontrol ediliyor."
+      ],
+      "faultIndex": 1,
+      "explanation": "Kural, roboRIO ile PCM/PH'ler ve CAN motor controller'lar arasındaki haberleşmeyi değiştiren, engelleyen veya buna karışan hiçbir cihaza izin vermez. Hattın üzerine yerleştirilen aktif bir tekrarlayıcı kart tam olarak bu tanıma girer. Buna karşılık yalnızca pasif iletkenlerden oluşan star veya hub düzenleri kurallarca açıkça izinlidir: daisy chain önerilen topolojidir, tek izinli topoloji değildir. Bu ayrım sık karıştırılır. Üçüncü öğe de doğrudur; sinyal seviyesi devreler için istenen minimum 28 AWG'dir ve 22 AWG bundan daha kalındır. Dördüncü öğe pnömatik kontrol birimleri için konan zorunluluğa uygundur.",
+      "hint": "Hangi öğe hattın üzerine, sinyale müdahale eden bir şey koyuyor? Pasif bir blok ile aktif bir kart aynı şey midir?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R716",
+          "season": "2026",
+          "topic": "haberleşmeyi değiştiren veya engelleyen cihaz kullanılamaz"
+        },
+        {
+          "rule": "R714",
+          "season": "2026",
+          "topic": "çeldirici: yalnızca pasif iletkenlerle kurulan star düzenlerine izin verilir"
+        },
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "çeldirici: sinyal seviyesi devreler için minimum 28 AWG"
+        },
+        {
+          "rule": "R715",
+          "season": "2026",
+          "topic": "çeldirici: PH dahili CAN hattından kontrol edilir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-03-d8",
+      "type": "diagnose",
+      "symptom": "Maçın ortasında intake ve shooter aynı anda yanıt vermeyi bıraktı. Drivetrain ve roboRIO maç boyunca normal çalıştı ve driver station bağlantısı kesilmedi. Maçtan sonra pit'te robot yeniden çalıştırıldığında her şey normaldi ve arıza tekrarlanmadı. CAN zincirinde intake ve shooter motor controller'ları, drivetrain motor controller'larından sonra geliyor.",
+      "prompt": "İlk olarak neyi kontrol edersiniz?",
+      "options": [
+        "Zincirde drivetrain cihazlarından sonra gelen ilk CAN bağlantısını; titreşimle gevşeyen bir kablo o noktadan sonrasını hattan düşürür.",
+        "Intake ve shooter motor controller'larının CAN ID ayarlarını.",
+        "Battery'nin şarj durumunu ve maç sonundaki gerilimini.",
+        "Intake ve shooter kodunu; büyük olasılıkla bir yazılım hatası vardır."
+      ],
+      "correctIndex": 0,
+      "explanation": "İki cihazın aynı anda düşmesi ve arızanın kendiliğinden geçmesi, ayar veya kod sorununa değil mekanik bir bağlantı sorununa işaret eder: yanlış bir CAN ID veya bir kod hatası maçın ortasında ortaya çıkmaz ve kendiliğinden düzelmez. Daisy chain seri bir hat olduğu için tek bir gevşek iletken kendisinden sonraki her şeyi hattan düşürür ve düşen grup tam olarak zincirin o noktadan sonraki kısmıdır. Drivetrain'in etkilenmemesi, arızanın drivetrain cihazlarından sonraki bir noktada olduğunu söyler. Battery zayıflasaydı roboRIO ve drivetrain de etkilenirdi. WPILib'in kablolama önerileri tam bu nedenle her bağlantının çekilerek denenmesini ve kabloların bağlantı noktalarına yakın, gerilim oluşturmayacak şekilde sabitlenmesini ister.",
+      "hint": "İki cihaz aynı anda düştü ve kendiliğinden geri geldi. Bu, ayar sorunu ile mekanik sorun arasında hangisine işaret eder?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html",
+      "sourceNote": "Zincirin seri yapısı ve kopukluğun etkisi: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"
+    }
+  ]
+}

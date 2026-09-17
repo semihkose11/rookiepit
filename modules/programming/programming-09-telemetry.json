@@ -1,0 +1,296 @@
+{
+  "id": "programming-09-telemetry",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 9,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Telemetry ve Driver Station Loglarıyla Hata Ayıklama",
+  "summary": "Basit değer ile Sendable arasındaki farkı, her birinin koda nereye konulacağını ve Driver Station log grafiğinin dört kanalının birlikte nasıl okunacağını öğretir.",
+  "prerequisites": [
+    "programming-02-deploy"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Telemetry, robot kodundan dashboard'a veri göndermektir. Basit değerler için SmartDashboard sınıfının putNumber, putString ve putBoolean metotları kullanılır; dokümantasyon bunları, tipe uygun metodu çağırıp verinin adı ile değerini vermek olarak tarif eder. Bu metotlar çağrıldıkları anda bir değer yazar; değerin güncel kalması için her döngüde yeniden çağrılmaları gerekir.\n\nSendable, WPILib'in robot telemetry'sini kolaylaştırmak için sağladığı bir interface'tir. Bu interface'i uygulayan sınıflar durumlarını declarative biçimde dashboard'a gönderebilir ve bir kez bildirildikten sonra WPILib telemetry değerlerini her robot döngüsünde kendiliğinden gönderir. Bir Sendable nesnesini göndermek için dashboard'ın putData metodu kullanılır. Basit veri tiplerinin aksine Sendable'lar ek bir kullanıcı kodu olmadan güncel tutulur. Bunun doğrudan sonucu kaynakta kural olarak yazılıdır: Sendable'lar genellikle bir initialization bloğunda veya constructor'da gönderilmelidir, periodic bir fonksiyonda değil.\n\nDriver station, çalışırken hata ayıklamaya yardımcı olacak önemli tanılama verilerinin log dosyalarını üretir. Bu dosyalar driver station bilgisayarında C:\\Users\\Public\\Documents\\FRC\\Log Files klasöründe tutulur ve her log .dslog ile .dsevents uzantılı iki dosyadan oluşur. Log File Viewer dört büyüklüğü renkli kanallar hâlinde çizer: milisaniye cinsinden trip time yeşil çizgi, saniyedeki lost packet sayısı mavi dikey çubuklar, battery gerilimi sarı çizgi ve roboRIO CPU yüzdesi kırmızı çizgi. Ayrı bir grafik de robot mode ile driver station mode'unu gösterir; üst set driver station'ın komut ettiği mode'u, alt set robot kodunun raporladığı mode'u verir.",
+    "keyTerms": [
+      {
+        "term": "telemetry",
+        "glossTr": "robot kodundan dashboard'a gönderilen veri"
+      },
+      {
+        "term": "SmartDashboard",
+        "glossTr": "robot verisinin gönderildiği dashboard sınıfı"
+      },
+      {
+        "term": "putNumber",
+        "glossTr": "dashboard'a tek bir sayı değeri yazan metot"
+      },
+      {
+        "term": "putData",
+        "glossTr": "dashboard'a bir Sendable nesnesi gönderen metot"
+      },
+      {
+        "term": "Sendable",
+        "glossTr": "durumunu declarative olarak dashboard'a gönderebilen interface"
+      },
+      {
+        "term": "trip time",
+        "glossTr": "driver station ile robot arasındaki gidiş dönüş süresi"
+      },
+      {
+        "term": "lost packet",
+        "glossTr": "ulaşmayan haberleşme paketi"
+      },
+      {
+        "term": "Log File Viewer",
+        "glossTr": "driver station log dosyalarını grafikle gösteren araç"
+      },
+      {
+        "term": "dslog",
+        "glossTr": "grafik verisini taşıyan driver station log dosyası uzantısı"
+      },
+      {
+        "term": "dsevents",
+        "glossTr": "driver station log'unun ikinci dosyasının uzantısı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-09-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "TELEMETRY",
+      "front": "İki telemetry biçimi, iki ayrı yere yazılır.",
+      "back": "Basit değerler için SmartDashboard sınıfının putNumber, putString ve putBoolean metotları kullanılır ve tipe uygun metot çağrılıp verinin adı ile değeri verilir. Bu metotlar çağrıldıkları anda bir değer yazar; değerin güncel kalması için her döngüde yeniden çağrılmaları gerekir. Sendable ise WPILib'in robot telemetry'sini kolaylaştırmak için sağladığı bir interface'tir. Bu interface'i uygulayan sınıflar durumlarını declarative biçimde gönderir ve bir kez bildirildikten sonra WPILib telemetry değerlerini her robot döngüsünde kendiliğinden gönderir. Buradan kural çıkar: Sendable'lar genellikle bir initialization bloğunda veya constructor'da gönderilmelidir, periodic bir fonksiyonda değil.",
+      "takeaway": "Kendiliğinden güncellenen bir şeyi her döngüde yeniden göndermeye gerek yok",
+      "tags": [
+        "SmartDashboard",
+        "Sendable",
+        "putData"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-09-d2",
+        "programming-09-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-09-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "TELEMETRY",
+      "front": "Log grafiğinin dört kanalı ancak birlikte okunur.",
+      "back": "Log File Viewer dört büyüklüğü renkli kanallar hâlinde çizer: milisaniye cinsinden trip time yeşil çizgi, saniyedeki lost packet sayısı mavi dikey çubuklar, battery gerilimi sarı çizgi ve roboRIO CPU yüzdesi kırmızı çizgi. Teşhis tek bir kanaldan değil, dördünün birlikte okunmasından çıkar. Yeşil tavan yapmış ve mavi çubuklar yoğunlaşmışsa haberleşme kesintisi vardır; sarı çizginin düz olması güç tarafını eler. Kırmızı tavana yakın seyrederken diğer üçü normalse roboRIO CPU'su doymuştur. Normal kalan kanallar da bilgi verir: neyin olmadığını söyleyerek aramayı daraltırlar.",
+      "takeaway": "Normal kalan kanal da bir kanıttır; neyin olmadığını söyler",
+      "tags": [
+        "Log File Viewer",
+        "trip time",
+        "CPU"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-09-d3",
+        "programming-09-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-09-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "TELEMETRY",
+      "front": "Autonomous hiç çalışmadı. Takım brownout sanıp battery değiştirmeyi tartışıyor.",
+      "back": "Log sarı çizginin maç boyunca düz olduğunu gösteriyorsa güç tarafı elenmiştir ve battery değiştirmek bir şeyi düzeltmez. Asıl bilgi mode grafiğindedir: üst set driver station'ın komut ettiği mode'u, alt set robot kodunun raporladığı mode'u verir. Üst set autonomous ve enable gösterirken alt set aynı anda disabled gösteriyorsa, robot o anda komut edilen mode'da değildir ve arama kodun kendisine döner. Bu pit'in dersi teşhisin nereden başladığıdır: belirtiye en yakın duran açıklama değil, logun elediği açıklama seçilir.",
+      "takeaway": "Elenen açıklamalar, seçilen açıklamadan daha çok iş görür",
+      "tags": [
+        "mode grafiği",
+        "teşhis",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-09-d8",
+        "programming-09-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-09-d1",
+      "type": "debug_code",
+      "language": "java",
+      "prompt": "Bu subsystem'de encoder mesafesinin dashboard'a sayı olarak gönderilmesi isteniyor. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "code": "public class Drivetrain extends SubsystemBase {\n  private final Encoder m_encoder = new Encoder(0, 1);\n  private final PIDController m_pid = new PIDController(0.5, 0.0, 0.0);\n\n  public Drivetrain() {\n    m_encoder.setDistancePerPulse(0.0005);\n    SmartDashboard.putData(\"Drive PID\", m_pid);\n  }\n\n  @Override\n  public void periodic() {\n    SmartDashboard.putData(\"Distance\", m_encoder.getDistance());\n  }\n}",
+      "buggyLine": 12,
+      "correctAnswer": "SmartDashboard.putNumber(\"Distance\", m_encoder.getDistance());",
+      "acceptableAnswers": [
+        "SmartDashboard.putNumber(\"Distance\", m_encoder.getDistance());",
+        "SmartDashboard.putNumber(\"Distance\", m_encoder.getDistance())"
+      ],
+      "explanation": "putData metodu bir Sendable nesnesini dashboard'a göndermek içindir. getDistance metodunun döndürdüğü şey bir nesne değil, düz bir sayıdır ve düz sayılar putNumber ile gönderilir. Bu sınıf iki deseni birden bilerek içerir. Yedinci satır doğrudur ve doğru yerdedir: PIDController bir Sendable'dır, putData ile constructor içinde gönderilmiştir ve kaynağın önerdiği yerleşim budur, çünkü Sendable'lar genellikle bir initialization bloğunda veya constructor'da gönderilmelidir, periodic bir fonksiyonda değil. On ikinci satırdaki değer ise tersine periodic'te olmalıdır, çünkü putNumber çağrıldığı anda bir değer yazar ve güncel kalması için her döngüde tekrarlanması gerekir. Yani satırın yeri doğru, metodu yanlıştır.",
+      "hint": "İki farklı put metodu var. Hangisi nesne alır, hangisi düz bir değer alır?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/telemetry/robot-telemetry-with-sendable.html",
+      "sourceNote": "putNumber ve basit değer yazma: https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/displaying-expressions.html"
+    },
+    {
+      "id": "programming-09-d2",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci PIDController nesnesini periodic metodundan putData ile gönderiyor, encoder mesafesini ise constructor'da bir kez putNumber ile gönderiyor. İki yerleştirme de yanlıştır. Doğru düzen hangisidir?",
+      "options": [
+        "PIDController constructor'da putData ile bir kez gönderilir; encoder mesafesi ise periodic içinde putNumber ile her döngüde yeniden gönderilir.",
+        "Her ikisi de constructor'da gönderilir, çünkü dashboard bağlantısı yalnızca robot açılırken kurulur ve sonradan gönderilen girişler listeye eklenmez.",
+        "Her ikisi de periodic içinde gönderilir, çünkü dashboard yalnızca son döngüde gönderilen girişleri gösterir ve gönderilmeyen her giriş listeden düşer.",
+        "Öğrencinin düzeni zaten doğrudur, çünkü putData'nın tekrar tekrar gönderilmesi gerekir, putNumber ise bir kez gönderilip WPILib tarafından güncel tutulur."
+      ],
+      "correctIndex": 0,
+      "explanation": "İki metot birbirinin tersi biçimde çalışır ve öğrenci ikisini de yer değiştirmiştir. Sendable'lar için kaynak şunu söyler: bu interface'i uygulayan sınıflar durumlarını declarative olarak gönderir ve bir kez bildirildikten sonra WPILib telemetry değerlerini her robot döngüsünde kendiliğinden gönderir; basit veri tiplerinin aksine ek bir kullanıcı kodu gerekmez. Kaynak bunun sonucunu ayrıca kural olarak yazar: Sendable'lar genellikle bir initialization bloğunda veya constructor'da gönderilmelidir, periodic bir fonksiyonda değil. Basit değerler ise tam tersidir; putNumber çağrıldığı anda tek bir değer yazar, kendiliğinden güncellenmez ve güncel kalması için her döngüde tekrarlanmalıdır. Dördüncü şık öğrencinin varsayımını olduğu gibi tekrarlar. İkinci ve üçüncü şıklar dashboard hakkında kaynakta bulunmayan davranışlar uydurur.",
+      "hint": "Hangisi bir kez bildirilip WPILib tarafından güncel tutuluyor, hangisi her seferinde yeniden yazılıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/telemetry/robot-telemetry-with-sendable.html",
+      "sourceNote": "putNumber ve basit değer yazma: https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/displaying-expressions.html"
+    },
+    {
+      "id": "programming-09-d3",
+      "type": "diagnose",
+      "symptom": "Maç sırasında robot birkaç saniye boyunca hiçbir komuta tepki vermedi. Log File Viewer'da o ana bakıldığında yeşil çizgi tavan yapmış ve mavi dikey çubuklar yoğunlaşmış. Sarı çizgi ise maç boyunca düz ve normal seviyede seyrediyor.",
+      "prompt": "Grafik neyi gösteriyor?",
+      "options": [
+        "Battery zayıflamış ve gerilim çökmüştür; sarı çizgi bu tür kısa olaylarda ölçüm gecikmesi nedeniyle düz görünür, bu yüzden battery değiştirilmelidir.",
+        "Haberleşme kesintisi yaşanmıştır; yeşil çizgi trip time'ı, mavi dikey çubuklar saniyedeki lost packet sayısını gösterir ve sarı çizgi düz kalmıştır.",
+        "roboRIO CPU'su dolmuştur; CPU doygunluğu grafikte yalnızca trip time ve paket kaybı olarak görünür, kırmızı çizgi bu durumda çizilmediği için bir şey göstermez.",
+        "Robot kodu çökmüştür; kod çöktüğü anda haberleşme paketleri de kesileceği için trip time yükselir ve paket kaybı artar, battery gerilimi ise etkilenmez."
+      ],
+      "correctIndex": 1,
+      "explanation": "Grafiğin dört kanalı birlikte okunduğunda cevap tek kalıyor. Yeşil çizgi milisaniye cinsinden trip time'dır ve tavan yapması driver station ile robot arasındaki gidiş dönüş süresinin uzadığını söyler. Mavi dikey çubuklar saniyedeki lost packet sayısıdır ve yoğunlaşmaları paketlerin ulaşmadığını gösterir. İkisi birlikte haberleşme tarafını işaret eder. Sarı çizgi battery gerilimidir ve düz kalması güç açıklamasını eler; birinci şık bunu ölçüm gecikmesiyle geçiştirmeye çalışıyor, oysa gerilim bu grafikte doğrudan çizilir. Üçüncü şık kırmızı çizginin varlığını yok sayıyor; CPU yüzdesi grafikte ayrı bir kanal olarak zaten çizilir ve belirtide anormal olduğu söylenmiyor. Dördüncü şık akla yatkın görünse de belirtinin desteklemediği bir iddiada bulunuyor. Kaynak, Communications göstergesinin driver station ile roboRIO üzerindeki FRC Network Communications Task arasındaki haberleşmeyi bildirdiğini, Robot Code göstergesinin ise takım kodunun çalışıp çalışmadığını bildirdiğini söyler; yani ikisi ayrı şeyleri ölçer. Takım kodunun çökmesinin paket kaybı üretip üretmeyeceği kaynakta yazmaz ve belirtide Robot Code göstergesine dair hiçbir gözlem yoktur. Bu şık, elimizdeki verinin işaret etmediği bir açıklamayı öne sürdüğü için elenir; trip time ile paket kaybının birlikte bozulması doğrudan haberleşme kanalını gösterir.",
+      "hint": "Dört kanaldan üçü belirtide anılıyor. Anılmayanı ve normal olanı hangi ihtimalleri eliyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html",
+      "sourceNote": "Robot Code göstergesinin anlamı: https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html"
+    },
+    {
+      "id": "programming-09-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi telemetry ve log okuma konusunda bir başvuru sayfası hazırlıyor.",
+      "elements": [
+        "Log dosyaları driver station bilgisayarında tutulur ve her log .dslog ile .dsevents uzantılı iki dosyadan oluşur.",
+        "Log grafiğinde sarı çizgi battery gerilimini, kırmızı çizgi roboRIO CPU yüzdesini gösterir.",
+        "Mode grafiğinde üst set driver station'ın komut ettiği mode'u, alt set robot kodunun raporladığı mode'u gösterir.",
+        "Sendable nesneleri dashboard'da güncel kalsın diye her periodic çağrısında yeniden putData ile gönderilmelidir.",
+        "putNumber ile gönderilen bir değerin güncel kalması için metodun her döngüde yeniden çağrılması gerekir."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak bunun tam tersini söyler ve iki ayrı yerde söyler. Önce mekanizmayı verir: Sendable'lar basit veri tiplerinin aksine, ek bir kullanıcı kodu olmadan WPILib tarafından dashboard'da güncel tutulur. Sonra bunu bir kurala çevirir: Sendable'lar genellikle bir initialization bloğunda veya constructor'da gönderilmelidir, periodic bir fonksiyonda değil. Yani dördüncü ifade yalnızca gereksiz değil, kaynağın açıkça uyardığı bir yerleştirmedir. Bu yanlış inancın pratikteki bedeli, aynı nesnenin her döngüde yeniden bildirilmesi ve iki mekanizmanın karıştırılmasıdır. Beşinci ifade doğrudur ve karşıtlığı görmek için oradadır. Kaynak bunu ayrı bir cümleyle söylemez; ifade, Sendable'ları tarif eden cümlenin başındaki basit veri tiplerinin aksine karşılaştırmasından çıkar.",
+      "hint": "İki ifade aynı konuda ama zıt yönde iddiada bulunuyor. Kaynak hangisini kural olarak yazıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/telemetry/robot-telemetry-with-sendable.html",
+      "sourceNote": "Log dosyaları ve grafik kanalları: https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html | putNumber ve basit değer yazma: https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/displaying-expressions.html"
+    },
+    {
+      "id": "programming-09-d5",
+      "type": "multiple_choice",
+      "prompt": "Etkinlikte bir önceki maçta yaşanan kesintiyi incelemek istiyorsunuz. Log dosyalarına nereden ulaşırsınız?",
+      "options": [
+        "Field Management System'den; maç logları saha yönetimi tarafından tutulur ve takımlara ancak yazılı talep üzerine iki dosya hâlinde verilir.",
+        "roboRIO'nun dosya sisteminden; loglar robot üzerinde tutulur ve bir sonraki deploy sırasında bilgisayara kopyalanarak proje klasörüne yazılır.",
+        "Driver station bilgisayarında C:\\Users\\Public\\Documents\\FRC\\Log Files klasöründen; her log .dslog ve .dsevents uzantılı iki dosyadan oluşur.",
+        "Robot kodunun proje klasöründen; loglar build sırasında oluşturulan bir alt klasöre .dslog ve .dsevents olarak yazılır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Log dosyalarını üreten taraf driver station'dır; kaynak, driver station'ın çalışırken hata ayıklamaya yardımcı olacak önemli tanılama verilerinin log dosyalarını oluşturduğunu söyler. Dosyalar bu nedenle robotta değil, driver station bilgisayarında durur ve konumu C:\\Users\\Public\\Documents\\FRC\\Log Files klasörüdür. Her log iki dosyadan oluşur: .dslog ve .dsevents. Bu ayrıntının pratikteki önemi, hangi bilgisayara bakılacağını bilmektir. Etkinlikte sürücü bilgisayarı çoğu zaman tek bir kişide durur ve loglar yalnızca o makinede vardır; başka bir bilgisayarla driver station çalıştırıldığı maçların logları o makinede olmaz. Diğer üç şık logların üretildiği yeri yanlış konumlandırır.",
+      "hint": "Bu logları hangi program üretiyor? Program hangi makinede çalışıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html"
+    },
+    {
+      "id": "programming-09-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım maç sırasındaki bir motor takılmasını incelemek için Log File Viewer'daki akım grafiğine bakmak istiyor. Robotta CTRE PDP 2.0 kullanılıyor. Ne bulacaklar?",
+      "options": [
+        "Akım grafiği yalnızca robot enable durumdayken kaydedilecek; maç sonrası bakıldığında disable dönemleri boş görünür ve takılma anı bu boşluklara denk gelebilir.",
+        "Akım grafiği görünecek ancak yalnızca toplam akımı verecek; kanal başına akım için üreticinin kendi aracını ayrıca kurmaları ve robotu yeniden loglama moduna almaları gerekir.",
+        "Akım grafiği tam olarak görünecek; PDP 2.0 kanal başına akım loglamasını destekleyen tek cihazdır ve bu veriler her maçta otomatik olarak log dosyasına yazılır.",
+        "Akım logları grafikte hiç bulunmayacak; CTRE PDP 2.0 ve AndyMark AMPD cihazları yerleşik akım loglamasına sahip değildir ve akım logları grafik ekranında görünmez."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak bunu bir not olarak ayrıca yazar: CTRE PDP 2.0 ve AndyMark AMPD cihazlarının yerleşik akım loglaması yoktur ve akım logları grafik ekranında bulunmaz. Yani takımın planı en baştan işlemeyecektir ve bunu pit'te öğrenmek zaman kaybıdır. Bu bilginin asıl değeri, hangi tanılama yolunun robotunuzda açık olduğunu önceden bilmektir; akım verisine ihtiyaç duyan bir takım bu veriyi başka bir yoldan, örneğin kendi kodundan telemetry olarak kaydetmeyi önceden planlamalıdır. Diğer üç şık akım verisinin bir biçimde mevcut olduğunu varsayar ve yalnızca erişim koşulunu değiştirir; hepsi aynı temel hatayı paylaşır.",
+      "hint": "Bu cihazda akım verisi log dosyasına hiç giriyor mu?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html"
+    },
+    {
+      "id": "programming-09-d7",
+      "type": "diagnose",
+      "symptom": "Robot maç boyunca komutlara geç tepki veriyor ve sürücü belirgin bir gecikmeden şikâyet ediyor. Log File Viewer'da kırmızı çizgi maçın büyük bölümünde tavana yakın seyrediyor. Yeşil çizgi normal, mavi dikey çubuk hiç yok ve sarı çizgi düz.",
+      "prompt": "Grafiğin dört kanalı birlikte okununca ne söylüyor?",
+      "options": [
+        "roboRIO CPU'su doymuş durumdadır; kırmızı çizgi CPU yüzdesidir. Yeşil çizgi normal ve mavi çubuk olmadığı için haberleşme, sarı çizgi düz olduğu için güç elenir.",
+        "Haberleşme yavaşlamıştır; kırmızı çizgi trip time'ı gösterir ve tavana yakın seyretmesi ağ gecikmesine işaret eder, yeşil çizgi ise yalnızca paket sayısını çizdiği için normal görünür.",
+        "Battery zayıflamıştır; kırmızı çizgi gerilim düşüşünü gösterir ve sarı çizgi yalnızca nominal gerilimi çizdiği için her zaman düz görünür, bu yüzden battery değiştirilmelidir.",
+        "Robot kodu takılmıştır; kırmızı çizgi robot kodunun raporladığı mode'u gösterir ve tavanda kalması kodun bir döngüde kilitlendiği anlamına gelir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Bu drill'in tamamı hangi çizginin ne olduğunu bilmeye dayanır. Grafikteki kırmızı çizgi roboRIO CPU yüzdesidir; yeşil çizgi trip time, mavi dikey çubuklar lost packet, sarı çizgi ise battery gerilimidir. Kırmızı çizginin tavana yakın seyretmesi CPU'nun doyduğunu söyler ve gecikme belirtisi bununla tutarlıdır. Diğer üç kanal aynı anda üç ihtimali eler: yeşil çizgi normal ve paket kaybı yok olduğu için haberleşme, sarı çizgi düz olduğu için güç sorunu elenir. İkinci, üçüncü ve dördüncü şıkların hepsi kırmızı çizgiyi başka bir şeyle karıştırır; sırasıyla trip time, gerilim ve robot mode. Mode bilgisi zaten ayrı bir grafikte, iki set hâlinde gösterilir ve dört renkli kanaldan biri değildir. Kod tarafında ne yapılacağına gelince, CPU doygunluğunun tipik sebebi her döngüde çalışan kodun ağırlaşmasıdır; periodic metotları ile command execute metotları bu yüzden hafif tutulur.",
+      "hint": "Dört renkli kanalın hangisi CPU'yu gösteriyor? Diğer üçünün normal olması ne kadar ihtimali eliyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html"
+    },
+    {
+      "id": "programming-09-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte autonomous rutini bir maçta hiç çalışmadı. Takım brownout yaşandığını düşünüyor ve pit'te battery değiştirmeyi tartışıyor. Log File Viewer'da sarı çizgi maç boyunca düz. Mode grafiğinde üst set autonomous ve enable gösterirken alt set aynı anda disabled gösteriyor; birkaç saniye sonra iki set tekrar eşleşiyor.",
+      "prompt": "Grafik ne söylüyor ve takımın planı doğru mu?",
+      "options": [
+        "Plan doğrudur; anlık brownout'lar grafikte görünmeyecek kadar kısa sürdüğü için sarı çizgi düz kalır ve mode ayrışması da bu kısa kesintinin bir sonucudur.",
+        "Plan yanlıştır. Üst set driver station'ın komut ettiği, alt set robot kodunun raporladığı mode'dur; ayrışma robotun o mode'a girmediğini söyler.",
+        "Plan yanlıştır. Üst set robot kodunun raporladığı mode'u, alt set driver station'ın komut ettiğini gösterir; yani driver station komutu geç göndermiştir ve aranacak yer sürücü bilgisayarıdır.",
+        "Plan doğrudur; iki setin birbirinden ayrılması her maçta görülen normal bir gecikmedir ve gerçek sorun sarı çizginin ortalama seviyesinin düşük olmasıdır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Mode grafiği tam olarak bu tür bir ayrışmayı görünür kılmak için iki set hâlinde çizilir: üst set driver station'ın komut ettiği mode, alt set robot kodunun raporladığı mode. İkisinin aynı anda farklı şey göstermesi, komutun gönderildiğini ancak robotun o mode'a girmediğini söyler. Birkaç saniye sonra eşleşmeleri de bunu destekler; robot tarafında bir şey geç toparlanmıştır. Sarı çizginin maç boyunca düz kalması da güç açıklamasını eler, çünkü battery gerilimi bu grafikte doğrudan çizilir ve bir çökme burada görünürdü; birinci şık bunu ölçüm süresiyle geçiştirmeye çalışır. Yani takımın planı yanlış yere para ve zaman harcatır. Üçüncü şık iki seti ters tarif eder ve teşhisi yanlış makineye yönlendirir; bu, iki setin hangisinin hangisi olduğunu bilmemenin doğrudan bedelidir. Birinci ve dördüncü şıklar ayrışmayı normalleştirir ve takımı aynı yanlış çözüme geri götürür. Pit'te doğru davranış, battery'ye dokunmadan önce robot tarafındaki başlangıç davranışını incelemektir.",
+      "hint": "Mode grafiğinde iki set var. Hangisi kimin söylediğini gösteriyor ve ikisinin ayrışması ne demek?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html"
+    }
+  ]
+}

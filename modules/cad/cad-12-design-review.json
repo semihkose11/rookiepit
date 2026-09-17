@@ -1,0 +1,315 @@
+{
+  "id": "cad-12-design-review",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 12,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Capstone: CAD Tasarım İncelemesi",
+  "summary": "Bölümün tamamını birleştirir: bir robot CAD'ini imalata ve denetime göndermeden önce hangi kontrollerin hangi sırayla yapılacağını ve hangi kusurların CAD'de sessiz kaldığını gerçek inceleme kararları üzerinden çalıştırır.",
+  "prerequisites": [
+    "cad-11-robot-rules"
+  ],
+  "estimatedMinutes": 50,
+  "concept": {
+    "body": "Tasarım incelemesi, CAD'i imalata ve denetime göndermeden önce yapılan son okumadır. Bu bölümde öğrenilen her modül burada bir kontrol maddesine dönüşür.\n\nİncelemenin en zor tarafı, kusurların çoğunun ekranda hata olarak görünmemesidir. Context bir snapshot'tır ve güncellemeler hiçbir zaman kendiliğinden uygulanmaz; bayat bir context'te model temiz görünür. Group, part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar; assembly gerçek robotu göstermeyi bırakmış olabilir. Değeri elle yazılmış bir ölçü altı çizili görünür ve artık geometriyi izlemez. Update işlemi yalnızca drawing view'larını tazeler, başka document'lardaki bağlantıların güncelliğini kontrol etmez. Bunların hiçbiri kırmızı bir uyarı üretmez.\n\nİkinci zorluk, kural kontrollerinin tek bir konumda yapılamamasıdır. Denetim robotu hem kapalı hâlde hem uzamış hâlde sınar; kural yalnızca uzamış robotun uygun olmasını ister, bu bölümün önerdiği yöntem ise hareketli mekanizmaların uç konumlarını ayrı configuration veya context olarak modelleyip her birini ayrı ölçmektir. Ölçüler, gerçek robotu temsil ettiğinden emin olunan bir assembly'den alınmalıdır.\n\nÜçüncü zorluk sıradır. Bir drawing, altındaki geometri güncellenmeden dondurulursa yanlış hâli dondurur. Bu yüzden önce context'ler güncellenir, sonra drawing update edilir ve kırmızı ile altı çizili ölçüler taranır, en sonunda document version'lanır. Version immutable olduğu için atölyeye giden hâl bir daha değişmez.",
+    "keyTerms": [
+      {
+        "term": "design review",
+        "glossTr": "imalat öncesi yapılan yapılandırılmış CAD incelemesi"
+      },
+      {
+        "term": "context",
+        "glossTr": "assembly geometrisinin yakalandığı snapshot"
+      },
+      {
+        "term": "Group",
+        "glossTr": "instance'ları origin'lerine göre sabitleyen assembly özelliği"
+      },
+      {
+        "term": "overridden",
+        "glossTr": "değeri elle yazılmış, altı çizili görünen ölçü"
+      },
+      {
+        "term": "dangling",
+        "glossTr": "geometriyle bağı kopmuş, kırmızı görünen ölçü"
+      },
+      {
+        "term": "configuration",
+        "glossTr": "bir part veya assembly'nin adlandırılmış varyantı"
+      },
+      {
+        "term": "version",
+        "glossTr": "document'ın adlandırılmış, değişmez hâli"
+      },
+      {
+        "term": "degrees of freedom",
+        "glossTr": "bir bağlantının serbest bıraktığı hareket sayısı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-12-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "İNCELEME",
+      "front": "İncelemede en zor iş, hata vermeyen kusurları görmektir.",
+      "back": "Tasarım incelemesi, CAD'i imalata ve denetime göndermeden önce yapılan son okumadır ve en zor tarafı, kusurların çoğunun ekranda hata olarak görünmemesidir. Context bir snapshot'tır ve güncellemeler hiçbir zaman kendiliğinden uygulanmaz; bayat bir context'te model temiz görünür. Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar; assembly gerçek robotu göstermeyi bırakmış olabilir. Değeri elle yazılmış bir ölçü altı çizili görünür ve artık geometriyi izlemez; Onshape açısından ortada arıza yoktur, update simgesi bile soluk kalır. Update işlemi ise yalnızca drawing view'larını tazeler, başka document'lardaki bağlantıların güncelliğini kontrol etmez. Bunların hiçbiri kırmızı bir uyarı üretmez. Bu yüzden inceleme gözle değil, maddeleri tek tek okunan bir listeyle yapılır.",
+      "takeaway": "Ekranda kırmızı görmemeyi bir onay saymayın; her sessiz kusur için listedeki maddeyi ayrıca okuyun",
+      "tags": [
+        "design review",
+        "context",
+        "overridden"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-12-d5",
+        "cad-12-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-12-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "İNCELEME",
+      "front": "Kontroller hangi sırayla ve kaç konumda yapılır?",
+      "back": "Sıra, her adımın bir öncekinin çıktısını kullanmasından doğar. Önce context'ler güncellenir, çünkü context güncellenmediyse part'ın Part Studio'su hâlâ eski geometriye göre şekillenmiştir. Sonra drawing update edilir; drawing view'larını Part Studio'dan aldığı için context güncellenmeden yapılan bir update yalnızca eski geometriyi tazeler. Update sonrası kırmızı ve altı çizili ölçüler taranır, çünkü update ölçüleri dangling hâle getirebilir. En sona document version'lanır; version'lamak drawing'i o hâlde dondurur ve version immutable olduğu için atölyeye giden hâl bir daha değişmez. Konum da tek değildir: denetim robotu hem kapalı hâlde hem uzamış hâlde sınar, kural yalnızca uzamış robotun uygun olmasını ister. Bu yüzden hareketli mekanizmaların uç konumları ayrı configuration veya context olarak modellenip her biri ayrı ölçülür.",
+      "takeaway": "Dondurma işlemini en sona bırakın ve kural ölçüsünü kapalı hâlde değil, uç konumu modellenmiş hâlde alın",
+      "tags": [
+        "sıra",
+        "version",
+        "configuration"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-12-d3",
+        "cad-12-d2"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-12-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "İNCELEME",
+      "front": "Ölçüler sınırların içindeydi, robot yine de denetimden geri çevrildi.",
+      "back": "Bir takım robot assembly'sinden çevre uzunluğunu, yüksekliği ve uzama mesafelerini ölçtü; hepsi sınırların içinde çıktı. Robot imal edildi ve denetimde yatay uzama sınırından geri çevrildi. Sebebi şuydu: intake şasiye Group ile bağlıydı ve ikisi ayrı Part Studio'larda tasarlanmıştı. Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar; şasi sezon içinde iki kez değiştiği hâlde intake'in origin'i aynı kaldığı için intake, assembly'de gerçekte olacağı yerden farklı bir konumda durmaya devam etti. Hiçbir mate kırmızıya dönmedi, çünkü ortada bozulmuş bir bağ yoktu. Takım ölçtüğü şeyin gerçek robot olduğunu sandı; ölçtüğü, yanlış konumlanmış bir modeldi. Doğrusu, değişmeye devam eden part'lar arasında gerçek geometriye referans veren bir mate kurmak ve kural ölçülerini ancak bundan sonra almaktır.",
+      "takeaway": "Kural ölçüsü almadan önce, ölçtüğünüz assembly'nin gerçek robotu gösterdiğini ayrıca doğrulayın",
+      "tags": [
+        "Group",
+        "assembly",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-12-d8",
+        "cad-12-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-12-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takımın robotunda aynı dış hatta sahip ancak üç farklı delik deseni olan gusset'ler var. Şu anda üçü de ayrı Part Studio'larda, birbirinden bağımsız modellenmiş. İncelemede dış hat değiştiğinde üçünü de elle güncellemek gerektiği fark edildi. Ne önerilir?",
+      "options": [
+        "Üçü de tek Part Studio'ya taşınmalı, ancak dış hat her biri için ayrı bir sketch olarak yeniden çizilmelidir.",
+        "Üçü de aynı assembly'ye Group ile bağlanmalıdır; Group dış hat değiştiğinde konumları birlikte günceller.",
+        "Tek bir gusset modellenip delik deseni configuration ile değiştirilmelidir; dış hat tek yerde tanımlı kalır.",
+        "Her gusset kendi document'ında kalmalı, dış hat linked document ile paylaşılmalıdır; böylece bağ tek yönlü olur."
+      ],
+      "correctIndex": 2,
+      "explanation": "Sorun tek bir yerde tanımlı olması gereken bir şeyin üç yerde tekrarlanmasıdır. Configuration tam olarak bunun içindir; tek bir part modellenir, değişen özellik configuration olarak tanımlanır ve dış hat tek bir yerde durur. Dış hat değiştiğinde üç varyant birden değişir ve elle senkron tutma işi ortadan kalkar. Birinci şık part'ları tek Part Studio'ya taşır ama dış hattı yine üç kez çizer; taşınma tek başına hiçbir şeyi çözmez, çünkü aynı bilgi hâlâ üç yerde yazılıdır ve dış hat değiştiğinde üç sketch de elle güncellenir. Kaynak Part Studio ölçütünü şöyle verir: yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio'da olmalıdır. Buradaki tasarımda ortak bir referans kurulmuş değildir. İkinci şık Group'un işini yanlış anlar; Group konumu sabitler, geometriyi paylaştırmaz ve kaynağa göre geometri değişikliklerini yok sayar. Dördüncü şık üç document ve üç bağ yaratarak sorunu büyütür. İnceleme açısından asıl soru şudur: bu tasarımda aynı bilgi kaç yerde yazılı? Cevap birden büyükse, orada bir gün senkron kaybolacaktır.",
+      "hint": "Aynı bilgi kaç yerde yazılı ve tek yerde tutmanın adı ne?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/configurations.htm",
+      "sourceNote": "Part Studio ölçütü: \"Only the parts that must share common references should be in the same Part Studio.\" ve \"As a best practice for performance, parts for the entire assembly should not all be modeled in a single Part Studio.\" (https://cad.onshape.com/help/Content/PartStudio/part_studios.htm). Group'un sınırı: https://cad.onshape.com/help/Content/Assembly/group.htm. Configuration sayfası neyin configure edilebileceğini tanımlar; tekrarı önleme gerekçesi kaynakta yazan bir cümle değil, bu modülün çıkarımıdır."
+    },
+    {
+      "id": "cad-12-d2",
+      "type": "diagnose",
+      "symptom": "İncelemede iki bulgu çıktı. Birincisi, elevator carriage'ı kılavuz tüpe cylindrical mate ile bağlı ve assembly'de tüpün etrafında dönebiliyor; gerçek robotta bearing'ler bunu engelliyor. İkincisi, elevator CAD'de yalnızca kapalı konumda modellenmiş ve mekanizmanın en üst konumundaki yükseklik hiç ölçülmemiş.",
+      "prompt": "Bu iki bulgudan hangisi robotun denetimden geri çevrilmesine yol açabilir ve neden?",
+      "options": [
+        "İkincisi; denetim robotu uzamış hâlde de sınar ve toplam yükseklik sınırı ölçülmemiş bir konumda aşılıyor olabilir.",
+        "Birincisi; denetim assembly'deki mate türlerini inceler ve fazla serbestlik derecesi bırakan mate'ler kabul edilmez.",
+        "İkisi de aynı ölçüde risklidir; denetim CAD dosyasını ister ve her iki bulgu da orada görünür durumdadır.",
+        "Hiçbiri; ikisi de yalnızca CAD tarafında kalan modelleme kusurlarıdır ve fiziksel robotu hiçbir biçimde etkilemez."
+      ],
+      "correctIndex": 0,
+      "explanation": "İki bulgu farklı türdendir ve incelemenin işi bunları ayırmaktır. Birinci bulgu bir modelleme kusurudur; assembly gerçek robottan daha serbest davranıyor, doğru mate slider olmalıydı, çünkü cylindrical iki serbestlik derecesi bırakır. Bu, CAD ile gerçeğin uyuşmaması demektir ve düzeltilmelidir; ancak denetim listesinde CAD dosyası istenen bir madde yoktur, denetim fiziksel robotu ölçer. İkinci bulgu ise doğrudan kural tarafındadır. Denetim listesi robotun uzamasını ve yerden yüksekliğini ayrı bir madde olarak sınar; yani robot kapalı hâlde ölçülüp bırakılmaz. Mekanizmanın en üst konumu hiç modellenmediyse takım o konumdaki yüksekliğin sınırın altında olup olmadığını bilmiyordur ve bunu ilk kez denetimde öğrenir. Yapılacak iş, uç konumu ayrı bir configuration veya context olarak modelleyip ölçmektir. İkinci şık denetimin mate türlerini incelediğini varsayar. Üçüncü şık denetimin CAD dosyası istediğini varsayar; denetim listesinde böyle bir madde yoktur. Dördüncü şık ikinci bulgunun fiziksel sonucunu görmez.",
+      "hint": "Denetim neyi ölçüyor: dosyayı mı, robotu mu? Ve robotu kaç konumda?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R107",
+          "season": "2026",
+          "topic": "robotların toplam yüksekliği 30.0in (76.2cm) değerini aşamaz"
+        },
+        {
+          "rule": "R104",
+          "season": "2026",
+          "topic": "starting configuration'da yükseklik 30in (76.2cm) değerini aşamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Extensions - ROBOT may not extend beyond the ROBOT PERIMETER > 12in (30.48cm) <R105> and in one direction at a time <R106>, > 30in (76.2cm) vertically from the floor <R107>, and cannot lift the BUMPERS out of the BUMPER ZONE <R108>\" Cylindrical mate'in iki serbestlik derecesi için: https://cad.onshape.com/help/Content/mate.htm ve ilgili mate sayfaları. FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-12-d3",
+      "type": "multiple_choice",
+      "prompt": "Bir takım şasi drawing'ini atölyeye gönderecek. Şasi plakası, assembly bağlamında in context tasarlanmıştı ve şasi geometrisi geçen hafta değiştirildi. Takım drawing'i dondurmak istiyor. Doğru sıra hangisidir?",
+      "options": [
+        "Önce document version'lanır, sonra context güncellenir, en son drawing update edilir; version bütün sonraki işleri kapsar.",
+        "Önce drawing update edilir, sonra context güncellenir; drawing zaten güncel olduğu için ikinci bir update gerekmez.",
+        "Önce document version'lanır, sonra kırmızı ölçüler taranır, en son context güncellenir ve atölyeye gönderilir.",
+        "Önce context güncellenir, sonra drawing update edilip ölçüler taranır, en son document version'lanır ve gönderilir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Sıra, her adımın bir öncekinin çıktısını kullanmasından doğar. Context bir snapshot'tır ve güncellemeler hiçbir zaman kendiliğinden uygulanmaz; şasi değiştiği hâlde context güncellenmediyse plakanın Part Studio'su hâlâ eski şasiye göre şekillenmiştir. Drawing ise view'larını Part Studio'dan alır, dolayısıyla context güncellenmeden yapılan bir update yalnızca eski geometriyi tazeler. Update sonrası ölçü taraması gerekir, çünkü kaynak update'in ölçüleri dangling hâle getirebileceğini belirtir ve dangling ölçü kırmızı görünür. En sona version bırakılır, çünkü version'lamak drawing'i o hâlde dondurur ve update düğmesinin vurgulanmasını engeller; yanlış bir hâli dondurmak, o yanlışı atölyeye gönderilen kayda kalıcı olarak yazmak demektir. Birinci ve üçüncü şıklar version'ı en öne alır ve tam da bu hatayı yapar; henüz güncellenmemiş bir hâl dondurulmuş olur. İkinci şık context'i drawing'den sonraya bırakır ve ikinci bir update gerekmediğini iddia eder; oysa context güncellendiğinde Part Studio değişir ve drawing yeniden güncelleme ister.",
+      "hint": "Her adım hangi adımın çıktısını kullanıyor? Dondurma işlemi nereye düşmeli?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm",
+      "sourceNote": "Drawing update kapsamı, dangling ölçüler ve version'lamanın dondurma etkisi için: https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm ve https://cad.onshape.com/help/Content/drawings-dimensions.htm"
+    },
+    {
+      "id": "cad-12-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş inceleme maddesinin dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir takım etkinlik öncesi CAD inceleme listesini yazıyor.",
+      "elements": [
+        "In context tasarlanmış her part için Assembly contexts etiketinin yanındaki güncelleme simgesine bakılır.",
+        "Drawing update edildikten sonra kırmızı görünen ölçüler ve altı çizili ölçüler ayrı ayrı taranır.",
+        "Hareketli her mekanizmanın uç konumları ayrı configuration veya context olarak modellenip ölçülür.",
+        "Update all çalıştırıldığında yalnızca güncel olmayan referanslar değişeceği için komut güvenle kullanılabilir.",
+        "Ayrı Part Studio'larda tasarlanmış ve değişmeye devam eden part'lar, best practice gereği Group yerine mate ile bağlanır."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dördüncü madde komutun kapsamını yanlış varsayar. Kaynak açıkça şunu yazar: Update all kullanıldığında, güncelliğini yitirmemiş olanlar dahil bütün version'lar en son version'a çekilir. Ayrıca komut recursive çalışır ve bunu yapabilmek için gerektiğinde version'ları kendiliğinden oluşturur. Yani düğme yalnızca geride kalmış referansları değil, assembly'deki her referansı süpürür ve hiç version'lanmamış yarım işleri de içeri alabilir. Etkinlik öncesinde bu, dokunulmamış olması gereken tasarımların değişmesi demektir. Doğru alışkanlık, dokunulmaması gereken referansları pin etmek veya Reference manager'ın Selective update filtresinden yalnızca ilgili nesneyi güncellemektir. Diğer dört madde kaynaklara uygundur: context'in dayandığı bir feature değiştiğinde bir güncelleme simgesi belirir, update sonrası kırmızı ölçü dangling'i ve altı çizili ölçü overridden'ı gösterir, denetim uzamış hâli de sınadığı için uç konumlar modellenmelidir ve kaynak yalnızca aynı Part Studio'da oluşturulan instance'ların Group'lanmasını best practice olarak önerir.",
+      "hint": "Update all hangi referanslara dokunuyor? Yalnızca geride kalmışlara mı?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/updating-references.htm",
+      "sourceNote": "Kural metinleri: \"All versions are updated to the latest version when using update all, even those that are not out-of-date.\" ve \"The Update all button performs a recursive update... automatically creating versions as needed in order to do so.\" Group'un sınırı için: https://cad.onshape.com/help/Content/Assembly/group.htm Group best practice cümlesi: \"For this reason, it is best practice to Group only instances created in the same Part Studio.\""
+    },
+    {
+      "id": "cad-12-d5",
+      "type": "diagnose",
+      "symptom": "Bir takım delik aralığını bir variable ile sürüyor ve variable'ı 76 mm olarak tanımlamış. Part Studio'da geometri gerçekten 76 mm. Drawing'de aynı ölçü 80 mm gösteriyor, kırmızı değil ve metninin altı çizili. Drawing'in update simgesi soluk ve hiçbir hata yok. Atölye 80 mm'ye göre imal etmiş.",
+      "prompt": "Ne oldu ve inceleme bunu nasıl yakalardı?",
+      "options": [
+        "Variable drawing'e aktarılmamıştır; drawing'ler variable değerlerini okumaz ve ölçüyü kendi hesaplar.",
+        "Ölçü overridden hâle getirilmiştir; elle yazıldığı için altı çizilidir ve variable'ı izlemez.",
+        "Variable Part Studio'da değiştirilmiş ancak drawing eski version'a bakmaktadır; update ile değer düzelecektir.",
+        "Ölçü dangling'dir; bağlı olduğu kenar silindiği için son bilinen değeri göstermeye devam etmektedir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Belirtideki ayırt edici işaret altı çizili metindir. Kaynak bunu adıyla tanımlar: overridden ölçü, metin değeri associativity'si olmayan bir annotation'a dönüştürülmüş ölçüdür ve metni her zaman altı çizilidir; bir ölçünün değerini düzenlemek onu overridden hâle getirir. Ayrıca teknik resimde altı çizili değer, değerin ölçeğe uygun olmadığını bildirir. Yani birisi ölçünün üzerine 80 yazmıştır ve o günden beri sayfadaki sayı ne variable'dan ne de geometriden gelmektedir. Update simgesinin soluk olması ve hiçbir hata bulunmaması da bu yüzdendir; Onshape açısından ortada arıza yoktur. İnceleme bunu tek bir alışkanlıkla yakalar: imalata giden her drawing'de altı çizili ölçü taraması yapılır ve bulunan her biri değer alanındaki karakterler silinerek associative hâle döndürülür. Birinci şık zinciri yanlış kurar; bir drawing ölçüsü variable'ı değil, variable'ın sürdüğü geometriyi ölçer ve o geometri 76 mm'dir. Üçüncü şık version farkına bağlar; o durumda gösterge soluk kalmazdı ve metin altı çizili olmazdı. Dördüncü şık dangling ile karıştırır; dangling ölçü kırmızı görünür, altı çizili değil.",
+      "hint": "Onshape neden hiçbir uyarı üretmiyor? Sayfada duran sayı nereden geliyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/drawings-dimensions.htm",
+      "sourceNote": "Update simgesi davranışı için: https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm. Ölçünün variable'ı değil geometriyi ölçtüğü, kaynakta ayrıca yazan bir cümle değil, associative ölçü tanımından çıkan sonuçtur."
+    },
+    {
+      "id": "cad-12-d6",
+      "type": "diagnose",
+      "symptom": "İki öğrenci ayrı branch'lerde çalıştı ve ikisi de aynı drawing tab'ini güncelledi. Branch'ler merge edildi. Merge sonrası drawing'de yalnızca bir öğrencinin çalışması duruyor, diğerininki yok. Merge sırasında hiçbir hata çıkmadı ve Part Studio ile assembly tab'lerinde her iki çalışma da birleşmiş durumda.",
+      "prompt": "Neden yalnızca drawing'de kayıp var?",
+      "options": [
+        "Drawing tab'i merge sırasında bozulmuştur; tab onarıldığında ikinci öğrencinin çalışması geri gelecektir.",
+        "Drawing'ler yalnızca son güncelleyen kullanıcının çalışmasını tutar; bu, tab türünden bağımsız bir merge davranışıdır.",
+        "Merge changes from both seçeneği drawing tab'lerinde bulunmaz; takım Keep veya Replace seçmek zorunda kalmıştır.",
+        "Drawing bir version referansına bağlıdır; version referanslı tab'ler merge sırasında kaynak branch'i tümüyle yok sayar."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirtideki asimetri doğrudan kaynaktaki bir istisnaya işaret ediyor: Part Studio ve assembly tab'lerinde her iki çalışma birleşmiş, yalnızca drawing'de biri kaybolmuş. Kaynak bunu kurala bağlar; merge edilecek tab'ler seçilirken Merge changes from both seçeneği Drawings ve PCB Studios dışındaki bütün tab türlerinde bulunur. Yani drawing için o seçenek hiç sunulmamıştır ve takım Keep ile Replace arasında seçim yapmak zorunda kalmıştır; hangisi seçildiyse diğer branch'in drawing çalışması kaybolmuştur. Kaynak ayrıca bir tab'in içindeki değişikliklerin tek tek seçilemeyeceğini, her tab'in bütün değişikliklerinin ya tutulacağını ya merge edileceğini ya da değiştirileceğini söyler; dolayısıyla bir kısmını kurtarmak da mümkün değildi. Hata çıkmaması beklenen davranıştır. Kaynağın önerdiği alışkanlık da bunu destekler: tek bir workspace, yani branch üzerinde çalışıp o branch'ten diğerlerine merge etmek önerilir. Birinci şık bir arıza uydurur. İkinci şık davranışı bütün tab türlerine yayar ve belirtideki asimetriyi açıklayamaz. Dördüncü şık version referansına kaynakta olmayan bir merge davranışı yükler.",
+      "hint": "Part Studio ve assembly birleşti, drawing birleşmedi. Sunulan seçenekler her tab türünde aynı mı?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/merge.htm",
+      "sourceNote": "Kural metinleri: \"When selecting tabs to merge, the Merge changes from both option is available for all tab types except Drawings and PCB Studios.\" ve \"You cannot select individual changes within a tab.\" Öneri cümlesi: \"it is recommended you work in one workspace (branch) and merge from that branch into other branches.\" Kaynak ayrıca \"Merge combines changes from both branches. This option is only available for Part Studios and assemblies, and only if both branches contain changes for a specific tab.\" der; bu drill'de her iki branch de aynı tab'i değiştirmiştir."
+    },
+    {
+      "id": "cad-12-d7",
+      "type": "multiple_choice",
+      "prompt": "İncelemede dört bulgu listelendi. Takımın yarım günü kaldı ve önce birini düzeltebilir. Hangisi robotun denetimden geri çevrilmesine yol açar ve bu yüzden öne alınmalıdır?",
+      "options": [
+        "Şasinin arka kenarı, bumper yüksekliğinde menteşeli bir kapak olarak tasarlanmış ve kapak içeri açılıyor.",
+        "Bir gusset'in sketch'inde iki çizgi underconstrained kalmış, ancak geometri şu anda doğru ölçülerde duruyor.",
+        "Intake Part Studio'sundaki bir context iki hafta önce güncellenmemiş, ancak o parça henüz imal edilmemiş.",
+        "Robot assembly'sindeki bir COTS gearbox referansı tedarikçinin daha yeni bir version'ına geçirilmemiş."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dört bulgu da gerçek kusurdur, ancak yalnızca biri kural ihlalidir. Kural robotun, bumper'lar hariç, BUMPER ZONE içinde ve starting configuration'da belirlenen, sabit ve non-articulated yapısal elemanlardan oluşan bir ROBOT PERIMETER'ı olmasını ister. Menteşeli bir kenar tanımı gereği articulated'dır ve tam da bumper yüksekliğinde bulunduğu için çevrenin parçasıdır; kapağın içeri açılması bunu değiştirmez, çünkü ihlal bir taşmada değil çevrenin nasıl kurulduğundadır. Bu bulgu düzeltilmezse robot denetimden geçemez, dolayısıyla yarım gün buraya harcanır. Diğer üçü ise takımı yavaşlatan veya ileride hata doğurabilecek kusurlardır. Underconstrained bir sketch bugün doğru ölçüdedir ama yarın sürüklendiğinde değişebilir. Güncellenmemiş bir context yanlış bir parça üretebilir, ancak o parça henüz imal edilmemiştir ve imalattan önce güncellenebilir. Eski bir COTS referansı ise tedarikçinin düzeltmelerini kaçırmak demektir ve kendi başına bir kural ihlali değildir. İnceleme yalnızca kusur bulmakla bitmez; bulguları sonuçlarına göre sıralamak da işin parçasıdır.",
+      "hint": "Dördünden hangisi bir ölçü hatası değil, bir yapı kararı? Ve hangisi denetimde ölçülür?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R101",
+          "season": "2026",
+          "topic": "robot, bumper'lar hariç, BUMPER ZONE içinde ve starting configuration'da belirlenen sabit ve non-articulated yapısal elemanlardan oluşan bir ROBOT PERIMETER'a sahip olmalıdır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni: \"The ROBOT (excluding BUMPERS) must have a ROBOT PERIMETER, contained within the BUMPER ZONE and established while in the ROBOT'S STARTING CONFIGURATION, that is comprised of fixed, non-articulated structural elements of the ROBOT.\" FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-12-d8",
+      "type": "diagnose",
+      "symptom": "Bir takım robot assembly'sinden ölçü alarak çevre uzunluğunu, yüksekliği ve uzama mesafelerini kontrol etti; hepsi sınırların içinde çıktı. Robot imal edildi ve denetimde yatay uzama sınırından geri çevrildi. Assembly incelendiğinde intake'in şasiye Group ile bağlandığı ve intake ile şasinin ayrı Part Studio'larda tasarlandığı görüldü. Şasi sezon içinde iki kez değiştirilmiş.",
+      "prompt": "Ölçüler neden yanlış çıktı?",
+      "options": [
+        "Group bir mate olmadığı için ölçü alınamaz; assembly'den alınan bütün ölçüler yaklaşık değerler verir.",
+        "Uzama ölçüsü assembly'den değil, drawing'den alınmalıydı; assembly ölçüleri denetimde kabul edilmez.",
+        "Şasi değiştiğinde intake'in mate'i kırmızıya dönmeliydi; dönmediğine göre assembly'de bir arıza vardır.",
+        "Group part'ları yalnızca origin'lerine göre konumlandırır; intake assembly'de yanlış konumdaydı."
+      ],
+      "correctIndex": 3,
+      "explanation": "Bu bölümün en sinsi kusuru burada bir araya geliyor. Kaynak Group'un sınırını açıkça yazar: Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar. Kaynak bu uyarıyı Group'un kullanım alanı notunda verir: Group ile bağlanan ve ayrı Part Studio'larda oluşturulan part'ların instance konumları assembly'de kendiliğinden güncellenmez ve bu, değişiklikle birlikte instance'ların çakışmasına yol açar. Bu yüzden kaynak yalnızca aynı Part Studio'da oluşturulan instance'ların Group'lanmasını best practice olarak önerir. Şasi iki kez değiştiği hâlde intake'in origin'i aynı kaldığı için Group açısından değişen bir şey olmamış, intake assembly'de gerçekte olacağı yerden farklı bir konumda durmaya devam etmiştir. Takım ölçüleri o assembly'den aldığına göre, ölçtüğü şey gerçek robot değil, yanlış konumlanmış bir modeldir; uzama mesafesi de bu yüzden olduğundan küçük görünmüştür. Hiçbir mate kırmızı olmaması beklenen davranıştır, çünkü ortada bozulmuş bir bağ yoktur; sorun aracın seçiminde ve kural ölçülerinin doğrulanmamış bir assembly'den alınmasındadır. Doğrusu, değişmeye devam eden part'lar arasında gerçek geometriye referans veren bir mate kurmaktır; mate geometriye bağlı olduğu için şasi değiştiğinde intake'in konumu da takip eder. Kural ölçüleri ancak bundan sonra alınmalıdır. Birinci şık assembly'den ölçü alınamayacağını iddia eder. İkinci şık denetimin drawing istediğini varsayar. Üçüncü şık bir arıza arar; Group bir mate değildir ve kırmızıya dönecek bir bağ kurmaz.",
+      "hint": "Ölçüler doğru alındı ama neyin üzerinden alındı? O assembly gerçek robotu gösteriyor muydu?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R105",
+          "season": "2026",
+          "topic": "robotlar ROBOT PERIMETER'ın dikey izdüşümünün 12in (30.48cm) ötesine uzayamaz"
+        }
+      ],
+      "source": "https://cad.onshape.com/help/Content/Assembly/group.htm",
+      "sourceNote": "Kural metinleri: \"It positions parts based only on their origin and ignores changes in geometry.\" ve \"With parts created in separate Part Studios, their instance positions do not update automatically in the assembly, causing instances to overlap with changes.\" Yatay uzama sınırı için denetim listesi: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    }
+  ]
+}

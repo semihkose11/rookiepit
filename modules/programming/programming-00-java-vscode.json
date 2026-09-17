@@ -1,0 +1,300 @@
+{
+  "id": "programming-00-java-vscode",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 0,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-14",
+  "imageRef": null,
+  "title": "Temel Java ve VS Code",
+  "summary": "Robot kodunu okumak için gereken en küçük Java kümesini, değişken ile sabit arasındaki farkı, metot bildiriminin parçalarını ve WPILib'in VS Code kurulumunda işlerin nereden yapıldığını öğretir.",
+  "prerequisites": [],
+  "estimatedMinutes": 18,
+  "concept": {
+    "body": "Robot kodunu okumak için Java'nın tamamı gerekmez, ama belirli bir çekirdek gerekir. Java değişkenleri dört cinse ayırır. Instance variable, static anahtar kelimesi olmadan bildirilen alandır ve nesneler kendi durumlarını bu alanlarda tutar. Class variable, static belirleyicisiyle bildirilen alandır; derleyiciye, sınıf kaç kez örneklenirse örneklensin bu değişkenin tam olarak bir kopyasının var olduğunu söyler. Local variable bir metodun geçici durumunu tuttuğu değişkendir. Parameter ise metoda dışarıdan verilen değerdir. static belirleyicisi final ile birlikte kullanıldığında sabit tanımlar; final, bu alanın değerinin değişemeyeceğini belirtir ve değiştirmeye çalışmak derleme zamanı hatasıdır.\n\nAdlandırma bir süs değil, okunabilirliğin parçasıdır. Değişken adı tek kelimeyse tamamı küçük harfle yazılır, çok kelimeliyse sonraki her kelimenin ilk harfi büyütülür. Sabitlerde kural değişir: her harf büyük yazılır ve kelimeler alt çizgiyle ayrılır. Metot adları ise küçük harfle başlayan bir fiil ya da fiille başlayan çok kelimeli bir addır.\n\nBir metot bildirimi altı parçadan oluşur: belirleyiciler, dönüş tipi, metot adı, parantez içindeki parametre listesi, exception listesi ve süslü parantezler arasındaki gövde. Bunlardan yalnızca ikisi metot imzasını oluşturur: metot adı ve parametre tipleri. Erişim tarafında ise kural nettir: anlamlı olan en kısıtlı erişim düzeyi kullanılır, iyi bir gerekçe yoksa private seçilir ve sabitler dışında public alanlardan kaçınılır.\n\nAlt sınıftaki bir instance metodu, üst sınıftaki bir metotla aynı imzaya ve aynı dönüş tipine sahipse onu override eder. @Override anotasyonu derleyiciye bu niyeti bildirir; derleyici metodu üst sınıflardan hiçbirinde bulamazsa hata üretir.\n\nVS Code tarafında WPILib komutları iki yoldan açılır: Command Palette'e WPILib yazarak ya da pencerelerin sağ üstündeki WPILib simgesine tıklayarak. Command Palette, View menüsünden veya Ctrl+Shift+P ile açılır.",
+    "keyTerms": [
+      {
+        "term": "instance variable",
+        "glossTr": "static olmadan bildirilen alan; nesnenin kendi durumu"
+      },
+      {
+        "term": "class variable",
+        "glossTr": "static ile bildirilen alan; sınıf başına tek kopya"
+      },
+      {
+        "term": "local variable",
+        "glossTr": "metodun geçici durumunu tutan değişken"
+      },
+      {
+        "term": "parameter",
+        "glossTr": "metoda dışarıdan verilen değer"
+      },
+      {
+        "term": "final",
+        "glossTr": "değeri değişemeyen alan belirleyicisi"
+      },
+      {
+        "term": "method signature",
+        "glossTr": "metot adı ve parametre tipleri"
+      },
+      {
+        "term": "override",
+        "glossTr": "üst sınıftaki metodun yerine geçmek"
+      },
+      {
+        "term": "@Override",
+        "glossTr": "override niyetini derleyiciye bildiren anotasyon"
+      },
+      {
+        "term": "access level",
+        "glossTr": "bir üyeye nereden erişilebileceğini belirleyen düzey"
+      },
+      {
+        "term": "Command Palette",
+        "glossTr": "VS Code'da komutların yazılarak çağrıldığı pencere"
+      },
+      {
+        "term": "stack trace",
+        "glossTr": "hata anında yığında ne olduğunu yazan çıktı"
+      },
+      {
+        "term": "compile-time error",
+        "glossTr": "program çalışmadan önce derleyicinin yakaladığı hata"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-00-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "JAVA BASICS",
+      "front": "Java değişkenleri dört cinse ayırır ve ikisi sınıfa, ikisi metoda aittir.",
+      "back": "Instance variable, static anahtar kelimesi olmadan bildirilen alandır; nesneler kendi durumlarını bu alanlarda tutar. Class variable, static belirleyicisiyle bildirilen alandır ve derleyiciye sınıf kaç kez örneklenirse örneklensin bu değişkenin tam olarak bir kopyasının var olduğunu söyler. Local variable bir metodun geçici durumunu tuttuğu değişkendir, parameter ise metoda dışarıdan verilen değerdir. static belirleyicisi final ile birlikte sabit tanımlar; final, alanın değerinin değişemeyeceğini belirtir ve değiştirmeye çalışmak derleme zamanı hatasıdır. Adlandırma da bu ayrımı görünür kılar: değişkenler küçük harfle başlar ve sonraki kelimelerin ilk harfi büyütülür, sabitlerde her harf büyük yazılır ve kelimeler alt çizgiyle ayrılır.",
+      "takeaway": "Bir bildirimdeki belirleyiciler, o değerin kime ait olduğunu söyler",
+      "tags": [
+        "static",
+        "final",
+        "adlandırma"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-00-d1",
+        "programming-00-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-00-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "JAVA BASICS",
+      "front": "@Override neden bir süs değil?",
+      "back": "Alt sınıftaki bir instance metodu, üst sınıftaki bir metotla aynı imzaya ve aynı dönüş tipine sahipse onu override eder. İmza yalnızca iki parçadan oluşur: metot adı ve parametre tipleri. Yani bir harflik yazım hatası veya bir parametre tipi farkı, metodun override etmeyi bıraktığı anlamına gelir. @Override anotasyonu derleyiciye bu niyeti bildirir; derleyici metodu üst sınıflardan hiçbirinde bulamazsa hata üretir. Anotasyon olmadığında aynı hata sessizdir: kod derlenir, yanlış adlı metot yeni ve bağımsız bir metot olur ve hiç çağrılmaz. Robot açılır, hiçbir hata görünmez ve o metoda yazılan kod hiç çalışmaz. Anotasyonun işi, bu hatayı sahadan derleme zamanına taşımaktır.",
+      "takeaway": "Sessiz bir hatayı derleme hatasına çevirmek, onu ucuza kapatmaktır",
+      "tags": [
+        "override",
+        "method signature",
+        "derleme hatası"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-00-d3",
+        "programming-00-d2"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-00-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "JAVA BASICS",
+      "front": "Etkinlikte WPILib simgesi yok, komutlar çıkmıyor, deploy edilemiyor.",
+      "back": "Açılan VS Code, sistemde önceden kurulu olan sürümdür. WPILib kurulumu, bilgisayarda zaten VS Code olsa bile WPILib geliştirmesi için ayrı bir kopya kurar ve var olan bir kurulumu kullanmaz; WPILib'in kurduğu VS Code açılmalıdır. Belirti buna tam olarak uyar: sistem kurulumunda WPILib eklentileri yoktur, dolayısıyla ne sağ üstteki simge ne de Command Palette'teki komutlar görünür. Aynı projenin başka bir bilgisayarda sorunsuz açılması da bunu doğrular; fark projede değil, açılan programdadır. Her yılın kendi klasörüne kurulması bu karışıklığı büyütür: birden çok sezonun sürümü aynı bilgisayarda yan yana durabilir, bu yüzden hangi sürümün açıldığına bakmak bir alışkanlık olmalıdır.",
+      "takeaway": "Aynı proje iki bilgisayarda farklı davranıyorsa, farkı projede aramayın",
+      "tags": [
+        "VS Code kurulumu",
+        "WPILib installer",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-00-d8",
+        "programming-00-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-00-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım motor port numarasını Constants sınıfında tutmak istiyor ve değerin program boyunca değişmemesini, ayrıca her nesne için ayrı bir kopya oluşmamasını bekliyor. Hangi bildirim bu iki isteği birlikte karşılar?",
+      "options": [
+        "public static final int kIntakePort = 5;",
+        "public int kIntakePort = 5;",
+        "public static int kIntakePort = 5;",
+        "public final int kIntakePort = 5;"
+      ],
+      "correctIndex": 0,
+      "explanation": "İki ayrı istek var ve her birini ayrı bir belirleyici karşılıyor. static, derleyiciye sınıf kaç kez örneklenirse örneklensin bu değişkenin tam olarak bir kopyasının var olduğunu söyler; bu alan sınıfla ilişkilidir, herhangi bir nesneyle değil. final ise bu alanın değerinin değişemeyeceğini belirtir. İkisi birlikte kullanıldığında sabit tanımlanır. Yalnızca static olan bir alan her nesne için tek kopya olur ama değeri değiştirilebilir; yalnızca final olan bir alan değişmez ama her nesnede ayrı bir kopya taşır; hiçbiri olmayan bir alan ikisini de sağlamaz. Sabitin adının kIntakePort değil KINTAKE_PORT biçiminde yazılması da beklenir: sabit adlarında her harf büyük yazılır ve kelimeler alt çizgiyle ayrılır.",
+      "hint": "İki ayrı beklenti var: tek kopya ve değişmezlik. Hangi belirleyici hangisini sağlıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.oracle.com/javase/tutorial/java/javaOO/classvars.html"
+    },
+    {
+      "id": "programming-00-d2",
+      "type": "multiple_choice",
+      "prompt": "Aşağıdaki metot bildirimi veriliyor: public double hesapla(double hiz, int oran). Bu metodun imzası nedir?",
+      "options": [
+        "public double hesapla(double, int)",
+        "hesapla(double, int)",
+        "hesapla",
+        "double hesapla(double hiz, int oran)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bir metot bildirimi altı parçadan oluşur: belirleyiciler, dönüş tipi, metot adı, parantez içindeki parametre listesi, exception listesi ve gövde. Bunlardan yalnızca ikisi imzayı oluşturur: metot adı ve parametre tipleri. Yani imza hesapla(double, int) olur. public belirleyicisi ve double dönüş tipi imzanın parçası değildir; parametre adları da değildir, yalnızca tipleri sayılır. Bu ayrım pratikte bir yerde karşınıza çıkar: bir metodu override ederken aynı imzayı ve aynı dönüş tipini taşımanız gerekir. Parametre adını değiştirmek imzayı bozmaz, parametre tipini değiştirmek bozar.",
+      "hint": "Altı parçanın hangi ikisi imzayı oluşturuyor? Dönüş tipi bunlardan biri mi?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.oracle.com/javase/tutorial/java/javaOO/methods.html"
+    },
+    {
+      "id": "programming-00-d3",
+      "type": "debug_code",
+      "prompt": "Bu sınıf derlenmiyor. Derleyici, override edilmek istenen metodun üst sınıflarda bulunmadığını bildiriyor. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "language": "java",
+      "code": "public class Robot extends TimedRobot {\n\n  @Override\n  public void robotInitialize() {\n    // kurulum\n  }\n\n  @Override\n  public void teleopPeriodic() {\n    // her 20 ms\n  }\n}",
+      "buggyLine": 4,
+      "correctAnswer": "public void robotInit() {",
+      "acceptableAnswers": [
+        "public void robotInit() {",
+        "public void robotInit()",
+        "public void robotInit(){"
+      ],
+      "explanation": "Alt sınıftaki bir instance metodu, üst sınıftaki bir metotla aynı imzaya ve aynı dönüş tipine sahipse onu override eder. Buradaki metodun adı robotInitialize, oysa üst sınıfta böyle bir metot yok; metodun adı robotInit'tir. Bu durumda @Override anotasyonu işini yapar: derleyiciye override niyetini bildirir ve derleyici metodu üst sınıflardan hiçbirinde bulamadığı için hata üretir. Anotasyon olmasaydı kod derlenir, robotInitialize yeni ve bağımsız bir metot olurdu ve hiç çağrılmazdı; robot açılır, hiçbir hata görünmez ve kurulum kodu sessizce çalışmazdı. Bu yüzden @Override yazmak bir süs değil, yazım hatalarını derleme zamanına taşıyan bir güvenlik önlemidir.",
+      "hint": "@Override anotasyonu tam olarak ne yapar? Bu hata onun olmadığı bir dünyada nasıl görünürdü?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.oracle.com/javase/tutorial/java/IandI/override.html"
+    },
+    {
+      "id": "programming-00-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş adlandırma ve erişim kararından dördü dokümantasyonun önerdiği gibidir. Uygun olmayanı seçiniz.",
+      "scenario": "Bir yazılım ekibi kod yazım kurallarını yeni üyelere anlatıyor.",
+      "elements": [
+        "Çok kelimeli bir değişken adı gearRatio biçiminde, sonraki kelimelerin ilk harfi büyütülerek yazılıyor.",
+        "Sabit adları NUM_GEARS biçiminde, her harf büyük ve kelimeler alt çizgiyle ayrılarak yazılıyor.",
+        "Metot adları getBackground ve setSpeed gibi küçük harfle başlayan bir fiille yazılıyor.",
+        "Sınıfın bütün alanları public yapılıyor, çünkü böylece her sınıftan erişilebilir ve kod kısalır.",
+        "Bir üyeye anlamlı olan en kısıtlı erişim düzeyi veriliyor ve iyi bir gerekçe yoksa private seçiliyor."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dördüncü madde dokümantasyonun tam tersini söyler. Kural şudur: anlamlı olan en kısıtlı erişim düzeyi kullanılır ve iyi bir gerekçe yoksa private seçilir. Sabitler dışındaki public alanlardan kaçınılır, çünkü public alanlar sizi belirli bir uygulamaya bağlar ve kodu değiştirme esnekliğinizi sınırlar. Diğer dört madde doğrudur: değişken adı tek kelimeyse tamamı küçük, çok kelimeliyse sonraki kelimelerin ilk harfi büyük yazılır; sabitlerde her harf büyük olur ve kelimeler alt çizgiyle ayrılır; metot adları küçük harfle başlayan bir fiil ya da fiille başlayan çok kelimeli bir addır. Bu kuralın robot kodunda somut bir karşılığı da vardır: subsystem'ler RobotContainer içinde private alan olarak tutulur.",
+      "hint": "Dört madde bir yöne, biri tam tersine işaret ediyor. Erişim düzeyi seçerken varsayılan hangisi?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html",
+      "sourceNote": "Adlandırma kuralları: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/variables.html ve https://docs.oracle.com/javase/tutorial/java/javaOO/methods.html"
+    },
+    {
+      "id": "programming-00-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci WPILib komutlarını bulamıyor ve menülerde arıyor. Dokümantasyona göre bu komutlara ulaşmanın iki yolu nedir?",
+      "options": [
+        "Command Palette'e WPILib yazmak ya da pencerelerin sağ üstündeki WPILib simgesine tıklamak; simge Command Palette'i WPILib önceden yazılmış olarak açar.",
+        "File menüsündeki WPILib alt menüsü ya da sol alttaki dişli simgesi.",
+        "Terminalde gradle komutlarını elle yazmak ya da proje klasöründeki bir kısayolu çalıştırmak.",
+        "Yalnızca sağ üstteki WPILib simgesi; Command Palette robot komutlarını içermez."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon iki yol gösterir. Birincisi Command Palette'e WPILib yazmaktır; Command Palette View menüsünden veya Ctrl+Shift+P kısayoluyla açılır ve yazdıkça arama daralır. İkincisi çoğu pencerenin sağ üstünde görünen WPILib simgesine tıklamaktır; bu, Command Palette'i WPILib önceden yazılmış olarak açar. İkisi aynı listeye çıkar. Bunu bilmek pratik bir kazanç sağlar: bu müfredattaki neredeyse bütün işlemler, deploy etmekten simulation başlatmaya ve vendor library yönetmeye kadar, bu listedeki bir komuttur. Aynı sayfada bir uyarı da vardır: VS Code'un FRC kurulumuna Visual Studio IntelliCode eklentisini kurmak önerilmez, çünkü IntelliSense'i tuhaf biçimlerde bozduğu bilinmektedir.",
+      "hint": "Biri klavyeden, biri ekranın bir köşesinden. İkisi de aynı pencereye çıkıyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/vscode-basics.html"
+    },
+    {
+      "id": "programming-00-d6",
+      "type": "diagnose",
+      "symptom": "Bir takım üyesi kodda bir değişiklik yaptı ve robotun ne yaptığını görmek istiyor. Kodun robota gitmesi ve konsol çıktısının izlenmesi gerekiyor. Ekip üyesi hangi komutu arayacağını bilmiyor ve komut listesindeki adları karıştırıyor.",
+      "prompt": "Kodu robota göndermek ve konsol çıktısını görmek için hangi iki komut kullanılır?",
+      "options": [
+        "WPILib: Build Robot Code ve WPILib: Test Robot Code.",
+        "WPILib: Deploy Robot Code ve WPILib: Start RioLog.",
+        "WPILib: Simulate Robot Code ve WPILib: Open API Documentation.",
+        "WPILib: Create a new project ve WPILib: Set Team Number."
+      ],
+      "correctIndex": 1,
+      "explanation": "Deploy Robot Code, kodu derleyip roboRIO'ya gönderen komuttur. Start RioLog ise bir robot programının konsol çıktısını görmek için kullanılan RioLog ekranını başlatır. Listedeki diğer komutlar başka işler yapar ve adları birbirine benzediği için karıştırılır. Build Robot Code projeyi GradleRIO ile yalnızca derler, robota bir şey göndermez. Test Robot Code projeyi derleyip yazılmış testleri çalıştırır. Simulate Robot Code programı bilgisayarda simulation modunda çalıştırır. Open API Documentation WPILib Javadoc'larını açar. Set Team Number projeye bağlı takım numarasını değiştirir ve Manage Vendor Libraries üçüncü taraf library'lerin kurulumunu yönetir. Komutların adlarını okumak, ne yaptıklarını tahmin etmekten daha güvenlidir.",
+      "hint": "Biri kodu gönderiyor, diğeri çıktıyı gösteriyor. Derlemek göndermek değildir.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/wpilib-commands-vscode.html"
+    },
+    {
+      "id": "programming-00-d7",
+      "type": "diagnose",
+      "symptom": "Robot kodu derlendi ve deploy edildi. Robot açıldı, ancak bir tuşa basıldığında mekanizma çalışmıyor. Driver Station konsolunda An unexpected error has occurred yazısı görünüyor ve üstünde girintili, at ile başlayan satırlardan oluşan uzun bir blok var.",
+      "prompt": "Bu blok nedir ve nereden okumaya başlanır?",
+      "options": [
+        "Bir stack trace'tir; hata anında yığında ne olduğunu yazar ve sorundan hemen önce çalışan kod satırlarına işaret eder. An unexpected error has occurred yazısının üstünde aranır.",
+        "Bir derleme hatası listesidir; kod robota hiç gitmemiştir ve yeniden deploy edilmelidir.",
+        "Driver Station'ın kendi tanılama çıktısıdır; robot koduyla ilgisi yoktur ve göz ardı edilebilir.",
+        "Bir uyarı listesidir; robot çalışmaya devam ettiği için bu satırların okunması gerekmez."
+      ],
+      "correctIndex": 0,
+      "explanation": "Stack trace, beklenmeyen bir hata yakalanmadığında yığında ne olduğunu yazan çıktıdır ve sorun olmadan hemen önce çalışan kod satırlarına işaret eder. Robot kodunda bu çıktı Driver Station ya da RioLog gibi konsol çıktısı yerlerinde görünür ve dokümantasyon nereden bakılacağını söyler: An unexpected error has occurred yazısının üstünde aranır. Java'da okunacak şeyler bellidir: exception tipi, hatanın oluştuğu dosya adı ile satır numarası, o anda çalışan metot adı ve hatanın takımın kendi kodundan mı yoksa WPILib'den mi geldiği. Girintili at satırları çağrı yığınını verir; her satır, altındaki satır tarafından çağrılan bir metodu gösterir. Bu bir derleme hatası değildir; kod derlendi ve çalışmaya başladı, ama çalışmanın sürmesi artık anlamsız hâle geldi.",
+      "hint": "Kod derlendi ve çalıştı. Öyleyse bu bir derleme hatası olamaz. Metnin hangi tarafına bakılır?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/basic-programming/reading-stacktraces.html"
+    },
+    {
+      "id": "programming-00-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte bir takım üyesi kendi bilgisayarındaki VS Code'u açıp projeyi yükledi. WPILib simgesi görünmüyor, Command Palette'te WPILib komutları çıkmıyor ve deploy etmenin bir yolu bulunamıyor. Aynı proje bir başka üyenin bilgisayarında sorunsuz açılıp deploy ediliyor.",
+      "prompt": "Ne oldu ve doğru düzeltme nedir?",
+      "options": [
+        "Proje dosyaları bozulmuştur; projenin yeniden oluşturulup kodun kopyalanması gerekir.",
+        "Takım numarası girilmemiştir; Set Team Number komutuyla girilince komutlar görünür hâle gelir.",
+        "Açılan VS Code, sistemde önceden kurulu olan sürümdür. WPILib ayrı bir VS Code sürümü kurar ve var olan bir kurulumu kullanmaz; WPILib'in kurduğu VS Code açılmalıdır.",
+        "Eksik olan vendor library'lerdir; Manage Vendor Libraries ile kurulunca WPILib komutları da gelir."
+      ],
+      "correctIndex": 2,
+      "explanation": "WPILib kurulumu, bilgisayarda zaten VS Code olsa bile WPILib geliştirmesi için ayrı bir VS Code kopyası kurar. Dokümantasyon bu noktada kesindir: WPILib ayrı bir VS Code sürümü kurar, var olan bir kurulumu kullanmaz ve sistemde kurulu bir kopya değil WPILib VS Code açılmalıdır. Belirti tam olarak buna uyar: sistem kurulumunda WPILib eklentileri yoktur, dolayısıyla ne simge ne de komutlar görünür. Takım numarası veya vendor library eksikliği başka belirtiler üretir ve WPILib komutlarının tamamının yok olmasına yol açmaz. İlgili bir ayrıntı da her yılın kendi klasörüne kurulmasıdır; birden çok sezonun sürümü aynı bilgisayarda yan yana durabilir, bu yüzden hangi sürümün açıldığına bakmak gerekir.",
+      "hint": "Aynı proje başka bir bilgisayarda çalışıyor. Öyleyse fark projede değil, açılan programda.",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html"
+    }
+  ]
+}

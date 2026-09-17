@@ -1,0 +1,295 @@
+{
+  "id": "programming-06-triggers",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 6,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Joystick ve Tuş Bağlamaları",
+  "summary": "Trigger kavramını, onTrue ile whileTrue ile toggleOnTrue arasındaki davranış farklarını ve bir bağlamanın hangi durumlarda beklenmedik sonuç ürettiğini öğretir.",
+  "prerequisites": [
+    "programming-03-command-based"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Tuş bağlamaları command-based'de declarative biçimde yapılır: bir tuş ile bir command arasındaki ilişki robot başlatılırken bir kez bildirilir. Bağlamanın merkezindeki nesne Trigger'dır. Trigger elde etmenin üç yolu vardır. Birincisi CommandXboxController gibi command-based HID sınıflarının tuş adını taşıyan factory metotlarıdır. İkincisi standart HID sınıflarıyla kurulan JoystickButton nesneleridir. Üçüncüsü, limit switch gibi HID dışı olaylar için Trigger constructor'ına lambda verilerek oluşturulan arbitrary Trigger'lardır.\n\nBağlama metotları davranışlarıyla ayrılır. onTrue, trigger false'tan true'ya döndüğünde command'i schedule eder ve trigger tekrar false'a düşüp yeniden true olmadıkça bir daha schedule etmez. whileTrue de false'tan true'ya geçişte schedule eder, ancak trigger yeniden false olduğunda command'i iptal eder. Burada kolay atlanan bir ayrıntı vardır: command trigger hâlâ true iken kendiliğinden biterse yeniden schedule edilmez. toggleOnTrue aynı geçişte command'i schedule eder; command o sırada çalışıyorsa aynı geçişte iptal eder. onFalse ve whileFalse bu davranışların ters yönlü karşılıklarıdır.\n\nTrigger'lar birleştirilebilir. and, or ve negate metotlarıyla yeni Trigger'lar üretilir, böylece bir command yalnızca birden çok koşul birlikte sağlandığında bağlanabilir. debounce metodu ise bir Trigger'ı, verilen debounce süresi ve edge type ile debounce eder; mekanik temas sıçraması üreten dijital girdilerde bu gerekli olur.",
+    "keyTerms": [
+      {
+        "term": "Trigger",
+        "glossTr": "bir koşulun doğru olup olmadığını bildiren ve command bağlanabilen nesne"
+      },
+      {
+        "term": "CommandXboxController",
+        "glossTr": "tuşları Trigger olarak veren command-based Xbox controller sınıfı"
+      },
+      {
+        "term": "JoystickButton",
+        "glossTr": "standart HID sınıflarıyla kurulan tuş Trigger'ı"
+      },
+      {
+        "term": "onTrue",
+        "glossTr": "trigger false'tan true'ya döndüğünde command'i schedule eden bağlama"
+      },
+      {
+        "term": "whileTrue",
+        "glossTr": "geçişte schedule eden, trigger false olduğunda iptal eden bağlama"
+      },
+      {
+        "term": "toggleOnTrue",
+        "glossTr": "aynı geçişte command'i açıp kapatan bağlama"
+      },
+      {
+        "term": "debounce",
+        "glossTr": "temas sıçramasını süzmek için Trigger'a uygulanan gecikme"
+      },
+      {
+        "term": "lambda",
+        "glossTr": "kısa yazılan, bir değer döndüren isimsiz fonksiyon"
+      },
+      {
+        "term": "edge type",
+        "glossTr": "debounce'un yükselen, düşen veya her iki kenarda uygulanacağını belirten ayar"
+      },
+      {
+        "term": "RunCommand",
+        "glossTr": "verilen işi her döngüde tekrarlayan, kendiliğinden bitmeyen command"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-06-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "TRIGGERS",
+      "front": "Tuş bağlamaları bir kez bildirilir, her döngüde sorgulanmaz.",
+      "back": "Command-based'de bağlamalar declarative'dir: bir tuş ile bir command arasındaki ilişki robot başlatılırken bir kez bildirilir. Bu yüzden bağlamaların yeri teleopPeriodic değil, robot başlarken bir kez çalışan kurulum kodudur. Bağlamanın merkezindeki nesne Trigger'dır ve üç yoldan elde edilir: CommandXboxController gibi command-based HID sınıflarının tuş adını taşıyan factory metotları, standart HID sınıflarıyla kurulan JoystickButton nesneleri ve limit switch gibi HID dışı olaylar için Trigger constructor'ına lambda verilerek oluşturulan arbitrary Trigger'lar. Üçü de aynı Trigger nesnesini verir; fark yalnızca nereden geldiğidir.",
+      "takeaway": "Bağlama bir kurulum işidir, döngü işi değil",
+      "tags": [
+        "Trigger",
+        "declarative",
+        "JoystickButton"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-06-d3",
+        "programming-06-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-06-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "TRIGGERS",
+      "front": "Aynı tuş, üç bağlama metoduyla üç farklı sonuç verir.",
+      "back": "onTrue, trigger false'tan true'ya döndüğünde command'i schedule eder ve trigger tekrar false'a düşüp yeniden true olmadıkça bir daha schedule etmez. whileTrue de aynı geçişte schedule eder, ancak trigger yeniden false olduğunda command'i iptal eder. toggleOnTrue aynı geçişte schedule eder; command o sırada çalışıyorsa aynı geçişte iptal eder. Hepsi geçişe bakar, duruma değil. Buradan iki pratik sonuç çıkar. Birincisi, tuşu basılı tutmak yeni bir geçiş üretmez; onTrue ile bağlanmış bir command iptal edilirse tuş basılı kaldığı sürece yeniden başlamaz. İkincisi whileTrue'nun kolay atlanan ayrıntısıdır: command trigger hâlâ true iken kendiliğinden biterse yeniden schedule edilmez.",
+      "takeaway": "Üç metot da duruma değil, geçişe bakar",
+      "tags": [
+        "onTrue",
+        "whileTrue",
+        "toggleOnTrue"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-06-d2",
+        "programming-06-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-06-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "TRIGGERS",
+      "front": "Tuş bırakıldı, intake maç boyunca dönmeye devam etti.",
+      "back": "İki ayrı karar bir araya geldiğinde bu sonuç çıkar. Birincisi bağlamanın onTrue seçilmiş olmasıdır; onTrue tuş bırakıldığında command'i iptal etmez. İkincisi command'in isFinished metodunun hiç yazılmamış olmasıdır; varsayılan dönüş değeri false olduğu için command kendiliğinden de bitmez. Tek başına her biri zararsız görünür: bitiş koşulu olan bir command onTrue ile bağlanabilir, bitiş koşulu olmayan bir command whileTrue ile bağlanabilir. İkisi bir arada durdurulamayan bir mekanizma üretir. Doğru düzeltme ikisini birden ele almaktır: bağlama whileTrue yapılır ve command'e bir bitiş koşulu yazılır.",
+      "takeaway": "Tek başına zararsız iki karar, birlikte durdurulamayan bir mekanizma üretir",
+      "tags": [
+        "onTrue",
+        "isFinished",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-06-d8",
+        "programming-06-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-06-d1",
+      "type": "debug_code",
+      "language": "java",
+      "prompt": "Intake'in yalnızca A tuşu basılı tutulduğu sürece çalışması, tuş bırakıldığında durması isteniyor. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "code": "public class RobotContainer {\n  private final CommandXboxController m_driver = new CommandXboxController(0);\n  private final Intake m_intake = new Intake();\n\n  public RobotContainer() {\n    configureBindings();\n  }\n\n  private void configureBindings() {\n    m_driver.a().onTrue(m_intake.runIntakeCommand());\n  }\n}",
+      "buggyLine": 10,
+      "correctAnswer": "m_driver.a().whileTrue(m_intake.runIntakeCommand());",
+      "acceptableAnswers": [
+        "m_driver.a().whileTrue(m_intake.runIntakeCommand());",
+        "m_driver.a().whileTrue(m_intake.runIntakeCommand())"
+      ],
+      "explanation": "İstenen davranış tuş basılı olduğu sürece çalışmak ve bırakılınca durmaktır. onTrue bağlaması yalnızca trigger false'tan true'ya döndüğünde command'i schedule eder; dokümantasyonun ifadesiyle trigger tekrar false olup yeniden true olmadıkça bir daha schedule edilmez ve tuş bırakıldığında command iptal edilmez. Trigger false olduğunda command'i iptal eden bağlama whileTrue'dur. Sınıfın geri kalanı doğrudur: bağlamalar constructor'dan çağrılan configureBindings içinde, yani robot başlatılırken bir kez bildiriliyor ve tuş Trigger'ı CommandXboxController'ın factory metodu ile alınıyor. Bir noktaya dikkat edin: bu düzeltmenin işe yaraması için runIntakeCommand metodunun sürekli çalışan bir command döndürmesi gerekir. Kendiliğinden hemen biten bir command döndürseydi, whileTrue onu trigger hâlâ true iken yeniden schedule etmezdi ve intake bir an dönüp susardı.",
+      "hint": "Tuş bırakıldığında hangi bağlama metodu command'i iptal eder?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-06-d2",
+      "type": "diagnose",
+      "symptom": "Shooter'ı hedef hıza çıkaran bir command A tuşuna whileTrue ile bağlandı. Command hedef hıza ulaşınca isFinished true dönüyor ve doğal olarak bitiyor; end metodu flywheel'i durduruyor. Sürücü A tuşunu basılı tutmaya devam ediyor, ancak shooter yavaşlıyor ve bir daha hızlanmıyor. Tuşu bırakıp tekrar basınca yeniden çalışıyor.",
+      "prompt": "Bu davranışın kaynağı nedir?",
+      "options": [
+        "whileTrue bağlaması, command trigger hâlâ true iken kendiliğinden biterse onu yeniden schedule etmez.",
+        "whileTrue command'i yalnızca tuş bırakıldığında schedule eder.",
+        "Command'in requirement'ı başka bir command tarafından alınmıştır.",
+        "Tuş bağlaması her döngüde yeniden sorgulanmadığı için bir kez çalışıp duruyor; bağlama teleopPeriodic içine taşınmalıdır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon bu ayrıntıyı doğrudan yazar: whileTrue ile bağlanan bir command, trigger hâlâ true iken kendiliğinden biterse yeniden schedule edilmez. Yani whileTrue, tuş basılı olduğu sürece komutu çalışır tutan bir bağlama değildir; yalnızca geçişte başlatır ve trigger false olunca iptal eder. Belirtinin son cümlesi bunu doğrular: tuşu bırakmak trigger'ı false yapar, tekrar basmak yeni bir geçiş üretir. İkinci şık ifadenin tersidir. Üçüncü şık belirtiyle elenir, gerekçesine dikkat etmek gerekir: belirti command'in kendiliğinden bittiğini söylüyor, iptal edildiğini değil. Command başka bir command tarafından iptal edilmiş olsaydı bu şık da aynı örüntüyü üretebilirdi, çünkü whileTrue kuralı bitişin doğal mı yoksa kesilme yoluyla mı olduğunu ayırmaz. Dördüncü şık hem yanlış hem tehlikelidir; bağlamalar robot başlatılırken bir kez bildirilir. Dokümantasyon iki çözüm adı verir: command bir RepeatCommand içine sarılabilir veya InstantCommand yerine RunCommand kullanılabilir. Üçüncü bir yol da davranışı komutta ifade etmektir, yani shooter hedef hıza ulaşınca bitmemek yerine hızı korumaya devam etmelidir.",
+      "hint": "Belirtinin son cümlesi anahtardır. Tuşu bırakıp basmak neyi değiştiriyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-06-d3",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci tuş bağlamalarını teleopPeriodic metodunun içine yazdı, çünkü tuşların her döngüde kontrol edilmesi gerektiğini düşündü. Bu yaklaşımın sorunu nedir?",
+      "options": [
+        "Bağlamalar yalnızca RobotContainer sınıfının içinde yazılabilir, başka bir sınıfta derlenmez.",
+        "Bağlamalar declarative'dir; tuş ile command arasındaki ilişki robot başlatılırken bir kez bildirilir ve her döngüde tekrarlanmasına gerek yoktur.",
+        "Sorun yoktur; tuşların her döngüde sorgulanması için bağlamanın da her döngüde yapılması gerekir.",
+        "Trigger nesneleri yalnızca CommandXboxController üzerinden oluşturulabilir, teleopPeriodic içinde oluşturulamaz."
+      ],
+      "correctIndex": 1,
+      "explanation": "Öğrencinin sezgisinin bir yarısı doğrudur: tuşlar gerçekten her döngüde sorgulanır. Yanlış olan, bu sorgulamayı kendisinin yapması gerektiğini sanmasıdır. Dokümantasyon bağlamanın declarative olduğunu söyler: tuş ile command arasındaki ilişki robot başlatılırken bir kez bildirilir ve bağlamaların yalnızca bir kez bildirilmesi yeterlidir. Sorgulamayı scheduler yapar; her döngüde kayıtlı trigger'ların durumunu yoklayıp schedule edilecek command'leri bulmak zaten onun işidir. Bağlamayı her döngüde tekrarlamak, ilişkiyi silip yenilemez; her çağrı ayrı bir bağlama daha ekler. Bu son cümle kaynak sayfalarda yazmayan, API davranışından çıkan bir sonuçtur. Dördüncü şık yanlıştır; Trigger elde etmenin üç yolu vardır ve bunlardan biri limit switch gibi HID dışı olaylar için lambda ile arbitrary Trigger kurmaktır. Birinci şık da yanlıştır; RobotContainer bir düzen alışkanlığıdır, dilin kuralı değil.",
+      "hint": "Trigger'ları her döngüde kim yokluyor? Bu iş zaten birine ait mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html",
+      "sourceNote": "Scheduler'ın trigger'ları yoklaması: https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html | Bağlamaların üst üste birikmesi kaynakta yazmaz, API davranışından çıkarılmıştır."
+    },
+    {
+      "id": "programming-06-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi bağlama metotlarını karşılaştıran bir tablo hazırlıyor.",
+      "elements": [
+        "onTrue, trigger false'tan true'ya döndüğünde command'i schedule eder.",
+        "whileTrue, trigger yeniden false olduğunda command'i iptal eder.",
+        "toggleOnTrue, aynı geçişte command o sırada çalışıyorsa onu iptal eder.",
+        "whileTrue, command trigger hâlâ true iken bitse bile onu yeniden schedule eder.",
+        "Trigger'lar and, or ve negate metotlarıyla birleştirilerek yeni Trigger'lar üretilebilir."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dokümantasyon tam tersini söyler: whileTrue ile bağlanan command, trigger hâlâ true iken biterse yeniden schedule edilmez. Bu yanlış inanç zararsız değildir, çünkü whileTrue'yu tuş basılı olduğu sürece komutu çalışır tutan bir mekanizma sanmaya yol açar. Öyle sanan bir ekip, doğal olarak biten bir command'i whileTrue ile bağlar, sürücü tuşu basılı tutar ve mekanizma bir kez çalışıp susar. Belirtiyi anlamak için bu tek cümlenin bilinmesi gerekir. Diğer dört ifade dokümantasyonun yazdığı gibidir.",
+      "hint": "Dört ifade bir metodun ne zaman ne yaptığını söylüyor. Biri bir metoda, o metodun yapmadığı bir iş atfediyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-06-d5",
+      "type": "diagnose",
+      "symptom": "Kolu belirli bir yüksekliğe götüren bir command B tuşuna onTrue ile bağlı. Sürücü B'ye basıyor ve kol yükselmeye başlıyor. Bu sırada operatör kolu kullanan başka bir command çalıştırıyor, ilk command iptal ediliyor. Sürücü B tuşunu hâlâ basılı tutuyor, ancak kol yükselmeye devam etmiyor. Tuşu bırakıp tekrar basınca command yeniden çalışıyor.",
+      "prompt": "Tuşu basılı tutmak neden yetmiyor?",
+      "options": [
+        "İkinci command arm subsystem'ini kalıcı olarak kilitlemiştir.",
+        "onTrue, bir kez iptal edilmiş command'i hiçbir koşulda yeniden schedule edemez.",
+        "onTrue yalnızca trigger false'tan true'ya döndüğünde schedule eder; tuş basılı kaldığı sürece trigger true'da durur ve yeni bir geçiş oluşmaz.",
+        "Tuşa debounce uygulanması gerekiyordur."
+      ],
+      "correctIndex": 2,
+      "explanation": "onTrue bir kenar bağlamasıdır. Command yalnızca trigger false'tan true'ya döndüğü anda schedule edilir; dokümantasyon bunu, trigger tekrar false'tan geçmedikçe yeniden schedule edilmeyeceğini söyleyerek ifade eder. Tuş basılı kaldığı sürece trigger true'da sabittir, dolayısıyla yeni bir kenar oluşmaz ve iptal edilen command kendiliğinden geri gelmez. Belirtinin son cümlesi kanıttır: bırakmak false'u, yeniden basmak kenarı üretir. İkinci şık fazla ileri gider; onTrue yeniden schedule edebilir, yalnızca bunun için bir kenara ihtiyacı vardır. Birinci şık yanlıştır; ikinci command bittiğinde arm subsystem'i serbest kalır ve kilitli kalmaz. Dördüncü şık konuyla ilgisizdir; debounce mekanik temas sıçraması içindir, burada sıçrama yok, hiç geçiş yok.",
+      "hint": "Basılı tutulan bir tuşun trigger değeri zaman içinde değişiyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-06-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir mekanizmanın bir basışta açılması, sonraki basışta kapanması isteniyor. Sürücünün tuşu basılı tutması istenmiyor. Hangi bağlama kullanılır?",
+      "options": [
+        "whileTrue; tuş basılı olduğu sürece çalışır.",
+        "onFalse; tuş bırakıldığında çalışır ve ikinci bırakışta durur.",
+        "onTrue; ikinci basış çalışan command'i durdurur.",
+        "toggleOnTrue; aynı geçişte command çalışmıyorsa schedule eder, çalışıyorsa iptal eder."
+      ],
+      "correctIndex": 3,
+      "explanation": "Dokümantasyon toggleOnTrue'yu tam olarak bu iş için tarif eder: command'i trigger false'tan true'ya döndüğünde schedule eder ve command o sırada çalışıyorsa aynı koşulda iptal eder. Yani bir basış başlatır, sonraki basış durdurur. Birinci şık dışlanan davranışı, yani tuşu basılı tutmayı gerektirir. Üçüncü şık yaygın ve önemli bir yanlış inançtır: onTrue yalnızca schedule eder, hiçbir durdurma davranışı yoktur. İkinci şık aynı sorunu taşır; onFalse da yalnızca schedule eder, farkı yalnızca hangi geçişte tetiklendiğidir. Bu drill'in noktası, bağlamaların yalnızca ne zaman tetiklendikleriyle değil, iptal davranışı taşıyıp taşımadıklarıyla da ayrıldığını görmektir; dört bağlamadan iptal davranışı olanlar whileTrue, whileFalse ve toggleOnTrue'dur.",
+      "hint": "Bu dört bağlamadan kaç tanesinin iptal etme davranışı var?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-06-d7",
+      "type": "diagnose",
+      "symptom": "Bir limit switch için lambda ile Trigger kuruldu ve onTrue ile bir sayacı bir artıran command bağlandı. Mekanizma limit switch'e bir kez değdiğinde sayaç bazen 1, bazen 3 veya 4 artıyor. Kodda sayacı artıran başka bir yer yok.",
+      "prompt": "Neden oluyor ve nasıl düzeltilir?",
+      "options": [
+        "Mekanik temas sıçraması trigger'ı kısa sürede birden çok kez false'tan true'ya geçiriyor; Trigger, debounce metoduyla debounce süresi ve edge type verilerek debounce edilmelidir.",
+        "onTrue yerine whileTrue kullanılmalıdır.",
+        "Limit switch için Trigger lambda ile kurulamaz; JoystickButton kullanılmalıdır.",
+        "CommandScheduler.run metodu birden çok kez çağrılıyordur."
+      ],
+      "correctIndex": 0,
+      "explanation": "Bağlama aslında doğru çalışıyor. onTrue her gerçek false'tan true'ya geçişte bir kez schedule eder ve sayaç da her seferinde bir kez artıyor; sorun bağlamada değil, sinyalde. Mekanik bir kontak kapanırken kısa süre boyunca birkaç kez açılıp kapanır ve trigger bunu birkaç ayrı kenar olarak görür. Dokümantasyon çözümü adıyla verir: özellikle dijital girdilerden gelen trigger'lar, hızlı tekrarlı tetiklenmeyi önlemek için debounce metoduyla Debouncer sınıfı kullanılarak debounce edilebilir. Sayfadaki örnek, debounce süresinin ve edge type'ın verildiğini gösterir. İkinci şık davranışı değiştirir ama sıçramayı çözmez. Üçüncü şık yanlıştır; kaynak, HID dışı olaylar için Trigger constructor'ına lambda verilerek arbitrary Trigger kurulabileceğini söyler ve örnek olarak tam da limit switch'i verir. Dördüncü şık her şeyi etkilerdi, yalnızca bu sayacı değil.",
+      "hint": "Sayaç her seferinde bir artıyor olabilir mi ve asıl sorun kaç kez tetiklendiği olabilir mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-06-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte intake command'i A tuşuna onTrue ile bağlı. Sürücü A'ya basıyor ve intake dönüyor. Tuş bırakıldığında intake dönmeye devam ediyor ve maç boyunca durmuyor. İncelemede command'in isFinished metodunun hiç yazılmadığı görülüyor.",
+      "prompt": "İki ayrı karar bir araya gelip bu sonucu üretti. Bunlar nedir ve doğru düzeltme hangisidir?",
+      "options": [
+        "Yalnızca isFinished eksiktir; onTrue bağlaması tuş bırakıldığında command'i zaten iptal eder, dolayısıyla isFinished yazmak yeterlidir.",
+        "Bağlama onTrue seçilmiştir ve onTrue tuş bırakıldığında command'i iptal etmez; ayrıca isFinished yazılmadığı için command kendiliğinden hiç bitmez. Bağlama whileTrue olmalıdır.",
+        "Yalnızca bağlama yanlıştır; onTrue yerine onFalse kullanılmalıdır, çünkü onFalse tuş bırakıldığında çalışan command'i durdurur.",
+        "Motor Safety intake motorunda devreye girmemiştir; bu motorda Motor Safety etkinleştirilmelidir."
+      ],
+      "correctIndex": 1,
+      "explanation": "İki karar tek başına atlatılabilirdi, birlikte atlatılamaz. Birincisi bağlamadır: onTrue yalnızca false'tan true'ya geçişte schedule eder ve trigger false olduğunda hiçbir şey yapmaz; iptal davranışı olan bağlama whileTrue'dur. İkincisi command'in kendisidir: isFinished yazılmadığında varsayılan olarak false döner ve command kesilene kadar çalışır. whileTrue kullanılsaydı eksik isFinished'e rağmen tuş bırakılınca command iptal edilirdi; onTrue ile birlikte gerçek bir bitiş koşulu yazılsaydı command en azından bir noktada biterdi. İkisi bir araya gelince başlayan ama hiç durmayan bir command çıkar. Doğru düzeltme whileTrue'dur, çünkü istenen davranış basılı tutuldukça çalışmaktır ve whileTrue bunu ifade eder. Birinci şık yanlış bir iddia taşır; onTrue iptal etmez. Üçüncü şık da yanlıştır; onFalse durdurmaz, ters yönlü geçişte yeni bir command schedule eder. Dördüncü şık iki nedenle elenir: Motor Safety DifferentialDrive ve MecanumDrive dışındaki motor controller'larda varsayılan olarak kapalıdır ve zaten yalnızca çıkış güncellenmediğinde devreye girer; burada kod çıkışı düzenli olarak güncelliyor, sorun tam da budur.",
+      "hint": "Bağlamayı düzeltmek tek başına yeter miydi? isFinished'i yazmak tek başına yeter miydi?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html",
+      "sourceNote": "isFinished varsayılanı: .../commandbased/commands.html | Motor Safety varsayılanları: https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html"
+    }
+  ]
+}

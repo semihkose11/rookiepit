@@ -1,0 +1,296 @@
+{
+  "id": "programming-05-motor-controllers",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 5,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Motor Controller'ları Koddan Sürmek",
+  "summary": "set metodunun ne anlama geldiğini, inversion sorumluluğunun kime ait olduğunu, drive sınıflarının uyguladığı squaring ile deadband işlemlerini ve Motor Safety'nin hangi nesnelerde açık olduğunu öğretir.",
+  "prerequisites": [
+    "programming-04-subsystems"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Bir motor controller'ı koddan sürmenin temel yolu set metodudur. Bu metot -1.0 ile 1.0 arasında değer alır: -1.0 tam geri, 0.0 duruş, 1.0 tam ileri anlamına gelir. Dokümantasyona göre WPILib'in bütün motor controller sınıfları, actuator'a giden çıkış olarak bu aralığa ölçeklenmiş bir değer alır. PWM ile sürülen controller'lar roboRIO'nun PWM portlarından, CAN ile sürülenler CAN bus üzerinden komut alır; CAN motor controller'lar CTR Electronics ve REV Robotics gibi vendor'lardan gelir.\n\nMotorun hangi yönde döneceğini yönetmek kullanıcının sorumluluğudur. Motorlar, motor nesnesi üzerinde setInverted çağrılarak ters çevrilir. Differential drivetrain'lerde tipik olarak bir tarafın ters çevrilmesi gerekir, çünkü iki tarafın ileri yönü birbirinin tersidir; bu yapılmazsa robot düz gitmek yerine kendi etrafında döner.\n\nWPILib'in drive sınıfları girdiye iki ek işlem uygular. Birincisi squaring'dir: joystick girdisinin karesi alınıp işareti geri konur; böylece düşük hızlarda daha ince kontrol elde edilir. DifferentialDrive bunu varsayılan olarak yapar; istenmediğinde squaredInputs parametresi false verilir, ki API'de bu parametrenin adı squareInputs olarak geçer. İkincisi deadband'dir: varsayılan değeri 0.02'dir ve squaring uygulandıktan sonra büyüklüğü bunun altında kalan girdiler sıfırlanır. Gerekçesi de yazılıdır: küçük değerlerin drivetrain'e uygulanmasından doğan gereksiz motor ısınmasını azaltır.\n\nMotor Safety, her actuator için ayrı bir watchdog tutan mekanizmadır. Amacı, kod kilitlenip actuator çıkışını güncelleyemediğinde zarar verebilecek mekanizmaları disable etmektir. feed metodunun en son ne zaman çağrıldığını izler ve varsayılan ve kullanışlı en küçük değer 100 ms'dir ve karşılaştırma her 5 alınan pakette bir, nominal 100 ms'de bir yapılır. Bu özellik DifferentialDrive ve MecanumDrive nesnelerinde varsayılan olarak açık, diğer bütün motor controller ve servo'larda kapalıdır.",
+    "keyTerms": [
+      {
+        "term": "set",
+        "glossTr": "motor controller'a -1.0 ile 1.0 arasında çıkış oranı veren metot"
+      },
+      {
+        "term": "setInverted",
+        "glossTr": "bir motor nesnesinin dönüş yönünü ters çeviren metot"
+      },
+      {
+        "term": "vendor library",
+        "glossTr": "üreticinin kendi cihazları için sağladığı kod kütüphanesi"
+      },
+      {
+        "term": "squaring",
+        "glossTr": "girdinin karesinin alınıp işaretinin geri konması"
+      },
+      {
+        "term": "deadband",
+        "glossTr": "büyüklüğü belirli bir eşiğin altında kalan girdilerin sıfırlandığı bölge"
+      },
+      {
+        "term": "Motor Safety",
+        "glossTr": "her actuator için ayrı watchdog tutan güvenlik mekanizması"
+      },
+      {
+        "term": "watchdog",
+        "glossTr": "belirli sürede beslenmezse mekanizmayı disable eden zamanlayıcı"
+      },
+      {
+        "term": "feed",
+        "glossTr": "Motor Safety zamanlayıcısını sıfırlayan çağrı"
+      },
+      {
+        "term": "DifferentialDrive",
+        "glossTr": "iki taraflı tank tipi drivetrain'i süren WPILib sınıfı"
+      },
+      {
+        "term": "actuator",
+        "glossTr": "koddan sürülen hareket üreten donanım"
+      },
+      {
+        "term": "PIDController",
+        "glossTr": "hedef ile ölçüm arasındaki farktan çıkış üreten closed-loop kontrol sınıfı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-05-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "MOTOR CONTROLLERS",
+      "front": "set metodu bir oran alır; yüzde değil.",
+      "back": "Bir motor controller'ı koddan sürmenin temel yolu set metodudur ve bu metot -1.0 ile 1.0 arasında değer alır: -1.0 tam geri, 0.0 duruş, 1.0 tam ileri. Yüzde 50 çıkış isteyen biri 50 değil 0.5 yazar. Aralık controller'ın nasıl sürüldüğünden bağımsızdır: PWM ile sürülenler roboRIO'nun PWM portlarından, CAN ile sürülenler CAN bus üzerinden komut alır, ama WPILib'in bütün motor controller sınıfları bu aynı aralığa ölçeklenmiş bir değer alır. Motorun hangi yönde döneceğini yönetmek ise ayrı bir sorumluluktur ve kullanıcıya aittir.",
+      "takeaway": "Aralık her zaman −1.0 ile 1.0 arasıdır, bağlantı tipi ne olursa olsun",
+      "tags": [
+        "set",
+        "PWM",
+        "CAN"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-05-d2",
+        "programming-05-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-05-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "MOTOR CONTROLLERS",
+      "front": "Drive sınıfı girdinizi olduğu gibi motora vermez.",
+      "back": "İki ek işlem uygular. Birincisi squaring'dir: joystick girdisinin karesi alınıp işareti geri konur, böylece düşük hızlarda daha ince kontrol elde edilir. DifferentialDrive bunu varsayılan olarak yapar. İkincisi deadband'dir: varsayılan değeri 0.02'dir ve squaring uygulandıktan sonra büyüklüğü bunun altında kalan girdiler sıfırlanır. Gerekçesi de yazılıdır; küçük değerlerin drivetrain'e uygulanmasından doğan gereksiz motor ısınmasını azaltır. İkisi birlikte küçük girdilere beklenmedik biçimde sert davranır: 0.1 değeri squaring'den sonra 0.01 olur ve deadband eşiğinin altına düştüğü için sıfırlanır. Bu yüzden bir PIDController çıkışını doğrudan bu sınıfa vermek, hedefe yaklaştıkça düzeltmelerin kaybolmasına yol açar.",
+      "takeaway": "Küçük bir girdi, iki işlemden geçtikten sonra sıfır olabilir",
+      "tags": [
+        "squaring",
+        "deadband",
+        "DifferentialDrive"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-05-d1",
+        "programming-05-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-05-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "MOTOR CONTROLLERS",
+      "front": "Motor değişti, kol ters döndü. Command'in içinde −1 ile çarpıldı.",
+      "back": "Kol artık doğru yönde kalkar, ama o motora yazan diğer her yer hâlâ eskisi gibidir: yavaş indiren command de, setpoint'te tutan default command de ters çalışmaya devam eder. Inversion motor nesnesinin bir özelliğidir ve setInverted ile bir kez tanımlanır; işareti command'lerin içinde düzeltmek, o motora yazan her yerde tekrar edilmesi gereken bir düzeltme yaratır. İkinci bir varsayım da tehlikelidir: Motor Safety kod kilitlendiğinde bütün motorları durdurmaz. Bu özellik yalnızca DifferentialDrive ve MecanumDrive nesnelerinde varsayılan olarak açıktır; diğer bütün motor controller ve servo'larda kapalıdır.",
+      "takeaway": "Tek yerde tanımlanması gereken bir şeyi her yerde düzeltmek, unutulacak bir yer bırakır",
+      "tags": [
+        "setInverted",
+        "Motor Safety",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-05-d8",
+        "programming-05-d6"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-05-d1",
+      "type": "numeric",
+      "prompt": "DifferentialDrive varsayılan ayarlarıyla kullanılıyor. Sürücü joystick'i çok az itiyor ve sınıfa 0.1 değeri geliyor. Dokümantasyonun tarif ettiği işlemlere göre motor controller'a giden çıkış değeri ne olur?",
+      "answer": 0,
+      "tolerance": 0,
+      "unit": "çıkış oranı",
+      "explanation": "Dokümantasyon iki işlemi ve sıralarını birlikte verir. Önce squaring uygulanır ve 0.1 değeri 0.01'e iner; işaret pozitif olduğu için değişmez. Ardından deadband devreye girer ve buradaki kritik ayrıntı parantez içindedir: büyüklüğü 0.02'nin altında kalan girdiler sıfırlanır ve bu karşılaştırma squaring uygulandıktan sonra yapılır. 0.01 değeri 0.02'nin altında olduğu için çıkış 0 olur, yani motor hiç dönmez. Sonuç ilk bakışta şaşırtıcıdır: joystick'te görünür bir girdi vardır ama robot kıpırdamaz. Deadband'in gerekçesi dokümantasyonda verilir; küçük değerlerin drivetrain'e uygulanmasından doğan gereksiz motor ısınmasını azaltmaktır. Bir uyarı: sınıfın API dokümanı deadband'i eşiğin üstündeki değerleri yeniden ölçekleyen bir işlem olarak da tarif eder. Bu drill öğretici sayfanın tarif ettiği sırayı ve eşik davranışını sorar.",
+      "hint": "İki işlemden hangisi önce uygulanıyor ve deadband karşılaştırması hangi sayıyla yapılıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html",
+      "sourceNote": "API dokümanındaki yeniden ölçekleme tarifi bu sayfayla birebir örtüşmüyor; drill öğretici sayfayı esas alır."
+    },
+    {
+      "id": "programming-05-d2",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci motoru yüzde 50 çıkışla sürmek istiyor ve set metoduna 50 yazıyor. Bu neden yanlıştır?",
+      "options": [
+        "set metodu yüzde değil, -1.0 ile 1.0 arasında bir çıkış oranı alır; yüzde 50 için 0.5 verilmelidir.",
+        "set metodu yalnızca tam sayı kabul eder; 50 yerine 1 yazılmalıdır.",
+        "set metodu doğru kullanılmıştır; sorun motor controller'ın kalibre edilmemiş olmasıdır.",
+        "set metodu yüzde alır ancak üst sınırı 100 olduğu için 50 çok düşüktür."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon aralığı ve anlamını birlikte verir: set metodu -1.0 ile 1.0 arasında değer alır, -1.0 tam geri, 0.0 duruş ve 1.0 tam ileri demektir. Yüzde 50 çıkış için doğru değer 0.5'tir. Kaynağın genel ifadesi de şudur: WPILib'deki bütün motor controller sınıfları, actuator'a giden çıkış olarak -1.0 ile 1.0 arasına ölçeklenmiş bir değer alır. Pratikte buradan çıkan sonuç, verilen sayının bir hız ölçüsü olarak okunmamasıdır; aynı 0.5 değeri yüklü bir kolda ve boştaki bir tekerlekte farklı hızlar üretir, ancak bu son cümle kaynaktan değil mühendislik gözleminden gelir. İkinci ve dördüncü şıklar aralığı yanlış tarif eder. Üçüncü şık calibration'ı gündeme getirir; calibration PWM controller'larda gerçekten tavsiye edilen bir işlemdir, ancak buradaki sorun kodun verdiği sayının aralık dışında olmasıdır.",
+      "hint": "Metodun kabul ettiği sayı aralığı nedir ve o sayı neyi ifade eder?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/using-motor-controllers.html",
+      "sourceNote": "Genel -1.0 ile 1.0 ifadesi ve calibration: https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/pwm-controllers.html"
+    },
+    {
+      "id": "programming-05-d3",
+      "type": "diagnose",
+      "symptom": "Yeni kurulan bir differential drivetrain'de sürücü joystick'i ileri itiyor. Robot ileri gitmek yerine kendi etrafında dönüyor. Dört motorun hepsi çalışıyor, hiçbiri sessiz değil ve CAN bus'ta hata yok. Joystick eksen eşlemesi Driver Station üzerinde tek tek doğrulandı ve doğru.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Joystick eksenleri karışmıştır; ileri ekseni dönüş ekseni olarak okunuyordur.",
+        "Bir tarafın motorları ters çevrilmemiştir; differential drivetrain'de iki tarafın ileri yönü birbirinin tersidir.",
+        "Deadband çok yüksek ayarlanmıştır ve bir taraf eşiğin altında kalmıştır.",
+        "Motor Safety bir tarafı kesmiştir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon bu durumu doğrudan tarif eder: differential drivetrain'lerde tipik olarak bir tarafın ters çevrilmesi gerekir, çünkü tank drive'ın iki tarafının ileri yönü birbirinin tersidir. Ters çevirme yapılmazsa iki taraf birbirine karşı çalışır ve robot kendi etrafında döner. Doküman bu işin kime ait olduğunu da söyler: inversion'ları doğru yönetmek kullanıcının sorumluluğudur ve motor nesneleri üzerinde setInverted çağrılarak yapılır. Birinci şık gerçekten aynı belirtiyi üretebilirdi ve bu yüzden belirtiye özel bir gözlem konulmuştur: joystick eksen eşlemesi Driver Station üzerinde doğrulanmıştır, dolayısıyla bu şık elenir. Bu ayrıntı olmasaydı iki şık da savunulabilir olurdu. Üçüncü şık belirtiyle elenir; deadband bir tarafı sıfırlasaydı o taraftaki motorlar sessiz olurdu, oysa dört motorun da çalıştığı söyleniyor. Dördüncü şık elenir, çünkü Motor Safety mekanizmayı disable eder, ters yönde sürmez.",
+      "hint": "Belirti eksen eşlemesinin doğrulandığını söylüyor. Geriye iki tarafın birbirine karşı çalışması ihtimali kalıyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html"
+    },
+    {
+      "id": "programming-05-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi drivetrain kodunu yeni üyelere anlatıyor.",
+      "elements": [
+        "set metodu -1.0 ile 1.0 arasında değer alır ve 0.0 duruş anlamına gelir.",
+        "DifferentialDrive sınıfı girdiye varsayılan olarak squaring uygular.",
+        "DifferentialDrive sınıfının varsayılan deadband değeri 0.02'dir.",
+        "DifferentialDrive sınıfı bir tarafın motorlarını kendiliğinden ters çevirir, bu yüzden setInverted çağırmaya gerek yoktur.",
+        "Motor Safety, DifferentialDrive ve MecanumDrive nesnelerinde varsayılan olarak açıktır."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dokümantasyon sorumluluğu açıkça kullanıcıya verir: drivetrain için doğru inversion'ları yönetmek kullanıcının işidir ve motorlar motor nesneleri üzerinde setInverted çağrılarak ters çevrilir. Sınıfın bunu kendiliğinden yaptığını sanmak, kurulumdan sonra robotun neden döndüğünü anlayamamaya yol açar ve bu, yeni bir drivetrain'de en sık karşılaşılan ilk sorundur. Diğer dört ifade dokümantasyonun yazdığı gibidir; özellikle son ifadedeki asimetriye dikkat etmek gerekir, çünkü Motor Safety diğer bütün motor controller ve servo'larda varsayılan olarak kapalıdır.",
+      "hint": "Bu işlemlerden biri sınıfın kendiliğinden yaptığı bir şey değil, kullanıcıya bırakılmış bir sorumluluktur.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html",
+      "sourceNote": "Genel -1.0 ile 1.0 ifadesi: https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/pwm-controllers.html"
+    },
+    {
+      "id": "programming-05-d5",
+      "type": "diagnose",
+      "symptom": "Autonomous'ta robotun iki saniye düz ilerlemesi isteniyor. Kod DifferentialDrive kullanıyor ve sürüş çağrısı command'in initialize metodunda bir kez yapılıyor, execute metodu boş. Robot kısa bir an ilerliyor, sonra duruyor; command ise iki saniye boyunca çalışmaya devam ediyor.",
+      "prompt": "Neden duruyor?",
+      "options": [
+        "Deadband girdiyi sıfırlıyor.",
+        "initialize metodu yalnızca bir kez çalıştığı için motor controller komutu hiç almıyor.",
+        "Motor Safety devreye giriyor; DifferentialDrive nesnelerinde varsayılan olarak açıktır ve çıkış yeterince sık tazelenmezse mekanizma disable edilir.",
+        "Command'in isFinished metodu hemen true dönüyor."
+      ],
+      "correctIndex": 2,
+      "explanation": "Motor Safety her actuator için ayrı bir watchdog tutar ve feed metodunun en son ne zaman çağrıldığını izler; varsayılan ve kullanışlı en küçük timeout değeri 100 ms'dir. Dokümantasyon ayrıca kimin feed çağırdığını da söyler: motor controller sınıflarının set metotları feed çağırarak çıkışın güncellendiğini bildirir. DifferentialDrive nesnelerinde bu özellik varsayılan olarak açıktır. Sürüş çağrısı yalnızca initialize içinde yapıldığında watchdog bir daha beslenmez. Kesilme anı tam olarak 100 ms değildir: karşılaştırma Driver Station tarafında her 5 alınan pakette bir, nominal 100 ms'de bir yapıldığı için mekanizma son feed çağrısından yaklaşık 100 ile 200 ms sonra disable edilir. Belirtideki kısa ilerleme ve ardından gelen duruş budur. İkinci şık belirtiyle çelişir, çünkü robot bir an ilerliyor, yani komut ulaşmıştır. Birinci şık elenir; deadband sıfırlasaydı hiç hareket olmazdı. Dördüncü şık da elenir, çünkü belirtide command'in iki saniye boyunca çalışmaya devam ettiği söyleniyor. Doğru çözüm sürüş çağrısını execute metoduna taşımaktır; böylece her scheduler döngüsünde tazelenir.",
+      "hint": "Robot bir an ilerledi, demek ki komut ulaştı. O hâlde soru şu: komutu ulaşan bir çıkışı ne kesebilir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html"
+    },
+    {
+      "id": "programming-05-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, robot kodu takılıp kaldığında bütün motorların Motor Safety tarafından durdurulacağını varsayıyor. Bu varsayım hangi ölçüde doğrudur?",
+      "options": [
+        "Doğrudur; Motor Safety bütün aktüatörlerde varsayılan olarak açıktır.",
+        "Doğrudur; ancak yalnızca CAN motor controller'lar için geçerlidir.",
+        "Yanlıştır; Motor Safety yalnızca robot disable edildiğinde çalışır.",
+        "Kısmen doğrudur; Motor Safety yalnızca DifferentialDrive ve MecanumDrive nesnelerinde varsayılan olarak açıktır, diğer bütün motor controller ve servo'larda kapalıdır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Dokümantasyon asimetriyi açıkça yazar: Motor Safety, DifferentialDrive ve MecanumDrive nesnelerinde varsayılan olarak açıktır, diğer bütün motor controller ve servo'larda kapalıdır. Mekanizmanın amacı da yazılıdır: kod kilitlenip actuator çıkışını güncelleyemediğinde zarar verebilecek mekanizmaları disable etmek. Bu ikisini yan yana koyunca varsayımın neden tehlikeli olduğu görünür. Kod takıldığında drivetrain için koruma vardır, kol motoru veya intake için varsayılan olarak yoktur; yani en görünür mekanizma korunurken insanların elini soktuğu mekanizmalar korumasız kalır. Bu son cümle kaynaktaki iki ifadeden çıkan sonuçtur. Bir takım aynı korumayı başka actuator'larda da istiyorsa ilgili nesnelerde açıkça etkinleştirmelidir. Üçüncü şık yanlıştır; disable durumu ayrı bir mekanizmadır. İkinci şık da yanlıştır, ayrım CAN ile PWM arasında değil, drive nesneleri ile diğerleri arasındadır.",
+      "hint": "Doküman iki nesne adı sayıyor. Geri kalanlar için ne diyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html"
+    },
+    {
+      "id": "programming-05-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım hedefe hizalanmak için closed-loop bir PIDController kullanıyor. PIDController'ın ürettiği çıkış doğrudan DifferentialDrive sınıfının arcadeDrive metoduna veriliyor. Robot uzaktayken makul davranıyor, ancak hedefe yaklaştıkça hareket beklenenden çok daha zayıflıyor ve hedefe tam oturmadan duruyor.",
+      "prompt": "Drive sınıfının hangi davranışı bu sonucu üretiyor?",
+      "options": [
+        "Sınıf girdiye varsayılan olarak squaring uyguluyor; küçük düzeltmeler karesi alınınca daha da küçülüyor ve deadband eşiğinin altına düşüp sıfırlanıyor.",
+        "Motor Safety, küçük çıkışlarda watchdog'u beslemediği için kesiyor.",
+        "Kontrolcünün çıkışı -1.0 ile 1.0 aralığının dışına çıkıyor.",
+        "Bir tarafın motorları ters çevrilmemiştir."
+      ],
+      "correctIndex": 0,
+      "explanation": "DifferentialDrive girdiye varsayılan olarak squaring uygular ve dokümantasyon bu davranışın istenmeyebileceği durumu örnek olarak doğrudan verir: değerler bir PIDController'dan geliyorsa squaredInputs parametresi false verilmelidir. Sebebi tam olarak buradaki belirtidir. Squaring küçük değerleri orantısız biçimde küçültür; hedefe yaklaştıkça PIDController'ın ürettiği düzeltme zaten küçülür, karesi alınınca çok daha küçülür ve 0.02'lik deadband eşiğinin altına düştüğünde tamamen sıfırlanır. Robot hedefe yaklaşır ama son farkı kapatamaz. İkinci şık elenir: dokümantasyon motor controller sınıflarının set metotlarının feed çağırdığını söyler, yani çağrı her döngüde yapıldığı sürece verilen değerin büyüklüğü ne olursa olsun watchdog beslenir. Üçüncü şık aralık dışına çıkma sorunudur ve bunun belirtisi zayıflama değil, saturation olurdu. Dördüncü şık elenir, çünkü robot uzaktayken makul davranıyor.",
+      "hint": "Belirti 'yaklaştıkça zayıflıyor' diyor. Küçük sayıları orantısız küçülten bir işlem var mı?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html"
+    },
+    {
+      "id": "programming-05-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte arızalı bir kol motoru değiştirildi ve kol ters yönde çalışmaya başladı. Hızlı çözüm olarak kolu kaldıran command'in içinde set değeri eksi bir ile çarpıldı. Kol artık doğru yönde kalkıyor. Ancak kolu yavaş indiren ikinci command hâlâ ters yönde çalışıyor ve kolu setpoint'te tutan default command de kolu aşağı sürüyor.",
+      "prompt": "Kalıcı ve doğru çözüm nedir, ve hızlı çözümün sorunu neydi?",
+      "options": [
+        "İkinci command'de ve default command'de de değerler eksi bir ile çarpılmalıdır.",
+        "Inversion motor nesnesinin üzerinde setInverted ile bir kez tanımlanmalıdır; işareti command'lerin içinde düzeltmek, o motora yazan her yerde tekrar edilmesi gereken bir düzeltme yaratır.",
+        "Motor controller'ın CAN device ID'si değişmiştir ve yeniden atanmalıdır.",
+        "Motor Safety devreye girmiştir; timeout süresi artırılmalıdır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon inversion'ı nerede yapacağınızı söyler: motorlar, motor nesneleri üzerinde setInverted çağrılarak ters çevrilir ve doğru inversion'ları yönetmek kullanıcının sorumluluğudur. Buradaki hızlı çözüm tek bir çağrı yerini düzeltir ve o çağrı doğru çalıştığı için başarılı görünür; oysa aynı motora yazan diğer bütün yerler eski yönde kalır. Belirti bunu gösteriyor: ikinci command ve default command hâlâ ters. Etkinlikte bu hatanın tehlikeli yanı, düzeltmenin işe yaramış görünmesidir, çünkü kimse diğer yolları test etmez. Birinci şık sorunu büyütür: artık pozitif değerin ne anlama geldiği çağrı yerine göre değişir ve kodu sonradan okuyan kimse bunu bilemez. Üçüncü şık elenir, çünkü belirtide kolun ters de olsa hareket ettiği söyleniyor ve device ID değişikliği yönü değil, hangi cihazın komut aldığını etkiler. Dördüncü şık elenir, çünkü Motor Safety mekanizmayı disable eder, yönü değiştirmez. Kural olarak yön bilgisi motorun tanımlandığı tek yerde durmalı, çıkışı hesaplayan kodun içine dağılmamalıdır.",
+      "hint": "Hızlı çözüm kaç yeri düzeltti, o motora kaç yerden yazılıyor?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/wpi-drive-classes.html",
+      "sourceNote": "set aralığı: https://docs.wpilib.org/en/stable/docs/software/hardware-apis/motors/using-motor-controllers.html"
+    }
+  ]
+}

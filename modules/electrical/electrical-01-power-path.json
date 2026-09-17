@@ -1,0 +1,451 @@
+{
+  "id": "electrical-01-power-path",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 1,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Power Path: Battery'den PD'ye",
+  "summary": "Robotun tek enerji kaynağı olan battery'den main breaker üzerinden power distribution device'a uzanan zorunlu güç yolunu, bu yolun kablo ve koruma gereksinimlerini ve enerji vermeden önceki polarite kontrolünü öğretir.",
+  "prerequisites": [],
+  "estimatedMinutes": 14,
+  "concept": {
+    "body": "FRC robotunda tüm elektriksel enerji tek bir kaynaktan gelir. Bu enerjinin battery'den motor controller'lara ve roboRIO'ya ulaşana kadar izlediği yola power path (güç yolu) denir. Power path'in ilk üç halkası her robotta aynıdır ve kurallarla sabitlenmiştir.\n\nBirinci halka battery'dir (robot aküsü). Kurallara göre robot üzerinde 12V nominal, 17-18.2Ah kapasiteli, tek bir non-spillable SLA battery bulunabilir. İkinci halka main breaker (ana devre kesici) adı verilen 120A yüzey montajlı devre kesicidir. Main breaker'ın iki işlevi vardır: robotun açma-kapama anahtarıdır ve kendisinden sonraki kabloları korur. Robot üzerinde bundan başka 120A breaker bulunamaz. Üçüncü halka PD, yani power distribution device'tır (güç dağıtım birimi); bu görevi REV PDH üstlenir.\n\nBağlantı şöyledir: battery'nin kırmızı (+) ucu 6 AWG kablo ile main breaker'a, main breaker'ın çıkışı yine 6 AWG kablo ile PD'nin + terminaline gider. Battery'nin siyah (-) ucu ise main breaker'a uğramadan doğrudan PD'nin - terminaline bağlanır.\n\nPD'den sonra her yük kendi channel'ından (kanal) beslenir: motor controller'lar 40A breaker takılı high-current channel'lardan, roboRIO 10A fuse (sigorta) veya breaker takılı switchable olmayan bir kanaldan, radio ise ayrı bir korumalı kanaldan 18 AWG kablo ile beslenir.\n\nBattery her zaman en son takılır. Takmadan önce polarite kontrolü yapılır ve bu kontrolü tercihen kablolamayı yapmamış bir kişi tekrarlar.",
+    "keyTerms": [
+      {
+        "term": "power path",
+        "glossTr": "güç yolu; battery'den yüklere uzanan elektrik hattı"
+      },
+      {
+        "term": "battery",
+        "glossTr": "robot aküsü"
+      },
+      {
+        "term": "SLA battery",
+        "glossTr": "dökülmeyen kurşun-asit akü"
+      },
+      {
+        "term": "main breaker",
+        "glossTr": "ana devre kesici (120A)"
+      },
+      {
+        "term": "PD (power distribution device)",
+        "glossTr": "güç dağıtım birimi"
+      },
+      {
+        "term": "PDH",
+        "glossTr": "REV Power Distribution Hub"
+      },
+      {
+        "term": "motor controller",
+        "glossTr": "motor sürücü"
+      },
+      {
+        "term": "channel",
+        "glossTr": "PD üzerindeki çıkış kanalı"
+      },
+      {
+        "term": "fuse",
+        "glossTr": "sigorta"
+      },
+      {
+        "term": "AWG",
+        "glossTr": "American Wire Gauge; kablo kalınlık ölçüsü"
+      },
+      {
+        "term": "roboRIO",
+        "glossTr": "robotun ana kontrolcüsü"
+      },
+      {
+        "term": "radio",
+        "glossTr": "robot üzerindeki kablosuz haberleşme birimi"
+      },
+      {
+        "term": "custom circuit",
+        "glossTr": "takımın kendi tasarladığı devre"
+      },
+      {
+        "term": "polarity",
+        "glossTr": "kutup yönü; artı ve eksi uçların doğru bağlanması"
+      }
+    ],
+    "videoRefs": [
+      {
+        "provider": "youtube",
+        "id": "lGgIhxYuSHM",
+        "start": 0,
+        "label": "Bir robot baştan sona nasıl kablolanır",
+        "title": "How to Wire a Robot",
+        "channel": "FIRSTRoboticsCompetition",
+        "lang": "en",
+        "note": "WPILib'in Introduction to FRC Robot Wiring sayfasında gömülü olan resmî video.",
+        "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html",
+        "verifiedOn": "2026-09-12"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-01-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "POWER PATH",
+      "front": "Her FRC robotunda güç aynı üç halkadan geçer.",
+      "back": "Bütün elektriksel enerji tek bir battery'den gelir ve PD'ye ulaşana kadar sabit bir yol izler: battery, main breaker, PD. Bu üç halka kurallarla sabitlenmiştir ve her robotta aynıdır. Kırmızı (+) uç 6 AWG kablo ile main breaker'a, oradan yine 6 AWG ile PD'nin + terminaline gider. Siyah (-) uç ise main breaker'a hiç uğramaz, doğrudan PD'nin - terminaline bağlanır.",
+      "takeaway": "battery → main breaker → PD; üçü arasında 6 AWG",
+      "tags": [
+        "power path",
+        "battery",
+        "main breaker",
+        "PD"
+      ],
+      "estMinutes": 1,
+      "derivedFrom": [
+        "electrical-01-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "battery, main breaker ve PD arasındaki bağlantılarda en az 6 AWG bakır kablo"
+        }
+      ]
+    },
+    {
+      "id": "electrical-01-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "POWER PATH",
+      "front": "Main breaker neden battery ile PD arasında olmak zorunda?",
+      "back": "Main breaker'ın iki ayrı işi vardır ve ikisi de konumundan gelir. Birincisi robotun ana anahtarı olmaktır. İkincisi, kendisinden sonraki kabloları korumaktır. Breaker hattın ilerisine, örneğin motor controller besleme hattına taşındığında battery ile PD arasındaki 6 AWG hat korumasız kalır ve robot dışarıdan güvenle kapatılamaz. Robot üzerinde bundan başka bir 120A breaker da bulunamaz; negatif hatta ikinci bir tane eklemek aynı devreyi ikinci kez keser ve yalnızca yeni bir arıza noktası yaratır.",
+      "takeaway": "Konum iki işi birden belirler: ana anahtar ve kendisinden sonrasının koruması",
+      "tags": [
+        "main breaker",
+        "koruma",
+        "tek 120A"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-01-d5",
+        "electrical-01-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "tek 120A main breaker battery ile PD arasında; robotun dışından hızlı ve güvenli erişilebilir"
+        },
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "battery, main breaker ve PD arasındaki bağlantılarda en az 6 AWG bakır kablo"
+        }
+      ]
+    },
+    {
+      "id": "electrical-01-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "POWER PATH",
+      "front": "Main breaker elevator'ün arkasında kaldı. Robot inspection'dan neden geçemiyor?",
+      "back": "Kural, 120A main breaker'a robotun dışından hızlı ve güvenli şekilde erişilebilmesini şart koşar. Gerekçesi açıktır: yangın, duman veya kontrolden çıkma durumunda robotu saniyeler içinde kapatabilmek gerekir. Bumper sökmeyi gerektiren bir konum bu şartı karşılamaz. Bu hatanın sinsi tarafı şudur: breaker'ın yeri elektrik ekibinin değil, şasi ve mekanizma tasarımının kararıdır ve mekanizmalar büyüdükçe erişilebilir bir nokta sessizce erişilemez hâle gelir.",
+      "takeaway": "Breaker'ın yeri bir şasi kararıdır; mekanizma büyüdükçe erişim sessizce kapanır",
+      "tags": [
+        "main breaker",
+        "inspection",
+        "erişilebilirlik"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-01-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "120A main breaker robotun dışından hızlı ve güvenli şekilde erişilebilir olmalıdır"
+        }
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-01-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, battery ile main breaker arasındaki kırmızı kabloyu yenileyecek. Bu bağlantıda en az hangi kalınlıkta kablo kullanılmalıdır?",
+      "options": [
+        "6 AWG veya daha kalın",
+        "10 AWG veya daha kalın",
+        "12 AWG veya daha kalın",
+        "18 AWG veya daha kalın"
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural, battery, main breaker ve PD arasındaki bağlantılarda 6 AWG (16 mm²) veya daha kalın bakır kablo kullanılmasını zorunlu kılar. 10 AWG ve 12 AWG kablolar motor controller besleme hatlarında kullanılır; 18 AWG ise roboRIO ve radio gibi düşük akımlı yükler içindir. Bu ince kablolar robotun toplam akımını taşıyamaz, ısınır ve yalıtımları erir.",
+      "hint": "Bu hattan tek bir motorun değil, robotun çektiği toplam akım geçer.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "battery, main breaker ve PD arası bağlantı için minimum 6 AWG"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-01-d2",
+      "type": "order_steps",
+      "prompt": "Kablolama bitti ve robota ilk kez enerji verilecek. Aşağıdaki adımları izlenmesi gereken sıraya göre diziniz.",
+      "steps": [
+        "Battery'yi SB connector ile robota takın.",
+        "Battery, main breaker ve PD terminallerindeki tüm çıplak metal bağlantıları yalıtın.",
+        "Tüm güç kablolarını battery, main breaker, PD ve motor controller'lar arasında döşeyip terminalleri sıkın.",
+        "Main breaker'ı açarak robota enerji verin.",
+        "Kablolamayı yapmamış bir takım arkadaşınızdan bağlantıları polarite, yalıtımı eksiksizlik açısından kontrol etmesini isteyin."
+      ],
+      "correctOrder": [
+        2,
+        1,
+        4,
+        0,
+        3
+      ],
+      "explanation": "Bu sıralamada her adım bir öncekine bağımlıdır. Kablolar döşenmeden yalıtılacak bir terminal yoktur. Yalıtım, bağımsız kontrolden önce tamamlanır; çünkü kontrol eden kişinin doğrulayacağı şeylerden biri de yalıtımın eksiksiz olmasıdır ve kural terminallerin her zaman yalıtılmış olmasını ister. Polarite kontrolü battery takılmadan önce yapılmalıdır: yanlış polarite ile enerji verilirse hasar zaten oluşmuş olur. WPILib bu kontrolü tercihen kablolamayı yapmamış bir kişinin yapmasını önerir, çünkü kendi hatanızı görmek zordur. Battery takıldıktan sonra main breaker açılır; ters sıra mümkün değildir.",
+      "hint": "Her adım için şunu sorun: bir önceki adım yapılmadan bu adım fiziksel olarak mümkün mü, yoksa anlamsız mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R607",
+          "season": "2026",
+          "topic": "battery ve main breaker terminalleri her zaman yalıtılmış olmalı"
+        }
+      ],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/basic-robot-wiring.html"
+    },
+    {
+      "id": "electrical-01-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki kurulumda kurallara ve dokümantasyona aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir rookie takım power path'i kurmuş ve kontrol için size gösteriyor. Kurulumun öğeleri aşağıda listelenmiştir.",
+      "elements": [
+        "Battery'nin kırmızı (+) kablosu 6 AWG lug ile main breaker'ın battery tarafına bağlanmış.",
+        "Main breaker'ın AUX ucundan PD'nin + terminaline 6 AWG kırmızı kablo çekilmiş.",
+        "Battery'nin siyah (-) kablosu, ikinci bir 120A breaker üzerinden PD'nin - terminaline bağlanmış.",
+        "roboRIO, PD üzerindeki 10A fuse takılı switchable olmayan bir kanaldan 18 AWG kablo ile besleniyor.",
+        "Main breaker, robotun dış yüzeyinden erişilebilecek şekilde monte edilmiş."
+      ],
+      "faultIndex": 2,
+      "explanation": "Kural açıktır: robot üzerinde izin verilen tek 120A devre kesici main breaker'dır. Negatif hatta ikinci bir 120A breaker eklemek bu maddeyi doğrudan ihlal eder. Ayrıca WPILib'in enerji öncesi kontrol listesi siyah kablonun main breaker'a uğramadan doğrudan PD'nin - terminaline gitmesini şart koşar. Uygulamada da bir faydası yoktur: ikinci breaker aynı devreyi ikinci kez keser, ek bir arıza noktası yaratır ve yalıtılması gereken terminal sayısını artırır. Diğer dört öğe doğrudur.",
+      "hint": "Öğeleri tek tek sayın. Robot üzerinde kaç adet 120A breaker bulunabilir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "robot üzerinde yalnızca tek bir 120A breaker bulunabilir"
+        },
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "battery, main breaker ve PD bağlantısı manual şemasına uygun olmalı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Kırmızı kablonun main breaker'dan geçip PD'nin + terminaline, siyah kablonun doğrudan - terminaline gitmesi WPILib kontrol listesinde tarif edilir: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/basic-robot-wiring.html"
+    },
+    {
+      "id": "electrical-01-d4",
+      "type": "multiple_choice",
+      "prompt": "roboRIO'yu PD üzerinden beslerken aşağıdaki bağlantılardan hangisi doğrudur?",
+      "options": [
+        "40A breaker takılı bir high-current channel'dan 12 AWG kablo ile",
+        "10A fuse veya breaker takılı, switchable olmayan bir kanaldan 18 AWG kırmızı ve siyah kablo ile",
+        "PDH üzerindeki switchable channel'dan 18 AWG kablo ile",
+        "Doğrudan battery terminallerinden 6 AWG kablo ile"
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural, roboRIO'nun güç girişinin doğrudan PD'nin switchable olmayan ve 10A fuse veya 10A breaker ile korunan bir terminal çiftine bağlanmasını ister; o korumaya başka hiçbir yük bağlanamaz. WPILib bunu PDH'in switchable olmayan fused channel'larından biri (20-22) üzerinden, 18 AWG kırmızı/siyah kablo ile tarif eder; kablo roboRIO'nun power input connector'una kırmızı V, siyah C olacak şekilde girer. 40A high-current channel roboRIO'yu aşırı akıma karşı korumaz. Switchable channel yazılım ile kapatılabildiği için robotun kontrolcüsünü beslemekte kullanılamaz. Battery'ye doğrudan bağlantı ise power path'i değiştirir ve kurallara aykırıdır.",
+      "hint": "roboRIO beslemesi kesilirse robot tamamen durur. Bu kanalın yazılımla kapatılabilir olması kabul edilebilir mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R615",
+          "season": "2026",
+          "topic": "roboRIO switchable olmayan, 10A fuse veya breaker ile korunan bir kanaldan beslenir ve o korumaya başka yük bağlanamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Kanal numaraları ve kablo detayı WPILib'den alındı: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/basic-robot-wiring.html"
+    },
+    {
+      "id": "electrical-01-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, kablo uzunluğunu kısaltmak için main breaker'ı battery ile PD arasından alıp motor controller besleme hattına taşımayı öneriyor. Bu öneri neden kabul edilemez?",
+      "options": [
+        "120A breaker yalnızca 6 AWG kabloyla çalışır, motor controller hattındaki 12 AWG kabloya takılamaz.",
+        "Motor controller hattında 120A breaker kullanılırsa o hat 40A yerine 120A'e kadar akım çeker ve motor yanar.",
+        "120A breaker battery ile PD arasında olmak zorundadır; aksi hâlde battery'den PD'ye giden hat korumasız kalır ve robot dışarıdan güvenle kapatılamaz.",
+        "Battery ile PD arasında breaker olmazsa roboRIO açılmaz ve robot kod çalıştıramaz."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kural, tek bir 120A yüzey montajlı main breaker'ın battery ile PD arasına bağlanmasını ve bu breaker'a robotun dışından hızlı ve güvenli şekilde erişilebilmesini zorunlu kılar. Main breaker'ın iki işlevi vardır: robotun ana anahtarı olmak ve kendisinden sonraki kabloları korumak. Breaker hattın ilerisine taşındığında battery ile PD arasındaki 6 AWG hat korumasız kalır. İkinci şık yaygın bir yanlış anlamadır: breaker akım çekmez, yalnızca aşırı akımda devreyi keser. Birinci şıkta anlatılan fiziksel kısıt gerçek değildir. Dördüncü şıkta anlatılan durum sonuç olarak doğru olabilir ancak kuralın gerekçesi bu değildir.",
+      "hint": "Main breaker'ın iki ayrı görevini düşünün. Breaker yer değiştirdiğinde hangi kablo korumasız kalır?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "tek 120A main breaker battery ile PD arasında"
+        },
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "main breaker robotun dışından erişilebilir olmalı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-01-d6",
+      "type": "numeric",
+      "prompt": "PD üzerinde 30A'lik bir breaker ile korunan bir custom circuit kuruyorsunuz. Kuralların izin verdiği en ince kablonun AWG değeri kaçtır? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 14,
+      "tolerance": 0,
+      "unit": "AWG",
+      "explanation": "Kural, kablo kalınlığını breaker değerine göre belirler: 21-30A aralığı için en az 14 AWG (2.5 mm²), 31-40A aralığı için en az 12 AWG (4 mm²), 6-20A aralığı için en az 18 AWG (1 mm²). 30A breaker 21-30A aralığına düştüğü için cevap 14 AWG'dir. 12 AWG de kullanılabilir ancak soru en ince, yani AWG sayısı en büyük olan kabloyu sormaktadır. 18 AWG bu akımda aşırı ısınır.",
+      "hint": "AWG sayısı büyüdükçe kablo incelir. Breaker değeri kural tablosundaki hangi aralığa düşüyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "breaker değerine göre minimum kablo kalınlığı tablosu"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-01-d7",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, robot açıkken yanan bir power on LED şeridini doğrudan battery terminallerine bağlamak istiyor. Bu bağlantı kurallara uygun mudur?",
+      "options": [
+        "Evet, LED şeridi çok az akım çektiği için doğrudan bağlanabilir.",
+        "Evet, 18 AWG kablo kullanılması şartıyla.",
+        "Evet, LED şeridi main breaker'dan sonra, PD'ye giden hatta paralel bağlanırsa.",
+        "Hayır. Her devre, gücünü yalnızca PD'nin korumalı bir terminal çiftinden almalıdır; battery ile PD arasındaki power path değiştirilemez."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural, robottaki her devrenin gücünü yalnızca PD'nin tek bir korumalı terminal çiftinden almasını ister ve devrelerin PD'nin ana güç girişine bağlanmasını açıkça yasaklar. Ayrıca custom circuit'ler battery, PD, motor controller'lar ve aktüatörler arasındaki güç yollarını değiştiremez ve uygun değerde bir koruma ile korunmalıdır. Üçüncü şık tam olarak yasaklanan bağlantıdır: main breaker ile PD arasındaki hat PD'nin ana güç girişidir. LED şeridi için doğru çözüm PDH üzerindeki switchable channel'dır; bu kanal 15A'e kadar sürekli akım verir ve tam olarak LED ve gösterge gibi yükler için tasarlanmıştır. Akımın düşük olması kuralı değiştirmez; kablo kalınlığı da sorunun kaynağı değildir.",
+      "hint": "Sorun çekilen akımın büyüklüğü değil, bağlantının nereye yapıldığı. Bir devre gücünü nereden almak zorunda?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "her devre gücünü yalnızca PD'nin tek bir korumalı terminal çiftinden alır; PD'nin ana güç girişine bağlanamaz"
+        },
+        {
+          "rule": "R625",
+          "season": "2026",
+          "topic": "custom circuit'ler güç yollarını değiştiremez"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "custom circuit'ler uygun koruma ile korunmalı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Switchable channel özellikleri: https://docs.revrobotics.com/ion-control/pdh/overview"
+    },
+    {
+      "id": "electrical-01-d8",
+      "type": "multiple_choice",
+      "prompt": "Takımınız inspection'a giriyor. Inspector robotu çeviriyor ve main breaker'ı elevator mekanizmasının arkasında, ancak bumper'lar sökülerek erişilebilen bir noktada buluyor. Robot bu hâliyle inspection'dan geçemiyor. Bu redde gerekçe oluşturan kural gereksinimi aşağıdakilerden hangisidir?",
+      "options": [
+        "120A main breaker robotun dışından hızlı ve güvenli şekilde erişilebilir olmalıdır.",
+        "Battery ve main breaker terminalleri her zaman tam olarak yalıtılmış olmalıdır.",
+        "Robot üzerinde yalnızca tek bir SLA battery bulunabilir.",
+        "Battery, robot ters döndüğünde bile yerinden çıkmayacak şekilde sabitlenmelidir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural, main breaker'ın robotun dışından hızlı ve güvenli şekilde erişilebilir olmasını şart koşar. Gerekçesi açıktır: yangın, duman veya kontrolden çıkma durumunda robotu saniyeler içinde kapatabilmek gerekir. Bumper sökmeyi gerektiren bir konum bu şartı karşılamaz. Diğer üç şık da elektrik denetiminin gerçek maddeleridir ancak burada anlatılan bulguyla doğrudan ilgili değildir. Bu hata mekanizma tasarımı ilerledikçe breaker'ın üstünün kapanmasıyla ortaya çıkar; breaker konumu tasarımın başında, mekanizmalardan önce belirlenmelidir.",
+      "hint": "Inspector'ın yaptığı şey breaker'a ulaşmaya çalışmaktır. Hangi gereksinim tam olarak bunu düzenler?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "main breaker robotun dışından erişilebilir olmalı"
+        },
+        {
+          "rule": "R607",
+          "season": "2026",
+          "topic": "çeldirici: terminal yalıtımı"
+        },
+        {
+          "rule": "R601",
+          "season": "2026",
+          "topic": "çeldirici: tek battery"
+        },
+        {
+          "rule": "R606",
+          "season": "2026",
+          "topic": "çeldirici: battery sabitleme"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-01-d9",
+      "type": "diagnose",
+      "symptom": "Kablolamayı yeni bitirdiniz. Battery'yi taktınız ve main breaker'ı açtınız. roboRIO ve radio normal şekilde açıldı, PD üzerindeki durum LED'i yanıyor. Ancak bir motor controller yanıt vermiyor ve üzerindeki LED'ler normal çalışma göstergesini vermiyor. Diğer üç motor controller sorunsuz çalışıyor.",
+      "prompt": "İlk olarak hangi olasılığı kontrol edersiniz?",
+      "options": [
+        "Battery zayıftır; şarj edilmiş bir battery ile tekrar deneyin.",
+        "O motor controller'ın besleme kablosu PD'den V+ yerine M+ terminaline bağlanmış olabilir.",
+        "Main breaker gevşek bağlanmıştır ve tam temas etmiyordur.",
+        "roboRIO'yu besleyen 10A fuse atmıştır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Motor controller üzerinde V+ ve M+ olmak üzere iki ayrı kırmızı terminal bulunur: V+ PD'den gelen beslemedir, M+ ise motora giden çıkıştır. WPILib'in enerji öncesi kontrol adımı bu konuda özellikle uyarır: her motor controller için kırmızı kablonun PD'den V+ terminaline gittiği doğrulanmalıdır, M+ terminaline değil. Besleme M+ terminaline girerse controller normal şekilde beslenmez; genellikle hiç LED yanmaz veya LED'ler anormal davranır ve mekanizma yanıt vermez. Diğer üç şık elenir çünkü hepsi robotun tamamını etkilerdi: zayıf battery, gevşek main breaker veya atmış bir roboRIO fuse'u durumunda roboRIO, radio ve diğer motor controller'lar da çalışmazdı. Belirtinin tek bir cihazla sınırlı olması, sorunu o cihazın kendi besleme bağlantısına indirger. Bu hata, polarite kontrolü battery takılmadan önce ve kablolamayı yapmamış bir kişi tarafından yapılsaydı yakalanırdı.",
+      "hint": "Üç motor controller çalışıyor, biri çalışmıyor. Bu bilgi hangi olasılıkları tek başına eler?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/basic-robot-wiring.html"
+    }
+  ]
+}

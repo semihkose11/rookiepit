@@ -1,0 +1,409 @@
+{
+  "id": "electrical-07-pneumatics",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 7,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Pneumatics: Basınç Bölgeleri, Koruma ve Besleme",
+  "summary": "Pnömatik devrenin stored ve working olmak üzere iki basınç bölgesini, her bölgenin sınırlarını, zorunlu güvenlik bileşenlerini ve PCM ile PH'in PD üzerinden nasıl beslendiğini öğretir.",
+  "prerequisites": [
+    "electrical-02-circuit-protection",
+    "electrical-06-status-lights"
+  ],
+  "estimatedMinutes": 16,
+  "concept": {
+    "body": "Pnömatik devre iki basınç bölgesine ayrılır ve bu ayrım kuralın omurgasıdır. Compressor ile regulator arasındaki bölge stored pressure (depolanan basınç) bölgesidir; buradaki basınç 120.0psi değerini aşamaz ve bu bölgedeki bileşenler en az 125.0psi için üretici tarafından derecelendirilmiş olmalıdır. Regulator'ın çıkışındaki bölge ise working pressure (çalışma basıncı) bölgesidir; burada basınç 60.0psi değerini aşamaz ve bileşenler en az 70.0psi için derecelendirilmiş olmalıdır. Bölgeler arasındaki geçişi tek bir primary adjustable relieving regulator sağlar; bu regulator'ın çıkışında, working pressure tarafında ek regulator'lar bulunabilir.\n\nPnömatik kullanan her robotta bulunması zorunlu bileşenler vardır: kurallara uygun tek bir onboard compressor, bir pressure relief valve, bir pressure switch, bir pressure vent plug, regulator'ın iki yanında birer pressure gauge ve tek bir primary working pressure regulator. Relief valve ya doğrudan compressor'a ya da compressor çıkış portuna bağlanan legal sert bağlantı parçalarıyla bağlanır ve 125.0psi değerinde açacak şekilde ayarlanır. Vent plug, elle çalıştırıldığında sistemdeki tüm basıncı makul bir sürede atmosfere boşaltacak şekilde bağlanmalı ve robot üzerinde görünür ve kolay erişilebilir olmalıdır.\n\nElektrik tarafında compressor doğrudan bir kanaldan değil, bir PCM veya PH ya da relay module üzerinden sürülür ve pressure switch doğrudan bu birime ya da roboRIO'ya bağlanarak compressor'ı kontrol eder. Compressor süren bir PCM veya PH için koruma değeri en fazla 20A olabilir.",
+    "keyTerms": [
+      {
+        "term": "stored pressure",
+        "glossTr": "compressor ile regulator arasındaki depolanan basınç"
+      },
+      {
+        "term": "working pressure",
+        "glossTr": "regulator çıkışındaki çalışma basıncı"
+      },
+      {
+        "term": "regulator",
+        "glossTr": "basıncı düşüren ve sabit tutan birim"
+      },
+      {
+        "term": "pressure relief valve",
+        "glossTr": "aşırı basınçta açan emniyet valfi"
+      },
+      {
+        "term": "pressure switch",
+        "glossTr": "basınca göre compressor'ı çalıştırıp durduran anahtar"
+      },
+      {
+        "term": "pressure vent plug",
+        "glossTr": "elle açılıp sistemdeki basıncı boşaltan valf"
+      },
+      {
+        "term": "pressure gauge",
+        "glossTr": "basınç göstergesi"
+      },
+      {
+        "term": "compressor",
+        "glossTr": "havayı sıkıştıran birim"
+      },
+      {
+        "term": "solenoid valve",
+        "glossTr": "elektrikle sürülen hava valfi"
+      },
+      {
+        "term": "storage tank",
+        "glossTr": "sıkıştırılmış havanın depolandığı tank"
+      },
+      {
+        "term": "psi",
+        "glossTr": "pound per square inch; basınç birimi"
+      },
+      {
+        "term": "cfm",
+        "glossTr": "cubic feet per minute; hava debisi birimi"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-07-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "PNEUMATICS",
+      "front": "Pnömatik devre iki basınç bölgesine ayrılır ve sınırları farklıdır.",
+      "back": "Compressor ile regulator arasındaki bölge stored pressure bölgesidir: basınç 120.0psi değerini aşamaz ve bileşenler en az 125.0psi için derecelendirilmiş olmalıdır. Regulator'ın çıkışındaki bölge working pressure bölgesidir: basınç 60.0psi değerini aşamaz ve bileşenler en az 70.0psi için derecelendirilmiş olmalıdır. Geçişi tek bir primary adjustable relieving regulator sağlar; ek regulator'lar yalnızca working tarafında bulunabilir.",
+      "takeaway": "Bir sayının doğru olup olmadığı, ölçüldüğü bölgeye bağlıdır",
+      "tags": [
+        "stored pressure",
+        "working pressure",
+        "regulator"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-07-d1",
+        "electrical-07-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R807",
+          "season": "2026",
+          "topic": "stored pressure en fazla 120.0psi"
+        },
+        {
+          "rule": "R808",
+          "season": "2026",
+          "topic": "working pressure en fazla 60.0psi, tek primary regulator"
+        }
+      ]
+    },
+    {
+      "id": "electrical-07-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "PNEUMATICS",
+      "front": "Relief valve neden compressor'a esnek tubing ile bağlanamaz?",
+      "back": "Relief valve, basınç kontrolden çıktığında açacak son emniyettir ve 125.0psi değerinde açacak şekilde ayarlanır. Bu değerin stored üst sınırı olan 120.0psi'nin biraz üzerinde olması tesadüf değildir: normal çalışmada açmaz, yalnızca sınır aşıldığında devreye girer. Emniyetin işe yaraması için compressor ile arasındaki yolun kopmaması gerekir. Bu yüzden ya doğrudan compressor'a ya da compressor çıkış portuna bağlanan legal sert bağlantı parçalarıyla bağlanır. Araya konan esnek tubing ezilebilir, kopabilir veya bağlantısından çıkabilir; o anda relief valve devrede değildir ve bunu gösteren hiçbir belirti yoktur.",
+      "takeaway": "Emniyet elemanı, kopabilecek bir yolun arkasına konmaz",
+      "tags": [
+        "relief valve",
+        "125.0psi",
+        "sert bağlantı"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-07-d2",
+        "electrical-07-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R811",
+          "season": "2026",
+          "topic": "relief valve doğrudan compressor'a veya legal sert bağlantı parçalarıyla bağlanır, 125.0psi"
+        }
+      ]
+    },
+    {
+      "id": "electrical-07-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "PNEUMATICS",
+      "front": "Vent plug açıldı, giriş gauge'i sıfırlandı ama çıkış gauge'i hâlâ basınç gösteriyor.",
+      "back": "Vent plug elle çalıştırıldığında sistemdeki tüm basıncı makul bir sürede atmosfere boşaltacak şekilde bağlanmış olmalıdır ve denetimde tam olarak bu doğrulanır: plug açılır, bütün gauge'lerin 0 psi gösterdiği kontrol edilir. Çıkıştaki basıncın inmemesi o bölgenin vent yolundan ayrıldığını gösterir. Bunun bedeli pit'te ödenir: basınçlı kaldığı bilinmeyen bir hatta çalışırken bir mekanizma kendiliğinden hareket edebilir. Plug ayrıca robot üzerinde görünür ve kolay erişilebilir olmalıdır.",
+      "takeaway": "Bütün gauge'ler sıfırı göstermeden sistem boşalmış sayılmaz",
+      "tags": [
+        "vent plug",
+        "0 psi",
+        "denetim"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-07-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R813",
+          "season": "2026",
+          "topic": "vent plug elle açıldığında tüm basıncı boşaltmalı, görünür ve kolay erişilebilir"
+        }
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-07-d1",
+      "type": "numeric",
+      "prompt": "Robotunuzda regulator'ın çıkışındaki hatta bir silindir çalışıyor. Bu hattaki basınç en fazla kaç psi olabilir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 60,
+      "tolerance": 0,
+      "unit": "psi",
+      "explanation": "Regulator'ın çıkışındaki bölge working pressure bölgesidir ve buradaki basınç 60.0psi değerini aşamaz. Karışması kolay olan diğer iki sayı farklı şeyleri ifade eder: 120.0psi regulator'ın girişindeki stored pressure için üst sınırdır, 125.0psi ise hem stored pressure bölgesindeki bileşenlerin taşıması gereken en düşük derecelendirmedir hem de relief valve'in açması gereken değerdir. Working pressure bölgesindeki bileşenler için istenen en düşük derecelendirme ise 70.0psi'dir. Bir sayıyı diğerinin yerine koymak doğrudan bir güvenlik sorunu yaratır.",
+      "hint": "Regulator devreyi ikiye böler. Silindir hangi tarafta kalıyor ve o tarafın sınırı hangisi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R808",
+          "season": "2026",
+          "topic": "working pressure en fazla 60.0psi"
+        },
+        {
+          "rule": "R807",
+          "season": "2026",
+          "topic": "çeldirici: stored pressure en fazla 120.0psi"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi: \"Components at working pressure must be rated for at least 70 psi... Components at stored pressure must be rated for at least 125 psi. <R801, R802>\" Kural metinleri için: https://www.frcmanual.com/2026/robot-construction-rules-(r)"
+    },
+    {
+      "id": "electrical-07-d2",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki pnömatik kurulumunda kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takım pnömatik sistemini kurmuş ve denetim öncesi size gösteriyor.",
+      "elements": [
+        "Relief valve, compressor ile storage tank arasında, compressor çıkışından yaklaşık yarım metrelik esnek 1/4 inç tubing ile uzatılıp bir T bağlantısına takılmış.",
+        "Regulator'ın hem girişinde hem çıkışında birer pressure gauge var ve ikisi de dışarıdan okunabiliyor.",
+        "Pressure switch, compressor'ı kontrol etmek üzere doğrudan PH'e bağlanmış.",
+        "Vent plug, robotun yan panelinde elle kolayca ulaşılabilecek bir noktada.",
+        "Tüm tubing dış çapı 1/4 inç ve KOP muadili."
+      ],
+      "faultIndex": 0,
+      "explanation": "Relief valve ya doğrudan compressor'a ya da compressor çıkış portuna bağlanan legal sert bağlantı parçalarıyla (brass, nylon vb.) bağlanmalıdır. Araya esnek tubing koymak bu şartı karşılamaz; tubing ezilebilir, kopabilir veya bağlantısından çıkabilir ve bu durumda relief valve compressor'dan tamamen ayrılır. Gerekçesi güvenliktir: relief valve, compressor durmadığı veya pressure switch arızalandığı durumda basıncı sınırlayan son savunmadır ve compressor ile arasına giren her bileşen tıkanma veya kopma hâlinde bu korumayı devre dışı bırakabilir. Valfin 125.0psi değerinde açacak şekilde kontrol edilmesi veya ayarlanması da ayrıca istenir. Diğer dört öğe kurallara uygundur: gauge'ler regulator'ın iki yanında ve okunabilir durumda, pressure switch doğrudan PH'e bağlı, vent plug erişilebilir ve tubing dış çapı izin verilen üst sınırda.",
+      "hint": "Bileşenlerden biri güvenlik zincirinin son halkası. Bu halka ile kaynak arasında başka bir şey olmalı mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R811",
+          "season": "2026",
+          "topic": "relief valve doğrudan compressor'a veya legal sert bağlantı parçalarıyla compressor çıkış portuna bağlanır ve 125.0psi için ayarlanır"
+        },
+        {
+          "rule": "R810",
+          "season": "2026",
+          "topic": "çeldirici: gauge'ler regulator'ın iki yanında ve görünür"
+        },
+        {
+          "rule": "R812",
+          "season": "2026",
+          "topic": "çeldirici: pressure switch doğrudan PCM/PH veya roboRIO'ya bağlanır"
+        },
+        {
+          "rule": "R813",
+          "season": "2026",
+          "topic": "çeldirici: vent plug görünür ve kolay erişilebilir"
+        },
+        {
+          "rule": "R804",
+          "season": "2026",
+          "topic": "çeldirici: tubing en fazla 1/4 inç"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Kural metinleri https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; denetim listesi maddeleri gauge, vent plug, tubing ve pressure switch için bunları teyit ediyor."
+    },
+    {
+      "id": "electrical-07-d3",
+      "type": "multiple_choice",
+      "prompt": "Takım, compressor'ı PDH üzerindeki boşta duran 40A breaker takılı bir high-current channel'a doğrudan bağlamayı öneriyor. Böylece compressor robot açıkken sürekli çalışacak. Bu öneriyi değerlendiriniz.",
+      "options": [
+        "Uygun değildir. Compressor doğrudan bir kanaldan sürülemez; bir PCM veya PH ya da relay module üzerinden sürülmeli ve pressure switch ile kontrol edilmelidir.",
+        "Uygundur; compressor 40A'den az akım çektiği için 40A breaker güvenlidir.",
+        "Uygundur, ancak kanaldaki breaker 20A ile değiştirilmelidir.",
+        "Uygun değildir; compressor yalnızca switchable channel'dan beslenebilir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Compressor'ın beslemesi bir kanal seçmekten ibaret değildir. Kural compressor'ın bir PCM veya PH ya da relay module üzerinden sürülmesini ve pressure switch'in doğrudan bu birime veya roboRIO'ya bağlanarak compressor'ı kontrol etmesini ister. Sürekli çalışan bir compressor zaten kabul edilemez: basınç pressure switch tarafından sınırlanmazsa sistem relief valve'e dayanır ve bu, güvenlik bileşenini normal çalışma parçası hâline getirir. Üçüncü şık doğru bir ayrıntı içerir çünkü compressor süren bir PCM veya PH için koruma değeri en fazla 20A olabilir, ancak tek başına yeterli değildir: sorun yalnızca breaker değeri değil, compressor'ın doğrudan bağlanmasıdır. Dördüncü şıkta anlatılan switchable channel zorunluluğu yoktur.",
+      "hint": "Compressor'ı ne durduracak? Kural bu işi hangi birime veriyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R812",
+          "season": "2026",
+          "topic": "compressor PCM/PH veya relay module ile sürülür; pressure switch doğrudan bu birime veya roboRIO'ya bağlanır"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "compressor süren PCM/PH için en fazla 20A koruma"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi: \"Compressor Power - Must use a PCM/PH or relay module. <R812 & Table 8-2>\" ve \"Compressor Control - A Pressure Switch must be wired directly to the PCM/PH or roboRIO to control compressor. <R812>\""
+    },
+    {
+      "id": "electrical-07-d4",
+      "type": "diagnose",
+      "symptom": "Robot çalışıyor ve compressor devrede. Regulator'ın girişindeki gauge 115 psi gösteriyor. Çıkışındaki gauge ise 85 psi gösteriyor. Silindirler normalden sert ve hızlı hareket ediyor.",
+      "prompt": "Bu tabloda sorun nedir?",
+      "options": [
+        "Sorun yok; her iki gauge de kabul edilebilir aralıkta.",
+        "Working pressure izin verilen üst sınırın üzerinde; regulator 60.0psi ve altına ayarlanmalıdır.",
+        "Stored pressure izin verilen üst sınırın üzerinde; pressure switch değiştirilmelidir.",
+        "Gauge'lerden biri arızalı; ikisi de aynı değeri göstermelidir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Girişteki 115 psi stored pressure için sorun değildir, çünkü üst sınır 120.0psi'dir. Asıl sorun çıkıştadır: working pressure 60.0psi değerini aşamaz ve 85 psi bu sınırın belirgin şekilde üzerindedir. Regulator bu nedenle vardır ve ayarı düşürülmelidir. Silindirlerin normalden sert çalışması da aynı bulguyu destekler; yüksek working pressure hem kurallara aykırıdır hem de working pressure bölgesindeki bileşenleri, yalnızca 70.0psi için derecelendirilmiş olabilecekleri hâlde zorlar. Dördüncü şık pnömatik devrenin mantığını yanlış anlar: gauge'lerin farklı değer göstermesi normaldir, zaten regulator'ın işi aradaki farkı yaratmaktır.",
+      "hint": "İki gauge'i ayrı ayrı değerlendirin. Her birinin kendi üst sınırı var ve bu sınırlar aynı değil.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R808",
+          "season": "2026",
+          "topic": "working pressure en fazla 60.0psi, tek primary regulator ile"
+        },
+        {
+          "rule": "R807",
+          "season": "2026",
+          "topic": "stored pressure en fazla 120.0psi"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Gauge zorunluluğu ve derecelendirme değerleri resmi denetim listesinden doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-07-d5",
+      "type": "numeric",
+      "prompt": "Relief valve'in havayı boşaltacak şekilde ayarlanması gereken basınç kaç psi'dir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 125,
+      "tolerance": 0,
+      "unit": "psi",
+      "explanation": "Relief valve 125.0psi değerinde açacak şekilde kontrol edilir veya ayarlanır ve ya doğrudan compressor'a ya da compressor çıkış portuna bağlanan legal sert bağlantı parçaları üzerinden bağlanır. Bu değerin stored pressure üst sınırı olan 120.0psi'nin biraz üzerinde olması tesadüf değildir: normal çalışmada relief valve hiç açmamalı, yalnızca pressure switch görevini yapmadığında devreye girmelidir. Aynı 125.0psi değeri stored pressure bölgesindeki bileşenlerin taşıması gereken en düşük derecelendirmedir; yani valf açtığı anda bile devredeki parçalar o basıncı taşıyabiliyor olur. 120 cevabı stored pressure sınırıdır, 60 ise working pressure sınırıdır.",
+      "hint": "Bu değer normal çalışmada hiç ulaşılmaması gereken bir eşik. Stored pressure sınırının üstünde mi altında mı olmalı?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R811",
+          "season": "2026",
+          "topic": "relief valve doğrudan compressor'a veya legal sert bağlantı parçalarıyla compressor çıkış portuna bağlanır ve 125.0psi için ayarlanır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "125 psi derecelendirme değeri resmi denetim listesiyle örtüşüyor: \"Components at stored pressure must be rated for at least 125 psi. <R801, R802>\" https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-07-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, maç öncesi robotun tanklarını pit'teki büyük bir atölye kompresöründen doldurmayı, sonra hortumu ayırıp sahaya çıkmayı öneriyor. Böylece onboard compressor'ın maç sırasında hiç çalışmasına gerek kalmayacak. Bu öneriyi değerlendiriniz.",
+      "options": [
+        "Uygundur; tanklar dolduktan sonra atölye kompresörü robottan ayrıldığı için robot üzerinde yalnızca izinli bileşenler kalır.",
+        "Uygundur, doldurma basıncı 120.0psi değerini aşmadığı sürece.",
+        "Uygun değildir. Robottaki sıkıştırılmış hava yalnızca robotun kendi onboard compressor'ı tarafından sağlanmalıdır.",
+        "Uygundur, ancak yalnızca elemelerde; playoff maçlarında yasaktır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kural açıktır: robottaki sıkıştırılmış hava yalnızca robotun tek onboard compressor'ı tarafından sağlanmalıdır. Ayrıca robot için kullanılacak hiçbir depolanmış basınç robot dışında bulunamaz. Doldurma basıncının sınırın altında kalması bu şartı değiştirmez, çünkü mesele basıncın değeri değil kaynağıdır. Bu, tasarımı doğrudan etkileyen bir kısıttır: pnömatik kullanan takım, maç boyunca gereken havayı üretebilecek bir onboard compressor ve tank kapasitesi planlamak zorundadır. Compressor için ayrıca nominal 1.1cfm debi üst sınırı vardır, yani daha büyük bir compressor ile bu sorunu aşmak da mümkün değildir.",
+      "hint": "Kural havanın miktarını mı, yoksa nereden geldiğini mi kısıtlıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R806",
+          "season": "2026",
+          "topic": "hava yalnızca tek onboard compressor tarafından sağlanır; en fazla nominal 1.1cfm"
+        },
+        {
+          "rule": "R807",
+          "season": "2026",
+          "topic": "robot için depolanmış basınç robot dışında bulunamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi: \"Only one onboard legal compressor (max 1.1cfm (519.1cm3/s) flow rate) may be used. <R806>\" Kural metinleri: https://www.frcmanual.com/2026/robot-construction-rules-(r)"
+    },
+    {
+      "id": "electrical-07-d7",
+      "type": "multiple_choice",
+      "prompt": "Takım, bir silindiri daha hızlı hareket ettirmek için iki ayrı solenoid valve'in çıkışlarını bir T bağlantısıyla birleştirip aynı silindire vermeyi öneriyor. Bu uygun mudur?",
+      "options": [
+        "Uygundur; iki valf aynı anda açıldığı sürece hava debisi artar ve silindir hızlanır.",
+        "Uygundur, ancak yalnızca working pressure 60.0psi'nin altında tutulursa.",
+        "Uygundur, valfler aynı PH üzerinden sürüldüğü sürece.",
+        "Uygun değildir. Birden fazla solenoid valve'in çıkış havası birleştirilemez."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural doğrudan bunu yasaklar: birden fazla solenoid valve'in çıkış havası birleştirilemez. Gerekçesi davranışın öngörülemez hâle gelmesidir; iki valf tam olarak aynı anda açılıp kapanmaz ve biri açıkken diğeri kapalıysa hava beklenmedik yönlerde akar, silindir kontrolsüz hareket edebilir. Valflerin aynı PH üzerinden sürülmesi veya basıncın sınır içinde kalması bu yasağı değiştirmez, çünkü kural elektriksel bağlantıyı değil hava çıkışlarının birleştirilmesini yasaklar. Silindiri hızlandırmanın doğru yolları farklıdır: tubing'i kuralın izin verdiği 1/4 inç dış çap üst sınırına kadar büyütmek, quick exhaust valve kullanmak veya silindir çapını yeniden seçmek.",
+      "hint": "Kural elektriksel bağlantıyı mı yoksa hava çıkışlarını mı düzenliyor? İki valf tam olarak aynı anda mı açılır?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R814",
+          "season": "2026",
+          "topic": "birden fazla solenoid valve'in çıkış havası birleştirilemez"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi: \"...valve outputs may not be combined. <Table 8-2, R804-C, & R814>\""
+    },
+    {
+      "id": "electrical-07-d8",
+      "type": "diagnose",
+      "symptom": "Denetimin son adımındasınız. Robot disable edildi, main breaker kapatıldı ve tüm ledlerin söndüğü doğrulandı. Vent plug elle açıldı. Regulator girişindeki gauge sıfıra indi, ancak çıkıştaki gauge 45 psi göstermeye devam ediyor ve düşmüyor.",
+      "prompt": "Bu bulgunun anlamı nedir?",
+      "options": [
+        "Vent plug sistemdeki tüm basıncı boşaltacak şekilde bağlanmamıştır; working pressure tarafı vent yolundan yalıtılmış durumdadır.",
+        "Normaldir; working pressure tarafı vent plug ile boşalmaz, kendiliğinden zamanla iner.",
+        "Çıkıştaki gauge arızalıdır; gerçek basınç sıfırdır.",
+        "Regulator arızalıdır ve kapalıyken bile basınç geçirmektedir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Vent plug, elle çalıştırıldığında sistemdeki tüm basıncı atmosfere boşaltacak şekilde bağlanmalıdır ve denetimde tam olarak bu doğrulanır: vent plug açılır ve tüm gauge'lerin 0 psi gösterdiği kontrol edilir. Çıkış tarafındaki basıncın inmemesi, o bölgenin vent yolundan ayrılmış olduğunu gösterir; uygulamada bunun en yaygın nedeni working pressure tarafında ters yönde takılmış bir check valve veya kapalı kalmış bir shutoff valve'dir. İkinci şık tehlikeli bir yanılgıdır: sistemde kalan basınç, robot kapalıyken bile bir silindiri hareket ettirebilir ve bu, mekanizmaya elini uzatan kişi için gerçek bir risktir. Üçüncü ve dördüncü şıklar da elenir; bu bulgu karşısında yapılacak şey gauge'i suçlamak değil, vent yolunun tüm devreyi kapsayacak şekilde yeniden düzenlenmesidir.",
+      "hint": "Vent plug'ın görevi ne kadar basıncı boşaltmak? Boşalmayan bir bölge varsa o bölge vent yoluna nasıl bağlanmış olabilir?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R813",
+          "season": "2026",
+          "topic": "vent plug elle açıldığında tüm basıncı atmosfere boşaltmalı, görünür ve kolay erişilebilir olmalı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi: \"Disable ROBOT, then open Main Breaker... actuate pneumatic vent plug valve and confirm that all pressure is vented to atmosphere and all gauges read 0 psi pressure. <R813>\" ve \"Must include an easily-accessible manual vent plug valve to release all system pressure. <R813>\""
+    }
+  ]
+}

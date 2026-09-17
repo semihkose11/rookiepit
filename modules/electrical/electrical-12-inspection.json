@@ -1,0 +1,395 @@
+{
+  "id": "electrical-12-inspection",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 12,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Inspection Points: Elektrik Denetimi Baştan Sona",
+  "summary": "Denetimde elektrik tarafında tam olarak nelere bakıldığını, bu maddelerin hangi modüldeki bilgiye dayandığını ve robotu denetime hazır hâle getiren son kontrolleri birleştirir.",
+  "prerequisites": [
+    "electrical-07-pneumatics",
+    "electrical-10-wire-management",
+    "electrical-11-control-system"
+  ],
+  "estimatedMinutes": 18,
+  "concept": {
+    "body": "Denetim, bu departmanda öğrendiğiniz her şeyin tek tek sorulduğu yerdir. Inspector elinde bir liste ile gelir ve maddeler kabaca dört öbekte toplanır.\n\nBirincisi güç yolu: tek bir battery, sağlam sabitlenmiş ve havalandırma delikleri kapatılmamış; tüm battery ve main breaker bağlantıları her zaman yalıtılmış; tek bir 120A main breaker, dışarıdan hızlı ve güvenli erişilebilir; battery'den main breaker'a ve PD'ye giden tüm kablolar en az 6 AWG.\n\nİkincisi koruma ve kablolama: PD, breaker'ları ve kabloları denetim için kolayca görülebilir olmalı; yalnızca izin verilen breaker ve fuse tipleri kullanılmalı; devre başına tek koruma bulunmalı; kablo kalınlığı koruma değerine uymalı; kablolar renk kodlu ve bakır veya bakır kaplı alüminyum olmalı; her WAGO terminaline tek kablo girmeli.\n\nÜçüncüsü kontrol sistemi: doğru imaj sürümü, tek bir wireless bridge ve ledlerinin görünür olması, radio ve roboRIO beslemelerinin doğru kanaldan gelmesi, RSL'in görünür olması ve roboRIO ile aynı ritimde yanıp sönmesi.\n\nDördüncüsü ise sık atlanan bir madde: frame isolation. Robotun şasisi elektriksel olarak yalıtılmış olmalı, yani PD'nin battery postlarından herhangi biri ile şasi arasında ölçülen direnç 120 ohm'un üzerinde olmalıdır.\n\nElektrik denetiminin son maddesi, robotun gücü kesilip tüm ledlerin söndüğünün ve pnömatik basıncın tamamen boşaldığının doğrulanmasıdır.",
+    "keyTerms": [
+      {
+        "term": "inspection",
+        "glossTr": "robotun kurallara uygunluğunun denetlendiği süreç"
+      },
+      {
+        "term": "inspector",
+        "glossTr": "denetimi yapan görevli"
+      },
+      {
+        "term": "frame isolation",
+        "glossTr": "şasinin elektriksel olarak yalıtılmış olması"
+      },
+      {
+        "term": "battery post",
+        "glossTr": "PD üzerindeki battery giriş terminali"
+      },
+      {
+        "term": "chassis",
+        "glossTr": "robotun şasisi"
+      },
+      {
+        "term": "CCA (copper-clad aluminum)",
+        "glossTr": "bakır kaplı alüminyum iletken"
+      },
+      {
+        "term": "kiosk",
+        "glossTr": "etkinlikte sağlanan, radio'nun programlandığı bilgisayar"
+      },
+      {
+        "term": "re-inspection",
+        "glossTr": "değişiklik sonrası yeniden denetim"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-12-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "INSPECTION",
+      "front": "Denetim, bu departmanda öğrendiğiniz her şeyin tek tek sorulduğu yerdir.",
+      "back": "Inspector elinde bir liste ile gelir ve maddeler kabaca dört öbekte toplanır: güç yolu, koruma ve kablolama, kontrol sistemi ve frame isolation. Öbeklerin hiçbiri yeni bilgi değildir; hepsi önceki modüllerin karşılığıdır. Elektrik denetiminin son maddesi ise robotun gücünün kesilip tüm ledlerin söndüğünün ve pnömatik basıncın tamamen boşaldığının doğrulanmasıdır. Denetim tek seferlik de değildir: değişiklik yapan takım yeniden denetime girer.",
+      "takeaway": "Denetim yeni bir konu değil, öğrenilenlerin tek tek sorulması",
+      "tags": [
+        "denetim",
+        "dört öbek",
+        "yeniden denetim"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-12-d1",
+        "electrical-12-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R813",
+          "season": "2026",
+          "topic": "denetim listesinin Power Off maddesi: disable, main breaker, ledler, vent plug, 0 psi"
+        }
+      ]
+    },
+    {
+      "id": "electrical-12-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "INSPECTION",
+      "front": "Şasi ile güç devresi arasında neden 120 Ω aranıyor?",
+      "back": "Kural robotun şasisinin elektriksel olarak yalıtılmış olmasını ister: PD'nin battery postlarından herhangi biri ile şasi arasında ölçülen direnç 120 ohm'un üzerinde olmalıdır. Ölçüm tek bir sayı verir ama arkasında bir tasarım kararı vardır: robotun güç devresi şasiyi bir iletken olarak kullanmaz. Şasi devreye karışırsa, yalıtımı bozulan herhangi bir kablo gövde üzerinden beklenmedik bir yol açar ve arıza takip edilemez hâle gelir. Ölçüm bu ayrımın hâlâ geçerli olduğunu doğrular.",
+      "takeaway": "Tek bir direnç ölçümü, şasinin devreye karışmadığını doğrular",
+      "tags": [
+        "frame isolation",
+        "120 ohm",
+        "battery post"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-12-d2"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R611",
+          "season": "2026",
+          "topic": "PD battery postu ile şasi arasındaki direnç 120 ohm'un üzerinde olmalı"
+        }
+      ]
+    },
+    {
+      "id": "electrical-12-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "INSPECTION",
+      "front": "Ölçüm 3 ohm çıktı, ama robot sorunsuz çalışıyor ve hiçbir koruma devreye girmedi.",
+      "back": "3 ohm, istenen sınırın çok altındadır ve şasi ile güç devresi arasında gerçek bir iletken yol bulunduğu anlamına gelir. Robotun çalışıyor olması bunu çürütmez; yol henüz bir kısa devre oluşturacak kadar düşük dirençli değildir, ama vardır. Aramaya ezilmiş veya sıyrılmış kablolardan ve gövdesi topraklı bileşenlerden başlanır: kamera, dekoratif LED şerit, sensörler. Bulunması zordur çünkü belirti yoktur; belirti çıktığında ise genellikle iş işten geçmiştir.",
+      "takeaway": "Belirti vermeyen bir bulgu, olmayan bir sorun değildir",
+      "tags": [
+        "frame isolation",
+        "teşhis",
+        "sıyrılmış kablo"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-12-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R611",
+          "season": "2026",
+          "topic": "şasi elektriksel olarak yalıtılmış olmalı"
+        }
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-12-d1",
+      "type": "order_steps",
+      "prompt": "Denetimin son adımı robotun güvenli şekilde kapatıldığının doğrulanmasıdır. Aşağıdaki adımları izlenmesi gereken sıraya göre diziniz.",
+      "steps": [
+        "Tüm ledlerin söndüğünü doğrulayın.",
+        "Robotu disable edin.",
+        "Main breaker'ı kapatarak robotun gücünü kesin."
+      ],
+      "correctOrder": [
+        1,
+        2,
+        0
+      ],
+      "explanation": "Üç adımın sırası zorunludur. Önce robot disable edilir, çünkü güç kesilirken hiçbir mekanizmanın komut altında olmaması gerekir. Ardından main breaker kapatılarak güç kesilir. Ledlerin söndüğünü doğrulamak ancak güç kesildikten sonra anlamlıdır; bu adım bir önceki adımın gerçekten işe yaradığının kanıtıdır ve robotta enerji bırakan gizli bir yol olup olmadığını gösterir. Denetim listesi bu üç adımdan sonra pnömatik vent plug'ın elle açılmasını ve tüm gauge'lerin 0 psi gösterdiğinin doğrulanmasını da ister. Basıncın boşaltılması listede bu üç adımdan sonra gelir; compressor yalnızca robot enable iken çalışabildiği için disable edilmiş ve gücü kesilmiş bir robotta hat yeniden dolmaz.",
+      "hint": "Her adım için sorun: bu adımı bir öncekinden önce yapmak tehlikeli mi, yoksa anlamsız mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R813",
+          "season": "2026",
+          "topic": "vent plug elle açıldığında tüm stored pressure atmosfere boşalmalı, görünür ve kolay erişilebilir olmalı; denetim listesinin Power Off maddesi bu kurala bağlanır"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Power Off - Disable ROBOT, then open Main Breaker to remove power from the ROBOT, confirm all LEDs are off, actuate pneumatic vent plug valve and confirm that all pressure is vented to atmosphere and all gauges read 0 psi pressure. <R813>\""
+    },
+    {
+      "id": "electrical-12-d2",
+      "type": "numeric",
+      "prompt": "Inspector, PD'nin battery postlarından biri ile robotun şasisi arasındaki direnci ölçüyor. Bu direncin kaç ohm'un üzerinde olması gerekir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 120,
+      "tolerance": 0,
+      "unit": "ohm",
+      "explanation": "Kural robotun şasisinin elektriksel olarak yalıtılmış olmasını ister: PD'nin battery postlarından herhangi biri ile şasi arasında ölçülen direnç 120 ohm'un üzerinde olmalıdır. Gerekçesi şudur: FRC güç sistemi şasiye göre yüzer, yani şasi bir dönüş yolu değildir. Bir iletken şasiye temas ederse bu yalıtım bozulur ve şasi devrenin parçası hâline gelir; o andan itibaren robotun herhangi bir metal parçasına dokunan başka bir iletken beklenmedik bir devre tamamlayabilir. Bu madde sık atlanır çünkü robot yalıtım bozulmuşken de sorunsuz çalışır; sorun ancak ikinci bir temas oluştuğunda ortaya çıkar. Kural ölçümü PD'nin battery postlarından herhangi biri için tanımlar; dolayısıyla şart her iki post için de sağlanmış olmalıdır.",
+      "hint": "Ölçüm bir yalıtım testidir. Yalıtım iyiyse ölçülen direnç yüksek mi olur, düşük mü?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R611",
+          "season": "2026",
+          "topic": "şasi elektriksel olarak yalıtılmış olmalı; PD battery postu ile şasi arasında 120 ohm'un üzerinde direnç"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Isolated Frame - Frame must be electrically isolated: >120Ω between either PDP/PDH battery post and chassis. <R611>\""
+    },
+    {
+      "id": "electrical-12-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki denetim öncesi kontrolde bir madde kurallara aykırıdır. Onu seçiniz.",
+      "scenario": "Denetime girmeden önce robotu son kez gözden geçiriyorsunuz.",
+      "elements": [
+        "Battery, robot ters döndüğünde bile çıkmayacak şekilde sabitlenmiş ve üzerine bir tutma braketi geçirilmiş; braket, battery'nin üst yüzeyindeki havalandırma dikdörtgeninin kısa kenarlarını doğrudan kapatıyor.",
+        "Battery ve main breaker terminallerinin tamamı yalıtılmış durumda.",
+        "Main breaker, bumper sökülmeden dışarıdan erişilebiliyor.",
+        "PD, breaker'ları ve kabloları elektronik panosunda açıkta ve kolayca görülebiliyor.",
+        "Battery'den main breaker'a ve PD'ye giden tüm kablolar 6 AWG."
+      ],
+      "faultIndex": 0,
+      "explanation": "Battery'nin sabitlenmesi doğru ve zorunludur, ancak denetim maddesi bunu tek başına istemez: battery sabitlenmiş olmalı ve şarj sırasında havalandırması kapatılmamış olmalıdır. Kural bir tolerans tanır: havalandırma dikdörtgeninin kısa kenarları sızdırmaz şekilde kapatılmadığı veya doğrudan örtülmediği sürece havalandırma kapatılmış sayılmaz. Buradaki braket tam olarak o kısa kenarları kapattığı için şartı ihlal eder. Gerekçesi kimyasaldır: kurşun-asit bir battery şarj sırasında gaz çıkarır ve bu gazın çıkabileceği bir yol olmalıdır; kapatılmış bir havalandırma basınç birikmesine ve battery'nin şişmesine yol açar. Bu maddenin toleransı sezon içinde bir Team Update ile netleştirilmiştir; denetim listesinin ilk sürümü bu açıklamayı içermez. Bu, sabitleme çözümü tasarlanırken en sık atlanan ayrıntıdır, çünkü braket ilk bakışta doğru işi yapıyor görünür. Diğer dört madde denetim listesinin doğrudan maddeleridir ve hepsi uygundur.",
+      "hint": "Battery maddesi iki şart içeriyor. Braket bunlardan hangisini sağlıyor, hangisini bozuyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R601",
+          "season": "2026",
+          "topic": "tek battery; şarj sırasında havalandırma dikdörtgeninin kısa kenarları kapatılmamış olmalı"
+        },
+        {
+          "rule": "R606",
+          "season": "2026",
+          "topic": "battery robot ters döndüğünde bile çıkmayacak şekilde sabitlenir"
+        },
+        {
+          "rule": "R607",
+          "season": "2026",
+          "topic": "çeldirici: battery ve main breaker bağlantıları her zaman yalıtılmış"
+        },
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "çeldirici: main breaker dışarıdan hızlı ve güvenli erişilebilir"
+        },
+        {
+          "rule": "R613",
+          "season": "2026",
+          "topic": "çeldirici: PD, breaker'ları ve kabloları denetim için kolayca görülebilir"
+        },
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "çeldirici: battery'den main breaker'a ve PD'ye giden hat en az 6 AWG"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Battery - A single 12V, 17-18.2Ah ROBOT battery, securely fastened inside ROBOT with vents unobstructed for charging. <R601, R605, & R606>\" Havalandırma toleransı Team Update 11 ile eklenmiştir: https://firstfrc.blob.core.windows.net/frc2026/Manual/TeamUpdates/REBUILT_TeamUpdate-Combined.pdf"
+    },
+    {
+      "id": "electrical-12-d4",
+      "type": "multiple_choice",
+      "prompt": "Takım, elektronik panosunu korumak için PD'nin üzerine perçinlenmiş, sökülemeyen bir alüminyum kapak yapmış. Kapak yalıtımlı ve hiçbir kabloya temas etmiyor. Denetimde bu kapak sorun çıkarır mı?",
+      "options": [
+        "Evet. PD, breaker'ları ve ilgili kabloları denetim için görülebilir olmalıdır; sökülemeyen bir kapak bu şartı bozar.",
+        "Hayır; kapak yalıtımlı olduğu ve kablolara temas etmediği için sorun yoktur.",
+        "Hayır; kapak yalnızca maç sırasında takılıysa sorun olur.",
+        "Evet, ancak yalnızca kapak metal olduğu için; plastik bir kapak sorun çıkarmaz."
+      ],
+      "correctIndex": 0,
+      "explanation": "Denetim listesinde ayrı bir madde vardır: tek PD, PD breaker'ları ve ilgili kablolar denetim için görülebilir olmalıdır. Kural bir esneklik de tanır: bu parçaların robotun starting configuration hâlinde görünür olması şart değildir, takım denetim sırasında görünür hâle getirebiliyorsa yeterlidir. Yani vidalı veya menteşeli, denetimde açılabilen bir kapak sorun çıkarmaz. Sorudaki kapak perçinli ve sökülemez olduğu için bu esneklikten yararlanamaz ve şartı bozar. Kapağın yalıtımlı olması veya kablolara temas etmemesi bu görünürlük şartıyla ilgisizdir; dördüncü şık ise malzemeyi belirleyici sanır, oysa opak bir plastik kapak da aynı sorunu yaratır. Pratikte doğru çözüm kapağı elle hızlıca sökülebilir yapmaktır. Bu madde yalnızca denetim için de değildir: maç arası bir arızada breaker'ları görebilmek zaman kazandırır.",
+      "hint": "Kuralın istediği şey yalıtım mı, temassızlık mı, yoksa başka bir şey mi? Kapağın açılabilir olması bir fark yaratır mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R613",
+          "season": "2026",
+          "topic": "PD, PD breaker'ları ve ilgili kablolar denetim için görülebilir olmalı; starting configuration'da görünür olmaları şart değildir, denetimde görünür hâle getirilebiliyorsa yeterlidir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"PD Visibility - The single PD, PD breakers, and associated wiring must be easily visible for inspection. <R613>\""
+    },
+    {
+      "id": "electrical-12-d5",
+      "type": "multiple_choice",
+      "prompt": "Denetimde inspector, takım numarasını driver station üzerinde doğruluyor ve wireless bridge'in bu etkinlik için kiosk'ta programlanıp programlanmadığını soruyor. Takım, radio'yu bir önceki etkinlikte programlattıklarını ve o zamandan beri hiç değiştirmediklerini söylüyor. Bu yeterli midir?",
+      "options": [
+        "Evet; radio bir kez programlandıktan sonra ayarı kalıcıdır ve tekrar programlanması gerekmez.",
+        "Hayır. Radio her etkinlik için, o etkinlikte kiosk'ta programlanmış olmalıdır.",
+        "Evet, önceki etkinlik aynı sezon içinde olduğu sürece.",
+        "Hayır, ancak takım radio'yu kendi bilgisayarından yeniden programlayarak şartı sağlayabilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Denetim maddesi bunu açıkça belirtir: takım numarası driver station üzerinde doğrulanır ve takımın wireless bridge'i bu etkinlik için kiosk'ta programlamış olması aranır. Şart, radio'nun genel olarak programlanmış olması değil, her etkinlikte o etkinlikte yeniden yapılandırılmış olmasıdır: kural, radio'nun takım numaranıza ait uygun şifreleme anahtarı ile her etkinlikte yapılandırılmış olmasını ister. Bu nedenle önceki etkinlikte yapılan programlama bu etkinlik için geçerli sayılmaz. Dördüncü şık bu nedenle yanlıştır: etkinlikte yapılandırma sağlanan bilgisayarla yapılır ve takımın kendi bilgisayarından yapılan manuel yapılandırma bunun yerine geçmez. Bu, pit'e vardığınızda ilk yapılacaklar listesine yazılması gereken bir maddedir; unutulduğunda robot çalışır görünür ancak sahaya bağlanamaz.",
+      "hint": "Radio'ya yüklenen şey yalnızca takım numarası mı? Etkinlikler arasında değişen bir şey var mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R702",
+          "season": "2026",
+          "topic": "wireless bridge, takım numarasına ait uygun şifreleme anahtarı ile her etkinlikte yapılandırılmış olmalı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Team Number - Verify on DS and Team has programmed the wireless bridge at kiosk for this event. <R702>\" Etkinlikte yapılandırmanın sağlanan bilgisayarla yapıldığı: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-3/radio-programming.html"
+    },
+    {
+      "id": "electrical-12-d6",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki dört hattan üçü kablo kalınlığı açısından uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Inspector, PD kanallarını ve ana güç hattını koruma değeri ile kablo kalınlığı açısından tek tek kontrol ediyor.",
+      "elements": [
+        "40A breaker takılı bir kanalda 12 AWG kablo.",
+        "30A breaker takılı bir kanalda 16 AWG kablo.",
+        "20A breaker takılı bir kanalda 18 AWG kablo.",
+        "Battery'den main breaker'a giden hatta 6 AWG kablo."
+      ],
+      "faultIndex": 1,
+      "explanation": "Denetim listesi kablo kalınlığını koruma değerine göre satır satır verir: 40A breaker için en az 12 AWG, 30A breaker için en az 14 AWG, 20A breaker için en az 18 AWG, battery ile main breaker ve PD arasındaki hat için ise en az 6 AWG. İkinci öğedeki 16 AWG, 30A için istenen 14 AWG'den incedir ve uygun değildir. AWG sayısının büyümesi kablonun incelmesi anlamına geldiği için bu hata gözden kaçmaya çok müsaittir; 16 sayısı 14'ten büyük olduğu için kablo daha kalınmış gibi okunur, oysa daha incedir. Diğer üç öğe listedeki değerlerle tam olarak örtüşmektedir. Ayrıca kabloların bakır veya bakır kaplı alüminyum olması da ayrıca aranır; sinyal kabloları bu şartın dışındadır.",
+      "hint": "Her satırı listedeki eşleşmesiyle karşılaştırın. AWG sayısı büyüdükçe kablo neye dönüşür?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "koruma değerine göre minimum kablo kalınlığı; kablolar bakır veya bakır kaplı alüminyum olmalı"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "kanal koruma değerleri"
+        },
+        {
+          "rule": "R609",
+          "season": "2026",
+          "topic": "battery, main breaker ve PD arası en az 6 AWG"
+        },
+        {
+          "rule": "R607",
+          "season": "2026",
+          "topic": "battery ve main breaker bağlantıları yalıtılmış olmalı; 6 AWG maddesi bu kuralla birlikte anılır"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddeleri: \"40A breakers must have min 12 AWG... <R621 & R622>\", \"30A breakers must have min 14 AWG... <R621 & R622>\", \"20A breakers must have min 18 AWG... <R621 & R622>\", \"Copper or Copper-Clad Aluminum (CCA) Wire - All wire used must be copper or CCA. (Signal wire excluded). <R622>\""
+    },
+    {
+      "id": "electrical-12-d7",
+      "type": "multiple_choice",
+      "prompt": "Takım, elinde kalan kabloları değerlendirmek için bir custom circuit'in besleme hattında alüminyum iletkenli bir kablo kullanmış. Kablo doğru kalınlıkta ve doğru renkte. Denetimde bu sorun çıkarır mı?",
+      "options": [
+        "Hayır; kalınlık ve renk doğru olduğu sürece iletkenin malzemesi denetim konusu değildir.",
+        "Hayır; alüminyum daha iyi bir iletken olduğu için tercih bile edilebilir.",
+        "Evet. Kullanılan tüm kablolar bakır veya bakır kaplı alüminyum olmalıdır; saf alüminyum iletken kabul edilmez. Sinyal kabloları bu şartın dışındadır.",
+        "Evet, ancak yalnızca 40A üzerindeki kanallarda sorun çıkarır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Denetim listesinde iletken malzemesi için ayrı bir madde vardır: kullanılan tüm kablolar bakır veya bakır kaplı alüminyum olmalıdır ve sinyal kabloları bu şartın dışında tutulur. Doğru kalınlık ve doğru renk bu şartın yerine geçmez; üç ayrı gerekliliktir ve üçü de ayrı ayrı aranır. İkinci şık ayrıca fiziksel olarak da yanlıştır: alüminyum bakırdan daha kötü bir iletkendir, aynı akım için daha kalın kesit gerekir ve bağlantı noktalarında zamanla oksitlenerek direnci artan bir yüzey oluşturur. Dördüncü şıkta anlatılan akıma bağlı bir ayrım kuralda yoktur; şart tüm kablolar için geçerlidir.",
+      "hint": "Denetim listesinde kablolarla ilgili kaç ayrı madde var? Kalınlık ve renk bunların hepsi mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "tüm kablolar bakır veya bakır kaplı alüminyum olmalı; sinyal kabloları hariç"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Copper or Copper-Clad Aluminum (CCA) Wire - All wire used must be copper or CCA. (Signal wire excluded). <R622>\""
+    },
+    {
+      "id": "electrical-12-d8",
+      "type": "diagnose",
+      "symptom": "Robot atölyede haftalardır sorunsuz çalışıyordu ve denetimin diğer tüm elektrik maddelerini geçti. Ancak inspector şasi yalıtım ölçümünü yaptığında PD'nin battery postu ile şasi arasında yalnızca 3 ohm okuyor. Robot bu ölçüme rağmen normal çalışmaya devam ediyor, hiçbir breaker atmıyor ve brownout yaşanmıyor.",
+      "prompt": "Bu bulguyu nasıl yorumlar ve nereden aramaya başlarsınız?",
+      "options": [
+        "Ölçüm hatalıdır; robot çalıştığına ve hiçbir koruma devreye girmediğine göre yalıtım sağlamdır.",
+        "PD arızalıdır ve değiştirilmelidir.",
+        "Şasi yalıtımı yalnızca pnömatik sistemi olan robotlarda aranır; bu robot için geçerli değildir.",
+        "Bir iletken şasiye temas ediyor. Robotun çalışıyor olması bunu çürütmez; ezilmiş veya sıyrılmış bir kablo ile gövdesi topraklı kamera, dekoratif LED şerit ve sensörlerin şasiye temas ettiği noktalardan aramaya başlanır."
+      ],
+      "correctIndex": 3,
+      "explanation": "3 ohm, istenen 120 ohm sınırının çok altındadır ve bu, şasi ile güç devresi arasında gerçek bir iletken yol bulunduğu anlamına gelir. Robotun sorunsuz çalışıyor olması bu bulguyu çürütmez ve bu, maddenin neden sık atlandığının da cevabıdır: FRC güç sistemi şasiye göre yüzer, dolayısıyla tek bir temas noktası kendi başına bir devre tamamlamaz ve hiçbir belirti üretmez. Tehlike ikinci bir temas oluştuğunda ortaya çıkar; o anda şasi devrenin parçası hâline gelir ve robotun herhangi bir metal parçası üzerinden beklenmedik bir akım yolu açılır. Arama şuradan başlar: kablo geçişlerinde ezilmiş veya yalıtımı sıyrılmış noktalar, terminal yakınında şasiye değen çıplak uçlar ve gövdesi topraklı olan cihazlar. Kural bu son grubu özellikle sayar: bazı kameraların, dekoratif LED şeritlerin ve sensörlerin gövdesi topraklıdır veya iletken plastiktendir ve bunların şasiden yalıtılması gerekir. Buna karşılık metal gövdeli legal motor controller'lar zaten yalıtılmıştır ve doğrudan şasiye monte edilebilir; oradan aramaya başlamak zaman kaybıdır. Birinci şık ölçüm sonucunu robotun davranışıyla çürütmeye çalışır ve bu modülde defalarca görülen hatanın son örneğidir: bir korumanın devreye girmemesi, sorun olmadığının kanıtı değildir.",
+      "hint": "Sistem şasiye göre yüzüyorsa, tek bir temas noktası neden hiçbir belirti üretmez? Peki ikincisi olursa?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R611",
+          "season": "2026",
+          "topic": "PD battery postu ile şasi arasında 120 ohm'un üzerinde direnç"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Isolated Frame - Frame must be electrically isolated: >120Ω between either PDP/PDH battery post and chassis. <R611>\""
+    }
+  ]
+}

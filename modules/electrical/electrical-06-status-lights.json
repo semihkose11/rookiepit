@@ -1,0 +1,335 @@
+{
+  "id": "electrical-06-status-lights",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 6,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Status Lights: roboRIO, RSL ve PD",
+  "summary": "roboRIO, Robot Signal Light ve power distribution device üzerindeki durum ledlerinin ne anlattığını ve bir arızayı kablo sökmeden önce ledlerden nasıl daraltacağınızı öğretir.",
+  "prerequisites": [
+    "electrical-03-can-bus",
+    "electrical-05-brownout"
+  ],
+  "estimatedMinutes": 15,
+  "concept": {
+    "body": "Status light'lar (durum ledleri) robotun size ne olduğunu anlattığı ilk yerdir. Bir arızayı aramaya kablo sökerek değil, ledlere bakarak başlanır.\n\nroboRIO üzerinde altı led bulunur: Power, Status, Radio, Comm, Mode ve RSL. Radio ledi şu an kullanılmamaktadır, RSL ledi ise robot üzerindeki Robot Signal Light ile aynı durumu gösterir. Teşhiste okunan dört led şunlardır. Power ledi yeşilse besleme iyidir, amber ise brownout protection devreye girmiş ve çıkışlar kapatılmıştır, kırmızı ise bir power fault vardır ve user rail'lerde kısa devre aranmalıdır. Status ledi yanıp sönme sayısıyla yazılım durumunu bildirir: iki kez yanıp sönme yazılım hatasını ve roboRIO'nun yeniden imajlanması gerektiğini, üç kez safe mode'u, dört kez kodun yeniden başlamadan iki kez çöktüğünü gösterir. Comm ledi kırmızı sabitse driver station ile haberleşme vardır ancak kullanıcı kodu çalışmıyordur, kırmızı yanıp sönüyorsa E-stop tetiklenmiştir, yeşil sabitse haberleşme sorunsuzdur. Mode ledi sönükse çıkışlar devre dışıdır; turuncu autonomous, yeşil teleop, kırmızı test demektir.\n\nRobot Signal Light (RSL) robotun durumunu dışarıya bildirir: sabit yanıyorsa robot açık ve disabled, yanıp sönüyorsa açık ve enabled, sönükse robot kapalıdır, roboRIO beslenmiyordur veya RSL doğru bağlanmamıştır. Kurallara göre robot üzerinde en az bir, en fazla iki RSL bulunmalı, roboRIO'nun RSL portuna bağlanmalı ve robotun en az bir yanından 36in uzaklıkta dururken kolayca görülebilmelidir.\n\nPD üzerindeki ledler de haberleşme ve kanal durumunu bildirir.",
+    "keyTerms": [
+      {
+        "term": "status light",
+        "glossTr": "durum ledi"
+      },
+      {
+        "term": "RSL (Robot Signal Light)",
+        "glossTr": "robotun açık ve enabled durumunu dışarıya bildiren zorunlu lamba"
+      },
+      {
+        "term": "Power LED",
+        "glossTr": "roboRIO'nun besleme durumu ledi"
+      },
+      {
+        "term": "Status LED",
+        "glossTr": "roboRIO'nun yazılım durumu ledi"
+      },
+      {
+        "term": "Comm LED",
+        "glossTr": "roboRIO'nun driver station haberleşme ledi"
+      },
+      {
+        "term": "Mode LED",
+        "glossTr": "roboRIO'nun çalışma modu ledi"
+      },
+      {
+        "term": "power fault",
+        "glossTr": "besleme arızası; genellikle user rail'de kısa devre"
+      },
+      {
+        "term": "safe mode",
+        "glossTr": "roboRIO'nun kısıtlı açılış modu"
+      },
+      {
+        "term": "reimage",
+        "glossTr": "roboRIO'nun yazılım imajını yeniden yükleme"
+      },
+      {
+        "term": "sticky fault",
+        "glossTr": "geçmişte oluşup kaydedilen ve elle temizlenene kadar duran arıza kaydı"
+      },
+      {
+        "term": "E-stop",
+        "glossTr": "acil durdurma"
+      },
+      {
+        "term": "enabled / disabled",
+        "glossTr": "robotun komut kabul ettiği ve etmediği durumlar"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-06-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "STATUS LIGHTS",
+      "front": "Sabit yanan RSL, robotun kapalı olduğunu değil açık olduğunu söyler.",
+      "back": "Robot Signal Light üç durum bildirir: sabit yanıyorsa robot açık ve disabled, yanıp sönüyorsa açık ve enabled, sönükse robot kapalıdır, roboRIO beslenmiyordur veya RSL doğru bağlanmamıştır. Sabit ışığı kapalı sanıp mekanizmaya el sokmak tehlikelidir; disabled bir robot her an enable edilebilir. Disabled durumda motorlara komut gitmemesi de güvence değildir, çünkü enable komutu robotun dışından gelir.",
+      "takeaway": "Sabit RSL açık ve disabled demektir; el sokmadan önce main breaker kapatılır",
+      "tags": [
+        "RSL",
+        "disabled",
+        "güvenlik"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-06-d2",
+        "electrical-06-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R709",
+          "season": "2026",
+          "topic": "en az bir en fazla iki RSL, roboRIO RSL portuna bağlı, 36in uzaklıktan görülebilir"
+        }
+      ]
+    },
+    {
+      "id": "electrical-06-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "STATUS LIGHTS",
+      "back": "Bir led üç ayrı dille konuşur ve hangisini konuştuğunu bilmek gerekir. Power ledi renkle konuşur: yeşil besleme iyi, amber brownout protection devrede ve çıkışlar kapalı, kırmızı power fault ve user rail'de kısa devre. Status ledi sayıyla konuşur: iki kez yanıp sönme yazılım hatası ve reimage, üç kez safe mode, dört kez kodun yeniden başlamadan iki kez çökmesi. Comm ledi ritimle konuşur: kırmızı sabit haberleşme var ama kod yok, kırmızı yanıp sönen E-stop demektir.",
+      "front": "Aynı led neden bazen renkle, bazen sayıyla konuşuyor?",
+      "takeaway": "Renk, sayı ve ritim ayrı dillerdir; birini diğerinin yerine okumak teşhisi baştan bozar",
+      "tags": [
+        "Power LED",
+        "Status LED",
+        "Comm LED"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-06-d1",
+        "electrical-06-d6",
+        "electrical-06-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-06-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "STATUS LIGHTS",
+      "front": "PD'nin status ledi turuncu ile sarı arasında yanıp sönüyor. Nereye bakarsınız?",
+      "back": "PD'de belirtiyi ikinci renk tanımlar: turuncu ile sarı CAN fault, turuncu ile mavi low battery, turuncu ile macenta device over current, turuncu ile camgöbeği hardware fault, turuncu ile kırmızı fail safe demektir. Turuncu ile sarı görüldüğünde bakılacak yer CAN zinciri, Weidmuller bağlantıları ve sonlandırma dirençleridir. Cihazı değiştirmek ya da yükleri azaltmak bu belirtinin cevabı değildir; her ikisi de başka renk çiftlerinin işidir.",
+      "takeaway": "Turuncu her belirtide var; hangi arıza olduğunu ikinci renk söyler",
+      "tags": [
+        "PD status",
+        "CAN fault",
+        "teşhis"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-06-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-06-d1",
+      "type": "diagnose",
+      "symptom": "Driver station robotu görüyor ve bağlantı kurulu görünüyor, ancak robot hiçbir komuta yanıt vermiyor. roboRIO'da Comm ledi kırmızı ve sabit yanıyor, Power ledi yeşil, Mode ledi sönük.",
+      "prompt": "Bu üç led birlikte size ne söyler?",
+      "options": [
+        "Driver station ile haberleşme var, ancak roboRIO üzerinde kullanıcı kodu çalışmıyor.",
+        "Driver station ile haberleşme yok; radio veya ethernet bağlantısı kopmuş olmalı.",
+        "Robot brownout yaşıyor; besleme yetersiz kalıyor.",
+        "E-stop tetiklenmiş durumda."
+      ],
+      "correctIndex": 0,
+      "explanation": "Comm ledinin kırmızı ve sabit olması tek bir anlama gelir: driver station ile haberleşme kurulmuştur ancak kullanıcı kodu çalışmamaktadır. Diğer şıklar ledlerle çelişir. Haberleşme hiç olmasaydı Comm ledi sönük olurdu. E-stop tetiklenseydi Comm ledi kırmızı yanıp sönerdi, sabit değil; sabit ile yanıp sönen arasındaki fark burada belirleyicidir. Brownout yaşansaydı Power ledi amber olurdu, oysa yeşil yanıyor. Mode ledinin sönük olması da tabloyla tutarlıdır: çıkışlar devre dışıdır. Çözüm kabloya bakmak değil, kodu deploy etmek veya çöken kodu incelemektir.",
+      "hint": "Üç ledi tek tek okuyun ve her birinin hangi şıkkı elediğine bakın. Sabit ile yanıp sönen arasındaki fark önemli.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/status-lights-ref.html"
+    },
+    {
+      "id": "electrical-06-d2",
+      "type": "multiple_choice",
+      "prompt": "Pit'te bir takım arkadaşınız robota bakıp 'RSL sabit yanıyor, demek ki robot kapalı, mekanizmaya elimi sokabilirim' diyor. Bu akıl yürütmeyi değerlendiriniz.",
+      "options": [
+        "Doğrudur. RSL yalnızca robot enabled iken yanar, sabit yanması kapalı olduğunu gösterir.",
+        "Yanlıştır ve tehlikelidir. Sabit yanan RSL robotun açık ve disabled olduğunu gösterir; robot her an enable edilebilir.",
+        "Doğrudur. Sabit yanan RSL robotun kapalı, yanıp sönen RSL ise açık olduğunu gösterir.",
+        "Yanlıştır, ancak tehlikeli değildir; disabled durumda motorlara komut gitmediği için mekanizma hareket edemez."
+      ],
+      "correctIndex": 1,
+      "explanation": "RSL üç durum bildirir: sabit yanıyorsa robot açık ve disabled, yanıp sönüyorsa açık ve enabled, sönükse robot kapalıdır, roboRIO beslenmiyordur veya RSL doğru bağlanmamıştır. Yani sabit ışık kapalı değil, tam tersine açık demektir. Dördüncü şık doğru bir gözlemden yanlış bir sonuca varır: disabled durumda motorlara komut gitmez, ancak robot tek bir tuşla enable edilebilir ve pnömatik sistemde basınç varsa mekanizma komut olmadan da hareket edebilir. Mekanizmaya el sokmadan önce main breaker kapatılarak robotun gücü kesilmelidir. Denetimde de robotun gücü kesilip tüm ledlerin söndüğü ve basıncın tamamen boşaldığı ayrıca doğrulanır.",
+      "hint": "RSL'in üç durumunu sayın. Sabit ışık bu üç durumdan hangisi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R813",
+          "season": "2026",
+          "topic": "denetim listesindeki Power Off adımı bu kurala bağlanır: robot disable edilir, main breaker kapatılır, tüm ledlerin söndüğü ve basıncın 0 psi seviyesine indiği doğrulanır. R813 kuralının kendi metni pressure vent plug ile ilgilidir."
+        },
+        {
+          "rule": "R612",
+          "season": "2026",
+          "topic": "main breaker hızlı ve güvenli erişilebilir olmalı"
+        }
+      ],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/status-lights-ref.html",
+      "sourceNote": "Denetimde güç kesme adımı resmi denetim listesinden doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-06-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki RSL kurulumunda kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takım RSL kurulumunu tamamlamış ve denetim öncesi size gösteriyor.",
+      "elements": [
+        "RSL, roboRIO'nun RSL terminallerine bağlanmış.",
+        "Robot üzerinde iki adet RSL bulunuyor.",
+        "RSL, elektronik kutusunun içine, kapak kapatıldığında dışarıdan görünmeyecek şekilde monte edilmiş.",
+        "855PB-B12ME522 modelinde sabit ışık çalışması için La ve Lb terminalleri arasına jumper takılmış.",
+        "Robot enable edildiğinde RSL'in roboRIO ile aynı ritimde yanıp söndüğü doğrulanmış."
+      ],
+      "faultIndex": 2,
+      "explanation": "RSL, robotun en az bir yanından 36in (91.44cm) uzaklıkta dururken kolayca görülebilmelidir. Kapalı bir elektronik kutusunun içi bu şartı karşılamaz ve robot denetimden geçemez. RSL'in amacı zaten dışarıdan görülmektir: sahadaki ve pit'teki herkesin robotun enabled olup olmadığını uzaktan anlayabilmesi için vardır. Diğer dört öğe doğrudur. Robot üzerinde en fazla iki RSL bulunabilir, RSL roboRIO'nun RSL portuna bağlanır, 855PB-B12ME522 modelinde sabit ışık çalışması için La ve Lb terminalleri arasına jumper konur ve denetimde RSL'in roboRIO ile aynı ritimde yanıp söndüğü doğrulanır.",
+      "hint": "RSL kimin için var? Bu soruya verdiğiniz cevap hangi öğeyi eler?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R709",
+          "season": "2026",
+          "topic": "en fazla iki RSL, roboRIO RSL portuna bağlı, 36in uzaklıktan görülebilir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"ROBOT Signal Light (two max.) must be easily visible while standing 36in (91.44 cm) away from at least one side of the ROBOT and be plugged into the RSL port on roboRIO. Confirm the RSL flashes in sync with roboRIO. <R709>\" Jumper detayı için: https://www.frcmanual.com/2026/robot-construction-rules-(r)"
+    },
+    {
+      "id": "electrical-06-d4",
+      "type": "numeric",
+      "prompt": "RSL'i monte edeceğiniz yeri seçiyorsunuz. Kural, RSL'in robotun en az bir yanından kaç inç uzaklıkta dururken kolayca görülebilmesini şart koşar? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 36,
+      "tolerance": 0,
+      "unit": "in",
+      "explanation": "Kural 36.0in (91.44cm) mesafeyi şart koşar ve bu ölçü robotun en az bir yanı için sağlanmalıdır. Ölçünün amacı RSL'in yalnızca denetim masasında değil, saha kenarından ve pit'ten bakan biri için de okunabilir olmasıdır. Bu nedenle RSL genellikle robotun üst kısmına, mekanizmaların kapatmayacağı bir noktaya yerleştirilir. Aynı kural robot üzerinde en az bir, en fazla iki RSL bulunmasını şart koşar.",
+      "hint": "Ölçü bir uzaklıktır ve robotun tüm yanları için değil, en az bir yanı için sağlanması yeterlidir.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R709",
+          "season": "2026",
+          "topic": "en az bir en fazla iki RSL; 36in uzaklıktan kolayca görülebilmeli"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-06-d5",
+      "type": "diagnose",
+      "symptom": "Robot açık, roboRIO ve radio normal çalışıyor. PDH'in status ledi turuncu ile sarı arasında yanıp sönüyor. Driver station'da bazı motor controller'lar hiç görünmüyor, bazıları normal.",
+      "prompt": "Led ne bildiriyor ve nereye bakmalısınız?",
+      "options": [
+        "Low battery bildiriyor; battery değiştirilmelidir.",
+        "Device over current bildiriyor; kanallardaki yükler azaltılmalıdır.",
+        "CAN fault bildiriyor; CAN zinciri, bağlantılar ve terminating resistor'lar kontrol edilmelidir.",
+        "Hardware fault bildiriyor; PDH değiştirilmelidir."
+      ],
+      "correctIndex": 2,
+      "explanation": "PDH'in status ledinde turuncu ile sarı arasında yanıp sönme CAN fault anlamına gelir. Diğer durumlar farklı renk çiftleriyle gösterilir: low battery turuncu ile mavi, device over current turuncu ile macenta, hardware fault turuncu ile camgöbeği, fail safe ise turuncu ile kırmızı arasında yanıp söner. Belirtinin ikinci yarısı da aynı sonucu doğrular: bazı motor controller'ların görünüp bazılarının görünmemesi CAN zincirinde bir sorun olduğunu gösterir. Zincir seri bir hat olduğu için bir noktadaki kopukluk kendisinden sonraki cihazları düşürür; çalışanlar ile çalışmayanların ayrıldığı nokta arızanın yerini verir.",
+      "hint": "Renk çiftini tam olarak okuyun. PDH'in her arıza durumu farklı bir çiftle gösterilir. Belirtinin ikinci yarısı bu okumayı destekliyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/status-lights-ref.html"
+    },
+    {
+      "id": "electrical-06-d6",
+      "type": "diagnose",
+      "symptom": "Robot açıldığında roboRIO'nun Power ledi kırmızı yanıyor ve robot hiçbir çıkış vermiyor. Battery tam dolu ve driver station 12.9V gösteriyor.",
+      "prompt": "Bu belirti size ne söyler?",
+      "options": [
+        "Brownout yaşanıyor; battery gerilimi koruma eşiğinin altına düşmüş.",
+        "Normal bir durumdur; Power ledi açılış sırasında kısa süre kırmızı yanar.",
+        "roboRIO'nun kullanıcı kodu çökmüş; kod yeniden deploy edilmelidir.",
+        "Bir power fault var; roboRIO'nun user rail'lerinde kısa devre aranmalıdır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Power ledi üç ayrı durum bildirir ve renkleri karıştırmamak gerekir: yeşil besleme iyi, amber brownout protection devreye girmiş ve çıkışlar kapatılmış, kırmızı ise power fault demektir ve user rail'lerde kısa devre aranmasını gerektirir. Birinci şık iki nedenle elenir: brownout amber ile gösterilir, ayrıca 12.9V koruma eşiğinin çok üzerindedir. Bu ayrım pratikte zaman kazandırır: amber ile kırmızıyı karıştıran bir takım battery değiştirerek uğraşır, oysa sorun 5V veya 6V hattına bağlı bir sensor kablosunda veya kısa devre yapan bir bağlantıda olabilir. Üçüncü şık elenir çünkü kırmızı Power ledi bir besleme arızasını bildirir; çöken kullanıcı kodu Status ve Comm ledlerinde görünür. Kodun aşırı akım çektirmesi Power ledini amber yapabilir, ancak kırmızı yapmaz.",
+      "hint": "Power ledinin üç rengini ayırın. Hangi renk beslemenin düştüğünü, hangisi bir arızayı bildirir? Battery gerilimi hangi şıkkı zaten eliyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/status-lights-ref.html"
+    },
+    {
+      "id": "electrical-06-d7",
+      "type": "multiple_choice",
+      "prompt": "roboRIO'nun Status ledi açılıştan sonra sürekli olarak ikişer kez yanıp sönüyor. Ne yapmalısınız?",
+      "options": [
+        "roboRIO'yu yeniden imajlamalısınız; iki kez yanıp sönme bir yazılım hatasını gösterir.",
+        "roboRIO'yu yeniden başlatmalı, geçmezse imajlamalısınız; iki kez yanıp sönme safe mode anlamına gelir.",
+        "roboRIO'yu yeniden başlatmalısınız; kod yeniden başlamadan iki kez çökmüş demektir.",
+        "Bir şey yapmanıza gerek yok; açılış sırasında ikişer kez yanıp sönme normaldir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Status ledinin yanıp sönme sayısı farklı durumları kodlar ve sayıyı doğru saymak gerekir. İki kez yanıp sönme bir yazılım hatasını gösterir ve roboRIO'nun yeniden imajlanmasını gerektirir. Üç kez yanıp sönme safe mode anlamına gelir; bu durumda roboRIO yeniden başlatılır ve sorun geçmezse imajlanır. Dört kez yanıp sönme, kodun yeniden başlamadan iki kez çöktüğünü gösterir; bu durumda roboRIO yeniden başlatılır ve sorun geçmezse imajlanır. İkinci ve üçüncü şıklar üç ve dört kez yanıp sönmenin açıklamalarıdır; doğru bilgiyi yanlış sayıya bağlarlar. Sürekli sabit yanma veya kesintisiz hızlı yanıp sönme ise toparlanamayan bir hatayı gösterir.",
+      "hint": "Yanıp sönme sayısı bir kod. İki, üç ve dört ayrı anlamlara geliyor; şıklardaki açıklamalar hangi sayıya ait?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/status-lights-ref.html"
+    },
+    {
+      "id": "electrical-06-d8",
+      "type": "diagnose",
+      "symptom": "Denetime giriyorsunuz. Robot açık, driver station bağlantı kurdu, kod çalışıyor ve mekanizmalar komutlara yanıt veriyor. Ancak RSL hiç yanmıyor; ne sabit yanıyor ne de yanıp sönüyor. Inspector robotu geçirmiyor.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Robot aslında kapalıdır; driver station eski bir bağlantıyı gösteriyordur.",
+        "RSL doğru bağlanmamıştır; büyük olasılıkla roboRIO'nun RSL terminallerine bağlı değildir veya kablosu kopmuştur.",
+        "RSL yalnızca robot enable edildiğinde yanar; robot disabled olduğu için sönüktür.",
+        "RSL beslemesini PD üzerinden alır ve o kanalın koruması atmıştır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Sönük bir RSL üç şeyden birini gösterir: robot kapalıdır, roboRIO beslenmiyordur veya RSL doğru bağlanmamıştır. Belirtide robotun açık olduğu, driver station ile haberleştiği, kodun çalıştığı ve mekanizmaların yanıt verdiği söylenmiştir. Kod çalışıyorsa roboRIO da besleniyor demektir; bu bilgi ilk iki ihtimali birden eler ve geriye tek seçenek kalır. Üçüncü şık yanlıştır: RSL disabled durumda sönmez, sabit yanar. Dördüncü şık da yanlıştır çünkü RSL beslemesini roboRIO'nun RSL terminallerinden alır, PD üzerinde ayrı bir kanaldan değil. Denetimde ayrıca RSL'in roboRIO ile aynı ritimde yanıp söndüğü doğrulanır, bu nedenle sönük bir RSL denetimi geçemez. Bu hata çoğunlukla elektronik kutusu yeniden düzenlenirken RSL kablosunun sökülüp geri takılmasının unutulmasıyla oluşur.",
+      "hint": "Sönük bir RSL hangi durumlarda görülür? Belirtideki bilgiler bunlardan hangisini eliyor?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R709",
+          "season": "2026",
+          "topic": "RSL roboRIO'nun RSL portuna bağlanır ve roboRIO ile aynı ritimde yanıp söner"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "RSL durumlarının anlamı için: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/status-lights-ref.html"
+    }
+  ]
+}

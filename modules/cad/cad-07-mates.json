@@ -1,0 +1,292 @@
+{
+  "id": "cad-07-mates",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 7,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-01",
+  "imageRef": null,
+  "title": "Assembly Mate'leri ve Mate Connector",
+  "summary": "Part'ları assembly'de bağlamayı, mate türünün hangi serbestlik derecelerini bıraktığını, mate connector'ın ne olduğunu ve Group'un mate'ten farkını öğretir.",
+  "prerequisites": [
+    "cad-06-in-context"
+  ],
+  "estimatedMinutes": 40,
+  "concept": {
+    "body": "Assembly'de part'lar mate ile birbirine bağlanır. Mate connector, sketch, part, curve veya surface üzerinde ya da arasında bulunan bir local coordinate system entity'sidir. Mate iki instance'ı birbirine göre konumlandırır ve her instance üzerindeki birer mate connector'ı hizalar; hangi hareketin serbest kalacağını mate türü belirler.\n\nOnshape'in eski CAD sistemlerinden farkı şudur: kaynağın ifadesiyle birçok assembly'de iki instance arasında tek bir Onshape mate'i yeterlidir, çünkü serbestlik dereceleri mate'in içine gömülüdür. Kaynak gerektiğinde birden çok mate kullanılabileceğini de belirtir; olağan yol ise var olan mate'in türünü, offset'ini veya Limits ayarını değiştirmektir.\n\nMate connector iki türlüdür. Explicit connector Mate connector tool ile tanımlanır, Feature list'te en üst seviyede listelenir ve mate kurulurken listeden seçilebilir. Implicit connector ise mate kurulurken tanımlanır, kullanıldığı mate'in altında listelenir ve listeden seçilemez.\n\nMate türlerinin bıraktığı serbestlik dereceleri kaynakta tek tek verilir. Fastened hepsini kaldırır. Revolute bir serbestlik derecesi bırakır, Z ekseni etrafında dönme (Rz). Slider bir serbestlik derecesi bırakır, Z ekseni boyunca öteleme (Tz). Cylindrical iki bırakır (Tz, Rz). Pin Slot iki bırakır (Rz, Tx). Planar üç bırakır (Tx, Ty, Rz). Ball üç bırakır (Rx, Ry, Rz).\n\nLimits mate'in hareket aralığını kısıtlar ve kullanılabilir limitler mate'in serbestlik derecelerine göre belirlenir. Gösterge rengi durumu bildirir: mavi ve beyaz sağlıklı mate'i, gri suppressed veya inactive durumu, kırmızı sorunu gösterir. Bir mate, bağlı olduğu part veya assembly suppress edildiğinde kendiliğinden inactive olur.\n\nGroup ise instance'ları mate kurmadan sabitler ve aralarındaki bütün serbestlik derecelerini kaldırır. Kaynak sınırını da yazar: Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar.",
+    "keyTerms": [
+      {
+        "term": "mate",
+        "glossTr": "iki instance'ı assembly'de birbirine bağlayan özellik"
+      },
+      {
+        "term": "mate connector",
+        "glossTr": "geometri üzerinde konumlanan local coordinate system"
+      },
+      {
+        "term": "degrees of freedom",
+        "glossTr": "bir bağlantının serbest bıraktığı hareket sayısı"
+      },
+      {
+        "term": "Revolute mate",
+        "glossTr": "Z ekseni etrafında dönme bırakan mate"
+      },
+      {
+        "term": "Slider mate",
+        "glossTr": "Z ekseni boyunca öteleme bırakan mate"
+      },
+      {
+        "term": "Cylindrical mate",
+        "glossTr": "Z ekseninde hem dönme hem öteleme bırakan mate"
+      },
+      {
+        "term": "Fastened mate",
+        "glossTr": "bütün serbestlik derecelerini kaldıran mate"
+      },
+      {
+        "term": "Limits",
+        "glossTr": "mate'in hareket aralığını kısıtlayan ayar"
+      },
+      {
+        "term": "Group",
+        "glossTr": "instance'ları mate kurmadan birbirine göre sabitleyen özellik"
+      },
+      {
+        "term": "instance",
+        "glossTr": "assembly'ye eklenmiş bir part veya subassembly referansı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-07-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "MATE",
+      "front": "Mate türü, bağlantıdan sonra hangi hareketin serbest kalacağını belirler.",
+      "back": "Assembly'de part'lar mate ile birbirine bağlanır. Mate iki instance'ı birbirine göre konumlandırır ve her instance üzerindeki birer mate connector'ı hizalar; hangi hareketin serbest kalacağını mate türü belirler. Kaynak bu serbestlikleri tek tek verir. Fastened hepsini kaldırır. Revolute bir serbestlik derecesi bırakır, Z ekseni etrafında dönme. Slider bir serbestlik derecesi bırakır, Z ekseni boyunca öteleme. Cylindrical iki bırakır, Z ekseni boyunca öteleme ve Z ekseni etrafında dönme. Pin Slot iki bırakır. Planar üç bırakır. Ball üç bırakır. Öğrencinin assembly'de gördüğü davranış budur: bir parça sürüklendiğinde nasıl hareket ettiği mate türünün doğrudan sonucudur. Limits bu hareketin aralığını kısıtlar ve kullanılabilir limitler mate'in serbestlik derecelerine göre belirlenir.",
+      "takeaway": "Önce hangi hareketin serbest kalması gerektiğine karar verin, mate türünü ondan sonra seçin",
+      "tags": [
+        "mate",
+        "serbestlik derecesi",
+        "Limits"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-07-d1",
+        "cad-07-d2"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-07-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "MATE",
+      "front": "Aynı nokta ikinci bir mate'te neden listede bulunamıyor?",
+      "back": "Mate connector, sketch, part, curve veya surface üzerinde ya da arasında bulunan bir local coordinate system entity'sidir; mate kurulurken hizalanan şey budur. İki türü vardır. Explicit connector Mate connector tool ile tanımlanır, Feature list'te en üst seviyede listelenir ve mate kurulurken listeden seçilebilir. Implicit connector ise mate kurulurken tanımlanır, kullanıldığı mate'in altında listelenir ve listeden seçilemez. Bir mate kurulurken doğrudan tanımlanan connector implicit olduğu için sonraki mate'lerde listede seçilebilir hâlde bulunmaz; fark sıralamada değil, connector'ın türündedir. Serbestlik dereceleri mate'in içine gömülü olduğundan birçok assembly'de iki instance arasında tek bir mate yeterlidir; olağan yol var olan mate'in türünü, offset'ini veya Limits ayarını değiştirmektir. Açık seri bir zincirde ise her mate kendi serbestliğini toplama ekler.",
+      "takeaway": "Bir noktayı birden çok mate'te kullanacaksanız onu Mate connector tool ile explicit hâle getirin",
+      "tags": [
+        "mate connector",
+        "explicit",
+        "implicit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-07-d3",
+        "cad-07-d6"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-07-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "GROUP",
+      "front": "Group ile sabitlenen iki part, delik aralığı değişince üst üste bindi.",
+      "back": "Group instance'ları mate kurmadan sabitler ve aralarındaki bütün serbestlik derecelerini kaldırır. Kaynak sınırını da yazar: Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar. Ayrı Part Studio'larda oluşturulan part'ların instance konumları assembly'de kendiliğinden güncellenmez. Sezon ortasında bir bracket'ın delik aralığı değiştiğinde part'ın origin'i aynı kalır, Group açısından değişen bir şey yoktur ve instance'lar üst üste biner. Bu sırada hiçbir mate kırmızı görünmez ve hiçbir Part Studio'da hata yoktur; bu bir arızanın değil, yanlış aracın belirtisidir. Assembly artık gerçek robotu temsil etmez ve bundan sonraki her ölçü yanlış konumdan alınır. Group değişmeyen satın alınmış part'lar için veya aynı Part Studio'da birlikte oluşturulan part'lar için en uygundur; bir subassembly'nin gruba eklenebilmesi için de rijit olması gerekir.",
+      "takeaway": "Sezon boyunca revize edilecek part'ları Group ile değil, gerçek geometriye referans veren bir Fastened mate ile bağlayın",
+      "tags": [
+        "Group",
+        "origin",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-07-d8",
+        "cad-07-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-07-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir intake kolu şasiye tek bir şaft üzerinden bağlanıyor. Kolun yalnızca o şaft ekseninde dönmesi isteniyor ve takım dönme aralığını 0 ile 110 derece arasında sınırlamak istiyor. Hangi mate kurulur ve Limits ile ne sınırlanabilir?",
+      "options": [
+        "Cylindrical mate; Limits ile hem dönme açısı hem de şaft boyunca kayma mesafesi sınırlanabilir hâle gelir.",
+        "Fastened mate; serbestlik derecesi kalmadığı için Limits doğrudan açı değerleri üzerinden tanımlanabilir.",
+        "Revolute mate; tek serbestlik derecesi Rz olduğundan Limits yalnızca dönme açısını sınırlayabilir hâle gelir.",
+        "Planar mate; Limits iki eksendeki kaymayı sınırlar, dönme açısı ise mate tarafından zaten sabitlenmiştir."
+      ],
+      "correctIndex": 2,
+      "explanation": "İki kaynak cümlesi birlikte çalışıyor. Revolute mate iki entity'yi Z ekseni etrafında dönme hareketine izin verecek biçimde bağlar (Rz) ve bir serbestlik derecesi sağlar. Limits ise mate'in hareket aralığını kısıtlar ve kullanılabilir limitler mate'in serbestlik derecelerine göre belirlenir. Revolute'ta tek serbestlik derecesi dönme olduğu için Limits yalnızca açı üzerinden tanımlanabilir; istenen 0 ile 110 derece aralığı tam olarak buradan gelir. Birinci şık Cylindrical'ı doğru tarif eder ancak yanlış işi seçer; Cylindrical Tz ve Rz olmak üzere iki serbestlik derecesi bırakır ve kol şaft boyunca kayabilir hâle gelir. İkinci şık kendi içinde çelişir; Fastened bütün serbestlik derecelerini kaldırır ve serbestlik derecesi olmayan bir mate'te sınırlanacak hareket de yoktur. Dördüncü şık Planar'ın üç serbestlik derecesini yanlış aktarır; Planar dönmeyi sabitlemez, Rz'yi serbest bırakır.",
+      "hint": "Limits neye göre belirleniyor? Hangi mate tam olarak sınırlamak istediğiniz hareketi bırakıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/revolute_mate.htm",
+      "sourceNote": "Limits kuralı ve gösterge bilgileri https://cad.onshape.com/help/Content/mate.htm sayfasından, diğer mate'lerin serbestlik dereceleri kendi sayfalarından alınmıştır."
+    },
+    {
+      "id": "cad-07-d2",
+      "type": "diagnose",
+      "symptom": "Bir elevator carriage'ı dikey kılavuz tüpe bağlandı. Assembly'de carriage tüp boyunca yukarı aşağı hareket ediyor, ancak aynı zamanda tüpün etrafında serbestçe dönebiliyor. Gerçek robotta carriage bearing'lerle tutulduğu için dönmesi mümkün değil.",
+      "prompt": "Mate seçiminde ne yanlış?",
+      "options": [
+        "Cylindrical mate kurulmuştur; bu mate Tz ve Rz olmak üzere iki serbestlik derecesi bırakır.",
+        "Revolute mate kurulmuştur; yalnızca Rz bırakır ve dikey hareket mate'in offset değerinden gelmektedir.",
+        "Slider mate kurulmuştur ancak Limits tanımlanmamıştır; limit eklendiğinde istenmeyen dönme ortadan kalkar.",
+        "Ball mate kurulmuştur; üç dönme serbestlik derecesi bırakır ve carriage bu yüzden serbestçe dönmektedir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Belirtideki iki hareket birlikte tek bir mate türüne işaret ediyor. Kaynak Cylindrical mate için şunu yazar: iki entity'yi Z ekseni boyunca öteleme ve Z ekseni etrafında dönme hareketine izin verecek biçimde bağlar (Tz, Rz) ve iki serbestlik derecesi vardır. Görülen tam olarak budur. İstenen ise yalnızca öteleme, yani Slider mate; kaynak Slider için Z ekseni boyunca tek bir öteleme serbestlik derecesi verir (Tz). İkinci şık elenir çünkü Revolute hiçbir öteleme bırakmaz ve offset sabit bir kaydırmadır, hareket değildir. Üçüncü şık Limits'in işini yanlış anlar; kaynak kullanılabilir limitlerin mate'in serbestlik derecelerine göre belirlendiğini söyler, Slider'da dönme serbestlik derecesi zaten yoktur ve limit yeni bir kısıt yaratmaz. Dördüncü şık elenir çünkü Ball mate yalnızca dönme bırakır ve carriage'ın dikey hareketini açıklayamaz.",
+      "hint": "İki ayrı hareket görülüyor. Hangi mate tam olarak o ikisini bırakıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/cylindrical_mate.htm",
+      "sourceNote": "Slider mate'in tek öteleme serbestlik derecesi https://cad.onshape.com/help/Content/Assembly/slider_mate.htm sayfasından alınmıştır."
+    },
+    {
+      "id": "cad-07-d3",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci aynı deliğin merkezini üç ayrı mate'te referans olarak kullanmak istiyor. İlk mate'i oluştururken o noktayı seçti ve mate çalıştı. Sonraki iki mate'te aynı noktayı Feature list'ten seçmeye çalışıyor ancak listede seçilebilir hâlde bulamıyor. Ne yapmalıdır?",
+      "options": [
+        "İlk mate'i kopyalayıp iki kez yapıştırmalıdır; kopyalanan mate referans noktasını da beraberinde taşır.",
+        "Feature list'i yeniden sıralamalıdır; alt seviyedeki mate connector'lar üst sıraya taşındığında seçilebilir olur.",
+        "Deliği Part Studio'da bir sketch point ile işaretlemelidir; mate connector'lar Feature list'ten hiçbir koşulda seçilemez.",
+        "Mate connector tool ile explicit bir connector oluşturmalıdır; explicit olanlar listeden seçilebilir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak iki tür mate connector'ı açıkça ayırır. Implicit mate connector mate oluşturulurken tanımlanır, Feature list'te kullanıldığı mate'in altında alt seviyede listelenir ve mate oluşturulurken Feature list'ten seçilemez. Explicit mate connector ise toolbar'daki Mate connector tool ile tanımlanır, Feature list'te en üst seviyede listelenir ve mate oluşturulurken Feature list'ten seçilebilir. Öğrencinin ilk mate'te oluşturduğu şey implicit bir connector'dur; bu yüzden sonraki mate'lerde onu listede seçilebilir bulamıyor. Kaynak bir mate connector'ın birden çok mate'te kullanılabildiğini söyler, ancak listeden erişmek isteyen kişinin o noktayı Mate connector tool ile explicit hâle getirmesi gerekir. Birinci şık kopyalamayla referans paylaşımını karıştırır. İkinci şık listede taşıma diye bir çözüm uydurur; fark sıralamada değil, connector'ın türündedir. Üçüncü şık explicit connector'ların listeden seçilebildiği gerçeğini yok sayar.",
+      "hint": "İlk mate'i kurarken o nokta nasıl oluştu? O türden connector'lar listeden seçilebiliyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/mateconnector.htm"
+    },
+    {
+      "id": "cad-07-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş adımın dördü planlandığı gibi sonuç verir. Vermeyecek olanı seçiniz.",
+      "scenario": "Bir takım dönen bir intake kolunu şasiye bağlamak için assembly planını yazıyor.",
+      "elements": [
+        "Kol ile şasi arasında revolute mate kurup mate connector'ların Z eksenini şaft eksenine hizalarlar.",
+        "Kolun hareket aralığını Limits ile kısıtlarlar; kullanılabilir limitler mate'in serbestlik derecelerine göre belirlenir.",
+        "Şaft üzerindeki bearing ve retaining ring gibi değişmeyecek satın alınmış part'ları Group ile birbirine göre sabitlerler.",
+        "Kolu belirli bir açıda tutmak için kol ile şasiyi Group ile birbirine göre sabitler, sonra kolu döndürürler.",
+        "Bir mate'in göstergesi kırmızı göründüğünde o mate'i açıp referanslarını kontrol ederler."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dördüncü adım kendi kendini bozar. Kaynak Group'u şöyle tanımlar: Group, seçilen instance'lar arasındaki bütün serbestlik derecelerini kaldırmanın hızlı bir yoludur ve instance'lar tek bir birim gibi birlikte hareket eder. Kol ile şasi gruplandığında revolute mate'in bıraktığı dönme de ortadan kalkar, dolayısıyla takım kolu artık döndüremez. Kolu belirli bir açıda tutmak isteyen takımın yapacağı şey var olan revolute mate'in kendi ayarlarına gitmektir; hareket aralığını daraltmak için Limits kullanılır. Diğer dört adım kaynakla uyumludur: revolute mate dönmeyi Z ekseni etrafında sağlar, kullanılabilir limitler serbestlik derecelerine göre belirlenir, Group değişmeyecek satın alınmış part'lar için önerilir ve kırmızı gösterge bir sorunu bildirir.",
+      "hint": "Group seçilen instance'lar arasında ne bırakır? Kolun dönmesi gerekiyordu.",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/group.htm",
+      "sourceNote": "Limits ve gösterge renkleri https://cad.onshape.com/help/Content/mate.htm sayfasından alınmıştır."
+    },
+    {
+      "id": "cad-07-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir takım aşağıdaki dört işi de Group ile yapmayı planlıyor. Üçü sonradan sorun çıkarır. Group'un güvenle kullanılabileceği tek iş hangisidir?",
+      "options": [
+        "Şasiye bağlı kolun dönebileceği açı aralığı daraltılacak, kol yalnızca belirli bir aralıkta hareket edecektir.",
+        "Satın alınmış ve sezon boyunca değişmeyecek bir gearbox'ın parçaları birbirine göre sabit tutulacaktır.",
+        "Ayrı Part Studio'larda tasarlanan ve sezon boyunca revize edilecek iki bracket birbirine göre sabitlenecektir.",
+        "Kendi içinde hareket eden, rijit olmayan bir subassembly assembly içinde sabit tutulacaktır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak Group için açık bir kullanım alanı verir: Group, değişmeyen satın alınmış part'lar için veya aynı Part Studio'da birlikte oluşturulan part'lar için en uygundur. İkinci şık tam olarak bu tarife oturur. Üçüncü şık kaynağın uyardığı durumdur; ayrı Part Studio'larda oluşturulan part'ların instance konumları assembly'de kendiliğinden güncellenmez ve değişiklikle birlikte instance'lar üst üste biner. Dördüncü şık yine kaynaktaki bir şartı ihlal eder; bir subassembly'nin gruba eklenebilmesi için rijit olması gerekir. Birinci şık Group'un işini yanlış anlar; Group seçilen instance'lar arasındaki bütün serbestlik derecelerini kaldırmanın hızlı bir yoludur, aralık daraltan bir araç değildir ve uygulandığında kol hiç dönemez. Aralık daraltmak için mate üzerinde Limits kullanılır.",
+      "hint": "Group neyi yok sayıyor, hangi şartı arıyor ve neyi tamamen kaldırıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/group.htm"
+    },
+    {
+      "id": "cad-07-d6",
+      "type": "numeric",
+      "prompt": "Bir robot kolu şasiye revolute mate ile bağlı. Kolun ucundaki wrist kola revolute mate ile bağlı. Wrist'in ucundaki roller ise wrist'e cylindrical mate ile bağlı. Üç mate'in eksenleri birbirine paralel veya çakışık değildir ve zincir kapalı bir çevrim oluşturmaz. Bu zincirdeki toplam serbestlik derecesi sayısı kaçtır?",
+      "answer": 4,
+      "tolerance": 0,
+      "unit": "serbestlik derecesi",
+      "explanation": "Kaynak her mate türünün kaç serbestlik derecesi bıraktığını tek tek verir. Revolute bir serbestlik derecesi bırakır, Z ekseni etrafında dönme (Rz). İkinci revolute yine bir serbestlik derecesi bırakır. Cylindrical iki serbestlik derecesi bırakır, Z ekseni boyunca öteleme ve Z ekseni etrafında dönme (Tz, Rz). Zincir açık ve seri bağlı olduğu için her mate kendi serbestliğini toplama ekler; bir artı bir artı iki, yani dört. Toplama kuralının şartı önemlidir: yalnızca açık seri zincirlerde geçerlidir, kapalı bir çevrim oluştuğunda toplam bu biçimde hesaplanmaz ve four bar gibi mekanizmalarda ayrı bir hesap gerekir. Eksenlerin genel konumda olması şartı da bu yüzden verilmiştir; eksenler çakışık olsaydı zincirin ulaşabildiği hareketler örtüşürdü. Sayının pratik karşılığı şudur: assembly'de bir parçayı sürüklediğinizde kaç farklı biçimde hareket edebileceğini önceden bilirsiniz.",
+      "hint": "Her mate kendi serbestliğini zincire ekler. Üç mate'in değerlerini toplayınız.",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/cylindrical_mate.htm",
+      "sourceNote": "Revolute mate'in tek serbestlik derecesi https://cad.onshape.com/help/Content/Assembly/revolute_mate.htm sayfasından alınmıştır. Açık seri zincirde serbestlik derecelerinin toplanması ve toplamın pratik yorumu kaynakta yazan cümleler değil, mate başına verilen değerlerden yapılan çıkarımlardır."
+    },
+    {
+      "id": "cad-07-d7",
+      "type": "diagnose",
+      "symptom": "Sezon ortasında assembly açıldığında iki mate'in göstergesi kırmızı, bir mate'inki gri, geri kalanlar mavi ve beyaz görünüyor. Takımdaki hiç kimse herhangi bir mate'i suppress etmediğini söylüyor ve kayıtlara bakıldığında gerçekten de hiçbir mate suppress edilmemiş.",
+      "prompt": "Gri gösterge nasıl ortaya çıktı?",
+      "options": [
+        "Gri gösterge mate'in henüz yeniden hesaplanmadığını bildirir; assembly yenilendiğinde kendiliğinden maviye döner.",
+        "Gri gösterge mate'in referansının kırıldığını bildirir; kırmızı ile aynı sorunun daha hafif görünen hâlidir.",
+        "Gri gösterge mate'in Limits değerlerinin dışına çıkıldığını bildirir; limit değerleri düzeltildiğinde renk değişir.",
+        "Mate'e bağlı part veya assembly suppress edildiğinde mate kendiliğinden inactive olur; gri renk bunu bildirir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak renkleri tek cümlede tanımlar: mavi ve beyaz sağlıklı mate'leri, gri suppressed veya inactive durumu, kırmızı bir sorunu gösterir. Belirtideki çelişki de bir başka kaynak cümlesiyle çözülür: bir mate veya mate connector, bağlı olduğu part veya assembly suppress edildiğinde kendiliğinden inactive hâle gelir. Yani mate'in kendisi suppress edilmemiştir, ona bağlı part suppress edilmiştir ve mate bunun sonucu olarak gri görünmektedir. Aranacak yer mate listesi değil, instance listesidir. Birinci şık gri rengi geçici bir hesaplama durumuna bağlar; kaynakta böyle bir anlam yoktur. İkinci şık gri ile kırmızıyı aynı sorunun iki derecesi sayar; oysa kaynak ikisine farklı anlamlar verir ve suppress edilmiş bir mate hâlâ düzenlenebilir durumdadır. Üçüncü şık Limits ile gösterge rengi arasında kaynakta bulunmayan bir bağ kurar.",
+      "hint": "Mate suppress edilmediyse, gri rengi doğuracak başka ne suppress edilmiş olabilir?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/mate.htm"
+    },
+    {
+      "id": "cad-07-d8",
+      "type": "diagnose",
+      "symptom": "Bir bracket ile ona cıvatalanan gearbox plakası ayrı Part Studio'larda tasarlandı ve assembly'de Group ile birbirine göre sabitlendi. Sezon ortasında bracket'ın delik aralığı değiştirildi. Assembly açıldığında iki part üst üste binmiş görünüyor. Hiçbir mate kırmızı değil ve hiçbir Part Studio'da hata yok.",
+      "prompt": "Ne oldu?",
+      "options": [
+        "Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar.",
+        "Group yalnızca subassembly'ler içinde çalışır; iki part doğrudan gruplanamaz ve bu yüzden konumları bozulmuştur.",
+        "Group bir mate olmadığı için gösterge rengi taşımaz; üst üste binme yalnızca görüntüdedir ve imalatı etkilemez.",
+        "Bracket'ın delik aralığı değiştiğinde Group kendini günceller ancak plakayı ters yöne kaydırır; yeniden kurulmalıdır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Belirtideki her ayrıntı aynı yere çıkıyor ve en önemlisi hiç hata olmamasıdır. Kaynak Group'un sınırını açıkça yazar: Group part'ları yalnızca origin'lerine göre konumlandırır ve geometri değişikliklerini yok sayar. Delik aralığı değiştiğinde part'ın origin'i aynı kalır, dolayısıyla Group açısından değişen bir şey yoktur ve konum güncellenmez. Kaynak sonucunu da söyler: ayrı Part Studio'larda oluşturulan part'ların instance konumları assembly'de kendiliğinden güncellenmez, bu da değişiklikle birlikte instance'ların üst üste binmesine yol açar. Bu bir arızanın değil, yanlış aracın belirtisidir. Kaynak Group'un neye uygun olmadığını söyler, yerine ne kullanılacağını yazmaz; buradan çıkan makul yol, değişen part'lar arasında gerçek geometriye referans veren bir Fastened mate kurmak ve Group'u değişmeyecek satın alınmış part'lar ile aynı Part Studio'da birlikte oluşturulan part'lara bırakmaktır. İkinci şık kaynakta olmayan bir kısıt uydurur. Üçüncü şık üst üste binmeyi zararsız sayar; oysa assembly artık gerçek robotu temsil etmemektedir ve bundan sonraki her ölçü yanlış konumdan alınır. Dördüncü şık Group'a kaynakta bulunmayan bir güncelleme davranışı yükler.",
+      "hint": "Delik aralığı değişti ama part'ın origin'i değişti mi? Group neye bakıyor?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/group.htm",
+      "sourceNote": "Fastened mate önerisi kaynakta yazan bir cümle değil, Group'un kaynakta belirtilen sınırından yapılan bir çıkarımdır."
+    }
+  ]
+}

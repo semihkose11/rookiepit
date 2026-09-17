@@ -1,0 +1,305 @@
+{
+  "id": "cad-05-variables-configurations",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 5,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Variable'lar ve Configuration'lar",
+  "summary": "Bir variable'ın nasıl tanımlanıp dimension içinde nasıl çağrıldığını, Feature list'teki yerinin neden önemli olduğunu ve configuration'ların tek bir part'tan nasıl varyasyonlar ürettiğini öğretir.",
+  "prerequisites": [
+    "cad-04-features"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Variable, bir Part Studio içindeki expression'larda kullanılmak üzere oluşturulan ve bir değer atanan bir feature'dır. Kaynağın ifadesiyle variable dimension'larda ve expression'larda kullanılır. Bir dimension alanında variable'a başvurmak için alana # karakteri ve ardından variable adı yazılır. Variable adlandırmasının kuralları vardır: yalnızca İngilizce alfanümerik karakterler ve alt çizgi kullanılır, adlar büyük küçük harfe duyarlıdır ve bir rakamla başlayamaz. Değer türü olarak Length, Angle, Number veya Any seçilebilir; Any türü diğerlerini ve farklı birimleri kapsadığı gibi boolean, map, array, string veya fonksiyon gibi FeatureScript değerlerini de alabilir.\n\nBurada kolay atlanan ve pahalıya mal olan bir kural vardır. Variable'lar Onshape'te birer feature olduğu için Feature list'teki yerleri önemlidir. Kaynak şunu söyler: variable'ı, onu kullanacağınız feature'dan önce oluşturun ya da değere ihtiyaç duyan bir işlem sırasında anında oluşturun. Ayrıca bir alana yazmaya başladığınızda açılan variable listesinde yalnızca o anki bağlamda var olan variable'lar gösterilir; Feature list'te daha aşağıda duranlar bu listede görünmez.\n\nConfiguration ise bir part'ın, Part Studio'nun, assembly'nin veya Variable Studio'nun varyasyonlarını oluşturmayı sağlar. Kaynak nelerin configure edilebileceğine örnekler verir: bir extrude feature'ının derinliği, bir fillet'in suppression'ı, bir custom feature'ın FeatureScript'i, part numaraları, renkler, malzemeler ve daha fazlası. Kaynağın terminoloji bölümü yapıyı üç adla verir. Inputs: her configuration input katlanabilir bir tablo olarak gösterilir. Options: bir input tablosundaki her satır, configuration seçilirken sunulan seçeneklerden biri olur. Parameters: her sütun, configure edilen belirli bir feature parametresini temsil eder.",
+    "keyTerms": [
+      {
+        "term": "variable",
+        "glossTr": "Part Studio içindeki ifadelerde kullanılan, değer atanmış bir feature"
+      },
+      {
+        "term": "expression",
+        "glossTr": "bir dimension alanına yazılan hesaplanabilir ifade"
+      },
+      {
+        "term": "Length",
+        "glossTr": "uzunluk temsil eden variable türü"
+      },
+      {
+        "term": "Angle",
+        "glossTr": "açı temsil eden variable türü"
+      },
+      {
+        "term": "Any",
+        "glossTr": "diğer türleri ve FeatureScript değerlerini kapsayan variable türü"
+      },
+      {
+        "term": "configuration",
+        "glossTr": "bir part, Part Studio, assembly veya Variable Studio'nun varyasyonu"
+      },
+      {
+        "term": "configuration input",
+        "glossTr": "configuration'da katlanabilir bir tablo olarak gösterilen girdi"
+      },
+      {
+        "term": "suppression",
+        "glossTr": "bir feature'ın etkisiz bırakılması"
+      },
+      {
+        "term": "FeatureScript",
+        "glossTr": "Onshape'in feature tanımlarının yazıldığı dil"
+      },
+      {
+        "term": "Number",
+        "glossTr": "genel sayısal değer taşıyan variable türü"
+      },
+      {
+        "term": "Options",
+        "glossTr": "configuration tablosunda her satırın karşılık geldiği seçenek"
+      },
+      {
+        "term": "Parameters",
+        "glossTr": "configuration tablosunda her sütunun karşılık geldiği feature parametresi"
+      },
+      {
+        "term": "Variable Studio",
+        "glossTr": "Onshape'te ayrı bir tab türü; bu modülün kapsamı dışındadır"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-05-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "VARIABLE",
+      "front": "Variable bir dimension alanında adıyla değil, # karakteriyle çağrılır.",
+      "back": "Variable, bir Part Studio içindeki expression'larda kullanılmak üzere oluşturulan ve bir değer atanan bir feature'dır; dimension'larda ve expression'larda kullanılır. Bir dimension alanında variable'a başvurmak için alana # karakteri ve ardından variable adı yazılır, istenirse bir expression'ın parçası olarak. Ad düz yazıldığında Onshape onu çözemez ve alan hata verir. Adın kendisi de serbest değildir: yalnızca İngilizce alfanümerik karakterler ve alt çizgi kullanılır, adlar büyük küçük harfe duyarlıdır ve bir rakamla başlayamaz. Bu yüzden plaka_kalinligi geçerlidir; 2mmPlaka bir rakamla başladığı için, plakaKalınlığı ise Türkçe karakter içerdiği için kabul edilmez. Değer türü olarak Length, Angle, Number veya Any seçilebilir; Any türü diğerlerini ve farklı birimleri kapsadığı gibi boolean, map, array, string veya fonksiyon gibi FeatureScript değerlerini de alabilir.",
+      "takeaway": "Bir alana variable yazarken önce # koyun, adı da İngilizce karakterlerle ve rakamla başlamadan seçin",
+      "tags": [
+        "variable",
+        "expression",
+        "adlandırma"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-05-d1",
+        "cad-05-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-05-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "VARIABLE",
+      "front": "Variable Onshape'te bir feature'dır; bu yüzden Feature list'teki yeri önemlidir.",
+      "back": "Variable'lar Onshape'te birer feature olduğu için Feature list'teki yerleri önemlidir. Kaynağın kuralı açıktır: variable'ı, onu kullanacağınız feature'dan önce oluşturun ya da değere ihtiyaç duyan bir işlem sırasında anında oluşturun. Sebebi alanın çalışma biçimidir. Bir alana yazmaya başladığınızda açılan variable listesinde yalnızca o anki bağlamda var olan variable'lar gösterilir; Feature list'te daha aşağıda duranlar bu listede görünmez. Önce bir extrude oluşturup sonra listenin en altına variable ekleyen bir öğrenci, extrude'u düzenlediğinde o variable'ı listede bulamaz, ad doğru yazılmış olsa bile. Adın bulunamamasının ikinci bir sebebi daha olabilir, çünkü adlar büyük küçük harfe duyarlıdır ve plakaKalinligi ile plakakalinligi iki ayrı variable demektir.",
+      "takeaway": "Variable'ı, onu kullanacak feature'dan önce oluşturun; sonradan eklenen variable o feature'ın listesinde görünmez",
+      "tags": [
+        "Feature list",
+        "bağlam",
+        "variable"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-05-d2",
+        "cad-05-d3"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-05-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CONFIGURATION",
+      "front": "Aynı bracket dört ayrı Part Studio'da tutuldu; düzeltme birinde atlandı.",
+      "back": "Etkinlikte bir bracket'in delik deseninde hata bulundu. Takım aynı bracket'in dört varyasyonunu dört ayrı Part Studio'da tutuyordu; düzeltme dördüne de elle uygulandı, biri atlandı ve o versiyondan üretilen parça robota takılmadı. Configuration tam olarak bu ihtiyaç için vardır: bir part'ın, Part Studio'nun, assembly'nin veya Variable Studio'nun varyasyonlarını oluşturmayı sağlar. Dört ayrı Part Studio yerine tek bir tanım ve dört configuration olsaydı, delik deseni tek bir yerde tanımlı olurdu ve düzeltme dört varyasyona birden uygulanırdı; atlanacak bir kopya kalmazdı. Buradaki ders bir araç tercihinden daha geneldir: aynı bilgi birden çok yerde tutulduğunda, o yerlerin ayrışması yalnızca zaman meselesidir ve ayrışma sessizce olur. Bir uyarı daha vardır. Yalnızca tabloda bir sütunu olan, yani bir configuration parametresi olan değer configuration'a göre değişir; tanımlanmamış parametreler bütün configuration'lar için ortak kalır.",
+      "takeaway": "Bir part'ın birden çok varyasyonu gerekiyorsa kopya çıkarmayın, configuration açın",
+      "tags": [
+        "configuration",
+        "varyasyon",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-05-d8",
+        "cad-05-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-05-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci plaka kalınlığı için kalinlik adında bir variable oluşturdu. Bu değeri bir extrude'un depth alanında kullanmak istiyor. Alana ne yazmalıdır?",
+      "options": [
+        "Alana # karakterini ve ardından variable adını yazmalıdır; istenirse bir expression içinde.",
+        "Variable adını tırnak içinde yazmalıdır; metin değerler \" işaretiyle belirtilir.",
+        "Adın önüne $ karakterini koymalıdır; bu Onshape'in variable çağırma biçimidir.",
+        "Adı doğrudan yazmalıdır; Onshape variable adlarını kendiliğinden tanıyıp değerini koyar."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak variable'ın nasıl çağrıldığını açıkça söyler: bir dimension oluşturulur ve dimension alanına # karakteri ile variable adı girilir, istenirse bir expression'ın parçası olarak. Bu küçük ayrıntı bilinmediğinde öğrenci adı düz yazar, Onshape onu çözemez ve alan hata verir; öğrenci de variable'ın çalışmadığını sanır. Dördüncü şık tam olarak bu yanılgıyı temsil eder. # karakterinin bir amacı vardır: aynı alana hem sayı hem expression yazılabildiği için, yazılanın bir variable adı olduğunu belirten bir işaret gerekir. Bu son cümle kaynakta yazmayan bir yorumdur. İkinci ve üçüncü şıklar başka ortamlardan tanıdık gelen karakterler önerir; Onshape'in kullandığı karakter #'tir. Türkçede bu karakter kare işareti veya diyez olarak anılır, ancak klavyede aranacak şey doğrudan # tuşudur.",
+      "hint": "Kaynak tek bir karakterden söz ediyor. Klavyede hangisi?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/variable.htm"
+    },
+    {
+      "id": "cad-05-d2",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci önce bir extrude feature'ı oluşturdu, sonra Feature list'in en altına kalinlik adında bir variable ekledi. Şimdi extrude'u düzenleyip depth alanında bu variable'ı kullanmak istiyor, ancak variable listede hiç görünmüyor. Adı doğru yazılmış ve variable Feature list'te duruyor.",
+      "prompt": "Neden görünmüyor?",
+      "options": [
+        "Variable türü Length yerine Any seçilmiştir ve Any türündekiler dimension alanlarında listelenmez.",
+        "Variable adında Türkçe karakter bulunmaktadır; Onshape yalnızca İngilizce karakterli adları listeler.",
+        "Açılan listede yalnızca o anki bağlamda var olan variable'lar gösterilir; aşağıdakiler görünmez.",
+        "Extrude feature'ı commit edilmiş durumdadır; commit edilmiş feature'lara sonradan variable bağlanamaz."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak bu davranışın sebebini doğrudan yazar: variable'lar Onshape'te birer feature olduğu için Feature list'teki yerleri önemlidir, ve açılan variable listesinde yalnızca o anki bağlamda var olanlar gösterilir; Feature list'te daha aşağıda duranlar görünmez. Extrude düzenlenirken o feature'ın oluşturulduğu andaki bağlam geçerlidir ve o anda variable henüz yoktur. Bu geri sarma mekanizması bu sayfada anlatılmaz; buradaki çıkarım kaynağın o anki bağlam ifadesine dayanır. Kaynak çözümü ise açıkça verir: variable'ı, onu kullanacağınız feature'dan önce oluşturun ya da değere ihtiyaç duyan bir işlem sırasında anında oluşturun. Takımların yaygın alışkanlığı variable'ları Feature list'in en üstünde toplamaktır; bu bir pratik önerisidir, kaynağın kuralı değil. Birinci şık Any türüne kaynakta olmayan bir kısıt yükler. İkinci şık gerçek bir adlandırma kuralını anar ancak belirtide adın doğru yazıldığı söyleniyor. Dördüncü şık kaynakta karşılığı olmayan bir kavram uydurur.",
+      "hint": "Variable Onshape'te ne tür bir nesne? Bu, sıranın önemli olup olmadığını belirler mi?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/variable.htm"
+    },
+    {
+      "id": "cad-05-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir CAD ekibi variable kullanımını anlatan bir başvuru kartı hazırlıyor.",
+      "elements": [
+        "Variable adlarında yalnızca İngilizce alfanümerik karakterler ve alt çizgi kullanılır.",
+        "Variable adları büyük küçük harfe duyarlıdır.",
+        "Variable adları bir rakamla başlayabilir.",
+        "Atanmış bir variable oluşturulurken değer türü Length, Angle, Number veya Any olabilir.",
+        "Any türü boolean, map, array, string veya fonksiyon gibi FeatureScript değerlerini de alabilir."
+      ],
+      "faultIndex": 2,
+      "explanation": "Kaynak bunun tersini söyler: variable adları büyük küçük harfe duyarlıdır ve bir rakamla başlayamaz. Bu kural pratikte can sıkıcı bir yerde karşımıza çıkar, çünkü FRC takımları ölçüleri sık sık 2mmPlaka gibi adlarla anmak ister ve böyle bir ad kabul edilmez. Aynı paragraftaki diğer kural da atlanmamalıdır: yalnızca İngilizce alfanümerik karakterler ve alt çizgi kullanılabilir, yani Türkçe karakterli adlar da geçersizdir. İkisi birlikte, Türkçe çalışan bir takım için adlandırmanın bilinçli yapılması gereken bir iş olduğu anlamına gelir. Diğer dört ifade kaynağın yazdığı gibidir.",
+      "hint": "Kaynak adlandırma için üç kural veriyor. Listedeki üçü de aynı yönde mi söylenmiş?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/variable.htm"
+    },
+    {
+      "id": "cad-05-d4",
+      "type": "multiple_choice",
+      "prompt": "Bir takım variable adlandırma listesi hazırlıyor. Aşağıdaki adaylardan hangisi kaynağın kurallarına uygundur?",
+      "options": [
+        "2mmPlaka; sayıyla başlamak Onshape'te serbesttir ve okunabilirliği artırır.",
+        "plaka_kalinligi; yalnızca İngilizce alfanümerik karakter ve alt çizgi içerir.",
+        "plaka kalinligi; boşluk içeren adlar okunabilirlik için önerilir ve kabul edilir.",
+        "plakaKalınlığı; Türkçe karakterler Onshape'in desteklediği alfabeler arasındadır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynağın iki kuralı birlikte uygulandığında yalnızca üçüncü aday geçerli kalır. Birinci kural karakter kümesiyle ilgilidir: yalnızca İngilizce alfanümerik karakterler ve alt çizgi kullanılır. Bu, dördüncü adayı eler, çünkü Türkçe karakterler içerir; ikinci adayı da eler, çünkü boşluk alfanümerik bir karakter değildir. İkinci kural başlangıçla ilgilidir: adlar bir rakamla başlayamaz, bu da birinci adayı eler. Geriye kalan plaka_kalinligi her iki kurala da uyar. Kaynağın üçüncü kuralı adların büyük küçük harfe duyarlı olmasıdır; bu bir yasak değil bir uyarıdır ve plakaKalinligi ile plakakalinligi'nin farklı iki variable olacağı anlamına gelir. Türkçe çalışan bir takım için pratik sonuç şudur: variable adları Türkçe düşünülüp İngilizce karakterlerle yazılır.",
+      "hint": "Kaynak iki ayrı kural veriyor: hangi karakterler ve hangi karakterle başlanamaz. Adayları bu iki süzgeçten geçirin.",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/variable.htm"
+    },
+    {
+      "id": "cad-05-d5",
+      "type": "diagnose",
+      "symptom": "Bir takım bir bracket için iki configuration oluşturdu: kısa ve uzun. Uzun configuration seçiliyken bir delik çapı 5 mm'den 6 mm'ye çıkarılıyor. Kısa configuration'a geçildiğinde o deliğin çapı da 6 mm olmuş. Takım bunu bir hata sanıyor.",
+      "prompt": "Neden iki configuration'da da değişti?",
+      "options": [
+        "Configuration'lar yalnızca extrude derinliklerini değiştirebilir; delik çapları configuration kapsamının dışındadır.",
+        "Configuration'lar yalnızca part görünürlüğünü değiştirir; dimension değerleri hiçbir zaman ayrışmaz.",
+        "Configuration'lar yalnızca assembly seviyesinde çalışır; Part Studio değişiklikleri hepsine yayılır.",
+        "O delik çapı bir configuration parametresi değildir; tanımlanmamış parametreler ortak kalır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak configuration'ın yapısını üç kavramla anlatır ve cevap üçüncüsündedir: her configuration input katlanabilir bir tablo olarak gösterilir, her satır configuration seçilirken sunulan seçeneklerden biri olur, ve her sütun configure edilen belirli bir feature parametresini temsil eder. Yani bir parametre ancak bir sütun olarak tabloya alındıysa configuration'a göre değişir. Tabloda olmayanın bütün configuration'lar için ortak kalması ise kaynağın açıkça yazdığı bir cümle değil, Parameters tanımının çıkarımıdır. Bu, aslında istenen davranıştır; ortak olan geometrinin ortak kalması configuration'ların varlık sebebidir. Takımın yapması gereken, o delik çapını da bir configuration parametresi hâline getirmektir. Birinci şık kaynağın örnek listesiyle çelişir; kaynak extrude derinliği, fillet suppression'ı, part numaraları, renkler ve malzemeler gibi çok çeşitli şeylerin configure edilebildiğini söyler. İkinci şık configuration'ın ne yaptığını, üçüncü şık ise nerede çalıştığını yanlış tarif eder; kaynak part, Part Studio, assembly ve Variable Studio'nun hepsinde varyasyon oluşturulabildiğini söyler.",
+      "hint": "Bir dimension'ın configuration'a göre değişmesi için tabloda ne olması gerekir?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/configurations.htm"
+    },
+    {
+      "id": "cad-05-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım aynı bracket'in iki versiyonunu istiyor: biri extrude ile 3 mm alüminyum, diğeri 5 mm polikarbon, ve ikisinin part numarası farklı olacak. Configuration bu üç farkı da taşıyabilir mi?",
+      "options": [
+        "Yalnızca part numarasını taşıyabilir; geometri ve malzeme farkları için ayrı Part Studio açılmalıdır.",
+        "Yalnızca kalınlığı taşıyabilir; malzeme ve part numarası configuration kapsamının dışındadır ve ayrı part gerektirir.",
+        "Taşıyabilir; extrude derinliği, part numarası ve malzeme kaynağın saydığı configure edilebilir kalemlerdir.",
+        "Hiçbirini taşıyamaz; configuration yalnızca assembly'de bir part'ın gösterilip gizlenmesini yönetir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak nelerin configure edilebileceğine dair örnekleri açıkça sayar ve listede üçü de vardır: bir extrude feature'ının derinliği, bir fillet'in suppression'ı, bir custom feature'ın FeatureScript'i, part numaraları, renkler, malzemeler ve daha fazlası. Yani kalınlık bir extrude derinliği olarak, malzeme ve part numarası da doğrudan bu listedeki kalemler olarak configure edilebilir. Bunun FRC takımları için pratik değeri büyüktür: iki ayrı document veya iki ayrı part yerine tek bir tanım tutulur, bir düzeltme yapıldığında ikisine birden uygulanır ve part numaraları ayrı kalmaya devam eder. Diğer üç şık configuration'ın kapsamını gerçekte olduğundan dar tarif eder ve üçü de takımı gereksiz yere kopyalama yoluna iter.",
+      "hint": "Kaynak configure edilebilecekleri örneklerle sayıyor. O listede kaç tanesi geçiyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/configurations.htm"
+    },
+    {
+      "id": "cad-05-d7",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci configuration tablosunu ilk kez açtı ve satırlarla sütunları karıştırıyor. Yeni bir kalınlık seçeneği eklemek istiyor ama bunun yerine yeni bir sütun ekleyip her configuration için ayrı bir parametre oluşturuyor. Sonuç beklediği gibi olmuyor.",
+      "prompt": "Satır ile sütun ne anlama gelir?",
+      "options": [
+        "Her satır seçeneklerden biridir; her sütun configure edilen bir feature parametresidir.",
+        "Her satır configure edilen bir feature parametresini, her sütun ise bir seçeneği temsil eder.",
+        "Satırlar ve sütunlar aynı şeyi temsil eder; tablo yalnızca görsel bir düzendir ve yönü fark etmez.",
+        "Her satır bir part'ı, her sütun ise o part'ın bulunduğu Part Studio'yu temsil eder."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın terminoloji bölümü bu ayrımı iki adla verir. Options: bir input tablosundaki her satır, configuration seçilirken sunulan seçeneklerden biri olur. Parameters: her sütun, configure edilen belirli bir feature parametresini temsil eder. Öğrencinin istediği şey yeni bir kalınlık seçeneğidir, yani yeni bir satır. Bunun yerine sütun eklemek yeni bir parametre tanımlar ve tablo, çözmek istediği sorundan uzaklaşır. Ayrımı akılda tutmanın kolay yolu şudur: satırlar kullanıcının seçtiği şeylerdir, sütunlar ise o seçime göre değişen şeylerdir. Bu son cümle kaynakta yazmayan bir hatırlatma biçimidir. İkinci şık ikisini tam olarak ters çevirir ve en yaygın karışıklıktır. Üçüncü şık tabloyu anlamsız kılar. Dördüncü şık kaynakta karşılığı olmayan bir yapı uydurur.",
+      "hint": "Configuration seçilirken kullanıcı bir listeden seçim yapar. O liste tabloda hangi yönde duruyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/configurations.htm"
+    },
+    {
+      "id": "cad-05-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte bir bracket'in delik deseninde hata bulundu. Takım aynı bracket'in dört varyasyonunu dört ayrı Part Studio'da tutuyordu. Düzeltme dördüne de elle uygulandı, ancak biri atlandı ve o versiyondan üretilen parça robota takılmadı. Kimse yanlış versiyonun hangisi olduğunu hatırlamıyor.",
+      "prompt": "Bu durumu kaynağın hangi özelliği önlerdi ve neden?",
+      "options": [
+        "Variable'lar; dört Part Studio'da aynı variable adı kullanılsaydı değişiklik dördüne birden yayılırdı.",
+        "Feature list sırası; variable'lar en üste alınsaydı düzeltme bütün Part Studio'lara aynı anda uygulanırdı.",
+        "Part numaraları; her varyasyona ayrı numara verilseydi hangi versiyonun yanlış olduğu anlaşılırdı.",
+        "Configuration'lar; bir part'ın varyasyonlarını tek tanım altında tutar, böylece düzeltme tek yerde yapılır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak configuration'ı tam olarak bu ihtiyaç için tanımlar: bir part'ın, Part Studio'nun, assembly'nin veya Variable Studio'nun varyasyonlarını oluşturur. Dört ayrı Part Studio yerine tek bir tanım ve dört configuration olsaydı, delik deseni tek bir yerde tanımlı olurdu ve düzeltme dört varyasyona birden uygulanırdı; atlanacak bir kopya kalmazdı. Buradaki asıl ders bir araç tercihinden daha geneldir: aynı bilgi birden çok yerde tutulduğunda, o yerlerin ayrışması yalnızca zaman meselesidir ve ayrışma sessizce olur. Bu, daha önceki bir modülde geçen tasarım niyeti dersinin document seviyesindeki karşılığıdır. Birinci ve ikinci şıklar variable'ların kapsamını yanlış anlar. Bu iki sayfa variable'ların Part Studio'lar arasında paylaşıldığını söylemez; variable.htm variable'ı bir Part Studio içindeki expression'larda kullanılan bir feature olarak tanımlar. Onshape'te Part Studio'lar arası paylaşım için ayrı bir tab türü olan Variable Studio vardır ve bu modülün kapsamı dışındadır. Üçüncü şık sorunu tespit etmeyi kolaylaştırırdı ama oluşmasını engellemezdi; part numaraları kaynağın configure edilebilecekler listesinde zaten yer alır ve bu, configuration ile birlikte kullanıldığında anlamlı olur.",
+      "hint": "Aynı bilgi kaç yerde tutuluyordu? Kaynağın hangi özelliği o sayıyı bire indirir?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/configurations.htm",
+      "sourceNote": "Variable tanımı ve kapsamı: https://cad.onshape.com/help/Content/PartStudio/variable.htm"
+    }
+  ]
+}

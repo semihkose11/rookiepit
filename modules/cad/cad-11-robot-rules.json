@@ -1,0 +1,381 @@
+{
+  "id": "cad-11-robot-rules",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 11,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-01",
+  "imageRef": null,
+  "title": "Robot Kuralları ve CAD",
+  "summary": "Boyut, ağırlık, ROBOT PERIMETER, starting configuration ve uzama sınırlarının CAD tarafında nasıl kontrol edileceğini; hangi ölçünün nereden alındığını ve hangi kuralların CAD'de görünmediğini öğretir.",
+  "prerequisites": [
+    "cad-10-cots-imports"
+  ],
+  "estimatedMinutes": 45,
+  "concept": {
+    "body": "Bir robotun CAD'i yalnızca çalışan bir mekanizma değil, aynı zamanda denetimden geçecek bir belgedir. Kuralların büyük bölümü doğrudan ölçüdür ve CAD'de sınanabilir.\n\nİlk grup starting configuration ile ilgilidir. Robotun bumper'lar hariç, sabit ve non-articulated yapısal elemanlardan oluşan bir ROBOT PERIMETER'ı olmalıdır; bu çevre BUMPER ZONE içinde ve starting configuration'da belirlenir. Kural, 0.25in (0.64cm) değerini aşmayan cıvata başı, perçin ve kaynak dikişi gibi küçük çıkıntıları ROBOT PERIMETER'ın parçası saymaz. Starting configuration'da bumper'lar ve bu küçük çıkıntılar dışında hiçbir parça çevrenin dikey izdüşümünün dışına taşamaz. Aynı konfigürasyonda çevrenin uzunluğu ve robotun yüksekliği için birer üst sınır vardır.\n\nİkinci grup maç sırasındaki uzamayı sınırlar. Yatay uzama için bir sınır, toplam yükseklik için ayrı bir sınır ve aynı anda birden çok yönde uzamama şartı vardır; bu sonuncusu uzamanın o kenarın izdüşümü dışına çıkmamasını da ister. Madde sezon içinde Team Update ile güncellenmiş ve bumper'lar, küçük çıkıntılar ile momentary, sonuç doğurmayan uzamalar için istisna listesi eklenmiştir. Denetim bu uzama sınırlarını da ayrıca sınar.\n\nÜçüncü grup ağırlıktır ve neyin tartıldığı kritiktir. Robotun kendi ağırlık sınırı bumper'lar ve battery hariç ölçülür; robot ile bumper'ların birlikte ağırlığı için ayrı ve daha yüksek bir sınır vardır. Takas edilebilir mekanizmalarla birlikte toplam denetlenen ağırlık için de ayrı bir sınır bulunur.\n\nBumper'ların yerden belirli iki yükseklik arasındaki BUMPER ZONE'u tümüyle doldurması gerekir; bu aralık CAD'de iki referans düzlem olarak çizilmelidir.",
+    "keyTerms": [
+      {
+        "term": "ROBOT PERIMETER",
+        "glossTr": "robotun sabit yapısal elemanlarından oluşan dış çevre"
+      },
+      {
+        "term": "STARTING CONFIGURATION",
+        "glossTr": "robotun maç başındaki katlanmış hâli"
+      },
+      {
+        "term": "BUMPER",
+        "glossTr": "robotun çevresini koruyan tampon"
+      },
+      {
+        "term": "BUMPER ZONE",
+        "glossTr": "bumper'ların doldurması gereken yerden yükseklik aralığı"
+      },
+      {
+        "term": "non-articulated",
+        "glossTr": "hareketli eklemi olmayan, sabit"
+      },
+      {
+        "term": "vertical projection",
+        "glossTr": "bir çevrenin yukarı ve aşağı doğru dikey izdüşümü"
+      },
+      {
+        "term": "extension",
+        "glossTr": "robotun çevresi dışına taşması"
+      },
+      {
+        "term": "swappable mechanism",
+        "glossTr": "maçlar arasında değiştirilebilen mekanizma"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-11-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "KURAL",
+      "front": "Kurallar robotun iki ayrı hâlini ölçer: maç başındaki kapalı hâl ve maç sırasındaki uzamış hâl.",
+      "back": "Bir robotun CAD'i yalnızca çalışan bir mekanizma değil, aynı zamanda denetimden geçecek bir belgedir ve kuralların büyük bölümü doğrudan ölçüdür. Ölçüler iki ayrı hâl üzerinden alınır. Starting configuration robotun maç başındaki katlanmış hâlidir; bu hâlde bumper'lar ve küçük çıkıntılar dışında hiçbir parça çevrenin dikey izdüşümünün dışına taşamaz, ayrıca çevrenin toplam uzunluğu ve robotun yüksekliği için birer üst sınır vardır. Maç sırasındaki hâl ise ayrı sınırlara bağlıdır: yatay uzama için bir sınır, toplam yükseklik için ayrı bir sınır ve aynı anda birden çok yönde uzanmama şartı. İki hâl ayrı ayrı sağlanmalıdır ve kurallar birbirinden düşülmez; maç sırasında uzayabilmek, maç başlamadan önceki hâlde taşmaya izin vermez. Denetim de robotu hem kapalı hem uzamış hâlde ölçer.",
+      "takeaway": "Bir ölçüyü sınamadan önce robotun hangi hâlinde olduğunuza karar verin; kapalı hâl ölçüsü uzamış hâl için hiçbir şey kanıtlamaz",
+      "tags": [
+        "starting configuration",
+        "extension",
+        "denetim"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-11-d3",
+        "cad-11-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-11-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "KURAL",
+      "front": "Her ölçü kuralının CAD tarafında onu görünür kılan bir karşılığı vardır.",
+      "back": "Kaynak her sınır için bir CAD karşılığı verir. Çevrenin toplam uzunluğu için çerçeve sketch'ine bir perimeter ölçüsü konur veya kenar uzunlukları variable olarak tanımlanıp toplamı hesaplayan bir variable eklenir; böylece kenarlar her değiştiğinde çevre kendiliğinden güncellenir ve sınıra yaklaşıldığı görülür. Yatay uzama için çerçeve sketch'inden 12 inch offset alınmış bir referans geometri çizilir ve uzayan her mekanizma en uç konumunda bu çizginin içinde kalıyor mu diye kontrol edilir. Toplam yükseklik için hareketli mekanizmanın uç konumları ayrı configuration veya context olarak modellenir ve her biri kurala karşı ayrı ayrı ölçülür. Bumper'lar için yerden iki yükseklikte iki referans düzlem tanımlanır ve bumper kesitinin ikisini de kapsadığı her tasarım değişikliğinden sonra sınanır. Ağırlıkta ise bumper'lar ve battery ayrı bir configuration'da tutulur veya kütle hesabında ayrı kalemler olarak izlenir.",
+      "takeaway": "Bir sınırı akılda tutmak yerine CAD'e bir referans olarak çizin; o zaman sınıra yaklaşıldığı tasarım değişirken görünür",
+      "tags": [
+        "variable",
+        "offset",
+        "configuration"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-11-d1",
+        "cad-11-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-11-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "KURAL",
+      "front": "Bütün ölçüler sınırların içindeydi, robot denetimde yine geri çevrildi.",
+      "back": "Menteşeli bir arka kapak bunun en açık örneğidir. Kapak, bumper'ların dayandığı yükseklikte şasinin arka yüzünü oluşturuyorsa çevrenin parçasıdır ve menteşeli bir kenar tanımı gereği articulated'dır. Kural robotun, bumper'lar hariç, sabit ve non-articulated yapısal elemanlardan oluşan bir çevreye sahip olmasını ister; yalnızca 0.25in değerini aşmayan cıvata başı, perçin ve kaynak dikişi gibi küçük çıkıntılar çevrenin parçası sayılmaz. Kapak kapalıyken hiçbir ölçüyü ihlal etmediği için tasarım incelemesinde hiçbir sayı yanlış çıkmaz; ihlal bir sayıda değil bir yapı kararındadır. Aynı tuzak ağırlıkta da vardır: robotun kendi ağırlık sınırı bumper'lar ve battery hariç ölçülür, bunlar kütleye eklendiğinde takım kendi robotunu olduğundan ağır sanar ve gereksiz yere malzeme inceltir. Bedeli, imal edilmiş bir şasinin denetimde geri çevrilmesidir.",
+      "takeaway": "Bir ölçü listesini geçmek uygunluk demek değildir; çevrenin nasıl kurulduğunu ve neyin tartıldığını ayrıca denetleyin",
+      "tags": [
+        "ROBOT PERIMETER",
+        "non-articulated",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-11-d8",
+        "cad-11-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-11-d1",
+      "type": "numeric",
+      "prompt": "Bir takım CAD'de şasi çerçevesini 28 inch x 32 inch dikdörtgen olarak tasarladı. Starting configuration'da ROBOT PERIMETER için izin verilen üst sınır 110.0in (2.794m). Bu tasarımın çevresi sınırı kaç inch aşıyor?",
+      "answer": 10,
+      "tolerance": 0,
+      "unit": "inch",
+      "explanation": "Dikdörtgen bir çerçevenin çevresi iki kenarın toplamının iki katıdır: 28 artı 32 eşittir 60, 60 çarpı 2 eşittir 120 inch. Kural starting configuration'da ROBOT PERIMETER'ın 110.0in (2.794m) değerini aşamayacağını söyler, dolayısıyla tasarım 10 inch fazladır. Buradaki asıl ders ölçünün hangi büyüklük olduğudur; sınır kenar uzunluğuna değil, çevrenin toplam uzunluğuna konur. Bir takım 28 x 32 rakamlarına bakıp iki kenarın da makul göründüğüne karar verirse hatayı göremez. CAD tarafında yapılacak iş, çerçeve sketch'ine bir perimeter ölçüsü koymak veya kenar uzunluklarını variable olarak tanımlayıp toplamı hesaplayan bir variable eklemektir; böylece kenarlar her değiştiğinde çevre kendiliğinden güncellenir ve sınıra yaklaşıldığı görülür. 10 inch'i düşürmenin yolu kenarlardan toplam 5 inch kısaltmaktır, örneğin 26 x 29 çerçeve 110 inch verir.",
+      "hint": "Sınır kenar uzunluğuna mı, çevrenin toplamına mı konuyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R104",
+          "season": "2026",
+          "topic": "starting configuration'da ROBOT PERIMETER 110.0in (2.794m) değerini, yükseklik ise 30in (76.2cm) değerini aşamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Starting Volume - ROBOT PERIMETER ≤ 110in (2.794m), height ≤ 30in (76.2cm). <R104>\" Kural metni frcmanual.com aynasından da doğrulandı."
+    },
+    {
+      "id": "cad-11-d2",
+      "type": "diagnose",
+      "symptom": "Bir takımın CAD'inde intake, çerçevenin ön kenarından öne doğru 14 inch dışarı uzanabiliyor. Takım bu ölçüyü assembly'de doğrudan ölçtü. Starting configuration'da intake tümüyle içeride ve robot 29 inch yüksekliğinde. Ağırlık da sınırın altında.",
+      "prompt": "Tasarımda hangi sorun var ve CAD'de nasıl gösterilir?",
+      "options": [
+        "Sorun yok; uzama sınırı yalnızca starting configuration için geçerlidir ve maç sırasında serbesttir.",
+        "Intake'in yüksekliği sınırı aşıyor; 29 inch değeri starting configuration için değil, uzamış hâl için ölçülmelidir.",
+        "Sorun ağırlıktadır; uzayan mekanizmalar ağırlık sınırına ayrıca eklenir ve intake bu sınırı aşmaktadır.",
+        "Yatay uzama sınırı 12in (30.48cm); 14 inch bunu aşıyor ve CAD'de çevre etrafına bir offset referansı çizilmelidir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural robotların ROBOT PERIMETER'larının dikey izdüşümünün 12in (30.48cm) ötesine uzayamayacağını söyler. Ölçülen 14 inch bu sınırın üzerindedir, dolayısıyla intake kurallara uygun değildir. Belirtideki diğer bütün ayrıntılar kasıtlı olarak temizdir; starting configuration'da her şey içeride, yükseklik sınırın altında ve ağırlık uygun. Yani tek sorun yatay uzamadır. CAD tarafındaki karşılığı basittir ve alışkanlık hâline getirilmelidir: çerçeve sketch'inden 12 inch offset alınmış bir referans geometri çizilir ve uzayan her mekanizma en uç konumunda bu çizginin içinde kalıyor mu diye kontrol edilir. Birinci şık sınırı starting configuration ile sınırlar; oysa uzama sınırı maç sırasındaki hareket içindir. İkinci şık yükseklikle karıştırır; yükseklik ayrı bir kuraldır ve belirtide zaten uygun. Üçüncü şık ağırlık sınırına uzayan mekanizmalar için kaynakta olmayan bir ek uydurur.",
+      "hint": "Ölçülen değer hangi yönde ve o yön için kuralın verdiği sınır nedir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R105",
+          "season": "2026",
+          "topic": "robotlar ROBOT PERIMETER'ın dikey izdüşümünün 12in (30.48cm) ötesine uzayamaz"
+        },
+        {
+          "rule": "R107",
+          "season": "2026",
+          "topic": "robotların toplam yüksekliği 30.0in (76.2cm) değerini aşamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"Extensions - ROBOT may not extend beyond the ROBOT PERIMETER > 12in (30.48cm) <R105> and in one direction at a time <R106>, > 30in (76.2cm) vertically from the floor <R107>, and cannot lift the BUMPERS out of the BUMPER ZONE <R108>\" Kural metinleri aynadan doğrulandı: \"ROBOTS may not extend more than 12in (30.48cm) beyond the vertical projection of their ROBOT PERIMETER.\" ve \"ROBOTS may not extend such that their total height exceeds 30.0in (76.2cm).\" FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde (frcmanual.com ve frctools.com) birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-11-d3",
+      "type": "multiple_choice",
+      "prompt": "Bir takımın CAD'inde intake, robot kapalıyken bile çerçevenin ön kenarından 2 inch dışarıda duruyor. Takım bunun sorun olmadığını, çünkü maç sırasında zaten daha fazla uzayacağını düşünüyor. Bu düşünce neden yanlıştır?",
+      "options": [
+        "Starting configuration'da 2 inch'e kadar taşma serbesttir, ancak yalnızca bumper'ların arkasında kalıyorsa geçerlidir.",
+        "Starting configuration'da bumper'lar ve küçük çıkıntılar dışında hiçbir parça çevrenin dikey izdüşümü dışına taşamaz.",
+        "Maç sırasındaki uzama sınırı starting configuration'daki taşmayı da kapsar; 2 inch bu sınırdan düşülür ve kalan kullanılır.",
+        "Taşma yalnızca ağırlık dağılımını bozduğu için sorundur; CAD'de kütle merkezi çevre içinde kalırsa kural sağlanır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural starting configuration için kesin bir ifade kullanır: bu konfigürasyonda robotun hiçbir parçası, bumper'ları ve cıvata başı, perçin, kablo bağı gibi küçük çıkıntılar hariç, ROBOT PERIMETER'ın dikey izdüşümünün dışına taşamaz. Maç sırasında uzayabilmek, maç başlamadan önceki hâlde taşmaya izin vermez; bunlar iki ayrı kuraldır ve ikisi ayrı ayrı sağlanmalıdır. Denetim de robotu bu kapalı hâlde ölçer. Birinci şık 2 inch'lik bir tolerans uydurur; kuralın küçük çıkıntı istisnası 0.25in (0.64cm) değerini aşmayan cıvata başı türü ayrıntılar içindir ve 2 inch dışarıda duran bir intake bir çıkıntı değil, bir mekanizmadır. Üçüncü şık iki kuralı tek bir bütçe gibi toplar; kurallar birbirinden düşülmez. Dördüncü şık kuralı kütle merkezine bağlar; kural geometriktir, kütle dağılımıyla ilgili değildir. CAD tarafında yapılacak iş, intake'i kapalı konumda ayrı bir configuration veya context olarak modelleyip çerçeve izdüşümüyle karşılaştırmaktır.",
+      "hint": "Maç başlamadan önceki hâl ile maç sırasındaki hâl aynı kurala mı bağlı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R102",
+          "season": "2026",
+          "topic": "starting configuration'da bumper'lar ve küçük çıkıntılar hariç hiçbir parça ROBOT PERIMETER'ın dikey izdüşümü dışına taşamaz"
+        },
+        {
+          "rule": "R101",
+          "season": "2026",
+          "topic": "ROBOT PERIMETER, BUMPER ZONE içinde ve starting configuration'da belirlenen sabit, non-articulated elemanlardan oluşur; 0.25in (0.64cm) değerini aşmayan küçük çıkıntılar çevrenin parçası sayılmaz"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni: \"In the STARTING CONFIGURATION (the physical configuration in which a ROBOT starts a MATCH), no part of the ROBOT shall extend outside the vertical projection of the ROBOT PERIMETER, with the exception of its BUMPERS and minor protrusions such as bolt heads, fastener ends, rivets, cable ties, etc.\" ve \"Minor protrusions no greater than 0.25in (0.64cm) such as bolt heads, fastener ends, weld beads, and rivets are not considered part of the ROBOT PERIMETER.\" FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde (frcmanual.com ve frctools.com) birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-11-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş kontrolün dördü doğru yapılmıştır. Yanlış olanı seçiniz.",
+      "scenario": "Bir takım CAD tasarım incelemesinde kural kontrol listesini uyguluyor.",
+      "elements": [
+        "Çerçeve sketch'inden 12 inch offset alınmış referans çizip uzayan mekanizmaları en uç konumlarında kontrol ederler.",
+        "Starting configuration'da intake ve elevator'ü kapalı modelleyip hiçbir parçanın çevre izdüşümü dışına taşmadığını doğrularlar.",
+        "Robotun ağırlık sınırını kontrol ederken bumper'ları ve battery'yi de kütleye ekleyip toplamı 115.0lb ile karşılaştırırlar.",
+        "Bumper'ların yerden 2.5in ile 5.75in arasındaki BUMPER ZONE'u tümüyle doldurduğunu CAD'de referans düzlemlerle sınarlar.",
+        "Elevator'ü en yüksek konumuna getirip robotun toplam yüksekliğinin 30.0in sınırını aşmadığını ölçerler."
+      ],
+      "faultIndex": 2,
+      "explanation": "Üçüncü kontrol neyin tartıldığını yanlış alıyor. Denetim listesi robotun kendi ağırlık maddesini şöyle yazar: robot ağırlığı, bumper'lar ve battery hariç 115lbs (52.16kg) değerinden küçük veya eşit olmalıdır. Yani bumper'lar ve battery bu ölçünün içinde değildir. Bumper'lar için ayrı bir madde vardır ve orada robot ile bumper'ların toplamı 135lbs (61.23kg) sınırına bağlanır. Bu iki sınır karıştırıldığında takım kendi robotunu olduğundan ağır sanar ve gereksiz yere malzeme inceltir; ters yönde karıştırıldığında ise denetimde kalır. CAD tarafında doğru yol, bumper'ları ve battery'yi ayrı bir configuration'da tutmak veya kütle hesabında ayrı kalemler olarak izlemektir. Diğer dört kontrol kurallara uygundur: yatay uzama sınırı için offset referansı, starting configuration için kapalı hâl kontrolü, bumper'ların doldurması gereken yükseklik aralığı ve toplam yükseklik sınırı.",
+      "hint": "Robotun kendi ağırlık sınırı neyi içermiyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R103",
+          "season": "2026",
+          "topic": "robot ağırlığı bumper'lar ve battery hariç 115.0lb (52.16kg) değerini aşamaz"
+        },
+        {
+          "rule": "R408",
+          "season": "2026",
+          "topic": "robot ile bumper'ların toplamı 135.0lb (61.23kg) değerini aşamaz"
+        },
+        {
+          "rule": "I103",
+          "season": "2026",
+          "topic": "robot ile takas edilebilir mekanizmaların toplam denetlenen ağırlığı 150.0lb (68.04kg) değerini aşamaz"
+        },
+        {
+          "rule": "R105",
+          "season": "2026",
+          "topic": "yatay uzama ROBOT PERIMETER'ın dikey izdüşümünden 12in (30.48cm) ötesine geçemez"
+        },
+        {
+          "rule": "R102",
+          "season": "2026",
+          "topic": "starting configuration'da bumper'lar ve küçük çıkıntılar hariç taşma olamaz"
+        },
+        {
+          "rule": "R405",
+          "season": "2026",
+          "topic": "bumper'lar yerden 2.5in (6.35cm) ile 5.75in (14.61cm) arasındaki BUMPER ZONE'u tümüyle doldurmalıdır"
+        },
+        {
+          "rule": "R107",
+          "season": "2026",
+          "topic": "robotların toplam yüksekliği 30.0in (76.2cm) değerini aşamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddeleri: \"ROBOT Weight- Must be ≤ 115lbs (52.16kg) excluding BUMPERs and battery. <R103>\", \"BUMPER Weight - ROBOT + BUMPERS Must be ≤ 135lbs (61.23kg). <R408>\", \"Total Inspected Weight - ROBOT + swappable mechanisms ≤ 150lbs (68.04kg). <I103>\" BUMPER ZONE aralığı kural metninden alınmıştır: \"entirely filling the BUMPER ZONE, a space between 2.5in (6.35cm) and 5.75in (14.61cm) from the floor.\" FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde (frcmanual.com ve frctools.com) birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-11-d5",
+      "type": "numeric",
+      "prompt": "Bir takım bumper'ı 3.5 inch yüksekliğinde düz bir kesit olarak tasarladı ve CAD'de alt kenarını yerden 3.0 inch yukarıya oturttu. Kural BUMPER ZONE'u, yerden 2.5in (6.35cm) ile 5.75in (14.61cm) arasındaki boşluk olarak tanımlar ve bu boşluğun tümüyle doldurulmasını ister. Bu tasarımda BUMPER ZONE'un kaç inch'i doldurulmamış kalır?",
+      "answer": 0.5,
+      "tolerance": 0.01,
+      "unit": "inch",
+      "explanation": "Bumper 3.0 inch'ten başlayıp 3.5 inch yükseldiğine göre yerden 3.0 ile 6.5 inch arasını kaplar. Doldurulması gereken BUMPER ZONE ise 2.5 ile 5.75 inch arasıdır. Üst tarafta sorun yoktur; bumper 5.75'in üzerine çıkar, bu zone'un dışıdır ve doldurma şartını ihlal etmez. Alt tarafta ise 2.5 ile 3.0 arası boş kalır, yani 0.5 inch doldurulmamıştır ve tasarım kurala uymaz. Çözüm bumper'ı aşağı indirmek veya yüksekliğini artırmaktır; alt kenar en fazla 2.5 inch yükseklikte olmalıdır. Kural yalnızca zone'un tümüyle dolmasını ister, bumper'ın daha aşağı inmesini yasaklamaz. CAD tarafında bunu güvenceye almanın yolu yerden bu iki yükseklikte iki referans düzlem tanımlamak ve bumper kesitinin ikisini de tümüyle kapsadığını her tasarım değişikliğinden sonra kontrol etmektir. Şasi yüksekliği veya tekerlek çapı değiştiğinde bumper'ın yere göre konumu da değişir; düzlemler sabit kaldığı için uyumsuzluk CAD'de hemen görünür. Burada dikkat edilmesi gereken bir ayrıntı daha vardır: sezonun Rev. 0 denetim listesi bu aralığı daha dar yazar, kural metni ise geniş aralığı verir ve kural bağlayıcıdır.",
+      "hint": "Bumper yerden hangi aralığı kaplıyor ve zone'un hangi ucu açıkta kalıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R405",
+          "season": "2026",
+          "topic": "bumper'lar BUMPER ZONE'u, yani yerden 2.5in (6.35cm) ile 5.75in (14.61cm) arasındaki boşluğu tümüyle doldurmalıdır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni: \"While navigating the FIELD normally, all BUMPERS must have padding (per R402-A) supported by backing (per R402-B) entirely filling the BUMPER ZONE, a space between 2.5in (6.35cm) and 5.75in (14.61cm) from the floor.\" Rev. 0 denetim listesi bu aralığı \"between 2.75in (6.98cm) and 5.5in (13.98cm)\" olarak yazar; liste kural metninin gerisinde kaldığı için kural esas alınmıştır. FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde (frcmanual.com ve frctools.com) birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-11-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım öne uzayan bir intake ile sola uzayan bir climber tasarladı. Sürücüler bazı maçlarda ikisini aynı anda kullanmak istiyor. Her iki mekanizma da tek başına yatay uzama sınırının içinde kalıyor. Bu tasarım kurallar açısından nasıl değerlendirilir?",
+      "options": [
+        "Robotlar aynı anda birden çok yönde uzayamaz; momentary durumlar dışında ikisi birlikte dışarıda tutulamaz.",
+        "Her mekanizma kendi mesafe sınırı içinde kaldığından sorun yoktur; sınır her yön için ayrı ayrı uygulanmaktadır.",
+        "İki mekanizmanın uzama değerleri toplanır; toplam 12in değerinin altında kalıyorsa aynı anda kullanılabilirler.",
+        "Aynı anda uzama yalnızca starting configuration'da yasaktır; maç sırasında uzanılan yön sayısı sınırlanmamıştır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural yön sayısını doğrudan sınırlar: robotlar ROBOT PERIMETER'larının dışına aynı anda birden çok yönde, yani robotun birden fazla kenarının üzerinden uzayamaz. Kural bir cümle daha ekler; uzama, o kenarın izdüşümünün dışına da çıkamaz. Her iki mekanizmanın da tek başına yatay uzama sınırı içinde kalması bu maddeyi karşılamaz, çünkü sınırlanan yalnızca mesafe değil, aynı anda kaç yöne uzanıldığı ve o yönün izdüşümü içinde kalınıp kalınmadığıdır. Tasarımın kendisi yasak değildir; yasak olan ikisinin aynı anda dışarıda olmasıdır, dolayısıyla çözüm kod ve mekanizma tarafında bir kilit kurmaktır. Kural sezon içinde Team Update ile güncellenmiş ve bumper'lar, çevrenin parçası sayılmayan küçük çıkıntılar ile momentary, sonuç doğurmayan çok yönlü uzamalar için bir istisna listesi eklenmiştir; yine de sürekli çalışacak bir tasarımı momentary istisnasına dayandırmak doğru değildir. İkinci ve üçüncü şıklar kuralı yalnızca mesafe kuralı sanar ve yön şartını görmez. Dördüncü şık kuralı starting configuration'a hapseder; starting configuration kuralı zaten hiçbir yönde taşmaya izin vermez, bu madde ise maç sırası içindir. Denetim listesi de uzamayı aynı anda tek yön şartıyla birlikte sınar.",
+      "hint": "Bu kural bir mesafeyi mi, yoksa aynı anda kaç yöne uzanılabileceğini mi sınırlıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R106",
+          "season": "2026",
+          "topic": "robotlar aynı anda birden çok yönde ROBOT PERIMETER dışına uzayamaz ve uzama o kenarın izdüşümü dışına çıkamaz; Team Update 13 ile bumper'lar, küçük çıkıntılar ve momentary, sonuç doğurmayan uzamalar için istisna listesi eklenmiştir"
+        },
+        {
+          "rule": "R105",
+          "season": "2026",
+          "topic": "yatay uzama sınırı 12in (30.48cm)"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/TeamUpdates/REBUILT_TeamUpdate13.pdf",
+      "sourceNote": "Team Update 13 (24 Şubat 2026) ile yürürlükteki metin: \"ROBOTS may not extend beyond their ROBOT PERIMETER in more than one direction (i.e. over more than 1 side of the ROBOT) at a time. The extension may not reach outside the projection of that side of the ROBOT PERIMETER. For the purposes of this rule, a round or circular section of ROBOT PERIMETER is considered to have an infinite number of sides. Exceptions include:\" ve istisna listesi: \"A. BUMPERS  B. Minor protrusions excluded from the ROBOT PERIMETER per R101  C. MOMENTARY and inconsequential extensions in multiple directions\" Denetim listesi maddesi: \"Extensions - ROBOT may not extend beyond the ROBOT PERIMETER > 12in (30.48cm) <R105> and in one direction at a time <R106>...\""
+    },
+    {
+      "id": "cad-11-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım CAD'de robotun starting configuration'ını ölçtü ve 29 inch yükseklik buldu; sınırın altında. Robot imal edildi. Denetimde robotun uzamış hâli de sınandı ve elevator en üst konuma çıkarıldığında robot geri çevrildi. Takım CAD'e döndüğünde elevator'ün en üst konumunun hiç modellenmediğini fark etti.",
+      "prompt": "Ne yanlış yapıldı?",
+      "options": [
+        "Denetim yalnızca starting configuration'a bakar; bu geri çevirme hatalıdır ve maç sırasındaki yükseklik için kural yoktur.",
+        "Elevator'ün yüksekliği ağırlık sınırına bağlıdır; CAD'de kütle hesabı yapılsaydı sorun görülecekti.",
+        "Starting configuration ölçüsü yanlış alınmıştır; 29 inch değeri bumper'lar dahil edilmeden ölçülmüştür.",
+        "Toplam yükseklik için ayrı bir sınır vardır ve yalnızca kapalı hâl ölçülmüştür; uzamış hâl de modellenmeliydi."
+      ],
+      "correctIndex": 3,
+      "explanation": "Burada iki ayrı kural vardır ve takım yalnızca birini sınamıştır. Starting configuration için bir yükseklik sınırı, robotun maç sırasındaki toplam yüksekliği için ise ayrı bir sınır bulunur ve ikincisi 30.0in (76.2cm) değerini aşamaz. Kapalı hâlde 29 inch ölçmek yalnızca birinci kuralın sağlandığını gösterir; elevator yukarı çıktığında ulaşılan yükseklik hiç ölçülmemiştir. Denetim de bunu yakalar, çünkü denetim listesinde uzama ve yükseklik için ayrı bir madde bulunur ve robotun uzamış hâli ayrıca sınanır. CAD tarafında çözüm bu kursta daha önce öğrenilen yöntemdir: hareketli mekanizmanın uç konumları ayrı configuration veya context olarak modellenir ve her biri kurala karşı ayrı ayrı ölçülür. Birinci şık denetimin yalnızca kapalı hâle baktığını iddia eder; denetim listesi bunun tersini gösterir. İkinci şık yüksekliği ağırlığa bağlar. Üçüncü şık ölçüm hatası arar; oysa kapalı hâl ölçüsü doğrudur, eksik olan ikinci ölçüdür.",
+      "hint": "Kaç ayrı yükseklik sınırı var ve takım kaçını ölçtü?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R107",
+          "season": "2026",
+          "topic": "robotların toplam yüksekliği 30.0in (76.2cm) değerini aşamaz"
+        },
+        {
+          "rule": "R104",
+          "season": "2026",
+          "topic": "starting configuration'da yükseklik 30in (76.2cm) değerini aşamaz"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddeleri: \"Extensions - ROBOT may not extend beyond the ROBOT PERIMETER > 12in (30.48cm) <R105> and in one direction at a time <R106>, > 30in (76.2cm) vertically from the floor <R107>...\" ve \"Starting Volume - ROBOT PERIMETER ≤ 110in (2.794m), height ≤ 30in (76.2cm). <R104>\" Kural metni aynadan: \"ROBOTS may not extend such that their total height exceeds 30.0in (76.2cm).\" FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde (frcmanual.com ve frctools.com) birebir aynı olarak doğrulandı."
+    },
+    {
+      "id": "cad-11-d8",
+      "type": "diagnose",
+      "symptom": "Bir takım battery'yi kolay değiştirmek için şasinin arka kenarını menteşeli bir kapak olarak tasarladı. Kapak, bumper'ların dayandığı yükseklikte şasinin arka yüzünü oluşturuyor ve içeri doğru açılıyor. Kapak kapalıyken şasi tam bir dikdörtgen ve bütün ölçüler sınırların içinde. CAD'de kapak yalnızca kapalı konumda modellendi ve tasarım incelemesinde hiçbir ölçü ihlali bulunamadı. Denetimde robot geri çevrildi.",
+      "prompt": "Neden geri çevrildi?",
+      "options": [
+        "Kapak açıldığında robot yatay uzama sınırını aşıyordur; içeri açılan kapaklar da uzama olarak sayılır.",
+        "Battery'ye erişim için ayrı bir kural vardır; battery'nin şasi içinden çıkarılabilmesi gerekir.",
+        "ROBOT PERIMETER sabit ve non-articulated elemanlardan oluşmalıdır; menteşeli bir kenar bunu sağlamaz.",
+        "Kapak kapalıyken ölçüldüğü için ölçüler doğrudur; sorun kapağın ağırlığının hesaba katılmamasıdır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Bu, CAD'in doğası gereği gösteremediği bir ihlaldir ve bu yüzden tehlikelidir. Kural robotun, bumper'lar hariç, BUMPER ZONE içinde ve starting configuration'da belirlenen, sabit ve non-articulated yapısal elemanlardan oluşan bir ROBOT PERIMETER'ı olmasını ister. Çevrenin nasıl bulunduğunu da tarif eder; bir ip robotun bumper bölgesindeki en dış parçalarının çevresine sarılıp gerilir. Kapak tam olarak o yükseklikte arka yüzü oluşturduğuna göre çevrenin parçasıdır ve menteşeli bir kenar tanımı gereği articulated'dır. Kapalıyken hiçbir ölçüyü ihlal etmese de çevrenin kendisi kural dışıdır; tasarım incelemesinde hiçbir ölçü ihlali bulunamaması da bundandır, çünkü ihlal bir sayıda değil bir yapı kararındadır. Kural yalnızca 0.25in (0.64cm) değerini aşmayan küçük çıkıntıları çevrenin parçası saymaz ve hareketli bir kenara izin veren bir madde yoktur. Doğru yol, battery erişimini çevrenin kendisini hareketlendirmeden çözmektir; üstten erişim, kayar bir taşıyıcı veya bumper bölgesinin üzerinde kalan bir kapak bunun yollarıdır. Birinci şık ihlali uzama kuralına bağlar; oysa kapak içeri açılıyor ve dışarı hiç taşmıyor. İkinci şık kaynakta olmayan bir erişim kuralı uydurur. Dördüncü şık sorunu ağırlığa bağlar ve tasarımın esas kusurunu ıskalar.",
+      "hint": "İhlal bir ölçüde mi, yoksa çevrenin nasıl kurulduğunda mı?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R101",
+          "season": "2026",
+          "topic": "robot, bumper'lar hariç, BUMPER ZONE içinde ve starting configuration'da belirlenen sabit ve non-articulated yapısal elemanlardan oluşan bir ROBOT PERIMETER'a sahip olmalıdır; 0.25in (0.64cm) değerini aşmayan küçük çıkıntılar çevrenin parçası sayılmaz"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni: \"The ROBOT (excluding BUMPERS) must have a ROBOT PERIMETER, contained within the BUMPER ZONE and established while in the ROBOT'S STARTING CONFIGURATION, that is comprised of fixed, non-articulated structural elements of the ROBOT. Minor protrusions no greater than 0.25in (0.64cm) such as bolt heads, fastener ends, weld beads, and rivets are not considered part of the ROBOT PERIMETER.\" Çevrenin ip ile belirlenmesi: \"To determine the ROBOT PERIMETER, wrap a piece of string around the outer most parts of the ROBOT (excluding BUMPERS) at the BUMPER ZONE described in R405 and pull it taut.\" Denetim listesi maddesi: \"ROBOT PERIMETER - Perimeter must be non-articulated. Minor protrusions ≤ 0.25 in (0.64cm) OK. <R101>\" FIRST'in kendi Section 8 metni doğrudan alınamıyor; resmi HTML manual Section 6.8'de kesiliyor. Kural metni iki bağımsız ayna üzerinde (frcmanual.com ve frctools.com) birebir aynı olarak doğrulandı."
+    }
+  ]
+}

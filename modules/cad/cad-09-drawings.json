@@ -1,0 +1,289 @@
+{
+  "id": "cad-09-drawings",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 9,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-01",
+  "imageRef": null,
+  "title": "Drawing: Teknik Resim ve Güncelleme",
+  "summary": "Drawing template seçimini, view'ları, drawing'in ne zaman ve nasıl güncellendiğini, kırmızı dangling ölçüleri ve altı çizili overridden ölçülerin taşıdığı riski öğretir.",
+  "prerequisites": [
+    "cad-08-versions-branches"
+  ],
+  "estimatedMinutes": 40,
+  "concept": {
+    "body": "Drawing, bir part'ın veya assembly'nin imalata gidecek teknik resmidir. Drawing oluşturulurken bir template seçilmesi zorunludur; template drawing'in başlangıç system variable değerlerini, sheet boyutunu, border'ını, birimlerini ve standardını belirler. Kaynak template listesini standartlara göre ayırır: ANSI template'leri drawing'i third angle view projection ile inch veya millimeter dimension birimlerine göre kurar, ISO template'leri ise first angle view projection ve millimeter dimension birimlerine göre kurar. JIS template'leri de listelenir, ancak kaynak bunlar için projection veya birim notu vermez. Doğru template ile başlamak, sayfayı baştan atölyenin okuduğu standarda oturtur.\n\nBir drawing hem view'suz hem de dört standart view ile oluşturulabilir: top, front, right ve isometric. Projection tipi genellikle seçilen standarda bağlıdır.\n\nBir drawing'in altındaki Part Studio veya assembly değiştiğinde drawing'in güncellenmesi gerekebilir. Etkin update simgesi bunu bildirir; simge soluksa güncelleme gerekmiyor demektir. Kaynak önemli bir uyarı ekler: bu durumu tetikleyen değişiklikler, bir sketch ölçüsünü kaydırmak veya bir construction plane'i gizlemek gibi önemsiz görünen şeyler olabilir. Update işlemi yalnızca drawing view'larını tazeler; drawing veya document'taki başka hiçbir şeyi güncellemez ve başka document'lardaki bağlantıların güncelliğini kontrol etmez. Kaynak ayrıca bir drawing üzerinde güncelleme yapmadan da çalışılabileceğini belirtir.\n\nİki ölçü durumu ayırt edilmelidir. Dangling ölçü, associativity'si kopmuş ölçüdür ve kırmızı görünür; snap point'leri sürüklenerek geometriye yeniden bağlanır. Overridden ölçü ise değeri elle yazılmış ölçüdür; metni her zaman altı çizili görünür ve teknik resimde altı çizili değer ölçeğe uygun olmadığını bildirir. Değer alanındaki karakterler silinip panelden çıkıldığında ölçü yeniden associative hâle gelir.",
+    "keyTerms": [
+      {
+        "term": "drawing",
+        "glossTr": "imalata giden teknik resim tab'i"
+      },
+      {
+        "term": "template",
+        "glossTr": "drawing'in boyut, birim ve standardını belirleyen başlangıç dosyası"
+      },
+      {
+        "term": "third angle projection",
+        "glossTr": "ANSI template'lerinin kullandığı görünüş yerleşimi"
+      },
+      {
+        "term": "first angle projection",
+        "glossTr": "ISO template'lerinin kullandığı görünüş yerleşimi"
+      },
+      {
+        "term": "view",
+        "glossTr": "drawing sayfasına yerleştirilen görünüş"
+      },
+      {
+        "term": "dangling",
+        "glossTr": "geometriyle bağı kopmuş, kırmızı görünen ölçü"
+      },
+      {
+        "term": "overridden",
+        "glossTr": "değeri elle yazılmış, altı çizili görünen ölçü"
+      },
+      {
+        "term": "associativity",
+        "glossTr": "bir ölçünün model geometrisine bağlı kalması"
+      },
+      {
+        "term": "revision",
+        "glossTr": "yayımlanmış ve sabitlenmiş bir sürüm kaydı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-09-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "DRAWING",
+      "front": "Drawing kendi kendine tazelenmez; bunu yalnızca bir simge bildirir.",
+      "back": "Drawing, bir part'ın veya assembly'nin imalata gidecek teknik resmidir. Altındaki Part Studio veya assembly değiştiğinde drawing'in güncellenmesi gerekebilir ve bunu etkin update simgesi bildirir; simge soluksa güncelleme gerekmiyor demektir. Kaynak buraya önemli bir uyarı ekler: bu durumu tetikleyen değişiklikler, bir sketch ölçüsünü kaydırmak veya bir construction plane'i gizlemek gibi önemsiz görünen şeyler olabilir. Yani part'ın şekli, ölçüsü ve kütlesi gözle aynı görünürken de simge etkinleşebilir; takımın hafızası burada bir kanıt değildir. Simgenin neden etkin olduğunu anlamak için document'ın History kaydındaki son değişiklikler incelenir. İkinci bir davranış daha vardır: bir drawing güncel değilken yeni bir view eklenirse güncelleme kendiliğinden gerçekleşir ve sayfadaki bütün view'lar yeniden çizilir.",
+      "takeaway": "Etkin simge gördüğünüzde hafızaya değil History'ye bakın, sonra update çalıştırın",
+      "tags": [
+        "drawing",
+        "update simgesi",
+        "History"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-09-d2",
+        "cad-09-d7"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-09-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "DRAWING",
+      "front": "Update neyi tazeler, neyi tazelemez ve bir resim nasıl dondurulur?",
+      "back": "Update işlemi yalnızca drawing view'larını tazeler; drawing veya document'taki başka hiçbir şeyi güncellemez ve başka document'lardaki bağlantıların güncelliğini kontrol etmez. Bu yüzden dış referanslı bir part kullanan bir takımda update sonrası kırmızı ölçü görmemek, o dış referansın güncel olduğunu göstermez; referans ayrıca ele alınmalıdır. Kaynak iki işlem daha verir ve bunlar birbirine karıştırılmamalıdır. Document'ta bir version oluşturmak update düğmesinin vurgulanmasını engeller, drawing'i o andaki hâlinde dondurur ve Released olarak işaretlenmesine imkân verir. Drawing tab'ine sağ tıklanıp Change to version seçilmesi ise drawing'in workspace part'ları yerine belirli bir version veya revision'a referans vermesini sağlar; bu, performansı belirgin biçimde iyileştirir ve ileride güncelleme yapmaya engel olmaz.",
+      "takeaway": "Dondurmak için document'ı version'layın, hızlandırmak için drawing'i bir version'a referanslayın",
+      "tags": [
+        "update",
+        "version",
+        "Change to version"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-09-d4",
+        "cad-09-d6"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-09-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "DRAWING",
+      "front": "Sayfada tek bir hata yoktu; parça yine de 3 mm yanlış çıktı.",
+      "back": "İki ölçü durumu ayırt edilmelidir. Dangling ölçü, associativity'si kopmuş ölçüdür ve kırmızı görünür; snap point'leri sürüklenerek geometriye yeniden bağlanır. Overridden ölçü ise değeri elle yazılmış ölçüdür. Bir ölçünün değerini düzenlemek onu overridden hâle getirir, metin associativity'si olmayan bir annotation'a döner ve metni her zaman altı çizili görünür. Sahadaki bedeli şudur: update simgesi soluk, sayfada kırmızı hiçbir şey yok ve hata da yokken, altı çizili bir ölçü modelden değil o elle yazılan metinden gelen bir sayı taşır; atölye tam olarak o sayıya göre imal eder ve parça modelden farklı çıkar. Kaynak işaretin anlamını da verir: teknik resimde altı çizili bir değer, o değerin ölçeğe uygun olmadığını bildirir. Düzeltme yolu da yazılıdır; değer alanındaki karakterler silinip panelden çıkıldığında ölçü yeniden associative olur.",
+      "takeaway": "İmalata giden her drawing'de hem kırmızı hem altı çizili ölçü taraması yapın",
+      "tags": [
+        "dangling",
+        "overridden",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-09-d8",
+        "cad-09-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-09-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım şasi plakasının teknik resmini yerel bir atölyeye gönderecek. Atölye inch cinsinden ölçü okuyor ve görünüşleri third angle projection'a göre yorumluyor. Drawing oluşturulurken hangi seçim yapılmalıdır ve neden?",
+      "options": [
+        "ISO template seçilmelidir; ISO template'leri hem inch hem millimeter destekler ve projection tipi sonradan ayarlanır.",
+        "Template seçimi önemli değildir; drawing template'siz de oluşturulabilir ve standart sonradan kendiliğinden atanır.",
+        "ANSI template seçilmelidir; ANSI template'leri third angle view projection ile inch veya millimeter birimlerine göre kurar.",
+        "JIS template seçilmelidir; JIS third angle kullanır ve inch birimi yalnızca bu standartta bulunur."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak template listesini standartlara göre ayırır ve iki tanesinin ne yaptığını açıkça yazar. ANSI template'leri drawing'i third angle view projection ile inch veya millimeter dimension birimlerine göre kurar. ISO template'leri ise first angle view projection ve millimeter dimension birimlerine göre kurar. Atölyenin beklentisi third angle olduğuna göre standart ANSI'dir; birim beklentisi inch olduğu için de inch birimli bir ANSI template'i seçilir. Birinci şık ISO'ya kaynakta olmayan bir esneklik yükler; ISO first angle ve millimeter demektir. İkinci şık template'in atlanabileceğini iddia eder; oysa kaynak template'in drawing oluşturulurken belirtilmesinin zorunlu olduğunu ve başlangıç system variable değerlerini, sheet boyutunu, border'ını, birimlerini ve standardını belirlediğini söyler. Dördüncü şık JIS'e kaynakta yazmayan özellikler atfeder; kaynak JIS template'lerini listeler ama projection veya birim notu vermez. Buradaki asıl risk şudur: yanlış projection ile basılmış bir resimde görünüşler doğru çizilmiş olsa bile yanlış kenarlardan okunur ve parça ters imal edilir.",
+      "hint": "Kaynak hangi standardın third angle, hangisinin first angle kullandığını yazıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/drawings-create.htm"
+    },
+    {
+      "id": "cad-09-d2",
+      "type": "diagnose",
+      "symptom": "Bir takımın drawing tab'inde update simgesi etkin görünüyor. Takım hiç kimsenin part'ı değiştirmediğini söylüyor; part'ın şekli ve ölçüleri gözle aynı, kütlesi de aynı görünüyor. Drawing'de hiçbir kırmızı ölçü ve hiçbir hata yok.",
+      "prompt": "Simge neden etkin ve takım ne yapmalıdır?",
+      "options": [
+        "Part Studio'da görünüşte önemsiz bir değişiklik yapılmış olabilir; History incelenip update çalıştırılmalıdır.",
+        "Simge her oturum açılışında etkin gelir; bir kez update çalıştırıldıktan sonra oturum boyunca soluk kalır.",
+        "Drawing template'i güncellenmiştir; template yeni sürümüne alınmadan simge etkin kalmaya devam eder.",
+        "Drawing başka bir document'a bağlıdır; o document değiştiğinde simge etkinleşir ve update ile bağ tazelenir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak bu belirtiyi doğrudan öngörür. Etkin update simgesi güncelleme gerektiğini, soluk simge gerekmediğini bildirir. Hemen ardından şu uyarı gelir: bu durumu tetikleyen değişiklikler, bir sketch ölçüsünü kaydırmak veya bir construction plane'i gizlemek gibi önemsiz görünen şeyler olabilir. Yani part'ın gözle görünen hiçbir özelliği değişmeden simge etkinleşebilir ve takımın hafızası burada güvenilir bir kanıt değildir. Kaynak yöntemi de verir: simgenin neden etkin olduğunu anlamak için document'ın History kaydındaki son değişiklikler incelenir. İkinci şık kaynakta karşılığı olmayan bir oturum davranışı uydurur. Üçüncü şık template'i canlı bir bağ sanır; template drawing oluşturulurken belirlenir ve sonradan simgeyi etkinleştiren şey değildir. Dördüncü şık tam tersini iddia eder; kaynak update işleminin yalnızca drawing view'larını tazelediğini ve başka document'lardaki bağlantıların güncelliğini kontrol etmediğini söyler.",
+      "hint": "Simgeyi tetikleyen değişiklik ne kadar küçük olabilir? Kaynak nereye bakmayı öneriyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm"
+    },
+    {
+      "id": "cad-09-d3",
+      "type": "multiple_choice",
+      "prompt": "Bir takım drawing'i atölyeye gönderdi ve bu resmin bir daha kendiliğinden değişmemesini istiyor. Aynı zamanda tasarım sezon boyunca gelişmeye devam edecek. Kaynağa göre ne yapılmalıdır?",
+      "options": [
+        "Drawing tab'i silinmeli ve atölyeye giden PDF tek kayıt olarak saklanmalıdır; başka bir dondurma yolu yoktur.",
+        "Document'ta bir version oluşturulmalıdır; bu, update simgesinin vurgulanmasını engeller ve drawing'i dondurur.",
+        "Drawing template'i değiştirilmelidir; template değişmedikçe drawing güncellenmez ve resim olduğu gibi kalır.",
+        "Drawing'deki bütün ölçüler overridden hâle getirilmelidir; elle yazılmış değerler modeldeki değişimden etkilenmez."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak bu işi tek cümleyle tanımlar: bir document'ı version'lamak, update düğmesinin vurgulanmasını engeller, drawing'i o andaki hâlinde dondurur ve Released olarak işaretlenmesine imkân verir. Bu, önceki modülde öğrenilen version kavramının drawing tarafındaki karşılığıdır. Version'ların immutable olduğu bilgisi o modülün kaynağından gelir ve iki bilgi birleştiğinde sonuç açıktır: o resim bir daha değişmez, tasarım ise workspace'te gelişmeye devam eder. Birinci şık drawing tab'ini silmeyi önerir ve document içindeki izlenebilirliği yok eder. Üçüncü şık template'e canlı bir denetim gücü atfeder; template yalnızca drawing oluşturulurken belirlenen başlangıç ayarlarını verir. Dördüncü şık en tehlikelisidir; ölçüleri elle yazmak onları overridden hâle getirir, metinleri altı çizili görünür ve altı çizili değer teknik resimde ölçeğe uygun olmadığını bildirir. Yani dondurmak yerine resmi güvenilmez hâle getirir.",
+      "hint": "Bir hâli kalıcı olarak dondurmak için Onshape'te hangi kayıt türü kullanılıyordu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm"
+    },
+    {
+      "id": "cad-09-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş adımın dördü planlandığı gibi sonuç verir. Vermeyecek olanı seçiniz.",
+      "scenario": "Bir takım imalata göndermeden önce drawing'i güncelleme ve kontrol etme planını yazıyor.",
+      "elements": [
+        "Update simgesinin etkin olup olmadığına bakar, etkinse History'den son değişiklikleri incelerler.",
+        "Dış bir document'tan gelen part için update çalıştırır, kırmızı ölçü görmeyince o dış referansı da güncel sayarlar.",
+        "Update sonrası tarayıcıyı yenileyip drawing'in baştan yeniden oluşturulmasını beklerler, sonra sayfayı incelerler.",
+        "Update sonrası kırmızı görünen ölçü olup olmadığını kontrol eder, varsa snap point'lerini yeniden bağlarlar.",
+        "Resmi atölyeye göndermeden önce document'ta bir version oluşturup drawing'i o hâlde dondururlar."
+      ],
+      "faultIndex": 1,
+      "explanation": "İkinci adım kaynağın açık bir sınırına takılır: update işlemi yalnızca drawing view'larını tazeler ve başka document'lardaki bağlantıların güncelliğini kontrol etmez. Kırmızı ölçü görmemek dış referansın güncel olduğunu göstermez, çünkü update o referansa hiç bakmamıştır. Bir takım dış referanslı bir part kullanıyorsa, drawing'i update etmek o referansın güncel olduğunu göstermez ve referans ayrıca ele alınmalıdır. Diğer dört adım kaynakla uyumludur: etkin simge güncelleme gerektiğini bildirir ve nedenini anlamak için History incelenir; update sonrası tarayıcı yenilenerek drawing yeniden oluşturulur; update bazen ölçüleri kırmızı, yani dangling hâle getirebilir ve bunlar snap point'leri sürüklenerek geometriye yeniden bağlanır; document'ı version'lamak update düğmesinin vurgulanmasını engeller ve drawing'i dondurur.",
+      "hint": "Update tam olarak neyi tazeliyor? Kaynak neyi kontrol etmediğini açıkça yazıyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm"
+    },
+    {
+      "id": "cad-09-d5",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci drawing'i update etti. Görünüşler yeni geometriyi doğru gösteriyor, ancak üç ölçü kırmızı görünüyor. Bu üç ölçü, update öncesi silinmiş bir delik grubunun kenarlarına verilmişti. Drawing'de başka hata yok.",
+      "prompt": "Bu üç ölçü ne durumdadır ve nasıl düzeltilir?",
+      "options": [
+        "Ölçüler overridden hâle gelmiştir; değer alanındaki karakterler silinerek associativity geri kazandırılır.",
+        "Ölçüler ölçek dışıdır; view scale değeri düzeltildiğinde kırmızı renk kendiliğinden kalkar.",
+        "Ölçüler template ile uyumsuzdur; drawing yeni bir template'e taşındığında renk normale döner.",
+        "Ölçüler dangling hâle gelmiştir; snap point'leri sürüklenerek mevcut geometriye yeniden bağlanır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak bu durumu adıyla tanımlar: dangling ölçü, associativity'si kopmuş ölçüdür ve kırmızı görünür. Çözümü de aynı yerde verir; snap point'ler sürüklenerek ölçü geometriye yeniden bağlanır. Belirtideki neden de tutarlıdır, çünkü ölçülerin bağlı olduğu kenarlar silinmiştir ve update sonrası bağlanacak geometri kalmamıştır. Update sayfası da bunu ayrıca belirtir: update sonrası bir ölçü kırmızı görünebilir, çünkü dangling veya kopmuş olabilir. Birinci şık overridden ölçüyle karıştırır; overridden ölçü kırmızı değil, altı çizili görünür ve sebebi değerin elle yazılmasıdır. İkinci şık ölçek ile renk arasında kaynakta bulunmayan bir bağ kurar. Üçüncü şık template'i sorumlu tutar; template drawing'in başlangıç ayarlarını belirler, tek tek ölçülerin associativity'siyle ilgisi yoktur. Buradaki asıl alışkanlık şudur: her update'ten sonra kırmızı ölçü taraması yapılır, çünkü kırmızı ölçü sessizce eski bir değeri gösterebilir.",
+      "hint": "Ölçülerin bağlı olduğu kenarlar silinmiş. Kaynak bu durumdaki ölçüye hangi adı veriyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/drawings-dimensions.htm",
+      "sourceNote": "Update sonrası ölçülerin kırmızı görünebileceği bilgisi https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm sayfasından alınmıştır."
+    },
+    {
+      "id": "cad-09-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takımın drawing'i açılırken ve her işlemde belirgin biçimde yavaşlıyor. Drawing, workspace'teki part'lara referans veriyor. Takım ileride drawing'i güncelleyebilmeyi de sürdürmek istiyor. Kaynağa göre ne önerilir?",
+      "options": [
+        "Drawing'deki view sayısı azaltılmalıdır; performans yalnızca sayfadaki view sayısına bağlıdır.",
+        "Drawing tab'ine sağ tıklanıp Change to version ile bir version veya revision referansına geçilmelidir.",
+        "Drawing ayrı bir document'a taşınmalıdır; aynı document içindeki drawing'ler her zaman daha yavaş çalışır.",
+        "Document'ta bir version oluşturulmalıdır; version alındıktan sonra drawing hızlanır ve güncelleme gereksinimi ortadan kalkar."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak performans için doğrudan bir öneri verir: drawing'ler workspace part'ları yerine version veya revision referans aldığında performans belirgin biçimde iyileşir. Yöntemi de yazar; drawing tab'ine sağ tıklanır ve Change to version seçilerek belirli bir version veya revision referans alınır. Takımın ikinci isteği de karşılanır, çünkü kaynak version veya revision kullanmaktan gelen performans kazancının ileride güncelleme yapmaya engel olmadığını belirtir. Birinci şık performansı tek bir sebebe indirger; kaynak yavaşlığın referans türüyle ilişkisini açıkça kurar. Üçüncü şık document ayrımıyla performans arasında kaynakta bulunmayan bir bağ kurar. Dördüncü şık iki ayrı işlemi karıştırır: document'ı version'lamak drawing'i o hâlde dondurur ve update düğmesinin vurgulanmasını engeller, yani takımın ileride güncelleme yapma isteğini karşılamaz. Aranan şey drawing'in version'lanması değil, drawing'in bir version'a referans vermesidir.",
+      "hint": "Drawing neye referans veriyor ve kaynak hangi referans türünün daha hızlı olduğunu söylüyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm"
+    },
+    {
+      "id": "cad-09-d7",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci güncel olmayan bir drawing'e yeni bir section view eklemek istiyor. Update simgesi etkin, ancak öğrenci update çalıştırmadan doğrudan view ekliyor. View eklendikten sonra sayfadaki eski view'ların da yeni geometriye göre değiştiğini ve iki ölçünün kırmızıya döndüğünü fark ediyor.",
+      "prompt": "Neden bütün sayfa değişti?",
+      "options": [
+        "Section view eklemek bütün drawing'i yeniden oluşturur; bu, yalnızca section view'a özgü bir davranıştır.",
+        "Öğrenci farkında olmadan update simgesine tıklamıştır; view ekleme işlemi tek başına hiçbir view'ı değiştirmez.",
+        "Kaynağa göre güncel olmayan bir drawing'e yeni bir view eklendiğinde güncelleme kendiliğinden gerçekleşir.",
+        "Drawing bir version referansına geçmiştir; version referansına geçen drawing'ler bir kez tümden yeniden çizilir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak bu davranışı tek cümleyle verir: bir drawing güncel değilken yeni bir view eklenirse güncelleme kendiliğinden gerçekleşir. Yani öğrenci update düğmesine hiç dokunmamış olsa da, view ekleme işlemi bekleyen güncellemeyi tetiklemiştir ve sayfadaki bütün view'lar yeni geometriye göre yeniden çizilmiştir. İki ölçünün kırmızıya dönmesi de bu güncellemenin sonucudur; kaynak update işleminin bazen ölçüleri dangling hâle getirebileceğini belirtir. Pratikte bunun anlamı şudur: güncel olmayan bir drawing'de yapılan masum görünen bir ekleme, kontrol edilmemiş bir güncellemeyi de beraberinde getirir, dolayısıyla önce update çalıştırıp sonucu incelemek daha güvenlidir. Birinci şık davranışı section view'a özgü sanır; kaynak view türü ayrımı yapmaz. İkinci şık öğrencinin yanlışlıkla tıkladığını varsayar ve kaynağın açıkça yazdığı kendiliğinden güncelleme davranışını yok sayar. Dördüncü şık version referansına geçişle ilgili kaynakta bulunmayan bir davranış uydurur.",
+      "hint": "Drawing güncel değilken bir view eklenirse kaynak ne olacağını söylüyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Drawing/updating_a_drawing.htm"
+    },
+    {
+      "id": "cad-09-d8",
+      "type": "diagnose",
+      "symptom": "Atölyeden gelen bracket'ın delik aralığı 3 mm yanlış. Drawing açıldığında ilgili ölçü tek bir değer gösteriyor, kırmızı değil, ancak metninin altı çizili. Atölye tam olarak o değere göre imal etmiş. Part Studio'daki geometri ölçülünce drawing'de yazan değerden 3 mm farklı çıkıyor. Update simgesi soluk ve drawing'de hiçbir hata yok.",
+      "prompt": "Ne oldu?",
+      "options": [
+        "Ölçü dangling'dir; kırmızı görünmemesinin sebebi drawing'in güncel olmasıdır ve yeniden bağlanması gerekir.",
+        "View scale yanlış ayarlanmıştır; ölçü değerleri scale ile çarpıldığı için sayfada farklı bir değer görünmektedir.",
+        "Part Studio ile drawing farklı version'lara bakmaktadır; drawing güncellendiğinde değer kendiliğinden düzelecektir.",
+        "Ölçü overridden hâle getirilmiştir; değeri elle yazıldığı için altı çizilidir ve artık geometriyi izlememektedir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Belirtideki tek ayırt edici işaret altı çizili metindir ve kaynak bunu adıyla tanımlar. Overridden ölçü, metin değeri associativity'si olmayan bir annotation'a dönüştürülmüş ölçüdür ve metni her zaman altı çizilidir. Kaynak sebebini de yazar: bir ölçünün değerini düzenlemek, o ölçüyü overridden hâle getirir. Yani birisi bir noktada ölçünün üzerine bir değer yazmıştır ve o günden beri sayfada duran sayı modelden değil, o yazıdan gelmektedir. Atölye de yazan değere göre imal ettiği için parça modelden 3 mm farklı çıkmıştır. Kaynak bu işaretin teknik resimdeki anlamını da verir: altı çizili değer, değerin ölçeğe uygun olmadığını bildirir. Birinci şık dangling ile karıştırır; dangling ölçü kırmızı görünür, altı çizili değil. İkinci şık scale ile ölçü değeri arasında yanlış bir bağ kurar. Üçüncü şık version farkına bağlar; bir version farkı sayfada altı çizili bir metin üretmez, çünkü altı çizili metin yalnızca overridden ölçünün işaretidir. Düzeltme yolu kaynakta yazılıdır: değer alanındaki karakterler silinip panelden çıkıldığında associativity geri kazanılır. Uygulama alışkanlığı olarak, imalata giden her drawing'de altı çizili ölçü taraması yapılır.",
+      "hint": "Kırmızı değil, altı çizili. Kaynak altı çizili bir ölçü metninin ne anlama geldiğini yazıyor.",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/drawings-dimensions.htm"
+    }
+  ]
+}

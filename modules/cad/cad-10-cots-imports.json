@@ -1,0 +1,306 @@
+{
+  "id": "cad-10-cots-imports",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 10,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-01",
+  "imageRef": null,
+  "title": "COTS Parçalar, Import ve Linked Document",
+  "summary": "Satın alınmış parçaları başka bir document'tan bağlamayı, referansların ne zaman güncellendiğini, pin ve Update all'ın etkisini, import edilmiş geometrinin parametric history taşımadığını öğretir.",
+  "prerequisites": [
+    "cad-09-drawings"
+  ],
+  "estimatedMinutes": 40,
+  "concept": {
+    "body": "FRC'de robotun büyük bölümü satın alınmış COTS parçalardan oluşur. Bunları CAD'e almanın iki yolu vardır ve ikisi çok farklı davranır.\n\nBirincisi linked document'tır. Kaynağın ifadesiyle bir Onshape document'ının bir version'ındaki part veya assembly, başka bir Onshape document'ındaki assembly'ye insert edilebilir ve böylece iki document birbirine bağlanır. Insert dialog'unda Other documents seçilir. Başka bir document'a verilen referans bir version'a, bazı durumlarda bir revision'a verilir; seçilen document'ın hiç version'ı yoksa veya version oluşturacak edit izniniz yoksa Onshape bir bildirim gösterir. Başkasının sizin document'ınıza bağlanabilmesi için document en az Read/Copy/Export izniyle paylaşılmalıdır. Paylaşım kaldırılırsa kullanıcı yalnızca yeni version'a geçmekten ve yeni bağ kurmaktan alıkonur; kurulmuş bağlar çalışmaya devam eder.\n\nAradaki fark önemlidir: part değişiklikleri aynı document içindeki assembly'lere anında yansır, ama başka document'a verilen referans bir version'a bağlıdır ve ne zaman güncelleneceğine siz karar verirsiniz. Kaynak, referans edilen tab'de daha yeni bir version'da düzenleme varsa linked icon'un çevresinde mavi bir arka plan belirdiğini söyler. Update all düğmesi recursive bir güncelleme yapar; kaynağın uyarısı şudur: Update all kullanıldığında, güncelliğini yitirmemiş olanlar dahil bütün version'lar en son version'a çekilir. Ayrıca gerekli version'ları kendisi oluşturur. Bir nesneyi bu süpürmeden korumak için referans pin edilir; pin edilmiş nesnede yeni version varken mavi arka planın yerini açık gri bir daire alır.\n\nİkinci yol dosya import etmektir. Import edilen geometri parametric history taşımaz; bu yüzden Delete face gibi direct editing araçlarına ihtiyaç duyulabilir. Kaynak, mesh vertex seçimlerinin parametric olmadığını ve mesh vertex'leriyle ilişkilendirilmediğini, bunun yerine yalnızca konumlarının kaydedildiğini belirtir. Import güncellemesi de anında yayılmanın istisnasıdır: yalnızca Part Studio güncellenir.",
+    "keyTerms": [
+      {
+        "term": "COTS",
+        "glossTr": "hazır satın alınan, takımın üretmediği parça"
+      },
+      {
+        "term": "linked document",
+        "glossTr": "başka bir document'ın version'ına referans veren document"
+      },
+      {
+        "term": "Other documents",
+        "glossTr": "Insert dialog'unda başka document'tan ekleme seçeneği"
+      },
+      {
+        "term": "reference",
+        "glossTr": "bir version'daki veriye verilen bağ"
+      },
+      {
+        "term": "Update all",
+        "glossTr": "bütün referansları en son version'a çeken komut"
+      },
+      {
+        "term": "pin reference",
+        "glossTr": "bir referansı Update all'dan muaf tutma"
+      },
+      {
+        "term": "Reference manager",
+        "glossTr": "referansların tek tek yönetildiği panel"
+      },
+      {
+        "term": "import",
+        "glossTr": "dış bir CAD dosyasını Onshape'e alma işlemi"
+      },
+      {
+        "term": "parametric history",
+        "glossTr": "geometriyi üreten feature kaydı"
+      },
+      {
+        "term": "direct editing",
+        "glossTr": "feature geçmişi olmadan geometriyi doğrudan değiştirme"
+      },
+      {
+        "term": "mesh",
+        "glossTr": "yüzeyi üçgenlerle tanımlanan faceted geometri"
+      },
+      {
+        "term": "revision",
+        "glossTr": "yayımlanmış ve sabitlenmiş bir sürüm kaydı"
+      },
+      {
+        "term": "Selective update",
+        "glossTr": "Reference manager'da tek tek nesne güncelleme filtresi"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-10-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "COTS",
+      "front": "Aynı document'taki değişiklik anında gelir, başka document'tan gelen gelmez.",
+      "back": "Kaynak iki davranışı ayrı ayrı yazar. Aynı document içinde part'lardaki değişiklikler assembly'lere anında yansır. Buna karşılık bir Onshape document'ının bir version'ındaki part veya assembly başka bir document'ın assembly'sine insert edildiğinde iki document birbirine bağlanır ve bu referans bir version'a verilir; version immutable olduğu için referans o hâlde durur ve tedarikçi yeni bir version çıkardığında geometri kendiliğinden değişmez. Güncelleme kararı size kalır. Kaynak bunu bir haber mekanizmasıyla tamamlar: referans edilen tab'de daha yeni bir version'da düzenleme varsa linked icon'un çevresinde mavi bir arka plan belirir. Kaynak bu yolun, tasarımlar olgunlaştıkça farklı izin ve version denetimi uygulamak istediğinizde özellikle değerli olduğunu söyler.",
+      "takeaway": "Bir parça başka document'tan geliyorsa değişikliğin kendiliğinden gelmesini beklemeyin; güncelleme kararını siz verirsiniz",
+      "tags": [
+        "linked document",
+        "version",
+        "reference"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-10-d3",
+        "cad-10-d1"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-10-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "COTS",
+      "front": "Update all düğmesine basıldığında tam olarak ne olur?",
+      "back": "Kaynak bu komutun kapsamını üç cümleyle verir. Update all recursive bir güncelleme yapar. Update all kullanıldığında, güncelliğini yitirmemiş olanlar dahil bütün version'lar en son version'a çekilir; yani komut yalnızca geride kalmış referansları değil hepsini süpürür. Üstelik bu güncellemeyi yapabilmek için gerektiğinde version'ları kendiliğinden oluşturur. Bir nesneyi bu süpürmeden korumanın yolu referansı pin etmektir; pin edilmiş bir referans Update all komutuyla güncellenmekten muaftır. Pin edilmiş nesnede daha yeni bir version varken simgedeki mavi arka planın yerini açık gri bir daire alır. Üst seviye instance pin edilmişse Update all düğmesiyle ve Reference manager ile güncelleme yapabilmek için önce unpin edilmesi gerekir; pin'i kaldırmadan güncellemek gerekiyorsa simgeye tıklanıp Reference manager'ın Selective update filtresinden yalnızca o nesne güncellenir.",
+      "takeaway": "Tek bir referansı güncellemek istiyorsanız Update all'a basmayın; dokunulmaması gerekenleri pin edin veya Selective update ile yalnızca o nesneyi güncelleyin",
+      "tags": [
+        "Update all",
+        "pin reference",
+        "Reference manager"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-10-d7",
+        "cad-10-d8"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-10-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "COTS",
+      "front": "Part Studio yeni geometriyi gösteriyor, assembly eski geometriyle etkinliğe gidiyor.",
+      "back": "Import edilen geometri parametric history taşımaz; gelen şey sonucun kendisidir, onu üreten adımlar değil. Bu yüzden import edilmiş bir part'ta açıp değerini değiştirebileceğiniz bir extrude feature bulunmaz ve modellemeye devam etmek için Delete face gibi direct editing araçlarına ihtiyaç duyulabilir. İki sessiz sonuç daha vardır. Bir import güncellendiğinde kaynak sistemde part üzerinde yapılan bütün feature ve değişiklikler hedef Part Studio'da güncellenir, ancak yalnızca Part Studio güncellenir; assembly güncellemesi şu anda desteklenmez ve assembly ile bütün instance'ları ilk import'taki hâlinde kalır. Mesh tarafında da mesh vertex seçimleri parametric değildir, mesh vertex'leriyle ilişkilendirilmez ve yalnızca konumları kaydedilir; mesh taşındığında o konuma kurulan sketch eski yerinde kalır ve hiçbir hata mesajı çıkmaz.",
+      "takeaway": "Import edilmiş bir parçanın ölçüsünü assembly'den almayın; güncellemeden sonra doğru geometri yalnızca Part Studio'dadır",
+      "tags": [
+        "import",
+        "parametric history",
+        "mesh"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-10-d6",
+        "cad-10-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-10-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım tedarikçinin Onshape'te yayımladığı gearbox document'ını kendi robot assembly'sinde kullanmak istiyor. Tedarikçi parçayı geliştirmeye devam edecek. Takım bu değişikliklerin sezon ortasında kendiliğinden gelmesini istemiyor, ancak tedarikçi bir hata düzeltmesi yayımladığında bunu istedikleri anda alabilmek istiyor. Nasıl eklemelidir?",
+      "options": [
+        "Gearbox document'ı kendi document'larına kopyalanmalıdır; kopya kaynaktan tümüyle koparak bağımsız hâle gelir.",
+        "Insert dialog'unda Other documents seçilip tedarikçi document'ının bir version'ından insert edilmelidir.",
+        "Gearbox STEP olarak dışa aktarılıp kendi Part Studio'larına import edilmelidir; başka güvenli yol bulunmaz.",
+        "Gearbox'ın Part Studio'su kendi document'larına taşınmalıdır; taşınan part'lar kaynak document'ı izlemeye devam eder."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak bu işi doğrudan tanımlar: bir Onshape document'ının bir version'ındaki part veya assembly, başka bir Onshape document'ındaki assembly'ye insert edilebilir ve bu iki document'ı birbirine bağlar. Yöntemi de yazar; başka bir document'tan insert etmek için Insert dialog'unda Other documents seçilir. Takımın iki isteği birlikte ancak bu yolla karşılanır. Referans bir version'a verilir ve version'lar immutable'dır, dolayısıyla tedarikçi yeni bir version çıkardığında geometri kendiliğinden değişmez; buna karşılık yeni version'da düzenleme varsa linked icon'un çevresinde mavi bir arka plan belirir ve güncelleme kararı takıma kalır. Birinci şık kopyalamayı önerir; kopya gerçekten bağımsız olur, ama bu kez tedarikçinin hata düzeltmesini alma yolu tümüyle kapanır ve takımın ikinci isteği karşılanmaz. Üçüncü şık STEP import'u tek güvenli yol sayar; oysa import edilen geometri parametric history taşımaz ve linked document bu iş için doğrudan tasarlanmıştır. Dördüncü şık iki yönü karıştırır; kaynak bir part'ın bir document'tan diğerine taşınmasının, part'ın daha önce insert edildiği assembly'lerde bir bağ oluşturduğunu söyler, yani bağ eski document'tan yeni konuma doğrudur. Üstelik takımın tedarikçi document'ında edit izni yoktur ve oradan bir şey taşıyamaz.",
+      "hint": "Referans neye veriliyor ve o şeyin değişmezliği takıma ne kazandırıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/linking_documents.htm"
+    },
+    {
+      "id": "cad-10-d2",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci Insert dialog'unda Other documents seçti ve tedarikçinin document'ını listede buldu. Ancak part'ı seçemiyor; Onshape bir bildirim gösteriyor. Öğrenci aynı document'ı ayrı bir sekmede açtığında Versions and history panelinde yalnızca Main workspace'i görüyor ve menüdeki Create version seçeneği gri görünüyor.",
+      "prompt": "Bildirim neden çıkıyor?",
+      "options": [
+        "Document şu anda başka bir kullanıcı tarafından açık tutulmaktadır; o kullanıcı çıkınca insert mümkün olur.",
+        "Part'ın adı kendi document'larındaki bir part ile çakışmaktadır; ad değiştirilince insert edilebilir.",
+        "Insert komutu yalnızca aynı company içindeki document'lardan ekleme yapar; dış document'lar listelenir ama eklenemez.",
+        "Referans bir version'a verilir; document'ın version'ı yok ve öğrencinin version oluşturma izni de yok."
+      ],
+      "correctIndex": 3,
+      "explanation": "Belirtideki iki gözlem birlikte okunmalıdır. Versions and history panelinde yalnızca Main workspace görünüyorsa document'ta hiç version yoktur. Create version seçeneğinin gri olması ise öğrencinin o document'ta version oluşturacak edit izni bulunmadığını gösterir. Kaynak bildirimi tam olarak bu iki koşula bağlar: seçilen document'ın hiç version'ı yoksa veya version oluşturacak edit izniniz yoksa Onshape bir bildirim gösterir. Bunun sebebi linked document'ın çalışma biçimidir; referans bir version'a verilir, çünkü version'lar immutable'dır ve bu sayede bağlanan veri kararlı ve geri getirilebilir kalır. Version yoksa bağlanacak kararlı bir hedef de yoktur. Çözüm, tedarikçiden ya da document sahibinden bir version oluşturmasını istemektir. Birinci ve ikinci şıklar kaynakta karşılığı olmayan sebepler uydurur ve belirtideki iki gözlemi kullanmaz. Üçüncü şık company sınırı diye bir kural uydurur; kaynak, bağlanılabilmesi için document'ın en az Read/Copy/Export izniyle paylaşılmış olmasını yeterli izin koşulu sayar.",
+      "hint": "Panelde ne eksik ve menüde ne gri? Referans neye veriliyordu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/linking_documents.htm"
+    },
+    {
+      "id": "cad-10-d3",
+      "type": "multiple_choice",
+      "prompt": "Bir takım kendi document'ındaki bir bracket'ın kalınlığını değiştirdi ve aynı document'taki assembly'de değişikliği hemen gördü. Aynı gün tedarikçi, bağlı oldukları gearbox document'ında yeni bir version yayımladı, ancak robot assembly'de hiçbir şey değişmedi. Bu fark neden?",
+      "options": [
+        "Part değişiklikleri aynı document içindeki assembly'lere anında yansır; dış referans ise bir version'a bağlıdır.",
+        "Tedarikçinin yayımladığı version henüz işlenme sürecindedir; birkaç saat içinde robot assembly'ye kendiliğinden inecektir.",
+        "Bracket ile gearbox farklı tab türlerindedir; assembly yalnızca Part Studio kaynaklı değişiklikleri anında gösterir.",
+        "Robot assembly güncel olmayan bir version'a bakmaktadır; assembly'nin kendisi version'landığı için değişiklikleri almaz."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak iki davranışı ayrı ayrı yazar. Aynı document içinde part'lardaki değişiklikler assembly'lere anında yansır. Buna karşılık linked document, bir document'tan başka bir document'ın bir version'ındaki veriye referans kurar; version immutable olduğu için referans o hâlde durur ve yeni bir version çıktığında kendiliğinden değişmez. Kaynak bunu bir haber mekanizmasıyla tamamlar: referans edilen tab'de daha yeni bir version'da düzenleme varsa linked icon'un çevresinde mavi bir arka plan belirir ve güncelleme kararı size kalır. Kaynak bu yolun, tasarımlar olgunlaştıkça farklı izin ve version denetimi uygulamak istediğinizde özellikle değerli olduğunu söyler. İkinci şık kaynakta olmayan bir gecikmeli yayılma uydurur. Üçüncü şık farkı tab türüne bağlar; belirleyici olan tab türü değil, referansın aynı document içinde mi yoksa başka bir document'a mı verildiğidir. Dördüncü şık assembly'nin version'lanmasıyla açıklamaya çalışır ve bracket'ın neden anında güncellendiğini açıklayamaz.",
+      "hint": "İki değişiklik arasındaki tek fark ne? Aynı document mu, başka document mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/linking_documents.htm"
+    },
+    {
+      "id": "cad-10-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş adımın dördü planlandığı gibi sonuç verir. Vermeyecek olanı seçiniz.",
+      "scenario": "Bir takım tedarikçiden gelen bir STEP dosyasını ve bir linked gearbox'ı kullanma planını yazıyor.",
+      "elements": [
+        "STEP dosyasını kendi Part Studio'larına import eder, sonra parçayı robot assembly'ye insert ederler.",
+        "Import edilen part'ın bir çıkıntısını kaldırmak için Delete face gibi direct editing araçlarını kullanırlar.",
+        "Import edilen part'ın Feature list'indeki extrude feature'ını açıp derinlik değerini değiştirirler.",
+        "Gearbox'ı Insert dialog'unda Other documents ile tedarikçi document'ının bir version'ından eklerler.",
+        "Tedarikçi yeni bir version yayımladığında linked icon'un mavi arka planını görüp güncelleme kararını kendileri verirler."
+      ],
+      "faultIndex": 2,
+      "explanation": "Üçüncü adım import edilmiş geometride var olmayan bir şeyi aramaktadır. Kaynak bunu açıkça yazar: import edilen geometri parametric history taşımaz, bu yüzden import edilmiş bir tasarım üzerinde modellemeye devam etmek için Onshape'in direct editing araçlarına ihtiyaç duyulabilir. Yani STEP dosyasından gelen bir part'ta açıp değerini değiştirebileceğiniz bir extrude feature bulunmaz; gelen şey sonucun kendisidir, onu üreten adımlar değil. Diğer dört adım kaynakla uyumludur: import edilen part Part Studio'da durur ve assembly'ye eklenebilir, Delete face kaynağın verdiği direct editing örneğidir, başka document'tan ekleme Other documents ile ve bir version üzerinden yapılır, referans edilen tab'de yeni bir version'da düzenleme varsa linked icon'un çevresinde mavi bir arka plan belirir ve güncelleme kararı kullanıcıya aittir.",
+      "hint": "STEP dosyasından gelen şey adımlar mı, yoksa adımların sonucu mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/working_with_imported_cad.htm",
+      "sourceNote": "Linked document ve mavi arka plan bilgileri https://cad.onshape.com/help/Content/Document/linking_documents.htm sayfasından alınmıştır."
+    },
+    {
+      "id": "cad-10-d5",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci tedarikçinin STL dosyasını import etti ve mesh üzerindeki bir noktayı seçerek bir sketch kurdu. Daha sonra import edilmiş mesh'e bir transform uygulayıp konumunu kaydırdı. Mesh yeni yerine gitti, ancak sketch eski konumunda kaldı ve mesh'i izlemedi. Hiçbir hata mesajı çıkmadı.",
+      "prompt": "Neden izlemiyor?",
+      "options": [
+        "Sketch yanlış plane üzerinde kurulmuştur; doğru plane'e taşındığında mesh noktasını izlemeye başlar.",
+        "STL mesh'leri hiçbir sketch, ölçüm veya mate connector referansını kabul etmez; kurulan sketch daima boşta kalır.",
+        "Mesh nokta seçimleri parametric değildir, mesh vertex'leriyle ilişkilendirilmez; yalnızca konumları kaydedilir.",
+        "Mesh önce composite part'a çevrilmeliydi; composite part'a çevrilmeyen mesh'lerde hiçbir referans tutulmaz."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak bu davranışı tek cümleyle kurala bağlar: mesh vertex seçimleri parametric değildir, mesh vertex'leriyle ilişkilendirilmez ve bunun yerine yalnızca konumları kaydedilir. Kaynak buna kendi örneğini de verir; import edilmiş mesh üzerinde yapılan bir düzenleme, örneğin bir transform, bu konumları güncellemez. Yani mesh üzerinde bir nokta seçtiğinizde kurulan şey canlı bir bağ değil, o anki konumun kaydıdır; mesh taşındığında sketch eski konumda kalır ve Onshape açısından ortada bir hata yoktur. Hata mesajı olmaması da bu yüzdendir ve bu, sessizce yanlış bir tasarıma yol açabilecek bir durumdur. İkinci şık mesh'lerin hiçbir referans kabul etmediğini iddia eder; oysa kaynak mesh noktalarıyla üç noktalı plane oluşturmayı, ölçüm yapmayı, sketch içinde mesh noktalarını project etmeyi ve mesh noktalarında mate connector oluşturmayı ayrıca sayar. Sorun referans verilememesi değil, verilen referansın parametric olmamasıdır. Birinci ve dördüncü şıklar kaynakta karşılığı olmayan plane ve composite part şartları uydurur.",
+      "hint": "Mesh üzerinde seçilen nokta canlı bir bağ mı, yoksa o anki konumun kaydı mı?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/working_with_imported_cad.htm"
+    },
+    {
+      "id": "cad-10-d6",
+      "type": "diagnose",
+      "options": [
+        "Assembly'nin mate'leri eski yüzeylere bağlıdır; mate'ler yeniden kurulduğunda geometri de kendiliğinden yenilenecektir.",
+        "Kaynak import güncellemesinde yalnızca Part Studio'nun güncellendiğini, assembly'nin ilk hâlinde kaldığını yazar.",
+        "Assembly güncel olmayan bir version'a bakmaktadır; Update all çalıştırıldığında yeni geometri assembly'ye inecektir.",
+        "Part Studio'daki değişiklik henüz kaydedilmemiştir; document kapatılıp yeniden açıldığında assembly de yenilenir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak import güncellemesinin kapsamını üç cümleyle sınırlar. Bir part güncellendiğinde, kaynak sistemde part üzerinde yapılan bütün feature ve değişiklikler hedef Part Studio'da güncellenir. Ardından sınır gelir: yalnızca Part Studio güncellenir, assembly güncellemesi şu anda desteklenmemektedir ve assembly ile bütün instance'ları, bir Update yapıldıktan sonra da ilk import'taki hâlinde kalır. Belirtideki durum tam olarak budur. Bu, modülün başında öğrenilen kuralın istisnasıdır; aynı document içinde part değişiklikleri assembly'lere normalde anında yansır, ancak import güncellemesi bu yayılmayı yapmaz. Takımın bunu bilmemesi tehlikelidir, çünkü Part Studio doğru geometriyi gösterirken assembly eski geometriyi göstermeye devam eder ve ölçüler assembly'den alınırsa yanlış çıkar. Birinci şık mate'leri sorumlu tutar; mate'ler kırmızı değildir ve sorun bağlantıda değil, assembly'nin hangi geometriyi tuttuğundadır. Üçüncü şık linked document mekanizmasını buraya taşır; burada başka bir document'a verilmiş bir referans yoktur, import edilmiş bir part vardır. Dördüncü şık kaynakta karşılığı olmayan bir kaydetme davranışı uydurur.",
+      "hint": "Kaynak import güncellemesinin neyi kapsadığını yazdıktan hemen sonra iki sınır cümlesi ekliyor. Assembly bunların neresinde?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/working_with_imported_cad.htm",
+      "symptom": "Tedarikçi bir bracket'ın yeni sürümünü yayımladı. Takım import'u güncelledi ve Part Studio'da yeni geometriyi görüyor; delik konumları gerçekten değişmiş. Ancak robot assembly'de aynı bracket hâlâ eski geometrisiyle duruyor. Assembly'de hiçbir hata yok ve hiçbir mate kırmızı değil.",
+      "prompt": "Assembly neden eski geometriyi gösteriyor?"
+    },
+    {
+      "id": "cad-10-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım Update all düğmesine bastı. Assembly'deki bütün linked referanslar en son version'a geçti, ancak gearbox subassembly'si eski version'da kaldı. Simgesindeki mavi arka planın yerini açık gri bir daire almış durumda. Reference manager'da hiçbir document izin uyarısı göstermiyor ve Update düğmesi etkin.",
+      "prompt": "Gearbox neden güncellenmedi?",
+      "options": [
+        "Gearbox bir subassembly olduğu için Update all kapsamı dışındadır; subassembly'ler yalnızca tek tek güncellenebilir.",
+        "Gearbox document'ı silinmiştir; silinmiş kaynaklar eski version'da kalır ve simgede açık gri daire böyle ortaya çıkar.",
+        "Gearbox referansı pin edilmiştir; pin edilmiş bir referans Update all komutuyla güncellenmekten muaftır.",
+        "Gearbox referansı bir workspace'e verilmiştir; workspace referansları Update all komutunun kapsamına hiç girmez."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirtideki simge doğrudan cevabı veriyor. Kaynağın simge tablosunda açık gri daire şöyle tanımlanır: üst seviye instance pin edilmiştir ve daha yeni bir version veya revision mevcuttur, Reference manager'ın Selective update filtresi kullanılmalıdır. Kuralın kendisi de yazılıdır; bir nesnenin Update all düğmesine basıldığında güncellenmesini engellemek için referans pin edilebilir ve pin edilmiş bir referans Update all komutuyla güncellenmekten muaftır. Belirtideki son cümle bir başka kaynak kuralını eliyor; Reference manager'da write izni olmayan bir document listelenseydi Update düğmesi devre dışı kalırdı, oysa düğme etkin. Yapılacak iki iş vardır. Kaynak, üst seviye instance pin edilmişse Update all düğmesiyle ve Reference manager ile güncelleme yapabilmek için önce unpin edilmesi gerektiğini söyler. Buna karşılık pin'i kaldırmadan da yol vardır: pin edilmiş nesnenin simgesine tıklanarak Reference manager'ın Selective update filtresinden yalnızca o nesne güncellenebilir. Birinci şık subassembly'leri kapsam dışı sayar; oysa Update all recursive bir güncelleme yapar. İkinci şık silinmiş document uydurur; o durumda kaynağın yazdığı erişim hata mesajları görünürdü. Dördüncü şık workspace referanslarını Update all kapsamının tümüyle dışında sayar.",
+      "hint": "Mavi arka plan gitmiş, yerine açık gri bir daire gelmiş. Kaynağın simge tablosu bu daireyi nasıl tanımlıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/updating_references.htm"
+    },
+    {
+      "id": "cad-10-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikten iki gün önce takım, tek bir gearbox referansının güncel olmadığını fark etti ve Update all düğmesine bastı. Ertesi gün intake geometrisinin de değiştiği, ayrıca bir takım arkadaşının yarım bıraktığı elevator redesign'ının assembly'ye indiği görüldü. Hiçbir hata mesajı çıkmadı ve hiçbir referans kırmızı değil.",
+      "prompt": "Ne oldu?",
+      "options": [
+        "Update all yalnızca seçili nesneyi güncellerdi; diğer değişiklikler başka bir kullanıcının elle yaptığı güncellemelerdir.",
+        "Assembly protected bir branch'e taşınmıştır; protected branch'e geçen assembly'ler bütün referansları en sona çeker.",
+        "Gearbox document'ı diğer document'lara da bağlıdır; güncelleme oradan zincirleme olarak intake ve elevator'e yayılmıştır.",
+        "Update all recursive çalışır ve güncelliğini yitirmemiş olanlar dahil bütün version'ları en son version'a çeker."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak Update all'ın kapsamını üç cümleyle verir ve üçü de bu belirtiyi açıklar. Update all düğmesi recursive bir güncelleme yapar. Daha kritik olanı şudur: Update all kullanıldığında, güncelliğini yitirmemiş olanlar dahil bütün version'lar en son version'a çekilir; yani komut yalnızca geride kalmış referansları değil, hepsini süpürür. Üçüncüsü ise en tehlikelisidir: kaynak, Update all'ın bu güncellemeyi yapabilmek için gerektiğinde version'ları kendiliğinden oluşturduğunu yazar. Bu üçü birleşince belirtideki tablo çıkar; takım tek bir gearbox'ı düşünerek bastığı düğmeyle assembly'deki her referansı en son hâline taşımış, üstelik takım arkadaşının hiç version'lamadığı yarım elevator çalışması için de bir version oluşturulmuş ve o hâl assembly'ye inmiştir. Hiçbir hata çıkmaması beklenen davranıştır, çünkü ortada bir arıza yoktur; komut tam olarak tanımlandığı işi yapmıştır. Kaynak korunma yolunu da verir: bir nesnenin Update all ile güncellenmesini engellemek için referans pin edilir. Etkinlik öncesinde doğru yol, dokunulmaması gereken referansları pin etmek veya Reference manager'ın Selective update filtresinden yalnızca gearbox'ı güncellemektir. Birinci şık komutun kapsamını daraltır ve kaynağın yazdığının tersini söyler. İkinci şık protected branch'e kaynakta olmayan bir davranış yükler. Üçüncü şık zincirlemeyi gearbox'a bağlar; oysa recursive güncelleme gearbox yüzünden değil, komutun kendi tanımı gereği bütün referanslara uygulanmıştır.",
+      "hint": "Düğmenin adı Update all. Kaynak bu komutun hangi referanslara dokunduğunu yazıyor?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/updating_references.htm"
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "id": "programming-02-deploy",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 2,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Deploy ve Driver Station Bağlantısı",
+  "summary": "Kodun robota nasıl gönderildiğini, driver station üzerindeki üç durum göstergesinin tam olarak neyi bildirdiğini ve bir bağlantı sorununun bu göstergelerden nasıl daraltılacağını öğretir.",
+  "prerequisites": [
+    "programming-01-project-structure"
+  ],
+  "estimatedMinutes": 25,
+  "concept": {
+    "body": "Kodu robota göndermeye deploy denir. VS Code'da Deploy Robot Code seçildiğinde gerekiyorsa derleme de yapılır ve program roboRIO'ya aktarılır; yalnızca derlemek için Build Robot Code ayrıca kullanılabilir. İşlem başarılı olduğunda Build Successful mesajı görünür ve RioLog açılarak robot programının konsol çıktısı akmaya başlar. Bu sırada kritik bir uyarı geçerlidir: deploy sürerken robotun gücü kesilmemelidir. İşlemin yarıda kalması roboRIO dosya sistemini bozabilir ve robot yeniden imajlanana kadar kod çalışmaz.\n\nDriver station'ın ortasındaki Status Pane, hangi sekme seçili olursa olsun her zaman görünür ve üç durum göstergesi taşır. Communications, driver station'ın roboRIO üzerindeki FRC Network Communications Task ile haberleşip haberleşmediğini gösterir. Robot Code, takımın kodunun çalışıp çalışmadığını bildirir; bunu robot kodu içindeki Driver Station Task'ının battery gerilimini güncelleyip güncellemediğine bakarak belirler. Joysticks ise en az bir joystick'in takılı ve driver station tarafından tanınmış olduğunu gösterir; bu gösterge robotu değil, sürücü bilgisayarını gözler. Göstergeler sağlıklı durumda yeşil, sorunlu durumda kırmızıdır.\n\nTakım numarası Setup sekmesinden girilir ve driver station'ın robotu hangi mDNS adında beklediğini belirler. Diagnostics sekmesi sürüm ve bağlantı bilgilerini toplar: driver station sürümü, roboRIO imaj sürümü, WPILib sürümü, CAN cihaz firmware sürümleri, bellek durumu ve Enet Link, Robot Radio, Robot ile FMS bağlantı göstergeleri. Aynı sekmedeki iki düğmeyle roboRIO uzaktan yeniden başlatılabilir veya yalnızca robot kodu yeniden çalıştırılabilir.",
+    "keyTerms": [
+      {
+        "term": "deploy",
+        "glossTr": "kodun derlenip robota gönderilmesi"
+      },
+      {
+        "term": "build",
+        "glossTr": "kaynak kodun derlenmesi"
+      },
+      {
+        "term": "RioLog",
+        "glossTr": "robot programının konsol çıktısını gösteren pencere"
+      },
+      {
+        "term": "re-image",
+        "glossTr": "roboRIO'nun yazılım imajının sıfırdan yüklenmesi"
+      },
+      {
+        "term": "Communications",
+        "glossTr": "driver station ile roboRIO'daki FRC Network Communications Task arasındaki haberleşme göstergesi"
+      },
+      {
+        "term": "Robot Code",
+        "glossTr": "takım kodunun çalışıp çalışmadığını gösteren gösterge"
+      },
+      {
+        "term": "Status Pane",
+        "glossTr": "driver station'ın ortasında her zaman görünen, üç durum göstergesini taşıyan bölüm"
+      },
+      {
+        "term": "Diagnostics tab",
+        "glossTr": "sürüm ve bağlantı bilgilerini gösteren sekme"
+      },
+      {
+        "term": "Setup tab",
+        "glossTr": "takım numarasının girildiği sekme"
+      },
+      {
+        "term": "FMS",
+        "glossTr": "Field Management System; sahayı yöneten sistem"
+      },
+      {
+        "term": "Driver Station Task",
+        "glossTr": "robot kodu içinde battery gerilimini güncelleyen görev"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-02-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "DEPLOY",
+      "front": "Status Pane'deki üç gösterge, üç ayrı yeri gözler.",
+      "back": "Driver station'ın ortasındaki Status Pane hangi sekme seçili olursa olsun her zaman görünür ve üç durum göstergesi taşır. Communications, driver station'ın roboRIO üzerindeki FRC Network Communications Task ile haberleşip haberleşmediğini gösterir. Robot Code, takımın kodunun çalışıp çalışmadığını bildirir. Joysticks ise en az bir joystick'in takılı ve tanınmış olduğunu gösterir; bu üçüncüsü robotu değil, sürücü bilgisayarını gözler. Göstergeler sağlıklı durumda yeşil, sorunlu durumda kırmızıdır. Hangisinin kırmızı olduğu aramayı doğrudan daraltır: ağ mı yok, kod mu çalışmıyor, yoksa sorun masadaki bilgisayarda mı.",
+      "takeaway": "Kırmızı olan gösterge, aranacak yeri söyler",
+      "tags": [
+        "Status Pane",
+        "Communications",
+        "Joysticks"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-02-d1",
+        "programming-02-d6"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-02-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "DEPLOY",
+      "front": "Robot Code göstergesi yeşil. Bu tam olarak neyi garanti eder?",
+      "back": "Yalnızca kodun robotta çalıştığını. Driver station bunu doğrudan göremez; robot kodu içindeki Driver Station Task'ının battery gerilimini güncelleyip güncellemediğine bakarak belirler. Yani gösterge bir canlılık işaretidir, bir doğruluk belgesi değil. Kodun hatasız olduğunu söylemez, mekanizmaların doğru çalışacağını söylemez ve en son deploy ettiğiniz sürümün yüklü olduğunu bile söylemez. Bu ayrım pratikte şuna karşılık gelir: yeşil gösterge deploy'un başarılı olduğuna dair yeterli kanıt değildir. Build Successful mesajını görmek ve deploy sonrası açılan RioLog çıktısını okumak ayrı bir iştir.",
+      "takeaway": "Yeşil gösterge canlılık işaretidir, doğruluk belgesi değil",
+      "tags": [
+        "Robot Code",
+        "Driver Station Task",
+        "RioLog"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-02-d4",
+        "programming-02-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-02-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "DEPLOY",
+      "front": "Maç arası hızlı bir düzeltme deploy edilirken biri main breaker'ı kapattı.",
+      "back": "Deploy sürerken robotun gücü kesilmemelidir. İşlemin yarıda kalması roboRIO dosya sistemini bozabilir ve robot yeniden imajlanana kadar kod çalışmaz. Bu arızanın en sinsi tarafı belirtisidir: robot açılır, roboRIO ledleri normal görünür, Communications yeşil olabilir, ama Robot Code kırmızı kalır ve yeni deploy denemeleri de tuhaf hatalarla başarısız olur. Tablo bir kod hatasına benzer, oysa sebep güç kesintisidir. Bu yüzden deploy'a başlamadan önce battery durumu kontrol edilir; yeterli değilse deploy başlatılmaz, başlatıldıysa bitene kadar beklenir.",
+      "takeaway": "Deploy bitmeden güç kesmek, kod hatası gibi görünen bir donanım arızası üretir",
+      "tags": [
+        "deploy",
+        "re-image",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-02-d2",
+        "programming-02-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-02-d1",
+      "type": "diagnose",
+      "symptom": "Driver station'da Communications göstergesi yeşil, Joysticks göstergesi yeşil, ancak Robot Code göstergesi kırmızı. Robot enable edilemiyor.",
+      "prompt": "Bu tablo size ne söyler?",
+      "options": [
+        "Ağ haberleşmesi kurulmuş ancak takımın kodu robotta çalışmıyor.",
+        "Robot ile ağ haberleşmesi yok; kablo veya radio sorunu vardır.",
+        "Joystick tanınmamış; sürücü kontrolü bu yüzden çalışmıyor.",
+        "roboRIO'nun imaj sürümü yanlıştır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Üç gösterge birbirinden bağımsız üç şeyi bildirir ve birlikte okunduğunda sorunu daraltır. Communications yeşilse driver station roboRIO ile ağ üzerinden haberleşiyor demektir; dolayısıyla kablo, radio ve takım numarası tarafında bir sorun yoktur ve i̇kinci şık elenir. Joysticks yeşilse en az bir joystick takılı ve tanınmıştır, üçüncü şık da elenir. Geriye kalan Robot Code göstergesidir ve kırmızı olması takım kodunun robotta çalışmadığı anlamına gelir. Bunun tipik nedenleri kodun hiç deploy edilmemiş olması, deploy'un başarısız olması veya kodun açılışta çökmesidir. İlk bakılacak yer RioLog veya driver station kaydıdır; kod açılışta bir istisna fırlatıyorsa orada görünür.",
+      "hint": "Üç göstergeyi tek tek okuyun. Yeşil olanlar hangi olasılıkları eliyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html",
+      "sourceNote": "Gösterge renk kuralı (yeşilden kırmızıya dönme) burada geçer: https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-errors-warnings.html RioLog davranışı: https://docs.wpilib.org/en/stable/docs/software/vscode-overview/deploying-robot-code.html"
+    },
+    {
+      "id": "programming-02-d2",
+      "type": "multiple_choice",
+      "prompt": "Deploy işlemi sürerken battery zayıflıyor. Bir takım arkadaşınız 'hemen main breaker'ı kapatıp battery'yi değiştirelim, deploy'u sonra tekrar yaparız' diyor. Bu öneriyi değerlendiriniz.",
+      "options": [
+        "Uygundur; deploy yarıda kalırsa yalnızca baştan başlatmak gerekir, başka bir sonucu olmaz.",
+        "Uygun değildir. Deploy sürerken güç kesilmemelidir; işlemin yarıda kalması roboRIO dosya sistemini bozabilir ve robot yeniden imajlanana kadar kod çalışmaz.",
+        "Uygundur, yalnızca deploy'un ilk saniyelerinde güç kesmek risklidir.",
+        "Uygun değildir; ancak tek sonuç kodun eski sürümde kalmasıdır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon bu konuda doğrudan uyarır: robot kodu deploy edilirken robotun gücünün kesilmesinden kaçınılmalıdır, çünkü işlemin yarıda kesilmesi roboRIO dosya sistemini bozabilir ve roboRIO yeniden imajlanana kadar kod çalışmaz hâle gelir. Yani risk yalnızca zaman kaybı değildir. Doğru davranış deploy'un bitmesini beklemek, bunun için de deploy'a başlamadan önce battery durumunu kontrol etmektir. Dördüncü şık kısmen doğru bir sezgiyle başlar ancak sonucu hafife alır: kod eski sürümde kalmakla kalmaz, hiç çalışmayabilir. Etkinlikte bu, pit'te yeniden imajlama gerektiren ve maç kaçırtabilecek bir duruma dönüşür.",
+      "hint": "Yarıda kalan bir yazma işleminin en kötü sonucu nedir? Yalnızca dosyanın eksik kalması mı?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/deploying-robot-code.html"
+    },
+    {
+      "id": "programming-02-d3",
+      "type": "diagnose",
+      "symptom": "Driver station'da Communications ve Robot Code göstergeleri kırmızı, Joysticks göstergesi yeşil. Robot açık, roboRIO'nun ledleri normal ve radio'nun PWR ledi sabit yanıyor. Bilgisayar robotun kablosuz ağına bağlı görünüyor.",
+      "prompt": "İlk olarak neyi kontrol edersiniz?",
+      "options": [
+        "Kodun deploy edilip edilmediğini.",
+        "Joystick'in USB bağlantısını.",
+        "Driver station'ın Setup sekmesindeki takım numarasını; driver station robotu bu numaradan türeyen mDNS adında bekler.",
+        "Battery gerilimini."
+      ],
+      "correctIndex": 2,
+      "explanation": "Yeşil olan gösterge işe kaç olasılığı elediğiyle başlar. Joysticks yeşilse en az bir joystick takılı ve driver station tarafından tanınmış demektir; üstelik bu gösterge yalnızca sürücü bilgisayarının USB tarafını bildirir, robotla ilgili hiçbir şey söylemez. Dolayısıyla i̇kinci şık düşer. Kırmızı olan iki gösterge ise iki ayrı sorun değildir: Robot Code göstergesi, robot kodu içindeki Driver Station Task'ının battery gerilimini güncelleyip güncellemediğine bakılarak belirlenir ve haberleşme yokken driver station bu bilgiyi hiç okuyamaz. Yani Robot Code'un kırmızı olması burada bir sonuçtur, ayrı bir belirti değildir. Geriye tek bir gerçek sorun kalır: haberleşme kurulmamıştır. roboRIO ve radio ledlerinin normal olması donanımın ayakta olduğunu söyler, o hâlde sorun adresleme tarafındadır. Takım numarası driver station'ın robotu hangi mDNS adında beklediğini belirler ve Setup sekmesinden girilir; yanlış veya eksik bir numara tam olarak bu tabloyu üretir. Birinci şık düşer, çünkü kod hiç deploy edilmemiş olsaydı Communications yine yeşil olurdu; deploy sorunu yalnızca Robot Code'u etkiler. Dördüncü şık da düşer, çünkü roboRIO ledleri normal yanıyor.",
+      "hint": "Yeşil gösterge hangi olasılığı eliyor? Kırmızı olan iki gösterge gerçekten iki ayrı sorun mu?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html"
+    },
+    {
+      "id": "programming-02-d4",
+      "type": "multiple_choice",
+      "prompt": "Robot Code göstergesi yeşil yanıyor. Bu tam olarak neyi garanti eder?",
+      "options": [
+        "Autonomous rutininin tanımlı olduğunu.",
+        "Kodun hatasız olduğunu ve tüm mekanizmaların doğru çalışacağını.",
+        "Kodun en son deploy ettiğiniz sürüm olduğunu.",
+        "Kodun robotta çalıştığını; driver station bunu robot kodu içindeki Driver Station Task'ının battery gerilimini güncelleyip güncellemediğine bakarak belirler."
+      ],
+      "correctIndex": 3,
+      "explanation": "Gösterge yalnızca bir şeyi bildirir: takımın kodu robotta çalışıyor mu. Driver station bunu doğrudan koda bakarak değil, robot kodu içindeki Driver Station Task'ının battery gerilimini güncelleyip güncellemediğine bakarak belirler. Bu ayrım pratikte önemlidir çünkü göstergenin yeşil olması kodun doğru olduğunu göstermez; mantık hatası olan, yanlış port numarası kullanan veya autonomous rutini boş olan bir kod da bu göstergeyi yeşil yakar. Üçüncü şık da yaygın bir yanılgıdır: gösterge çalışan kodun hangi sürüm olduğunu bilmez, robotta eski bir sürüm çalışıyorsa da yeşildir. Deploy'un gerçekten yeni sürümü yüklediğinden emin olmanın yolu göstergeye bakmak değil, deploy çıktısını ve RioLog'u okumaktır.",
+      "hint": "Gösterge kodun varlığını mı, doğruluğunu mu, yoksa güncelliğini mi ölçüyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html"
+    },
+    {
+      "id": "programming-02-d5",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki deploy alışkanlıklarından dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir takım yazılım ekibi deploy alışkanlıklarını anlatıyor.",
+      "elements": [
+        "Deploy'a başlamadan önce battery durumu kontrol ediliyor ve deploy bitene kadar robotun gücü kesilmiyor.",
+        "Deploy sonrası açılan RioLog izlenerek programın açılışta hata verip vermediği kontrol ediliyor.",
+        "Deploy başarılı olduğunda Build Successful mesajının göründüğü doğrulanıyor.",
+        "Robot Code göstergesi yeşil olduğu için deploy'un yeni sürümü yüklediği kabul ediliyor ve çıktı okunmuyor.",
+        "Takım numarası driver station'ın Setup sekmesinden girilip doğrulanıyor."
+      ],
+      "faultIndex": 3,
+      "explanation": "Robot Code göstergesi yalnızca robotta bir kodun çalıştığını bildirir; hangi sürümün çalıştığını bilmez. Deploy başarısız olduğu hâlde robotta eski sürüm çalışmaya devam ediyorsa gösterge yine yeşil yanar ve takım yaptığı değişikliğin robota gittiğini sanır. Bu, saatlerce yanlış yerde hata aranmasına yol açan sinsi bir alışkanlıktır. Doğru yaklaşım deploy çıktısında Build Successful mesajını görmek ve RioLog'u izlemektir. Diğer dört öğe doğrudur: deploy öncesi battery kontrolü ve güç kesmeme, RioLog takibi, başarı mesajının doğrulanması ve takım numarasının Setup sekmesinden girilmesi.",
+      "hint": "Öğelerden biri bir göstergeye, o göstergenin ölçmediği bir soruyu soruyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html",
+      "sourceNote": "Deploy çıktısı ve RioLog davranışı: https://docs.wpilib.org/en/stable/docs/software/vscode-overview/deploying-robot-code.html"
+    },
+    {
+      "id": "programming-02-d6",
+      "type": "diagnose",
+      "symptom": "Communications ve Robot Code göstergeleri yeşil, robot enable edilebiliyor ve autonomous rutini çalışıyor. Ancak Joysticks göstergesi kırmızı ve sürücü hiçbir tuşa yanıt alamıyor.",
+      "prompt": "Sorun nerededir?",
+      "options": [
+        "En az bir joystick'in takılı ve tanınmış olması gerekir; sorun sürücü bilgisayarının USB tarafındadır.",
+        "Robotta kod çalışmıyor; yeniden deploy edilmelidir.",
+        "roboRIO ile radio arasındaki bağlantı kopmuştur.",
+        "Kodda joystick okuma satırları eksiktir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Joysticks göstergesi en az bir joystick'in takılı ve tanınmış olduğunu bildirir; kırmızı olması bu şartın sağlanmadığı anlamına gelir. Belirtinin geri kalanı diğer olasılıkları eler: Robot Code yeşil olduğu için kod çalışıyordur ve i̇kinci şık düşer, autonomous rutini çalıştığı için robot komut alabiliyordur ve üçüncü şık düşer. Dördüncü şık ilginç bir ayrım gerektirir: kodda joystick okuma eksik olsaydı gösterge yine yeşil olurdu, çünkü gösterge kodun ne yaptığını değil, cihazın driver station tarafından tanınıp tanınmadığını ölçer. Aranacak yer bu nedenle sürücü bilgisayarıdır: USB kablosu, portun tanınması ve driver station'daki joystick sırası.",
+      "hint": "Bu gösterge robotu mu, yoksa sürücü bilgisayarını mı gözlüyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html"
+    },
+    {
+      "id": "programming-02-d7",
+      "type": "multiple_choice",
+      "prompt": "Denetimde roboRIO'nun imaj sürümünü ve CAN cihazlarının firmware sürümlerini göstermeniz isteniyor. Driver station'da nereye bakarsınız?",
+      "options": [
+        "Operation sekmesine; sürüm bilgileri robot mode kontrollerinin yanında listelenir.",
+        "Diagnostics sekmesine; driver station sürümü, roboRIO imaj sürümü, WPILib sürümü ve CAN cihaz firmware sürümleri burada toplanır.",
+        "Setup sekmesine; sürüm bilgileri takım numarasının altında bulunur.",
+        "Driver station bu bilgileri göstermez; her cihaz üreticinin kendi aracıyla ayrı ayrı kontrol edilmelidir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Diagnostics sekmesi tam olarak bu iş için vardır ve tek bir yerde toplar: driver station sürümü, roboRIO imaj sürümü, WPILib sürümü, CAN cihaz firmware sürümleri, roboRIO bellek durumu ve Enet Link, Robot Radio, Robot ile FMS bağlantı göstergeleri. Aynı sekmede iki düğme bulunur: Reboot roboRIO, roboRIO'yu uzaktan yeniden başlatmayı dener; Restart Robot Code ise robotta çalışan kodu yeniden başlatmayı dener. Birinci şık yanlıştır, çünkü Operation sekmesinde robot mode kontrolleri, enable ve disable düğmeleri, geçen süre ve bilgisayarın battery ile CPU bilgisi bulunur, sürüm bilgileri değil. Dördüncü şık da yanlıştır; bu bilgiler için ayrı araçlara gitmek gerekmez.",
+      "hint": "Bu bilgiler durum takibi için mi, yoksa tanılama için mi? Sekme adları bu ayrımı yapıyor.",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html"
+    },
+    {
+      "id": "programming-02-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte maç arasında hızlı bir kod düzeltmesi yapıldı ve deploy başlatıldı. Deploy sürerken biri battery'yi değiştirmek için main breaker'ı kapattı. Şimdi robot açılıyor, roboRIO ledleri normal, Communications yeşil, ancak Robot Code kırmızı ve yeni deploy denemeleri de tuhaf hatalarla başarısız oluyor.",
+      "prompt": "Büyük olasılıkla ne oldu ve ne yapılmalı?",
+      "options": [
+        "Kod yeniden deploy edilmelidir; deploy'un başarısız olmasının başka bir anlamı yoktur.",
+        "Battery değişimi CAN zincirini bozmuştur; zincir kontrol edilmelidir.",
+        "Deploy yarıda kesildiği için roboRIO dosya sistemi bozulmuş olabilir; roboRIO'nun yeniden imajlanması gerekebilir.",
+        "Takım numarası sıfırlanmıştır; Setup sekmesinden yeniden girilmelidir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Dokümantasyonun uyarısı tam olarak bu senaryoyu tarif eder: deploy sürerken gücün kesilmesi roboRIO dosya sistemini bozabilir ve roboRIO yeniden imajlanana kadar kod çalışmaz. Belirtiler de bunu destekler; Communications yeşil olduğuna göre ağ ve adresleme sağlamdır, dolayısıyla dördüncü şık düşer. CAN zinciri sorunu Robot Code göstergesini kırmızı yapmaz, i̇kinci şık da düşer. Birinci şık ilk denenecek şeydir ancak belirtideki kritik ayrıntıyı atlar: yeni deploy denemeleri de başarısız oluyor, yani sorun tek bir başarısız aktarımdan ibaret değildir. Bu durumda pit'te yapılacak iş roboRIO'yu imajlama aracıyla yeniden imajlamak ve ardından kodu tekrar deploy etmektir. Asıl ders önleyicidir: deploy sırasında robotun gücüne kimse dokunmamalıdır ve bunu pit'te sesli olarak duyurmak iyi bir alışkanlıktır.",
+      "hint": "Belirtide iki bilgi var: deploy güç kesilirken yarıda kaldı ve yeni denemeler de başarısız. İkincisi neyi eliyor?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/deploying-robot-code.html"
+    }
+  ]
+}

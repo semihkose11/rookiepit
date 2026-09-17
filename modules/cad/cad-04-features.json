@@ -1,0 +1,313 @@
+{
+  "id": "cad-04-features",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 4,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Feature'lar ve Extrude'un End Condition'ları",
+  "summary": "Extrude'un dört operation type'ını, altı end type'ını, Symmetric ile second end position seçeneklerini, merge scope kuralını ve bir feature düzenlenirken modelin neden geri sarılmış göründüğünü öğretir.",
+  "prerequisites": [
+    "cad-03-constraints"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Feature, geometriyi oluşturan veya değiştiren bir tasarım adımıdır ve parametrik olarak saklanır, yani Feature list'te kendi entity'si olarak görünür. Kaynak Extrude'u şöyle tarif eder: seçilen bir bölgeye veya düz bir face'e düz bir yol boyunca derinlik ekler; yeni bir part ya da surface oluşturur veya var olanı malzeme ekleyerek, çıkararak ya da kesiştirerek değiştirir.\n\nDört operation type vardır. New, yeni bir part ile sonuçlanan yeni malzeme oluşturur. Add, var olan malzemeye eklenen malzeme oluşturur. Remove, bir part'tan malzeme çıkarır. Intersect, yalnızca kesişimlerin bulunduğu yerde malzeme bırakır. Remove ile Intersect surface'ler için kullanılamaz. Merge scope, yeni malzemenin hangi part'larla birleşeceğini belirler; geometri tek bir part'a değiyorsa o part kendiliğinden eklenir, birden çoğuna değiyorsa belirsizlik oluşur ve seçim gerekir. Varsayılan olarak Merge all seçilidir. Kaynağın notu şudur: Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir; New için merge scope yoktur.\n\nEnd type, extrude'un nerede duracağını belirler ve altı seçenek içerir: Blind belirtilen bir mesafeye kadar, Up to next karşılaşılan bir sonraki face veya face'lere kadar, Up to face seçilen face'in altında yatan sonsuz face'e kadar, Up to part bir sonraki part veya surface'e kadar, Up to vertex seçilen bir noktaya veya Mate connector'a kadar, Through all ise seçilen bütün part'ların içinden geçer. Up to next sonlanmazsa Extrude başarısız olur. Symmetric bir end type değil, ayrı bir onay kutusudur ve yalnızca Blind ile Through all için kullanılabilir. Symmetric yerine Second end position işaretlenerek karşı uca farklı bir derinlik verilebilir ve bu seçenek aynı end type'ların hepsini sunar.",
+    "keyTerms": [
+      {
+        "term": "Extrude",
+        "glossTr": "bir bölgeye düz bir yol boyunca derinlik ekleyen feature"
+      },
+      {
+        "term": "operation type",
+        "glossTr": "extrude'un malzemeyi ne yapacağını belirleyen seçim"
+      },
+      {
+        "term": "New",
+        "glossTr": "yeni bir part ile sonuçlanan yeni malzeme oluşturan operation"
+      },
+      {
+        "term": "Add",
+        "glossTr": "var olan malzemeye malzeme ekleyen operation"
+      },
+      {
+        "term": "Remove",
+        "glossTr": "bir part'tan malzeme çıkaran operation"
+      },
+      {
+        "term": "Intersect",
+        "glossTr": "yalnızca kesişimlerin bulunduğu yerde malzeme bırakan operation"
+      },
+      {
+        "term": "merge scope",
+        "glossTr": "yeni malzemenin hangi part'larla birleştirileceğini belirleyen kapsam; New dışındaki operation'larda gerekir"
+      },
+      {
+        "term": "end type",
+        "glossTr": "extrude'un nerede sonlanacağını belirleyen seçim"
+      },
+      {
+        "term": "Blind",
+        "glossTr": "belirtilen bir mesafeye kadar giden end condition"
+      },
+      {
+        "term": "Through all",
+        "glossTr": "seçilen bütün part'ların içinden geçen end condition"
+      },
+      {
+        "term": "Up to next",
+        "glossTr": "karşılaşılan bir sonraki face'e kadar giden end condition"
+      },
+      {
+        "term": "rollback",
+        "glossTr": "modelin feature geçmişinde daha erken bir hâline geri sarılması"
+      },
+      {
+        "term": "Symmetric",
+        "glossTr": "extrude'u plane'in iki yanında simetrik yapan onay kutusu"
+      },
+      {
+        "term": "Second end position",
+        "glossTr": "karşı uca ayrı bir derinlik ve end condition veren seçenek"
+      },
+      {
+        "term": "face",
+        "glossTr": "bir part'ın sınırını oluşturan yüzey; Onshape'te surface'ten ayrı bir kavramdır"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-04-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "FEATURE",
+      "front": "Extrude dialog'unda iki ayrı seçim vardır ve ikisi birbirinden bağımsızdır.",
+      "back": "Feature, geometriyi oluşturan veya değiştiren bir tasarım adımıdır ve parametrik olarak saklanır. Extrude seçilen bir bölgeye düz bir yol boyunca derinlik ekler. Dialog iki şey sorar. Operation type malzemeye ne olacağını belirler: New yeni bir part ile sonuçlanan yeni malzeme oluşturur, Add var olan malzemeye malzeme ekler, Remove bir part'tan malzeme çıkarır, Intersect yalnızca kesişimlerin bulunduğu yerde malzeme bırakır. End type ise nerede duracağını belirler ve altı seçeneği vardır. Bir delik açmak malzeme çıkarmaktır, yani Remove'dur; New seçilirse plakanın içine bir silindir konur ve iki ayrı part elde edilir. Remove ile Intersect surface'ler için kullanılamaz.",
+      "takeaway": "Extrude açarken önce malzemeye ne olacağını, sonra nerede duracağını ayrı ayrı seçin",
+      "tags": [
+        "Extrude",
+        "operation type",
+        "end type"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-04-d1",
+        "cad-04-d2"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-04-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "FEATURE",
+      "front": "Merge scope kaç operation'ı ilgilendirir?",
+      "back": "Merge scope, yeni malzemenin hangi part'larla birleşeceğini belirler. Geometri yalnızca tek bir part'a değiyor veya onunla kesişiyorsa o part merge scope'a kendiliğinden eklenir. Birden çok part'a değiyor veya kesişiyorsa belirsizlik oluşur ve hangi part'larla birleştirileceğini kullanıcının seçmesi gerekir; bu bir hata değil, tanımlı bir davranıştır. Varsayılan olarak Merge all seçilidir ve Merge with all kısayolu değen veya kesişen bütün part'ları kapsama ekler. Kaynağın notu şudur: Boolean Add, Remove veya Intersect olarak ayarlanmışsa ve merge scope'ta hiçbir şey seçilmemişse feature hata verir. Merge scope'u olmayan tek operation New'dur. Yani kapsam üç operation'ı birden ilgilendirir; bunu ters bilen bir öğrenci Remove ile delik açarken kapsamı boş bırakır ve hatanın sebebini başka yerde arar.",
+      "takeaway": "New dışında bir operation seçtiyseniz merge scope'u boş bırakmayın",
+      "tags": [
+        "merge scope",
+        "Add",
+        "Remove"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-04-d3",
+        "cad-04-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-04-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "FEATURE",
+      "front": "Plaka 3 mm'den 5 mm'ye çıktı, delikler plakayı delip geçmedi.",
+      "back": "Blind, belirtilen bir mesafeye kadar gider; yani 3 sayısı bir ilişkiyi değil, o anki bir ölçüyü kaydetti. Plaka kalınlığı 5 mm'ye çıkınca delik hâlâ 3 mm derinliğe gitti ve bu ancak parça imal edildikten sonra görüldü. Geometriye bakan end type'lar bu sorunu çözer. Bu senaryoda doğru seçim Through all'dur; seçilen bütün part'ların içinden geçer, dolayısıyla kalınlık değişse de deliği takip eder. Up to next de işe yarardı, çünkü karşılaşılan bir sonraki face'e kadar gider ve plakanın alt face'i o rolü üstlenir. Up to part burada işe yaramazdı; bir sonraki part veya surface'e kadar gider ve deliğin yolunda başka part yoktur. Geometriye bağlı olmak tek başına yetmez, koşulun dayandığı geometrinin gerçekten orada olması gerekir.",
+      "takeaway": "Bir end type seçerken, o mesafenin gelecekte de doğru kalıp kalmayacağını sorun",
+      "tags": [
+        "Blind",
+        "Through all",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-04-d8",
+        "cad-04-d6"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-04-d1",
+      "type": "multiple_choice",
+      "prompt": "Var olan bir plakanın içinden geçen bir delik açılacak. Sketch'te çember çizildi ve Extrude açılıyor. Hangi operation type seçilmelidir?",
+      "options": [
+        "Remove; bir part'tan malzeme çıkarır ve surface'ler için kullanılamaz.",
+        "New; delik yeni bir geometri olduğu için sonuç yeni bir part olarak oluşturulur.",
+        "Intersect; çemberin plakayla kesiştiği yeri bırakır, yani delik yerine sadece o bölge kalır.",
+        "Add; deliğin kenarları var olan malzemeye eklenerek tanımlanır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın tanımı doğrudan bu işi tarif eder: Remove, bir part'tan malzeme çıkarır. Delik açmak bir malzeme çıkarma işlemidir, dolayısıyla operation type Remove'dur. İkinci şık yaygın bir yeni başlayan hatasıdır; New yeni bir part oluşturur, yani delik yerine plakanın içine bir silindir konur ve iki ayrı part elde edilir. Üçüncü şık Intersect'i yanlış anlar; Intersect yalnızca kesişimin bulunduğu yerde malzeme bırakır, yani sonuç plakanın delik olması gereken yerindeki silindir olurdu ve plakanın geri kalanı yok olurdu. Dördüncü şık Add'in tanımına aykırıdır; Add malzeme ekler, çıkarmaz. Kaynak ayrıca Remove ve Intersect'in surface'ler için kullanılamadığını belirtir, bu yüzden bu iki operation yalnızca katı part'lar üzerinde çalışır.",
+      "hint": "Delik açmak malzemeye ne yapar?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"
+    },
+    {
+      "id": "cad-04-d2",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci bir plakanın üzerine delik açmak için Extrude dialog'unu açıyor ve end type olarak Up to next seçiyor. Dialog başlığı kırmızıya dönüyor ve preview oluşmuyor. Sketch tamamen siyah ve doğru yerde. Deliğin açılacağı yönde plakanın ötesinde başka geometri yok.",
+      "prompt": "Neden başarısız oluyor?",
+      "options": [
+        "Sketch'in bir part face üzerine çizilmiş olması gerekir; plane üzerine çizilen sketch'ler Up to next ile kullanılamaz.",
+        "Up to next belirtilen yönde karşılaşılan bir sonraki face'e kadar gider; tam olarak sonlanmazsa Extrude başarısız olur.",
+        "Up to next yalnızca Add operation'ı ile çalışır; Remove seçildiğinde bu end condition devre dışı kalır.",
+        "Merge scope belirlenmemiştir; birden çok part olduğu için Onshape hangisine uygulanacağını bilemiyordur."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak Up to next'i tarif ederken sonucunu da söyler: belirtilen yönde karşılaşılan bir sonraki face veya face'lere kadar gider, ve tam olarak sonlanmazsa Extrude başarısız olur. Belirtideki kritik ayrıntı son cümledir; deliğin açılacağı yönde plakanın ötesinde başka geometri yoktur, yani extrude'un duracağı bir sonraki face de yoktur. Kırmızı başlık bir doğrulama işaretidir ve yalnızca dialog açıkken görünür; kaynak başlığın, bilgiler eksikse veya girilen bilgi bir hataya yol açtıysa kırmızı olduğunu söyler. Commit edilmiş bir feature'ın sonradan başarısız olması ayrı bir mekanizmadır ve kaynak sayfaları onu anlatmaz. Çözüm end type'ı değiştirmektir; bu senaryoda Through all uygundur. Birinci şık kaynakta karşılığı olmayan bir kısıt uydurur. Üçüncü şık da uydurmadır; end type ile operation type birbirinden bağımsız seçimlerdir. Dördüncü şık belirtiyle uyuşmaz; ortada tek bir plaka var, yani merge scope'ta belirsizlik yaratacak birden çok part yok. Kaynak merge scope'un Add, Remove ve Intersect için gerekli olduğunu belirtir, yalnızca New için yoktur.",
+      "hint": "Belirtinin son cümlesi ne söylüyor? Extrude nerede duracaktı?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm",
+      "sourceNote": "Dialog başlık renkleri: https://cad.onshape.com/help/Content/PartStudio/feature_basics.htm"
+    },
+    {
+      "id": "cad-04-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir CAD ekibi Extrude'u anlatan bir başvuru kartı hazırlıyor.",
+      "elements": [
+        "New, yeni bir part ile sonuçlanan yeni malzeme oluşturur.",
+        "Remove ve Intersect surface'ler için kullanılamaz.",
+        "Through all, seçilen bütün part'ların içinden geçer.",
+        "Merge scope yalnızca Add operation'ında gerekir; Remove ve Intersect merge scope istemez.",
+        "Up to vertex, seçilen bir noktaya veya bir Mate connector'a kadar gider."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak bir not ile bunun tersini söyler: Boolean Add, Remove veya Intersect olarak ayarlanmışsa ve merge scope'ta hiçbir şey seçilmemişse feature hata verir; merge scope'u olmayan tek operation New'dur, çünkü New sonucu boolean'lamaz. Yani merge scope üç operation'ı birden ilgilendirir. Bu ayrımı ters bilmek pratikte hata üretir: bir öğrenci Remove ile delik açarken merge scope'un kendisini ilgilendirmediğini sanıp boş bırakırsa feature hata verir ve sebebini başka yerde arar. Diğer dört ifade kaynağın yazdığı gibidir.",
+      "hint": "İfadelerden biri bir ayarın hangi operation'larda gerektiğini söylüyor. Kaynağın notu kaç operation sayıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"
+    },
+    {
+      "id": "cad-04-d4",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci bir sketch'i, sketch plane'inin iki yanına eşit uzunlukta uzatmak istiyor ve end type olarak Up to face seçtikten sonra Symmetric seçeneğini arıyor ama bulamıyor. Neden bulamıyor?",
+      "options": [
+        "Symmetric yalnızca sketch bir part face üzerine çizildiğinde kullanılabilir; plane üzerindeki sketch'lerde gizlenir.",
+        "Symmetric seçeneği yalnızca Remove operation'ında görünür; New seçildiğinde arayüzden kaldırılır.",
+        "Symmetric yalnızca Blind ve Through all end type'ları için kullanılabilir; Up to face bu ikisinden biri değildir.",
+        "Symmetric ayrı bir feature'dır ve Extrude dialog'unun içinde değil, Feature toolbar'ında bulunur."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynağın Symmetric ifadesi hem ne yaptığını hem nerede kullanılabileceğini söyler: seçilen plane veya sketch'in iki yanında simetrik extrude yapar, ve yalnızca Blind ile Through all end type'ları için kullanılabilir. Öğrenci Up to face seçtiği için o birleşim mevcut değildir ve onay kutusu görünmez. Kaynak alternatifi de verir: Symmetric yerine Second end position işaretlenerek karşı uca ayrı bir derinlik verilebilir ve bu seçenek aynı end condition'ların hepsini sunar, yani Up to face iki yönde de kullanılabilir. Birinci şık sketch plane türüyle ilgili kaynakta bulunmayan bir kısıt uydurur. İkinci şık Symmetric'i operation type'a bağlar; oysa Symmetric end type seçimine bağlı bir onay kutusudur. Dördüncü şık Symmetric'i ayrı bir feature sayar; kaynak onu Extrude dialog'unun içinde bir seçenek olarak tarif eder.",
+      "hint": "Kaynak Symmetric'i tarif ederken kaç end type adı sayıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"
+    },
+    {
+      "id": "cad-04-d5",
+      "type": "diagnose",
+      "symptom": "Bir Part Studio'da üç ayrı part var. Öğrenci Add operation'ı ile yeni bir malzeme ekliyor ve eklediği geometri bu part'lardan birden fazlasına değiyor. Onshape hangi part'larla birleştirileceğini soruyor. Öğrenci bunu bir hata sanıyor.",
+      "prompt": "Onshape ne istiyor ve neden?",
+      "options": [
+        "Sketch'in hangi plane üzerinde olduğunu istiyor; birden çok part varken sketch plane'i belirsiz kalır.",
+        "Hangi operation type'ın kullanılacağını istiyor; Add birden çok part varlığında geçerli bir seçim değildir.",
+        "Hangi end condition'ın kullanılacağını istiyor; birden çok part varken Blind dışındaki koşullar belirsizleşir.",
+        "Hangi part'larla birleştirileceğini istiyor; birden çok part değiyorsa merge scope belirsizleşir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak bu davranışı adıyla tarif eder ve iki durumu ayırır. Geometri yalnızca tek bir part'a değiyor veya onunla kesişiyorsa o part merge scope'a kendiliğinden eklenir. Birden çok part değiyor veya kesişiyorsa belirsizlik oluşur ve hangi part'larla birleştirileceğini kullanıcının seçmesi gerekir. Yani bu bir hata değil, tanımlı bir davranıştır. Kaynak kolaylık yollarını da verir: varsayılan olarak Merge all seçilidir ve Merge with all kısayolu değen veya kesişen bütün part'ları kapsama ekler. Ayrıca bir not vardır: Boolean Add, Remove veya Intersect iken merge scope boş bırakılırsa feature hata verir. Bu ayrımı bilmek pratikte önemlidir, çünkü yanlış part seçilirse iki ayrı parça tek bir parça hâline gelebilir; bu son cümle kaynakta yazmayan bir uyarıdır. Diğer üç şık belirsizliği yanlış yerlere bağlar; sketch plane, operation type ve end type zaten seçilmiştir ve hiçbiri part sayısına göre belirsizleşmez.",
+      "hint": "Öğrenci Add seçti, yani malzeme ekliyor. Eklenen malzeme neye katılacak?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"
+    },
+    {
+      "id": "cad-04-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci end type olarak Up to face seçiyor ve küçük bir yüzeyi tıklıyor. Extrude, o yüzeyin kenarlarının çok ötesine, yüzeyin uzantısı boyunca ilerliyor. Kaynağın Up to face tanımına göre bu davranış nedir?",
+      "options": [
+        "Beklenen davranıştır; Up to face seçilen yüzeyin altında yatan sonsuz face'e kadar gider.",
+        "Bir hatadır; Up to face seçilen yüzeyin sınırlarında durmalıdır ve feature yeniden oluşturulmalıdır.",
+        "Beklenen davranıştır; Up to face aslında Through all ile aynı işi yapar ve bütün part'ları geçer.",
+        "Bir hatadır; küçük yüzeyler Up to face için geçersizdir ve daha büyük bir yüzey seçilmelidir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın tanımındaki tek kelime bütün farkı yaratıyor: Up to face, seçilen face'in veya plane'in altında yatan sonsuz face'e kadar gider. Yani Onshape face'in kendisini değil, onun matematiksel olarak sonsuza uzatılmış hâlini kullanır. Küçük bir face seçildiğinde extrude o küçük parçanın sınırlarında durmaz; uzantı nerede kesişiyorsa orada durur. Bu, beklenmediğinde şaşırtıcı görünen ama tanımdan doğrudan çıkan bir davranıştır. Gerçek sınırlarda durmak isteniyorsa kaynağın face sınırlarına bakan koşulu Up to next'tir; o, karşılaşılan bir sonraki face veya face'lere kadar gider. Üçüncü şık iki koşulu birbirine karıştırır; Through all seçilen bütün part'ların içinden geçer ve bir yüzey referansı almaz. İkinci ve dördüncü şıklar tanımdan doğan davranışı hata sayar; oysa kaynak sonsuz yüzey ifadesini bilerek kullanır.",
+      "hint": "Kaynağın tanımında bir sıfat var. Hangi kelime beklenenden farklı bir davranışı haber veriyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"
+    },
+    {
+      "id": "cad-04-d7",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci Feature list'in ortasındaki eski bir extrude feature'ını düzenlemek için çift tıklıyor. Ekranda modelin sonraki feature'ları kayboluyor ve part yarım görünüyor. Öğrenci sonraki feature'ların silindiğini düşünüp panikliyor.",
+      "prompt": "Ne oluyor?",
+      "options": [
+        "Sonraki feature'lar gerçekten silinmiştir; bir feature düzenlendiğinde ondan sonrakiler geçersiz olur ve yeniden oluşturulmalıdır.",
+        "Onshape modeli o feature oluşturulduğu andaki hâline geri sarar ve sonrakileri gizler; Final düğmesi son sonucu gösterir.",
+        "Model bozulmuştur; Feature list'in ortasındaki bir feature düzenlenemez ve düzenleme yalnızca listenin sonundan yapılabilir.",
+        "Sonraki feature'lar hata verdiği için gizlenmiştir; düzenleme iptal edilip önce o hataların çözülmesi gerekir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak bu davranışı açıkça tarif eder: bir feature düzenlendiğinde Onshape varsayılan olarak modeli o feature oluşturulduğu andaki hâline geri sarılmış olarak gösterir ve sonraki bütün feature'ları gizler. Kaynak sebebini yazmaz; parametrik modellemenin genel mantığından çıkan yorum şudur: o feature'ı oluştururken hangi geometrinin mevcut olduğunu görmeniz gerekir. Kaynak aynı zamanda çıkış yolunu da verir: Final düğmesi, siz feature'ı düzenlemeye devam ederken son sonucu gösterir. Yani hiçbir şey silinmemiştir; kaynağın ifadesiyle sonraki feature'lar gizlenmiştir. Birinci şık öğrencinin korkusunu doğrular ve yanlıştır. Üçüncü şık kaynakta karşılığı olmayan bir kısıt uydurur; Feature list'in ortasındaki bir feature düzenlenebilir, zaten parametrik modellemenin anlamı budur. Dördüncü şık da gizlenmenin sebebini yanlış yere bağlar.",
+      "hint": "Model, düzenlenen feature'ın hangi anına ait hâlini gösteriyor olabilir?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/feature_basics.htm"
+    },
+    {
+      "id": "cad-04-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte bir bracket 3 mm alüminyum yerine 5 mm alüminyumdan yeniden yapılacak. Tasarımcı plakayı oluşturan extrude'un depth değerini 5 mm yapıyor. Delikler ise Blind end type ile 3 mm derinliğe extrude edilmişti. Yeni parça imal ediliyor ve delikler plakayı delip geçmiyor.",
+      "prompt": "Ne oldu ve doğru yaklaşım neydi?",
+      "options": [
+        "Merge scope yanlış seçilmişti; delik extrude'u yanlış part ile birleştirildiği için derinlik korunmadı.",
+        "Sketch underconstrained kaldığı için delik derinliği sürüklenme sonucu değişti; sketch tam kısıtlanmalıydı.",
+        "Delik derinliği sabit bir sayıydı; kalınlıktan bağımsız kalmaması için geometriye bağlı bir end condition gerekirdi.",
+        "Blind end condition surface'ler için kullanılamaz; delikler bu yüzden tam oluşmadı ve Remove operation'ı seçilmeliydi."
+      ],
+      "correctIndex": 2,
+      "explanation": "Bu, modül üçteki dersin katı modelleme tarafındaki karşılığıdır. Blind, kaynağın tanımıyla belirtilen bir mesafeye kadar gider; yani 3 sayısı bir ilişkiyi değil, o anki bir ölçüyü kaydetti. Plaka kalınlığı 5 mm'ye çıkınca delik hâlâ 3 mm derinliğe gitti. Kaynağın geometriye bakan end type'ları bu sorunu çözebilir. Bu senaryoda doğru seçim Through all'dur; seçilen bütün part'ların içinden geçer, dolayısıyla kalınlık değişse de deliği takip eder. Up to next de işe yarardı, çünkü karşılaşılan bir sonraki face'e kadar gider ve plakanın alt face'i o rolü üstlenir. Up to part burada işe yaramazdı; tanımı gereği bir sonraki part veya surface'e kadar gider ve deliğin yolunda başka part yoktur. Bu son ayrım, geometriye bağlı olmanın tek başına yetmediğini gösterir; koşulun dayandığı geometrinin gerçekten orada olması gerekir. Buradaki alışkanlık şudur: bir end type seçerken, o mesafenin gelecekte de doğru kalıp kalmayacağını sorun. Birinci şık merge scope'u yanlış yere bağlar; merge scope hangi part'larla birleşileceğini belirler, derinliği değil. Dördüncü şık da yanlıştır; surface kısıtı Blind'e değil, Remove ile Intersect'e aittir. İkinci şık belirtiyle uyuşmaz; sorun sketch'te değil, extrude'un end type'ındadır.",
+      "hint": "3 sayısı neyi kaydetti? Plaka kalınlığı değişince o sayı ne yaptı?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/extrude.htm"
+    }
+  ]
+}

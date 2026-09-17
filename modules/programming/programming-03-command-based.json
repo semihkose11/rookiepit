@@ -1,0 +1,294 @@
+{
+  "id": "programming-03-command-based",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 3,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Command-Based Temelleri",
+  "summary": "Command yaşam döngüsünü, requirement kavramının kaynak çakışmalarını nasıl çözdüğünü ve command composition'larının hangi kuralla kırıldığını öğretir.",
+  "prerequisites": [
+    "programming-01-project-structure"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Command-based, robot kodunu iki tür nesne etrafında düzenler. Subsystem, birlikte çalışan donanım parçalarını temsil eder: motor controller, sensor, pneumatic actuator gibi. Command ise robotun yapabileceği bir eylemi temsil eder; schedule edildiğinde çalışır ve kesilene veya bitiş koşulu sağlanana kadar sürer. İkisini bağlayan kavram requirement'tır. Her command kontrol ettiği subsystem'leri requirement olarak bildirir ve bir subsystem'i aynı anda yalnızca tek bir command kullanabilir.\n\nBir command'in dört yaşam döngüsü metodu vardır. initialize, command her schedule edildiğinde tam olarak bir kez çağrılır ve başlangıç koşullarını kurar. execute, command schedule edilmiş olduğu sürece tekrar tekrar çağrılır. isFinished de tekrar tekrar çağrılır ve true döndüğü anda end çağrılarak command biter; varsayılan dönüş değeri false'tur, yani bu metot yazılmazsa command kendiliğinden hiç bitmez ve yalnızca kesilerek durur. end metodu interrupted adlı bir parametre alır. Bu parametre command'in doğal olarak mı bittiğini yoksa kesildiğini mi bildirir; subsystem'i güvenli duruma döndürmek de bu metodun işidir.\n\nCommand'leri CommandScheduler adlı tekil nesne çalıştırır. Trigger'ları yoklar, kaynak çakışmalarını önler ve schedule edilmiş command'leri yürütür. run metodunun çağrılması zorunludur ve genellikle Robot sınıfının robotPeriodic metodundan çağrılması önerilir; bu metot varsayılan olarak 50 Hz, yani 20 ms'de bir çalışır. Bir requirement çakışması çıktığında hangi tarafın iptal edileceğini, çalışan command'in InterruptionBehavior ayarı belirler. Birden çok command tek bir command gibi davranacak biçimde birleştirilebilir; buna command composition denir ve composition bileşenlerinin bütün requirement'larını üstlenir.",
+    "keyTerms": [
+      {
+        "term": "Command",
+        "glossTr": "robotun yapabileceği bir eylemi temsil eden nesne"
+      },
+      {
+        "term": "Subsystem",
+        "glossTr": "birlikte çalışan ve bağımsız kontrol edilen donanım grubu"
+      },
+      {
+        "term": "requirement",
+        "glossTr": "bir command'in kontrol ettiğini bildirdiği subsystem"
+      },
+      {
+        "term": "initialize",
+        "glossTr": "command her schedule edildiğinde bir kez çalışan metot"
+      },
+      {
+        "term": "execute",
+        "glossTr": "command zamanlı olduğu sürece tekrar tekrar çalışan metot"
+      },
+      {
+        "term": "isFinished",
+        "glossTr": "command'in bitip bitmediğini bildiren metot"
+      },
+      {
+        "term": "end",
+        "glossTr": "command bittiğinde veya kesildiğinde bir kez çalışan metot"
+      },
+      {
+        "term": "CommandScheduler",
+        "glossTr": "command'leri yürüten ve kaynak çakışmalarını çözen tekil nesne"
+      },
+      {
+        "term": "command composition",
+        "glossTr": "birden çok command'in birleştirilmesiyle oluşan bileşik command"
+      },
+      {
+        "term": "InterruptionBehavior",
+        "glossTr": "requirement çakışmasında hangi command'in iptal edileceğini belirleyen ayar"
+      },
+      {
+        "term": "exception",
+        "glossTr": "programın çalışma anında fırlattığı hata"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-03-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "COMMAND-BASED",
+      "front": "Bir command'in dört metodu, dört ayrı soruya cevap verir.",
+      "back": "initialize, command her schedule edildiğinde tam olarak bir kez çağrılır ve başlangıç koşullarını kurar. execute, command schedule edilmiş olduğu sürece tekrar tekrar çağrılır. isFinished de tekrar tekrar çağrılır ve true döndüğü anda end çağrılarak command biter. end metodu ise interrupted adlı bir parametre alır ve subsystem'i güvenli duruma döndürür. Dördünün arasında en sessiz tuzak isFinished'tır: varsayılan dönüş değeri false'tur, yani bu metot yazılmazsa command kendiliğinden hiç bitmez ve yalnızca kesilerek durur. Kod derlenir, command çalışır, sadece durmaz.",
+      "takeaway": "Yazılmayan isFinished, hiç bitmeyen bir command demektir",
+      "tags": [
+        "initialize",
+        "execute",
+        "isFinished"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-03-d1",
+        "programming-03-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-03-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "COMMAND-BASED",
+      "front": "İki command aynı subsystem'i isterse ne olur?",
+      "back": "Her command kontrol ettiği subsystem'leri requirement olarak bildirir ve bir subsystem'i aynı anda yalnızca tek bir command kullanabilir. Bu kural iki mekanizmanın aynı motoru ters yönlere sürmesini baştan imkânsız kılar. Çakışma çıktığında hangi tarafın iptal edileceğini, çalışan command'in InterruptionBehavior ayarı belirler; varsayılan davranışta çalışan command iptal edilir ve yeni command schedule edilir. Bu yüzden hizalama command'i çalışırken sürücünün joystick'e dokunması hizalamayı anında durdurur. Kodda bunu isteyen özel bir satır yoktur; istenmeyen davranış değil, varsayılan davranıştır.",
+      "takeaway": "Kaynak çakışmasını kod değil, requirement kuralı çözer",
+      "tags": [
+        "requirement",
+        "InterruptionBehavior",
+        "subsystem"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-03-d3",
+        "programming-03-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-03-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "COMMAND-BASED",
+      "front": "Rutin bütün hafta çalıştı. Etkinlikte ikinci rutin eklendi ve kod çöktü.",
+      "back": "Bir composition'a verilmiş command nesnesi bağımsız olarak schedule edilemez ve ikinci bir composition'a verilemez. Bunu denemek exception fırlatır ve kullanıcı programını çökertir; Robot Code göstergesi kırmızıya döner. Çözüm her rutin için ayrı command nesnesi üretmektir. Bu hatanın etkinlikte ortaya çıkması tesadüf değildir: tek rutinle çalışırken hiçbir belirti vermez, ikinci rutin eklendiği anda çıkar. İlgili bir nokta da requirement'ların composition'a geçmesidir. Composition bileşenlerinin bütün requirement'larını üstlenir ve bunlar değiştirilemez; sürüş kısmı bitmiş olsa bile composition sürdüğü sürece o subsystem meşguldür.",
+      "takeaway": "Paylaşılan command nesnesi, ikinci rutin eklenene kadar sessiz kalan bir hatadır",
+      "tags": [
+        "composition",
+        "exception",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-03-d8",
+        "programming-03-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-03-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci kolu yukarı kaldıran bir command yazdı. initialize ve execute metotlarını yazdı, ancak isFinished metodunu hiç yazmadı. Command schedule edildiğinde ne olur?",
+      "options": [
+        "Command kendiliğinden hiç bitmez; kesilene kadar çalışmaya devam eder.",
+        "Command bir kez execute çalıştırıp hemen biter.",
+        "Kod derlenmez, çünkü isFinished metodunun yazılması zorunludur.",
+        "Command initialize çalıştıktan sonra biter ve execute hiç çağrılmaz."
+      ],
+      "correctIndex": 0,
+      "explanation": "isFinished metodunun varsayılan dönüş değeri false'tur ve dokümantasyon sonucunu açıkça yazar: kendiliğinden hiç bitmeyen, kesilene kadar çalışan bir command. Uygulamadaki karşılığı şudur: kol üst sınırına dayanır, motor zorlanmaya devam eder ve subsystem başka bir command'e serbest bırakılmaz. Üçüncü şık yanlıştır; metot varsayılan bir gövdeye sahiptir, yazılması zorunlu değildir, bu yüzden hata derleme anında değil davranışta ortaya çıkar. Bitiş koşulu ya isFinished içine yazılır ya da command bir composition içinde başka bir command ile sınırlandırılır. Bu drill'in asıl noktası, yazılmayan bir metodun sessizce bir varsayılan davranış ürettiğini görmektir.",
+      "hint": "Yazılmayan bir metot hata vermez. Peki ne döndürür?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html"
+    },
+    {
+      "id": "programming-03-d2",
+      "type": "debug_code",
+      "language": "java",
+      "prompt": "Bu command kol hedefe ulaşıp bittikten sonra da motoru sürmeye devam ediyor. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "code": "public class LiftArmCommand extends Command {\n  private static final double kLiftSpeed = 0.5;\n  private final Arm m_arm;\n\n  public LiftArmCommand(Arm arm) {\n    m_arm = arm;\n    addRequirements(m_arm);\n  }\n\n  @Override\n  public void execute() {\n    m_arm.setSpeed(kLiftSpeed);\n  }\n\n  @Override\n  public boolean isFinished() {\n    return m_arm.atTargetPosition();\n  }\n\n  @Override\n  public void end(boolean interrupted) {\n    m_arm.setSpeed(kLiftSpeed);\n  }\n}",
+      "buggyLine": 22,
+      "correctAnswer": "m_arm.setSpeed(0);",
+      "acceptableAnswers": [
+        "m_arm.setSpeed(0);",
+        "m_arm.setSpeed(0.0);",
+        "m_arm.setSpeed(0)",
+        "m_arm.setSpeed(0.0)"
+      ],
+      "explanation": "end metodu command bittiğinde veya kesildiğinde bir kez çağrılır ve dokümantasyona göre subsystem'i güvenli duruma döndürmelidir. Burada end, execute ile aynı satırı çalıştırarak motoru kaldırma hızında bırakıyor; isFinished true dönüp command listeden düştüğü hâlde motor sürülmeye devam ediyor. Doğru davranış çıkışı sıfırlamaktır. Bu hata sinsidir çünkü command mantığı doğru görünür ve isFinished de doğru yazılmıştır; sorun yalnızca kol hedefi geçip üst sınıra dayanınca fark edilir. Aynı hata kesilme durumunda da geçerlidir: sürücü command'i iptal ettiğinde end yine çalışır ve motoru yine kaldırma hızında bırakır.",
+      "hint": "end metodu ne zaman çağrılır ve o anda motorun hangi durumda olması gerekir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html"
+    },
+    {
+      "id": "programming-03-d3",
+      "type": "diagnose",
+      "symptom": "Drive subsystem'ini requirement olarak bildiren bir hizalama command'i çalışırken sürücü joystick'e dokunuyor. Joystick, yine drive subsystem'ini bildiren başka bir command'i zamanlıyor. Hizalama command'i anında duruyor ve joystick command'i çalışmaya başlıyor. Kodda bu davranışı isteyen özel bir ayar yok.",
+      "prompt": "Bu davranışın kaynağı nedir?",
+      "options": [
+        "İki command aynı anda çalışıyor ve subsystem her ikisinin çıkışını topluyor.",
+        "Çalışan command'in varsayılan interruption behavior'ı kCancelSelf'tir; requirement çakıştığında çalışan command iptal edilir ve yeni command schedule edilir.",
+        "Yeni command reddedilir; hizalama command'inin durmasının başka bir sebebi olmalıdır.",
+        "CommandScheduler bir exception fırlatır ve her iki command de iptal edilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Birinci şık doğrudan elenir, çünkü command-based'in kaynak yönetimi kuralı bir subsystem'i aynı anda yalnızca tek bir command'in kullanabilmesidir; çıkışların toplanması diye bir şey yoktur. Çakışma, çalışan command'in getInterruptionBehavior değerine göre çözülür; bu genel bir scheduler ayarı değil, command'in kendi özelliğidir ve varsayılanı kCancelSelf'tir: çalışan command iptal edilir, gelen command schedule edilir. Üçüncü şıktaki davranış gerçektir ancak kCancelIncoming ayarına aittir ve varsayılan değildir; belirtide özel bir ayar bulunmadığı söylendiği için elenir. Dördüncü şık da yanlıştır; requirement çakışması bir hata değil, scheduler'ın çözmek için var olduğu normal bir durumdur. Pratik sonuç şudur: iptal edilen command'in end metodu interrupted true ile çağrılır, dolayısıyla subsystem'i güvenli duruma döndürmek tam olarak orada yapılmalıdır.",
+      "hint": "Belirti 'özel bir ayar yok' diyor. Bu cümle hangi şıkkı eliyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html"
+    },
+    {
+      "id": "programming-03-d4",
+      "type": "multiple_choice",
+      "prompt": "Bir shooter command'i hedef hıza ulaşınca doğal olarak bitiyor ve bu durumda flywheel'in dönmeye devam etmesi isteniyor. Aynı command sürücü tarafından iptal edildiğinde ise flywheel'in durması isteniyor. Bu ayrımı nerede ve nasıl yaparsınız?",
+      "options": [
+        "isFinished metodunda; dönüş değerine göre farklı davranılır.",
+        "initialize metodunda; command başlarken nasıl biteceği belirlenir.",
+        "end metodunda; interrupted parametresi command'in doğal olarak mı bittiğini yoksa kesildiğini mi bildirir.",
+        "Bu ayrım tek bir command içinde yapılamaz; iki ayrı command yazmak gerekir."
+      ],
+      "correctIndex": 2,
+      "explanation": "end metodu, command ister isFinished true döndüğü için doğal olarak bitsin ister kesilsin, her iki durumda da bir kez çağrılır. Aldığı boolean parametre hangisinin gerçekleştiğini bildirir ve bu sayede iki duruma farklı temizlik davranışı yazılabilir. Birinci şık yanlıştır: isFinished yalnızca durup durmayacağını bildirir, temizlik işini yapmaz ve zaten defalarca çağrıldığı için içine yan etkili kod yazmak hatalıdır. İkinci şık yanlıştır; initialize başlangıçta çalışır ve command'in nasıl biteceğini o anda bilemez. Dördüncü şık gereksiz bir çözümdür, çünkü parametre tam olarak bu ayrım için vardır.",
+      "hint": "Dört metottan hangisi bir parametre alıyor ve o parametre neyi bildiriyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html"
+    },
+    {
+      "id": "programming-03-d5",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi command yaşam döngüsünü yeni üyelere anlatıyor.",
+      "elements": [
+        "initialize, command her schedule edildiğinde tam olarak bir kez çağrılır.",
+        "execute, command schedule edilmiş olduğu sürece tekrar tekrar çağrılır.",
+        "isFinished true döndüğü anda end çağrılır ve command biter.",
+        "end yalnızca command doğal olarak bittiğinde çağrılır; kesilen command'lerde çağrılmaz.",
+        "Her command kontrol ettiği subsystem'leri requirement olarak bildirmelidir."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dokümantasyon bunun tam tersini söyler: end metodu, command ister normal biterek ister kesilerek sonlansın, her durumda bir kez çağrılır ve interrupted parametresi hangisinin olduğunu bildirir. Bu yanlış inanç zararsız değildir; temizlik kodunu yanlış yere koymaya yol açar. Kesilen bir command'in end metodunun çalışmayacağını sanan bir ekip, motoru durdurma satırını başka bir yere taşır ve iptal edilen command robotu sürmeye devam eder. Diğer dört ifade dokümantasyonun tarif ettiği gibidir.",
+      "hint": "Dört metottan birinin ne zaman çağrıldığı hakkında bir iddia var. O iddia hangi durumu dışarıda bırakıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html"
+    },
+    {
+      "id": "programming-03-d6",
+      "type": "numeric",
+      "prompt": "CommandScheduler.run metodu robotPeriodic içinden çağrılıyor ve robotPeriodic varsayılan frekansında çalışıyor. Bir command schedule edildikten 1,5 saniye sonra isFinished true dönüyor. Bu süre boyunca execute yaklaşık kaç kez çağrılmış olur?",
+      "answer": 75,
+      "tolerance": 1,
+      "unit": "çağrı",
+      "explanation": "robotPeriodic varsayılan olarak 50 Hz frekansta, yani 20 ms'de bir çalışır. 1,5 saniye 1500 ms'dir ve 1500 bölü 20 işlemi 75 verir. Sayının kendisinden çok, çıkardığı sonuç önemlidir: execute saniyede elli kez çalışan bir metottur. Bu yüzden execute içine ağır hesaplamalar, dosya erişimi veya uzun döngüler konulmaz. Dokümantasyon isFinished metodunun da her scheduler döngüsünde çağrıldığını söyler, dolayısıyla o da hafif tutulmalıdır. Döngü süresinin aşılması durumunda robotun geç tepki vermesi ise dokümantasyonda bu sayfada yazmayan, pratikten gelen bir beklentidir. Sayı yaklaşıktır; döngü süresi aşıldığında gerçek çağrı sayısı bundan az olur.",
+      "hint": "Varsayılan frekans 50 Hz. Bir döngü kaç milisaniye sürer?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/what-is-command-based.html"
+    },
+    {
+      "id": "programming-03-d7",
+      "type": "multiple_choice",
+      "prompt": "Bir autonomous rutini, drive subsystem'ini kullanan bir sürüş command'i ile arm subsystem'ini kullanan bir kaldırma command'ini bir SequentialCommandGroup içinde birleştiriyor. Sürüş kısmı bitmiş, kaldırma kısmı sürüyor. Bu sırada drive subsystem'ini bildiren başka bir command schedule ediliyor. Ne olur?",
+      "options": [
+        "Composition artık drive subsystem'ini kullanmadığı için yeni command sorunsuz çalışır.",
+        "İki command drive subsystem'ini paylaşarak birlikte çalışır.",
+        "Yeni command reddedilir ve composition kesintisiz devam eder.",
+        "Composition bileşenlerinin requirement'larının tamamını taşır ve bunlar değiştirilemez; drive hâlâ composition tarafından tutulduğu için çakışma oluşur ve composition iptal edilir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural şudur: command composition'ları bileşenlerinin gerektirdiği bütün subsystem'leri gerektirir ve requirement'lar değiştirilemez. Yani composition, drive subsystem'ini yalnızca sürüş kısmı çalışırken değil, ilk andan son ana kadar tutar. Birinci şık bu yüzden yanlıştır ve rookie takımların en sık yaptığı varsayımdır. Çakışma çıktığında composition'ın interruption behavior'ı belirleyicidir; bileşenlerin hepsi kCancelIncoming olmadıkça composition kCancelIncoming olmaz, dolayısıyla varsayılan durumda iptal edilen taraf composition olur. Üçüncü şık bu nedenle yanlıştır. İkinci şık zaten temel kuralı ihlal eder. Pratik sonuç: geniş requirement taşıyan bir composition kısmen devralınamaz, bu yüzden autonomous rutinleri gereğinden fazla subsystem tutmayacak biçimde kurulur.",
+      "hint": "Composition'ın requirement'ları zaman içinde değişir mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html"
+    },
+    {
+      "id": "programming-03-d8",
+      "type": "diagnose",
+      "symptom": "Bir autonomous rutini bütün hafta sorunsuz çalıştı. Etkinlikte ikinci bir rutin eklendi ve ilk rutinde kullanılan command nesnesinin aynısı ikinci rutinin composition'ına da konuldu. Şimdi robot kodu, bu rutin kurulurken exception fırlatıp çöküyor ve Robot Code göstergesi kırmızıya dönüyor.",
+      "prompt": "Neden oldu ve nasıl düzeltilir?",
+      "options": [
+        "Bir composition'a verilmiş command nesnesi bağımsız olarak schedule edilemez ve ikinci bir composition'a verilemez; bunu denemek exception fırlatır ve kullanıcı programını çökertir. Her rutin için ayrı command nesnesi üretilmelidir.",
+        "İki rutin aynı subsystem'i kullandığı için requirement çakışması oluştu; birinin requirement'ı kaldırılmalıdır.",
+        "Composition'lar iç içe kullanılamaz; ikinci rutin düz bir command listesine çevrilmelidir.",
+        "roboRIO belleği yetmemiştir; Diagnostics sekmesinden bellek durumu kontrol edilmelidir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon bu kuralı doğrudan yazar: bir command composition'ına verilmiş command nesneleri bağımsız olarak schedule edilemez veya ikinci bir composition'a verilemez; bunu denemek exception fırlatır ve kullanıcı programını çökertir. Gerekçe, composition üyelerinin kendilerini kapsayan composition üzerinden çalıştırılmasıdır; aynı nesnenin iki yerden çalıştırılması tutarsız iç duruma ve teşhis edilmesi zor davranışlara yol açar. Çözüm, her rutin için yeni bir command nesnesi üretmektir; takımlarda yaygın çözüm, command nesnesini paylaşmak yerine her çağrıldığında yeni bir nesne döndüren bir üretici metot yazmaktır. Bu ikinci cümle kuralın kendisi değil, kuralın pratikteki karşılığıdır. İkinci şık yanlıştır, çünkü requirement çakışması programı çökertmez, scheduler tarafından çözülür. Üçüncü şık da yanlıştır: composition'lar kendileri de birer command olduğundan iç içe kullanılabilirler, dokümantasyon bunu açıkça söyler. Dördüncü şık pit'te akla gelen ancak belirtiyle uyuşmayan bir tahmindir; bellek yetmezliği belirli bir rutinin kurulmasına bağlı, her seferinde aynı biçimde tekrarlanan bir çökme üretmez.",
+      "hint": "Belirtideki kritik kelime 'aynısı'. Aynı nesnenin iki composition'da bulunması neden sorun olsun?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html",
+      "sourceNote": "Üretici metot alışkanlığı bu sayfada geçmez; kural metni command-compositions sayfasındandır."
+    }
+  ]
+}

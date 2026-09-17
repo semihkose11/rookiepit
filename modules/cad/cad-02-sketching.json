@@ -1,0 +1,307 @@
+{
+  "id": "cad-02-sketching",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 2,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Sketch Temelleri ve Kısıtlanma Durumu",
+  "summary": "Sketch'in ne olduğunu, üzerine çizilebilecek yüzeyleri, mavi siyah ve kırmızı renklerin ne bildirdiğini ve tam kısıtlanmamış bir sketch'in neden bir ölçü belgesi sayılamayacağını öğretir.",
+  "prerequisites": [
+    "cad-01-onshape-basics"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Sketch, Sketch toolbar ile oluşturulan ve bir plane üzerine çizilmiş, dimension ile constraint sistemine sahip eğriler kümesidir. Onshape'te sketch'ler Part Studio'da oluşturulur ve line segment, polygon, rectangle, spline gibi sketch curve'lerden oluşur. Kaynağın cümlesi şöyle devam eder: sketch'ler modellerin temelidir, parametrik olarak saklanır ve Features list'te kendi entity'si olarak görünür.\n\nSketch başlatılırken üzerine çizilecek plane seçilir ve aynı anda yalnızca tek bir plane üzerine çizilebilir. Var olan bir sketch veya part'ınız varsa, plane yerine bir part face veya bir Mate connector da sketch plane olarak seçilebilir; Mate connector implicit veya explicit olabilir.\n\nSketch geometrisinin rengi durumunu bildirir ve bu üç renk sketch okumanın temelidir. Mavi underconstrained, siyah fully constrained, kırmızı ise bir constraint sorunu yani overconstrained demektir. Constraint ikonlarında kırmızı üzerine beyaz bir sorunu, gri üzerine siyah ise iyi tanımlanmış olmayı gösterir.\n\nEksik olanı bulmak için kaynak iki yol verir: daha fazla dimension veya constraint eklemek sketch'i daha fazla kısıtlar, entity'leri sürüklemek ise hangi constraint veya dimension'ın eklenmesi gerektiğini anlamaya yardımcı olabilir. İki de araç vardır ve işleri farklıdır. Profile inspector sketch'teki gap'leri bulmaya ve gereken yerlerde loop'ları kapatmaya yardım eder. Constraint manager ise constraint ve dimension'ları görüntüleyip filtrelemeyi ve constraint hatalarını düzeltmeyi sağlar; Status filtresinde Driven, Solved ve Errors değerleri vardır ve buradan bir constraint silinebilir. Son bir ayrıntı: seçimde üst üste binen noktalarda tam kısıtlanmamış olanlar, yani mavi veya kırmızı noktalar, tam kısıtlanmış siyah noktaların önüne geçer.",
+    "keyTerms": [
+      {
+        "term": "sketch",
+        "glossTr": "bir plane üzerine çizilmiş, dimension ve constraint sistemine sahip eğriler kümesi"
+      },
+      {
+        "term": "sketch plane",
+        "glossTr": "sketch'in üzerine çizildiği düzlem"
+      },
+      {
+        "term": "plane",
+        "glossTr": "üzerine sketch çizilebilen düzlem"
+      },
+      {
+        "term": "part face",
+        "glossTr": "bir part'ın üzerine sketch çizilebilen yüzeyi"
+      },
+      {
+        "term": "dimension",
+        "glossTr": "bir sketch geometrisine sayısal ölçü veren kısıt"
+      },
+      {
+        "term": "constraint",
+        "glossTr": "sketch geometrisinin serbestliğini sınırlayan geometrik kural"
+      },
+      {
+        "term": "underconstrained",
+        "glossTr": "yeterince kısıtlanmamış, hâlâ hareket edebilen sketch durumu"
+      },
+      {
+        "term": "fully constrained",
+        "glossTr": "tam kısıtlanmış, artık hareket edemeyen sketch durumu"
+      },
+      {
+        "term": "overconstrained",
+        "glossTr": "birbiriyle çelişen kısıtlar içeren sketch durumu"
+      },
+      {
+        "term": "Profile inspector",
+        "glossTr": "sketch'teki gap'leri bulup loop'ları kapatmaya yardım eden araç"
+      },
+      {
+        "term": "sketch curve",
+        "glossTr": "sketch'i oluşturan tekil çizgi, yay veya eğri"
+      },
+      {
+        "term": "Constraint manager",
+        "glossTr": "constraint ve dimension'ları görüntüleyip filtreleyen, hataları düzeltmeye yarayan araç"
+      },
+      {
+        "term": "construction geometry",
+        "glossTr": "modeli oluşturmayan, yardımcı olarak çizilen ve kesikli görünen geometri"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-02-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "SKETCH",
+      "front": "Sketch üç renkle konuşur ve bu üç renk bir tercih değildir.",
+      "back": "Sketch, bir plane üzerine çizilmiş, dimension ile constraint sistemine sahip eğriler kümesidir ve Onshape'te Part Studio'da oluşturulur. Geometrinin rengi durumunu bildirir: mavi underconstrained, siyah fully constrained, kırmızı ise bir constraint sorunu yani overconstrained demektir. Constraint ikonlarında da aynı mantık vardır; kırmızı üzerine beyaz bir sorunu, gri üzerine siyah ise iyi tanımlanmış olmayı gösterir. Bu üç renk sketch okumanın alfabesidir. Renkleri bilmeyen bir öğrenci sorunu göremez, çünkü Onshape hata vermez; sadece rengi değiştirir ve beklemeye devam eder.",
+      "takeaway": "Sketch'e bakarken önce rengine bakın; ölçüye sonra bakılır",
+      "tags": [
+        "sketch",
+        "renk",
+        "constraint"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-02-d1",
+        "cad-02-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-02-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "SKETCH",
+      "front": "Mavi kalan bir sketch'te eksik olan nasıl bulunur?",
+      "back": "Kaynak iki yol verir. Daha fazla dimension veya constraint eklemek sketch'i daha fazla kısıtlar. Entity'leri sürüklemek ise hangi constraint veya dimension'ın eklenmesi gerektiğini anlamaya yardımcı olabilir; burada sürükleme bir teşhis yöntemidir, çünkü yalnızca serbestliği kalan geometri hareket eder. İki de araç vardır ve işleri aynı değildir. Profile inspector sketch'teki gap'leri bulmaya ve gereken yerlerde loop'ları kapatmaya yardım eder. Constraint manager ise constraint ve dimension'ları görüntüleyip filtrelemeyi ve constraint hatalarını düzeltmeyi sağlar; Status filtresinde Driven, Solved ve Errors değerleri vardır ve buradan bir constraint silinebilir. Bir ayrıntı daha vardır: seçimde üst üste binen noktalarda tam kısıtlanmamış olanlar, yani mavi veya kırmızı noktalar, tam kısıtlanmış siyah noktaların önüne geçer.",
+      "takeaway": "Gap bir boşluk sorunudur, constraint hatası bir kural sorunudur; araç ona göre seçilir",
+      "tags": [
+        "Profile inspector",
+        "Constraint manager",
+        "sürükleme"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-02-d7",
+        "cad-02-d6"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-02-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "SKETCH",
+      "front": "Sketch mavi bırakıldı, parça atölyeden dar çıktı.",
+      "back": "Mavi underconstrained demektir ve underconstrained bir entity'nin kalan serbestliği vardır. O serbestlik bir sürükleme ile kullanıldığında geometri hareket eder ve yeni konumunda kalır. Onshape bunu bir hata saymaz, çünkü kısıtlanmamış geometrinin hareket etmesi tanım gereği beklenen davranıştır. Sonuç, modelin gözle bakıldığında hâlâ doğru görünmesi ama ölçünün artık kastedilen ölçü olmamasıdır. Bu yüzden mavi bir sketch bir ölçü belgesi sayılamaz. Tam kısıtlanmış bir sketch'te sürükleme hiçbir şeyi hareket ettiremez; bu, sketch'in bittiğinin tek güvenilir testidir.",
+      "takeaway": "Sürüklendiğinde oynayan bir sketch, imalata gönderilecek ölçüyü taşımıyor demektir",
+      "tags": [
+        "underconstrained",
+        "sürükleme",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-02-d8",
+        "cad-02-d2"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-02-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci sketch'ine bakıyor: dış çerçevenin çizgileri siyah, iç deliğin çemberi mavi ve bir kenar kırmızı. Bu üç renk sırasıyla ne bildirir?",
+      "options": [
+        "Siyah fully constrained, mavi underconstrained, kırmızı ise bir constraint sorunu yani overconstrained durumdur.",
+        "Siyah seçili geometri, mavi seçilmemiş geometri, kırmızı ise silinmek üzere işaretlenmiş geometridir.",
+        "Siyah construction geometrisi, mavi normal geometri, kırmızı ise başka bir sketch'ten referans alınan geometridir.",
+        "Siyah tamamlanmış feature, mavi hesaplanmayı bekleyen feature, kırmızı ise hesaplaması başarısız olan feature'dır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak üç rengi tek tek verir: mavi underconstrained, siyah fully constrained, kırmızı ise bir constraint sorunu yani overconstrained demektir. Bu üç renk Onshape'te sketch okumanın alfabesidir ve bilinmediğinde öğrenci bir sorunun var olduğunu bile fark edemez, çünkü hiçbir hata penceresi açılmaz. Kaynak ayrıca constraint ikonlarının renklerini de tanımlar: kırmızı üzerine beyaz bir sorunu, gri üzerine siyah ise iyi tanımlanmış olmayı gösterir. Diğer üç şık renkleri Onshape'te var olan başka kavramlarla karıştırır. Üçüncü şıktaki construction geometry gerçek bir kavramdır ancak renkle değil, çizgi biçimiyle ayrılır; kaynak construction çizgisinin açık renkli ve kesikli göründüğünü söyler. Dördüncü şıktaki feature hata rengi de Onshape'te gerçektir, ancak soru sketch geometrisinin renklerini soruyor. Bu karışıklıklar zararsız değildir, çünkü öğrenciyi mavi bir sketch'i normal sayıp üzerine model kurmaya iter.",
+      "hint": "Üç renk de aynı şeyin farklı derecelerini bildiriyor. O şey nedir?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/troubleshooting_sketch_geometry.htm"
+    },
+    {
+      "id": "cad-02-d2",
+      "type": "diagnose",
+      "symptom": "Bir takım üyesi bir plakanın sketch'ini açtı, ölçüleri gözle incelerken bir çizgiyi farkında olmadan sürükledi ve sketch'i kapattı. Ertesi gün plakanın genişliğinin biraz değiştiği fark edildi. Sketch'te birkaç çizgi mavi görünüyor. Feature list'te hiçbir hata işareti yok.",
+      "prompt": "Bu davranışın kaynağı nedir?",
+      "options": [
+        "Sketch overconstrained durumdadır ve Onshape çelişkiyi çözmek için ölçüleri kendiliğinden yeniden dağıtmıştır.",
+        "Sketch tam kısıtlanmamıştır; mavi underconstrained demektir ve bu entity'ler hâlâ hareket edebilir.",
+        "Feature list'te hata olmadığına göre sketch sağlamdır; değişimin sebebi assembly'deki bir mate olmalıdır.",
+        "Sketch bir part face üzerine çizildiği için, part değiştiğinde sketch ölçüleri de orantılı olarak ölçeklenmiştir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynağın renk kuralı doğrudan cevabı veriyor: mavi underconstrained demektir. Underconstrained bir entity'nin hâlâ serbestliği vardır ve o serbestlik yönünde hareket edebilir. Kaynak sürüklemeyi bir teşhis yöntemi olarak anar; entity'leri sürüklemek hangi constraint veya dimension'ın eklenmesi gerektiğini anlamaya yardımcı olabilir. Sürüklenen geometrinin yeni konumunda kalması ise kaynakta yazmayan, pratikten gelen bir gözlemdir ve bu senaryonun tam olarak sebebidir. Belirtideki en yanıltıcı ayrıntı hata işaretinin olmamasıdır. Onshape burada bir hata görmez, çünkü ortada bir hata yoktur; tanımlanmamış bir serbestlik vardır ve o serbestlik kullanılmıştır. Birinci şık kaynağın söylemediği bir davranış uydurur. Üçüncü şık hata yokluğunu sağlamlık kanıtı sayar ve bu modülün asıl uyarısıdır; ayrıca belirtide sürükleme olduğu açıkça söyleniyor, dolayısıyla dış bir sebep aramaya gerek yok. Dördüncü şık da yanlıştır.",
+      "hint": "Hata işareti yok. Peki bu, sketch'in tanımlı olduğu anlamına gelir mi?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/troubleshooting_sketch_geometry.htm"
+    },
+    {
+      "id": "cad-02-d3",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci dikdörtgen bir sketch çizdi, genişliği 80 mm ve yüksekliği 50 mm olacak biçimde iki dimension ekledi, ardından birbirine komşu iki kenarın eşit uzunlukta olması için bir equal constraint ekledi. Ekledikten sonra sketch geometrisinin bir kısmı kırmızıya döndü.",
+      "prompt": "Ne oldu ve nasıl çözülür?",
+      "options": [
+        "Kırmızı, sketch'in tam kısıtlandığını bildirir; bu istenen sonuçtur ve herhangi bir işlem gerekmez.",
+        "Kırmızı, sketch'in henüz hesaplanmadığını bildirir; bir süre beklendiğinde renk kendiliğinden siyaha dönecektir.",
+        "Kırmızı bir constraint sorununu, yani overconstrained durumu bildirir; çelişen kısıtlardan biri kaldırılmalıdır.",
+        "Kırmızı, sketch'in başka bir Part Studio'daki geometriye referans verdiğini bildirir; referansın kopyalanması gerekir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynağın renk kuralı burada da doğrudan işler: kırmızı bir constraint sorununu, yani overconstrained durumu bildirir. Senaryodaki adımlar bu duruma nasıl gelindiğini gösteriyor. İki dimension komşu iki kenarın uzunluklarını 80 ve 50 olarak ayrı ayrı belirlemişti; equal constraint ise aynı iki uzunluğun birbirine eşit olmasını istiyor. Bu üç kural birlikte tutarsızdır, çünkü 80 ile 50 aynı anda hem farklı hem eşit olamaz, ve Onshape bunu kırmızıyla bildirir. Çözüm çelişen constraint'lerden birini kaldırmaktır; burada ya iki dimension'dan biri ya da equal constraint fazladır. Kaynak silme işlemini Constraint manager üzerinden tarif eder ve orada Status filtresindeki Errors değeri hatalı constraint'leri listeler. Birinci şık kırmızı ile siyahı ters çevirir; tam kısıtlanmış geometri siyahtır. İkinci ve dördüncü şıklar kaynakta karşılığı olmayan anlamlar uydurur. Genel ders şudur: sketch'e constraint eklemek her zaman iyileştirme değildir, çünkü aynı bilgiyi iki farklı yoldan söylemek çelişki üretir.",
+      "hint": "Öğrenci aynı bilgiyi kaç farklı yoldan söylemiş oldu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/troubleshooting_sketch_geometry.htm",
+      "sourceNote": "Constraint manager ve constraint silme: https://cad.onshape.com/help/Content/Primer/defining_constraining.htm"
+    },
+    {
+      "id": "cad-02-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir CAD ekibi sketch okuma konusunda bir başvuru kartı hazırlıyor.",
+      "elements": [
+        "Sketch'ler Part Studio'da oluşturulur ve modellerin temelidir.",
+        "Sketch'ler parametrik olarak saklanır.",
+        "Aynı anda yalnızca tek bir plane üzerine sketch çizilebilir.",
+        "Mavi geometri, sketch'in tam kısıtlandığını bildirir.",
+        "Sketch plane olarak bir part face veya bir mate connector da seçilebilir."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak renkleri tersine tanımlar: mavi underconstrained, siyah fully constrained demektir. Bu iki rengin karıştırılması, bu modülde öğretilen en pahalı hatadır, çünkü mavi bir sketch'i tam kısıtlanmış sanan bir öğrenci geometrinin hâlâ hareket edebileceğini bilmez ve üzerine bütün bir model kurar. Renkler tersine bilindiğinde belirti de tersine okunur; öğrenci siyah geometriyi sorunlu sanıp gereksiz constraint eklemeye çalışır ve bu kez overconstrained duruma düşer. Diğer dört ifade kaynağın yazdığı gibidir.",
+      "hint": "İfadelerden biri bir renge anlam yüklüyor. Kaynak o rengi hangi duruma bağlıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/sketch_basics.htm",
+      "sourceNote": "Renk kuralı: https://cad.onshape.com/help/Content/Sketch/troubleshooting_sketch_geometry.htm"
+    },
+    {
+      "id": "cad-02-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci var olan bir part'ın düz bir yüzeyi üzerine delik deseni çizmek istiyor ve bunun için yeni bir plane oluşturması gerektiğini düşünüyor. Kaynak sketch plane seçimi hakkında ne diyor?",
+      "options": [
+        "Part yüzeyleri sketch plane olarak kullanılamaz; yüzey üzerine çizim yalnızca drawing tab'inde yapılabilir.",
+        "Sketch yalnızca varsayılan üç plane üzerine çizilebilir; part yüzeyine çizmek için önce yüzeyden bir plane türetilmelidir.",
+        "Sketch aynı anda birden çok plane üzerine çizilebilir; bu yüzden yüzey ve plane birlikte seçilerek işlem yapılır.",
+        "Var olan bir part'ınız varsa, plane yerine bir part face veya bir Mate connector da sketch plane olarak seçilebilir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak seçenekleri sayar ve bir şart da koyar: üzerine çizilecek plane seçilir, aynı anda tek bir plane üzerine çizilir, ve var olan bir sketch veya part'ınız varsa plane yerine bir part face veya bir Mate connector da sketch plane olarak seçilebilir; Mate connector implicit ya da explicit olabilir. Senaryodaki öğrencinin var olan bir part'ı olduğu için şart sağlanıyor ve düşündüğü ek adım gereksiz kalıyor. Buna bağlı iki pratik gözlem daha vardır ve bunlar kaynakta yazmaz: gereksiz plane'ler Feature list'i uzatır, ve part yüzeyi zaten istenen konumu taşıdığı için ayrıca hizalanması gerekmez. İkinci şık kaynağın verdiği seçenekleri daraltır. Üçüncü şık kaynağın açık ifadesiyle çelişir; aynı anda tek plane üzerine çizilir. Birinci şık iki tab'in işini karıştırır; drawing var olan geometriden üretilir, geometri orada çizilmez.",
+      "hint": "Kaynak sketch plane olarak kaç farklı şey sayıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/sketch_basics.htm"
+    },
+    {
+      "id": "cad-02-d6",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci sketch'te üst üste binmiş iki nokta üzerinde çalışıyor. Alttaki nokta siyah, üstteki mavi. Öğrenci siyah noktayı seçmeye çalışıyor ancak her tıkladığında mavi nokta seçiliyor. Yakınlaştırmak da sonucu değiştirmiyor.",
+      "prompt": "Neden hep mavi nokta seçiliyor?",
+      "options": [
+        "Seçimde üst üste binen noktalarda tam kısıtlanmamış olanlar, tam kısıtlanmış olanların önüne geçer.",
+        "Mavi nokta daha sonra oluşturulduğu için seçim listesinde önce gelir; sıralama oluşturma zamanına göre belirlenir.",
+        "Siyah noktalar tam kısıtlandıkları için artık seçilemezler; seçilebilmeleri için önce bir constraint kaldırılmalıdır.",
+        "Sketch düzenleme modu kapalıdır; mod açıldığında siyah nokta normal biçimde seçilebilir hâle gelecektir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak bu davranışı özel olarak belirtir: seçim yapılırken, tam kısıtlanmamış sketch noktaları, yani mavi veya kırmızı görünenler, üst üste binen tam kısıtlanmış siyah noktaların önüne geçer. Bu, bilinmediğinde arayüz bozuk gibi görünen bir kuraldır ve öğrenci defalarca tıklayıp yakınlaştırarak zaman kaybeder. Kuralın arkasındaki mantık makuldür: tam kısıtlanmamış bir nokta üzerinde çalışılması muhtemel olandır, çünkü tanımlanmayı bekleyen odur. Üçüncü şık kaynakta karşılığı olmayan bir yasak uydurur; siyah noktalar seçilebilir, yalnızca üst üste binme durumunda önceliği kaybederler. İkinci ve dördüncü şıklar da kaynakta bulunmayan mekanizmalar önerir. Pratik çıkış yolu, mavi noktayı önce kısıtlayıp siyaha çevirmek veya geometriyi geçici olarak ayırmaktır; bu son cümle kaynakta yazmayan, pratikten gelen bir öneridir.",
+      "hint": "İki nokta üst üste. Onshape hangisini seçmenin daha olası olduğunu varsayıyor olabilir?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/sketch_basics.htm"
+    },
+    {
+      "id": "cad-02-d7",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrencinin sketch'i mavi kalıyor ancak neyin eksik olduğunu bulamıyor. Kaynağın bu durum için verdiği iki yol hangisidir?",
+      "options": [
+        "Sketch'i silip yeniden çizmek; tam kısıtlanmamış bir sketch'in düzeltilmesi kaynağa göre mümkün değildir.",
+        "Daha fazla dimension veya constraint eklemek ve entity'leri sürükleyerek neyin eksik olduğunu anlamak.",
+        "Sketch'i bir part face üzerine taşımak; part yüzeyine çizilen sketch'ler kendiliğinden tam kısıtlanır.",
+        "Sketch'i extrude etmek; üç boyutlu hâle gelen geometri eksik constraint'leri kendiliğinden tamamlar."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak bu durum için iki yol verir. Daha fazla dimension veya constraint eklemek sketch'i daha fazla kısıtlar. Entity'leri sürüklemek ise hangi constraint veya dimension'ın eklenmesi gerektiğini anlamaya yardımcı olabilir; buradaki mantık şudur, bir entity hangi yönde hareket edebiliyorsa eksik olan constraint o yöndedir. Kaynağın iki aracı da vardır ancak işleri farklıdır ve bu ayrım önemlidir: Profile inspector sketch'teki gap'leri bulup loop'ları kapatmaya yardım eder, yani eksik dimension bulmak için değildir; Constraint manager ise constraint hatalarını görüntüleyip düzeltmek içindir, yani kırmızı durumun aracıdır. Sürükleme yönteminin bir uyarısı vardır ve bu modülün pit drill'inin konusudur: teşhis için sürüklemek tasarım aşamasında yararlıdır, ancak imalata gidecek bir sketch üzerinde yapılırsa geometri yeni konumunda kalır. Diğer üç şık kaynakta karşılığı olmayan yöntemler önerir ve üçü de aynı yanlış umudu taşır: eksik constraint'lerin bir şekilde kendiliğinden tamamlanacağı.",
+      "hint": "Kaynak biri elle, biri deneyerek, biri araçla olmak üzere kaç yol sayıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/troubleshooting_sketch_geometry.htm"
+    },
+    {
+      "id": "cad-02-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte kırılan bir plaka yeniden imal edilecek. Takım üyesi Onshape'te plakanın sketch'ini açıyor, dimension'ları gözle doğrulamak için geometriyi biraz sürüklüyor, sonra parçayı dışa aktarıp kesime gönderiyor. Gelen parça kırılan parçadan yaklaşık üç milimetre dar. Sketch'te birkaç entity mavi görünüyordu ve hiçbir hata işareti yoktu.",
+      "prompt": "Ne oldu?",
+      "options": [
+        "Dışa aktarma sırasında ölçek ayarı yanlış seçildiği için parça bütün yönlerde orantılı olarak küçüldü.",
+        "Kırmızı entity'ler overconstrained olduğu için dimension'lar yanlış hesaplandı ve parça dar çıktı.",
+        "Sketch tam kısıtlanmamıştı; mavi entity'ler sürüklendiğinde hareket etti ve yeni konumlarında kaldı.",
+        "Sketch bir part face üzerine çizildiği için, part face'in konumu değiştiğinde dimension'lar kaydı."
+      ],
+      "correctIndex": 2,
+      "explanation": "Mavi underconstrained demektir ve underconstrained bir entity'nin kalan serbestliği vardır. Bu serbestlik sürükleme ile kullanıldığında geometri hareket eder ve yeni konumunda kalır. Bu son cümle kaynakta yazmaz; kaynak sürüklemeyi yalnızca bir teşhis yöntemi olarak anar ve sonucunun kalıcı olduğunu söylemez. Kalıcılık pratikten gelen bir gözlemdir ve tam olarak bu olayın sebebidir. Hiçbir şey uyarmaz; hata işareti çıkmaz, sketch yeniden hesaplanır, part oluşur ve dışa aktarma sorunsuz tamamlanır. Buradaki ders tek cümleyle şudur: tam kısıtlanmamış bir sketch bir ölçü belgesi değil, bir öneridir. İkinci şık belirtiyle çelişir; entity'ler mavi, kırmızı değil. Birinci ve dördüncü şıklar mekanizma uydurur, ayrıca bir ölçek hatası tek yönde üç milimetrelik fark değil, orantılı bir küçülme üretirdi. Etkinlik alışkanlığı olarak şu kural işe yarar: imalata gidecek her sketch siyah olmalıdır ve teşhis için sürükleme yalnızca tasarım aşamasında yapılmalıdır.",
+      "hint": "Üye hiçbir ölçüyü değiştirmedi, yalnızca sürükledi. Sürüklemek neyi değiştirmiş olabilir?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/troubleshooting_sketch_geometry.htm",
+      "sourceNote": "Sketch'lerin parametrik saklanması: https://cad.onshape.com/help/Content/Sketch/sketch_basics.htm"
+    }
+  ]
+}

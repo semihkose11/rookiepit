@@ -1,0 +1,297 @@
+{
+  "id": "electrical-10-wire-management",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 10,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Wire Management, Strain Relief ve Bakım",
+  "summary": "Kabloların bağlantı noktalarında neden gevşek pay bırakılarak sabitlendiğini, hangi bağlantının nasıl test edildiğini ve etkinlik boyunca hangi kontrollerin hangi sıklıkla yapılacağını öğretir.",
+  "prerequisites": [
+    "electrical-01-power-path",
+    "electrical-03-can-bus"
+  ],
+  "estimatedMinutes": 14,
+  "concept": {
+    "body": "Robot elektriğinde arızaların çoğu yanlış tasarımdan değil, gevşeyen bir bağlantıdan çıkar. Bu modül o bağlantıları ayakta tutan alışkanlıkları anlatır.\n\nTemel kavram strain relief'tir (gerilim azaltma): kablolar bağlantı noktalarına yakın bir yerden sabitlenir ve konnektöre yük binmeyecek kadar pay bırakılır. Amaç, titreşim ve çarpışmada kuvvetin konnektöre değil, sabitleme noktasına gitmesidir. Kabloyu gergin çekmek düzenli görünür ancak tam tersini yapar.\n\nBağlantı türüne göre kontrol yöntemi değişir. Somun ve cıvatalı bağlantılarda kablo ucu elle çevrilememelidir; battery veya main breaker terminalini kavrayıp çevirebiliyorsanız bağlantı yeterince sıkı değildir. Fuse'lar tam oturmalıdır ve bu beklediğinizden fazla kuvvet gerektirebilir. SB-50 gibi geçmeli konnektörler klips veya kablo bağı ile emniyete alınır. Sık takılıp çıkarılan portlar port saver veya pigtail ile korunur, titreşim üreten bileşenler vibration isolator ile monte edilir ve hassas elektronik istenirse shock mounting ile yumuşatılır. Her bağlantı çekilerek denenir, çıkan kablo telleri temizlenir ve yalıtımsız hiçbir bağlantı açıkta bırakılmaz.\n\nKontrol sıklığı da türe bağlıdır: battery ve PD gibi dönebilen bağlantılar bir ila üç maçta bir, WAGO ve Weidmuller gibi yaylı bağlantılar için ise etkinlik başına bir kez kontrol genellikle yeterlidir.\n\nSon olarak her maçtan sonra driver station kayıtlarındaki gerilim ve akım incelenir; zayıflayan bir battery veya sıkışan bir mekanizma çoğu zaman burada erkenden görünür.",
+    "keyTerms": [
+      {
+        "term": "strain relief",
+        "glossTr": "kabloyu bağlantı noktasına yakın sabitleyip konnektöre yük binmesini engelleme"
+      },
+      {
+        "term": "pull test",
+        "glossTr": "bağlantıyı çekerek sağlamlığını sınama"
+      },
+      {
+        "term": "whisker",
+        "glossTr": "bağlantıdan dışarı çıkan ince kablo teli"
+      },
+      {
+        "term": "port saver",
+        "glossTr": "sık takılıp çıkarılan portu koruyan kısa ara kablo"
+      },
+      {
+        "term": "pigtail",
+        "glossTr": "porta kalıcı takılan kısa uzatma kablosu"
+      },
+      {
+        "term": "vibration isolator",
+        "glossTr": "titreşimi gövdeye aktarmayan bağlantı elemanı"
+      },
+      {
+        "term": "shock mounting",
+        "glossTr": "elektroniği darbeden koruyan esnek montaj"
+      },
+      {
+        "term": "SB connector",
+        "glossTr": "battery bağlantısında kullanılan geçmeli konnektör"
+      },
+      {
+        "term": "DS log",
+        "glossTr": "driver station kaydı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-10-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "WIRE MANAGEMENT",
+      "front": "Gergin çekilmiş kablo düzenli görünür ve tam tersini yapar.",
+      "back": "Strain relief iki parçadan oluşur ve genellikle yalnızca biri uygulanır. Kablolar bağlantı noktasına yakın bir yerden sabitlenir, ama konnektöre yük binmeyecek kadar pay bırakılır. Payı olmayan bir kablo, şasi esnediğinde veya robot çarpıştığında bütün hareketi doğrudan konnektöre taşır. Sabitleme noktasının konnektörden uzakta olması da aynı sonucu verir: aradaki bütün kablo boyu konnektörü zorlar. Amaç kuvvetin konnektöre değil, sabitleme noktasına gitmesidir.",
+      "takeaway": "Yakın sabitle ve pay bırak; ikisinden biri eksikse strain relief yoktur",
+      "tags": [
+        "strain relief",
+        "pay",
+        "kablo bağı"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-10-d1",
+        "electrical-10-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-10-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "WIRE MANAGEMENT",
+      "front": "Gözle bakmak neden test sayılmıyor?",
+      "back": "Her bağlantı türü farklı tutunur, bu yüzden her birinin kendi hareketi vardır. Somun ve cıvatalı bağlantıda kablo ucu elle çevrilememelidir; battery veya main breaker terminalini kavrayıp çevirebiliyorsanız bağlantı yeterince sıkı değildir. Fuse tam oturmalıdır ve bu beklediğinizden fazla kuvvet isteyebilir. Geçmeli konnektörler klips veya kablo bağı ile emniyete alınır. Her bağlantı ayrıca çekilerek denenir, çıkan teller temizlenir ve yalıtımsız bağlantı açıkta bırakılmaz. Robotun çalışıyor olması hiçbirinin yerini tutmaz.",
+      "takeaway": "Her testin kendi hareketi var: çevirmek, bastırmak, çekmek",
+      "tags": [
+        "pull test",
+        "fuse",
+        "SB connector"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-10-d2",
+        "electrical-10-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R607",
+          "season": "2026",
+          "topic": "battery, main breaker ve bunların kabloya bağlantıları her zaman tam yalıtılmış olmalı"
+        }
+      ]
+    },
+    {
+      "id": "electrical-10-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "WIRE MANAGEMENT",
+      "front": "Arıza rastgele anlarda çıkıyor, kendiliğinden düzeliyor ve robot sarsılınca tetikleniyor.",
+      "back": "Bu üçlü mekanik bir temas sorununu tarif eder ve ilk bakılacak yer fuse'un oturmasıdır. Yarım oturmuş bir fuse yerinde görünür, elektriksel teması ise zayıftır; titreşim altında kesilir ve robot durunca kendiliğinden geri gelir. Bu yüzden pit'te ararken bulunması en zor arıza türüdür: aradığınız anda ortada yoktur. Fuse'u tam oturtmak beklediğinizden fazla kuvvet isteyebilir. Aynı mantık gevşemiş bir somun ya da emniyete alınmamış bir geçmeli konnektör için de geçerlidir.",
+      "takeaway": "Gelip giden arıza önce temas sorunudur; yazılımdan önce oturmayı kontrol edin",
+      "tags": [
+        "fuse",
+        "titreşim",
+        "aralıklı arıza"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-10-d8"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-10-d1",
+      "type": "multiple_choice",
+      "prompt": "Takım, elektronik panosunu daha derli toplu göstermek için tüm kabloları gergin çekmiş ve her kabloyu konnektöre girdiği noktadan hemen önce kablo bağıyla şasiye sabitlemiş. Hiçbir kabloda sarkma yok. Bu yaklaşımı değerlendiriniz.",
+      "options": [
+        "Yanlıştır. Kablolar bağlantı noktasına yakın sabitlenmeli, ancak konnektöre yük binmeyecek kadar pay bırakılmalıdır.",
+        "Doğrudur; gergin kablolar titreşimde daha az hareket eder ve konnektöre daha az yük biner.",
+        "Doğrudur; kablo bağı kullanıldığı sürece gerginlik önemli değildir.",
+        "Yanlıştır; kablolar bağlantı noktalarından uzakta sabitlenmeli ve aralarında hiç sabitleme yapılmamalıdır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Strain relief'in tanımı iki parçadan oluşur ve takım yalnızca birini uygulamıştır. Kablolar bağlantı noktalarına yakın sabitlenir, ancak konnektöre gerilim bindirmemek için yeterli pay bırakılır. Gergin çekilmiş bir kablo, şasi esnediğinde veya robot çarpıştığında kuvveti doğrudan konnektöre aktarır; sonuç ya konnektörün çıkması ya da kablonun bağlantı noktasından kopmasıdır. Dördüncü şık ters yönde hata yapar: sabitleme yapılmaması da yanlıştır, çünkü o zaman kablonun tüm ağırlığı ve hareketi konnektöre biner. Doğru görüntü şudur: bağlantıya yakın bir sabitleme noktası ve o noktayla konnektör arasında rahat bir pay.",
+      "hint": "Strain relief iki şey ister. Takım bunlardan hangisini yapmış, hangisini atlamış?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    },
+    {
+      "id": "electrical-10-d2",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki uygulamalardan dördü dokümantasyonun önerdiği doğru davranıştır. Yanlış olanı seçiniz.",
+      "scenario": "Bir takım elektrik bakım alışkanlıklarını anlatıyor.",
+      "elements": [
+        "Kablolama bittikten sonra her bağlantı tek tek çekilerek sağlamlığı sınanıyor.",
+        "Bağlantı noktalarından çıkan ince kablo telleri temizleniyor ve yalıtımsız bağlantı açıkta bırakılmıyor.",
+        "SB-50 konnektörü, darbede çıkmaması için klips ile emniyete alınmış.",
+        "Fuse'lar zorlanmadan, hafifçe yerine oturtuluyor; fazla kuvvet uygulamaktan kaçınılıyor.",
+        "Compressor, titreşimi gövdeye aktarmaması için vibration isolator ile monte edilmiş."
+      ],
+      "faultIndex": 3,
+      "explanation": "Fuse'lar tam oturmalıdır ve dokümantasyon bunun beklenenden fazla kuvvet gerektirebileceğini özellikle belirtir. Yarım oturmuş bir fuse ilk bakışta takılı görünür, elektriksel teması ise zayıftır; titreşim altında temas kesilir ve o kanal aralıklı olarak düşer. Bu, sahada bulunması en zor arıza türlerinden biridir çünkü göz kontrolünde her şey yerinde görünür. Diğer dört uygulama doğrudur: her bağlantının çekilerek sınanması, kablo tellerinin temizlenmesi ve yalıtımın tamamlanması, SB-50 konnektörünün klips veya kablo bağıyla emniyete alınması ve compressor gibi titreşim üreten bileşenlerin vibration isolator ile monte edilmesi.",
+      "hint": "Öğelerden biri 'nazik davranmayı' öneriyor. Bu bileşen için nazik davranmak doğru mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    },
+    {
+      "id": "electrical-10-d3",
+      "type": "numeric",
+      "prompt": "Etkinlik boyunca battery ve PD gibi dönebilen bağlantıların en geç kaç maçta bir kontrol edilmesi önerilir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 3,
+      "tolerance": 0,
+      "unit": "maç",
+      "explanation": "Dokümantasyon dönebilen bağlantılar için bir ila üç maçlık bir aralık önerir; yani en geç üçüncü maçta bir kontrol edilmelidir. Sıklığın türe göre değişmesinin nedeni bağlantının nasıl tutunduğudur. Somun ve cıvatalı bağlantılar titreşimle yavaş yavaş gevşer ve düzenli kontrol ister. Buna karşılık WAGO ve Weidmuller gibi yaylı bağlantılar kendi yaylarıyla basınç uygular ve etkinlik başına bir kez kontrol edilmeleri büyük olasılıkla yeterlidir. Bu ayrımı bilmek pit zamanını doğru yere harcamayı sağlar: her maç arasında tüm kabloları elden geçirmek yerine, gevşemeye yatkın olan az sayıdaki bağlantıya odaklanılır.",
+      "hint": "Dokümantasyon bir aralık veriyor. Soru bu aralığın hangi ucunu istiyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    },
+    {
+      "id": "electrical-10-d4",
+      "type": "multiple_choice",
+      "prompt": "Battery kablosunun main breaker terminaline bağlantısını kontrol ediyorsunuz. Terminali elinizle kavrayıp çevirdiğinizde kablo ucu hafifçe dönüyor, ancak bağlantı gözle bakıldığında sıkı duruyor ve robot çalışıyor. Ne yapmalısınız?",
+      "options": [
+        "Bir şey yapmanıza gerek yok; robot çalıştığına göre bağlantı yeterlidir.",
+        "Bağlantıyı sıkmalısınız; somun ve cıvatalı bir bağlantıda kablo ucu elle çevrilebiliyorsa bağlantı yeterince sıkı değildir.",
+        "Kabloyu değiştirmelisiniz; dönebiliyor olması kablonun içten koptuğunu gösterir.",
+        "Terminale kablo bağı takarak dönmesini engellemelisiniz."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon bu testi açıkça tarif eder: somun ve cıvatalı bağlantılarda kablo veya terminal elle çevrilememelidir, battery kablosunu veya main breaker bağlantısını kavrayıp çevirebiliyorsanız bağlantı yeterince sıkı değildir. Robotun çalışıyor olması bir kanıt değildir; gevşek bir bağlantı düşük akımda sorunsuz görünür, yüksek akımda ise ısınır ve gerilim düşümü yaratır. Bu hat robotun tüm akımını taşıdığı için sonucu bütün robotu etkiler. Üçüncü şık aceledir, dönme kopukluğun değil gevşekliğin işaretidir. Dördüncü şık ise belirtiyi gizler, nedeni gidermez. Bu bağlantılar dönebilen türden olduğu için etkinlik boyunca düzenli kontrol edilmelidir. Sıktıktan sonra terminal yalıtımının eksiksiz geri takıldığından emin olun; kural battery ve main breaker terminallerinin ve bunların kabloya bağlantılarının her zaman tam yalıtılmış olmasını ister.",
+      "hint": "Bu bir test ve sonucu belli. Testin geçme ölçütü ne?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R607",
+          "season": "2026",
+          "topic": "battery, main breaker ve bunların kabloya bağlantıları her zaman tam yalıtılmış olmalı"
+        }
+      ],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html",
+      "sourceNote": "R607 resmi denetim listesinden doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-10-d5",
+      "type": "diagnose",
+      "symptom": "Robot pit'te sorunsuz çalışıyor. Sahada ise ilk sert çarpışmadan sonra bir mekanizma tamamen tepkisiz kalıyor. Pit'e dönüldüğünde o mekanizmanın motor controller'ına giden sinyal kablosunun konnektörden çıkmış olduğu görülüyor. Kablo, konnektöre girdiği noktadan yaklaşık bir metre uzakta şasiye sabitlenmiş ve arada hiç pay bırakılmamış.",
+      "prompt": "Bu arızanın kök nedeni nedir ve nasıl önlenir?",
+      "options": [
+        "Konnektör kalitesizdir; daha iyi bir konnektör ile değiştirilmelidir.",
+        "Kablo çok uzundur; kısaltılması sorunu çözer.",
+        "Strain relief eksiktir; kablo bağlantı noktasına yakın bir yerden ve konnektöre yük binmeyecek pay bırakılarak sabitlenmelidir.",
+        "Mekanizma çarpışmada hasar görmüştür; sorun elektrikte değil mekaniktedir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirti kök nedeni doğrudan gösteriyor. Sabitleme noktası konnektörden bir metre uzakta ve arada pay yok; bu durumda şasi esnediğinde veya robot çarpıştığında kablonun tüm hareketi konnektöre biner. Strain relief tam olarak bunu önlemek içindir: kablo bağlantı noktasına yakın sabitlenir ve konnektöre yük binmeyecek kadar pay bırakılır. Birinci şık kök nedeni atlar; aynı kurulumda daha iyi bir konnektör de zamanla çıkar. İkinci şık kabloyu kısaltmayı önerir ancak pay bırakmadan kısaltmak gerilimi artırır. Dördüncü şık belirtinin kendisiyle çelişir, çünkü bulunan şey mekanik hasar değil çıkmış bir konnektördür. Bu arıza türü pit'te hiç görünmez, çünkü pit'te robot çarpışmaz.",
+      "hint": "Sabitleme noktası nerede ve konnektörle arasında ne var? Bu iki bilgi tek başına nedeni veriyor.",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    },
+    {
+      "id": "electrical-10-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, radio beslemesini hem 12V girişinden hem de RIO portuna passive injector ile aynı kaynaktan vermeyi düşünüyor. Gerekçeleri kablolardan biri hasar görür veya çıkarsa diğerinin beslemeyi sürdürmesi. Bu yaklaşımı değerlendiriniz.",
+      "options": [
+        "Gereksizdir; tek besleme yolu her zaman yeterlidir ve ikinci kablo yalnızca karmaşa yaratır.",
+        "Yalnızca elektronik kutusu kapalıysa anlamlıdır; açık montajlarda gereksizdir.",
+        "Sakıncalıdır; iki besleme yolu her durumda radio'ya zarar verir.",
+        "Dokümantasyonun önerdiği bir yedeklilik uygulamasıdır; kablolardan biri hasar görse veya çıksa diğeri radio'yu beslemeye devam eder."
+      ],
+      "correctIndex": 3,
+      "explanation": "Bu, dokümantasyonun doğrudan önerdiği bir yedeklilik uygulamasıdır: radio'yu hem doğrudan Weidmuller girişinden hem de PoE bağlantısıyla beslemek, kablolardan biri hasar görür veya yerinden çıkarsa diğerinin beslemeyi sürdürmesini sağlar. Radio robotun saha ile tek bağlantısı olduğu için bu yedekliliğin değeri yüksektir. Üçüncü şık önemli bir ayrımı kaçırır: sakıncalı olan her iki besleme değil, farklı kaynakların birleştirilmesidir; üretici iki yolun aynı kaynaktan ve aynı gerilimden gelmesi şartıyla birlikte kullanılabileceğini belirtir ve soruda tam olarak bu şart sağlanmıştır.",
+      "hint": "Radio'nun robot için önemi ne? Ve iki beslemeyi sakıncalı yapan şey sayıları mı, kaynakları mı?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html",
+      "sourceNote": "Aynı kaynak ve aynı gerilim şartı üretici dokümantasyonundan: https://frc-radio.vivid-hosting.net/overview/wiring-your-radio"
+    },
+    {
+      "id": "electrical-10-d7",
+      "type": "diagnose",
+      "symptom": "Takım her maçtan sonra driver station kayıtlarını inceliyor. Son üç maçta bir mekanizma çalışırken çekilen akımın giderek yükseldiği, aynı işi yapmak için gereken sürenin uzadığı ve battery geriliminin o anlarda daha derin düştüğü görülüyor. Henüz hiçbir şey arızalanmadı ve breaker atmadı.",
+      "prompt": "Bu eğilim büyük olasılıkla neyi gösteriyor ve ne yapılmalı?",
+      "options": [
+        "Mekanizmada artan bir mekanik sürtünme veya sıkışma gelişiyor ya da motor zayıflıyor; arıza çıkmadan önce mekanizma incelenmelidir.",
+        "Bir sorun yok; akım dalgalanması normaldir ve arıza çıkana kadar beklenmelidir.",
+        "Battery ömrünü tamamlamıştır; yalnızca battery değiştirilmelidir.",
+        "Driver station kaydı güvenilir değildir; ölçüm ancak multimetre ile yapılabilir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon her maçtan sonra DS kayıtlarındaki battery gerilimi ve akım kullanımının incelenmesini önerir; robotun normal çalışma değerleri bilindiğinde bozulmakta olan bileşenler kritik bir arızaya dönüşmeden önce fark edilebilir. Mekanik sıkışma dokümantasyonda ayrıca sayılmaz, ancak kayıttan çıkarılan doğrudan bir sonuçtur. Buradaki tablo mekanik tarafa işaret eder; aynı işin daha fazla akım ve daha uzun süre gerektirmesi, mekanizmanın giderek zorlandığını gösterir. Battery de zayıflıyor olabilir, ancak üçüncü şık tek başına eksiktir çünkü sürenin uzaması battery ile açıklanamaz. İkinci şık bu bakım yönteminin bütün amacını iptal eder: kaydın değeri arıza çıkmadan önce uyarmasıdır. Dördüncü şık da yanlıştır, kayıt bu iş için tasarlanmış bir araçtır.",
+      "hint": "Üç maçlık bir eğilim var. Aynı işin hem daha fazla akım hem daha uzun süre gerektirmesi neyi anlatır?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    },
+    {
+      "id": "electrical-10-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlik boyunca pnömatik sistem maçların rastgele anlarında birkaç saniyeliğine ölüyor, sonra kendiliğinden geri geliyor. Pit'te robot sarsıldığında sorun bazen tekrarlanıyor. PH'i besleyen kanalın fuse'u yerinde görünüyor, kablolar sağlam, CAN zinciri sorunsuz ve brownout yaşanmıyor.",
+      "prompt": "İlk olarak neyi kontrol edersiniz?",
+      "options": [
+        "Motor controller'ın CAN ID'sini.",
+        "Fuse'un tam oturup oturmadığını; yarım oturmuş bir fuse yerinde görünür ama titreşimde teması keser.",
+        "Battery'nin iç direncini.",
+        "roboRIO'nun yazılım imajını."
+      ],
+      "correctIndex": 1,
+      "explanation": "Belirtilerin birleşimi mekanik bir temas sorununa işaret ediyor: arıza rastgele anlarda çıkıyor, kendiliğinden düzeliyor ve robot sarsıldığında tetiklenebiliyor. Dokümantasyon PD üzerindeki fuse'ların tam oturması gerektiğini ve bunun beklenenden fazla kuvvet isteyebileceğini özellikle belirtir; yarım oturmuş bir fuse yaygın bir arıza kaynağıdır. Böyle bir fuse göz kontrolünde yerinde görünür, bu yüzden en zor bulunan arızalardan biridir; doğru kontrol bakmak değil, fuse'u bastırarak tam oturduğundan emin olmaktır. Diğer şıklar belirtiyle çelişir. Yanlış bir CAN ID veya yazılım imajı sorunu sarsıntıyla tetiklenmez ve kendiliğinden düzelmez. Battery iç direnci sorunu ise robotun tamamını etkilerdi, tek bir alt sistemi değil. Aynı mantık gevşek bir terminal veya yarım takılmış bir konnektör için de geçerlidir; sarsıntıyla tetiklenen her arıza önce temas noktalarında aranır.",
+      "hint": "Arıza sarsıntıyla tetikleniyor ve kendiliğinden düzeliyor. Bu ikisi birlikte hangi tür sorunu işaret eder?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    }
+  ]
+}

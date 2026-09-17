@@ -1,0 +1,297 @@
+{
+  "id": "programming-00b-wpilib-temelleri",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 0,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-14",
+  "imageRef": null,
+  "title": "WPILib Temelleri",
+  "summary": "WPILib'in ne olduğunu ve ne sağladığını, hangi robot base class'ın hangi iş için olduğunu, vendor library'lerin nasıl eklendiğini ve ölçü birimlerinin koda nasıl taşındığını öğretir.",
+  "prerequisites": [
+    "programming-00-java-vscode"
+  ],
+  "estimatedMinutes": 18,
+  "concept": {
+    "body": "WPI Robotics Library, takımların FRC robotları için kod yazmasında kullanılan standart yazılım library'sidir. Sağladığı şey iki başlıkta toplanır: FRC kontrol sisteminin parçalarıyla, yani sensor'lerle, motor controller'larla ve driver station ile arayüz kurmak için kullanışlı sınıflar ve altyordamlar, bir de çeşitli yardımcı işlevler. Library açık kaynaktır ve üç metin tabanlı dil için uygulaması vardır: Java, C++ ve Python. Bu müfredat Java kullanır.\n\nWPILib kurulumu tek bir eklenti değildir. Kurulum VS Code'u, roboRIO için C++ zincirlerini, Java JDK ve JRE'yi, derleme sistemi olan Gradle'ı, SmartDashboard ile Shuffleboard gibi WPILib araçlarını, OpenCV gibi bağımlılıkları ve çevrimdışı dokümantasyonu içerir. Önemli bir ayrıntı vardır: kurulum, bilgisayarda zaten VS Code olsa bile WPILib geliştirmesi için ayrı bir kopya kurar ve var olan bir kurulumu kullanmaz. Her yıl kendi klasörüne kurulur, bu yüzden birden çok sezonun sürümü aynı bilgisayarda yan yana durabilir.\n\nBir proje oluşturulurken robot base class seçilir. TimedRobot çoğu kullanıcı için önerilen temel sınıftır. TimesliceRobot, TimedRobot çerçevesini genişleterek periodic fonksiyonların zamanlaması üzerinde daha fazla denetim verir. RobotBase sunulan en asgari temel sınıftır ve doğrudan kullanılması genellikle önerilmez. Command Robot ise girdileri kendiliğinden yoklayıp ham girdi verisini olaylara çeviren bir çerçevedir.\n\nÜretici cihazları için vendor dependency kullanılır; bu, üreticilerin kendi yazılım library'lerini robot projelerine eklemesinin yoludur. Vendor dependency'ler proje başına kurulur, yani her robot projesi kendi bağımlılık kümesine sahip olabilir ve JSON dosyaları projenin vendordeps klasörüne kopyalanır. Çevrimiçi kurulum kullanıldığında bilgisayarın yaklaşık her otuz günde bir internete yeniden bağlanıp derleme yapması gerekir, yoksa önbellek temizlenir.\n\nÖlçü birimleri için Java Units Library vardır. Amacı, programcının ölçü birimiyle ilgili hatalardan kaçınmasına yardım etmektir. Bir büyüklük, biriminin factory metodu ile oluşturulur ve Measure.in çağrısıyla dönüştürüldüğünde geriye birim bilgisi taşımayan çıplak bir double kalır.",
+    "keyTerms": [
+      {
+        "term": "WPILib",
+        "glossTr": "FRC robot kodu için standart yazılım library'si"
+      },
+      {
+        "term": "GradleRIO",
+        "glossTr": "robot projesini derleyip robota gönderen yapı sistemi"
+      },
+      {
+        "term": "robot base class",
+        "glossTr": "robot programının üzerine kurulduğu temel sınıf"
+      },
+      {
+        "term": "TimedRobot",
+        "glossTr": "çoğu kullanıcı için önerilen temel sınıf"
+      },
+      {
+        "term": "TimesliceRobot",
+        "glossTr": "periodic zamanlaması üzerinde daha fazla denetim veren sınıf"
+      },
+      {
+        "term": "RobotBase",
+        "glossTr": "en asgari temel sınıf; doğrudan kullanımı önerilmez"
+      },
+      {
+        "term": "vendor dependency",
+        "glossTr": "üreticinin library'sini projeye ekleme yolu"
+      },
+      {
+        "term": "vendordeps",
+        "glossTr": "vendor JSON dosyalarının kopyalandığı proje klasörü"
+      },
+      {
+        "term": "Measure",
+        "glossTr": "bir büyüklüğün belirli bir birimdeki değeri"
+      },
+      {
+        "term": "Unit",
+        "glossTr": "bir boyutun belirli bir gerçeklenmesi, örneğin metre"
+      },
+      {
+        "term": "API documentation",
+        "glossTr": "sınıfların ve metotların resmî başvuru belgeleri"
+      },
+      {
+        "term": "open source",
+        "glossTr": "kaynak kodu herkese açık olan yazılım"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-00b-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "WPILIB BASICS",
+      "front": "WPILib bir araç değil, bir kod kümesidir.",
+      "back": "WPI Robotics Library, takımların FRC robotları için kod yazmasında kullanılan standart yazılım library'sidir. Sağladığı şey iki başlıkta toplanır: FRC kontrol sisteminin parçalarıyla, yani sensor'lerle, motor controller'larla ve driver station ile arayüz kurmak için kullanışlı sınıflar ve altyordamlar, bir de çeşitli yardımcı işlevler. Açık kaynaktır ve Java, C++ ile Python için uygulaması vardır. Kurulum ise library'den daha geniştir: VS Code'u, roboRIO için C++ zincirlerini, Java JDK ile JRE'yi, derleme sistemi olan Gradle'ı, SmartDashboard ve Shuffleboard gibi araçları, bağımlılıkları ve çevrimdışı dokümantasyonu içerir. Bu ayrımı bilmek bir soruyu kolaylaştırır: bir sorun library'de mi, araçta mı, yoksa kurulumda mı.",
+      "takeaway": "Library, kurulum ve araç ayrı şeylerdir; sorun da birinde olur",
+      "tags": [
+        "WPILib",
+        "kurulum",
+        "açık kaynak"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-00b-d1",
+        "programming-00b-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-00b-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "WPILIB BASICS",
+      "front": "Vendor dependency'ler neden proje başına kurulur?",
+      "back": "Vendor dependency, üreticilerin kendi yazılım library'lerini robot projelerine eklemesinin yoludur ve bu library'ler CAN üzerinden motor controller ile sensor'lere erişip standart PWM denetiminden daha ileri özellikler sağlar. Kurulum proje başınadır: her robot projesi kendi bağımlılık kümesine sahip olabilir ve JSON dosyaları her projenin vendordeps klasörüne kopyalanır. Gerekçesi sürüm tutarlılığıdır; bir projenin bağımlılık sürümleri, aynı bilgisayardaki başka bir projeyi güncellemek yüzünden değişmez. Bunun bedeli de vardır: yeni bir projeye geçen takım library'leri yeniden eklemek zorundadır ve bir bilgisayarda library'nin kurulu olması o bilgisayardaki her projenin onu kullanabileceği anlamına gelmez. Çevrimiçi kurulumda ayrıca bilgisayarın yaklaşık her otuz günde bir internete bağlanıp derleme yapması gerekir, yoksa önbellek temizlenir.",
+      "takeaway": "Proje başına kurulum, sürüm tutarlılığını tekrar eden işle satın alır",
+      "tags": [
+        "vendor dependency",
+        "vendordeps",
+        "30 gün"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-00b-d7",
+        "programming-00b-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-00b-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "WPILIB BASICS",
+      "front": "Geçen sezonun projesi açıldı, kod derleniyor ama robotta açılmıyor.",
+      "back": "Aramaya yeni yazılan sınıflardan değil, proje ve araç sürümlerinden başlanır. WPILib her yıl kendi klasörüne kurulur ve birden çok sezonun sürümü aynı bilgisayarda yan yana durabilir; bu yüzden hangi VS Code kurulumunun açıldığı ve projenin hangi sürümle oluşturulduğu her zaman doğrulanması gereken şeylerdir. Vendor library'ler de aynı kategoridedir ve proje başına kurulduğu için eski bir projede eski sürümleriyle durur. Belirti bu yöne işaret eder: kodun bilgisayarda derlenmesi sözdiziminin doğru olduğunu söyler, derlenen şeyin robot üzerindeki çalışma ortamıyla uyumlu olduğunu söylemez. Buradaki ders teşhisin sırasıdır; en görünür şüpheli, yani yeni yazılan kod, her zaman en olası sebep değildir.",
+      "takeaway": "En görünür şüpheli, en olası sebep değildir",
+      "tags": [
+        "sürüm",
+        "sezon",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-00b-d8",
+        "programming-00b-d2"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-00b-d1",
+      "type": "multiple_choice",
+      "prompt": "Yeni bir üye WPILib'in ne olduğunu soruyor. Dokümantasyonun tanımına en yakın cevap hangisidir?",
+      "options": [
+        "FRC robotları için kod yazmada kullanılan standart yazılım library'si; FRC kontrol sisteminin parçalarıyla arayüz kurmak için sınıflar ve altyordamlar, bir de yardımcı işlevler sağlar.",
+        "Robot kodunu robota gönderen bir yükleme aracı; kod yazmaya dair bir katkısı yoktur.",
+        "Bir bütünleşik geliştirme ortamı; VS Code'un FRC için hazırlanmış bir sürümüdür.",
+        "Bir simülasyon programı; robot olmadan kod denemek için kullanılır ve sahada rol oynamaz."
+      ],
+      "correctIndex": 0,
+      "explanation": "WPI Robotics Library, takımların FRC robotları için kod yazmasında kullanılan standart yazılım library'sidir. İçeriği iki başlıkta toplanır: FRC kontrol sisteminin çeşitli parçalarıyla, yani sensor'ler, motor controller'lar ve driver station ile arayüz kurmak için kullanışlı sınıflar ile altyordamlar, bir de çeşitli yardımcı işlevler. Diğer seçenekler WPILib kurulumunun parçalarını ya da yakın kavramları tarif eder ama library'nin kendisi değildir. VS Code bir editördür ve kurulumla birlikte gelir; simulation library'nin sağladığı imkânlardan biridir, tanımı değil; robota gönderme işini ise Gradle tabanlı yapı sistemi yapar. Library açık kaynaktır ve Java, C++ ile Python için uygulaması vardır; bu müfredat Java kullanır.",
+      "hint": "Tanım bir araca değil, bir kod kümesine işaret ediyor. Ne sağlıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/what-is-wpilib.html"
+    },
+    {
+      "id": "programming-00b-d2",
+      "type": "multiple_choice",
+      "prompt": "Bir takım yeni bir proje oluşturuyor ve base class seçmesi gerekiyor. Özel bir zamanlama ihtiyacı yok, ekip yeni ve mümkün olan en yaygın düzeni kullanmak istiyor. Dokümantasyona göre hangisi seçilir?",
+      "options": [
+        "RobotBase; en asgari sınıf olduğu için en az sürprizi olan seçenektir.",
+        "TimedRobot; çoğu kullanıcı için önerilen temel sınıftır.",
+        "TimesliceRobot; periodic zamanlaması üzerinde daha fazla denetim verdiği için varsayılan seçimdir.",
+        "Base class seçimi sonradan değiştirilemez ve dokümantasyon bir öneri vermez."
+      ],
+      "correctIndex": 1,
+      "explanation": "TimedRobot, çoğu kullanıcı için önerilen temel sınıftır ve bir dizi init, periodic ile exit metodu üzerinden robot programının denetimini sağlar. Diğer iki sınıfın kendi amaçları vardır ama varsayılan seçim değildir. TimesliceRobot, TimedRobot çerçevesini genişleterek periodic fonksiyonların zamanlaması üzerinde daha fazla denetim verir; bu denetime ihtiyaç duymayan bir ekip için gereksiz karmaşıklıktır. RobotBase sunulan en asgari temel sınıftır ve doğrudan kullanılması genellikle önerilmez; asgari olmak, daha az sürpriz değil daha çok elle yapılan iş anlamına gelir. Command Robot ise ayrı bir seçenek olarak durur ve girdileri kendiliğinden yoklayıp ham girdi verisini olaylara çeviren bir çerçeve ekler.",
+      "hint": "Dokümantasyon dört seçenekten yalnızca birini açıkça öneriyor. Asgari olmak önerilmek demek mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/creating-robot-program.html"
+    },
+    {
+      "id": "programming-00b-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi WPILib kurulumunu anlatan bir sayfa hazırlıyor.",
+      "elements": [
+        "Kurulum VS Code'u, Java JDK ve JRE'yi, Gradle'ı ve WPILib araçlarını içerir.",
+        "Kurulum, bilgisayarda zaten VS Code olsa bile ayrı bir kopya kurar ve var olan kurulumu kullanmaz.",
+        "Her yıl kendi klasörüne kurulur; birden çok sezonun sürümü aynı bilgisayarda yan yana durabilir.",
+        "Vendor dependency'ler bilgisayara bir kez kurulur ve bütün projeler aynı kümeyi paylaşır.",
+        "Vendor dependency'lerin JSON dosyaları projenin vendordeps klasörüne kopyalanır."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dördüncü madde yanlıştır. Vendor dependency'ler proje başına kurulur, yani her robot projesi kendi bağımlılık kümesine sahip olabilir. JSON dosyaları her projenin vendordeps klasörüne kopyalanır ve bu, projeler arasında sürüm tutarlılığını sağlar. Bu ayrımın pratik sonucu şudur: bir bilgisayarda bir library'nin kurulu olması, o bilgisayardaki her projenin o library'yi kullanabileceği anlamına gelmez; yeni bir projeye geçildiğinde bağımlılıklar yeniden eklenir. Diğer dört madde doğrudur. Kurulum VS Code'u, roboRIO için C++ zincirlerini, Java JDK ile JRE'yi, Gradle'ı, SmartDashboard ve Shuffleboard gibi araçları, bağımlılıkları ve çevrimdışı dokümantasyonu içerir; ayrı bir VS Code kopyası kurar; ve her yıl kendi klasörüne yerleşir.",
+      "hint": "Dört madde kurulumun bilgisayar düzeyinde olduğunu söylüyor. Bağımlılıklar hangi düzeyde?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/3rd-party-libraries.html",
+      "sourceNote": "Kurulum içeriği ve ayrı VS Code kopyası: https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html"
+    },
+    {
+      "id": "programming-00b-d4",
+      "type": "numeric",
+      "prompt": "Bir takım vendor library'leri çevrimiçi kurulumla ekledi ve atölyede internet bağlantısı yok. Dokümantasyona göre önbelleğin temizlenmemesi için bilgisayarın en fazla kaç günde bir internete yeniden bağlanıp derleme yapması gerekir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 30,
+      "tolerance": 0,
+      "unit": "gün",
+      "explanation": "Çevrimiçi kurulum kullanıldığında bilgisayarın yaklaşık her otuz günde bir internete yeniden bağlanıp derleme yapması gerekir, yoksa önbellek temizlenir. Bu sayı bir ayrıntı gibi görünür ama bir sezon planına doğrudan girer: internet erişimi olmayan bir atölyede uzun süre çalışan bir takım, bir gün derlemenin beklenmedik biçimde başarısız olduğunu görür ve sebebi kodda aramaya başlar. Alternatif yol çevrimdışı kurulumdur; üreticilerin kendi yükleyicileri kullanılır ve bunlar tipik olarak o cihazlarla çalışırken çok işe yarayan ek programlarla birlikte gelir. Hangi yol seçilirse seçilsin, vendor dependency'ler proje başına kurulur ve JSON dosyaları projenin vendordeps klasörüne kopyalanır.",
+      "hint": "Bu bir takvim sayısıdır ve bir aya yakındır.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/3rd-party-libraries.html"
+    },
+    {
+      "id": "programming-00b-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir takım tekerlek çapını kodda tutmak istiyor ve birim karışıklığından kaçınmak istiyor. Java Units Library'de altı inçlik bir çap nasıl oluşturulur ve bu neden yardımcı olur?",
+      "options": [
+        "Inches.of(6) ile oluşturulur; library'nin amacı programcının ölçü birimiyle ilgili hatalardan kaçınmasına yardım etmektir.",
+        "Çıplak bir double olarak 6 yazılır; library yalnızca ekrandaki gösterimi değiştirir.",
+        "new Unit(6, \"inch\") ile oluşturulur; birimler dize olarak verilir.",
+        "Metreye elle çevirip yazmak gerekir; library inç desteklemez."
+      ],
+      "correctIndex": 0,
+      "explanation": "Bir büyüklük, biriminin factory metodu ile oluşturulur: altı inçlik bir çap için Inches.of(6) yazılır ve sonuç bir Measure olur. Measure, fiziksel büyüklüklerin belirli bir birimde ifade edilmiş değerini temsil eder; beş metre örneğinde beş büyüklük, metre birim ve uzunluk boyuttur. Library'nin amacı yazılıdır: programcının ölçü birimiyle ilgili hatalardan kaçınmasına yardım etmek. İnçle metreyi yanlışlıkla toplamak gibi hataları, hesapların birimden haberdar olmasını sağlayarak önler. Bunun bir sınırı da vardır: Measure.in çağrısıyla yapılan dönüşümler geriye birim bilgisi taşımayan çıplak double değerler döndürür ve bu, tip güvenliğini ortadan kaldırır. Bu yüzden dönüşümlerin yalnızca units library'sini desteklemeyen API'lerle çalışırken kullanılması şiddetle önerilir.",
+      "hint": "Bir büyüklük nasıl yazılır ve library asıl neyi engellemeye çalışıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/basic-programming/java-units.html"
+    },
+    {
+      "id": "programming-00b-d6",
+      "type": "diagnose",
+      "symptom": "Bir takım bir mekanizma hesabını units library ile yazdı, sonra değeri Measure.in çağrısıyla dönüştürüp bir vendor metoduna verdi. Aynı dönüştürülmüş değeri daha sonra başka bir hesapta yeniden kullandı ve birim hatası ortaya çıktı: bir uzunluk, bir hızla toplandı ve derleyici hiçbir şey söylemedi.",
+      "prompt": "Dönüşüm neden bu hatayı mümkün kıldı?",
+      "options": [
+        "Measure.in çağrısı geriye birim bilgisi taşımayan çıplak bir double döndürür; tip güvenliği ortadan kalkar ve dönüşümlerin yalnızca units library'sini desteklemeyen API'lerle çalışırken kullanılması önerilir.",
+        "Measure.in çağrısı değeri her zaman metreye çevirir; hata birimin değişmesinden kaynaklanır.",
+        "Units library aynı programda iki farklı boyutun kullanılmasını desteklemez.",
+        "Hata derleyicinin units library'sini tanımamasından kaynaklanır; farklı bir derleyici seçilmelidir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Units library, hesapların birimden haberdar olmasını sağlayarak birim hatalarını önler. Bu koruma Measure nesnesinin kendisine bağlıdır. Measure.in çağrısıyla yapılan birim dönüşümleri geriye birim bilgisi taşımayan çıplak double değerler döndürür ve bu dönüşüm, korumayı kaldırır. Elinizde artık yalnızca bir sayı vardır; o sayının uzunluk mu hız mı olduğunu derleyici bilemez, dolayısıyla yanlış bir toplama hakkında da uyarmaz. Dokümantasyonun tavsiyesi tam olarak bu yüzdendir: birim dönüşümlerinin yalnızca units library'sini desteklemeyen API'lerle etkileşirken kullanılması şiddetle önerilir. Pratik kural şudur: dönüşümü mümkün olan en son noktada, değeri o API'ye verirken yapın ve dönüştürülmüş değeri saklayıp yeniden kullanmayın.",
+      "hint": "Koruma nesnenin kendisinde. Dönüşümden sonra elinizde ne kalıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/basic-programming/java-units.html"
+    },
+    {
+      "id": "programming-00b-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım sezon başında projeyi kurdu ve her şey çalıştı. Bir ay sonra ikinci bir robot projesi oluşturuldu ve aynı motor controller'lar kullanılacak. Yeni projede vendor sınıfları bulunamıyor ve kod derlenmiyor. Birinci proje aynı bilgisayarda hâlâ sorunsuz derleniyor.",
+      "prompt": "Neden oldu ve ne yapılmalı?",
+      "options": [
+        "WPILib kurulumu bozulmuştur ve yeniden kurulması gerekir.",
+        "Vendor dependency'ler proje başına kurulur; her robot projesi kendi bağımlılık kümesine sahiptir ve library yeni projeye de eklenmelidir.",
+        "İkinci projede base class yanlış seçilmiştir; vendor sınıfları yalnızca TimedRobot ile kullanılabilir.",
+        "Bir bilgisayarda aynı vendor library'nin iki projede birden kullanılması desteklenmez."
+      ],
+      "correctIndex": 1,
+      "explanation": "Vendor dependency'ler proje başına kurulur, yani her robot projesi kendi bağımlılık kümesine sahip olabilir ve JSON dosyaları her projenin vendordeps klasörüne kopyalanır. Birinci projenin çalışmaya devam etmesi bunu doğrular: kurulum bozulmuş olsaydı o proje de derlenmezdi. Yeni projede yapılacak şey library'yi yeniden eklemektir; Java ve C++ projelerinde bu, WPILib simgesinden açılan Dependency Manager üzerinden yapılır ve buradan library kurulabilir, güncellenebilir veya kaldırılabilir. Güncelleme çıktığında Update All seçeneği görünür ve bütün vendordeps'i en yeni sürüme taşır. Bu tasarımın gerekçesi sürüm tutarlılığıdır: bir projenin bağımlılık sürümleri, aynı bilgisayardaki başka bir projeyi güncellemek yüzünden değişmez.",
+      "hint": "Birinci proje çalışıyor. Öyleyse eksik olan şey bilgisayar düzeyinde değil.",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/3rd-party-libraries.html"
+    },
+    {
+      "id": "programming-00b-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte bir takım geçen sezonun robot projesini açtı ve üzerine bu sezonun kodunu yazmaya başladı. Proje eski WPILib sürümüyle oluşturulmuştu. Kod bilgisayarda derleniyor, ancak robota deploy edildiğinde robot kodu açılmıyor ve takım sorunu kendi yazdığı yeni sınıflarda arıyor.",
+      "prompt": "Aramaya nereden başlanmalı ve bunun gerekçesi nedir?",
+      "options": [
+        "Yeni yazılan sınıflardan; eski proje ile yeni kod arasında bir uyum sorunu olamaz.",
+        "Proje ve araç sürümlerinden. WPILib her yıl kendi klasörüne kurulur ve birden çok sezonun sürümü yan yana durabilir; hangi sürümün açıldığı ve projenin hangi sürümle oluşturulduğu önce doğrulanmalıdır.",
+        "Vendor library'lerden; vendor sürümleri robot kodunun açılmasını etkilemez ama tek olası sebep budur.",
+        "Battery ve CAN zincirinden; kod bilgisayarda derlendiğine göre yazılım tarafı elenmiştir."
+      ],
+      "correctIndex": 1,
+      "explanation": "WPILib her yıl kendi klasörüne kurulur ve birden çok sezonun sürümü aynı bilgisayarda yan yana durabilir. Bu, hangi VS Code kurulumunun açıldığının ve projenin hangi sürümle oluşturulduğunun her zaman doğrulanması gereken bir şey olduğu anlamına gelir. Belirti bu yöne işaret eder: kod bilgisayarda derleniyorsa yazılan sınıfların sözdizimi doğrudur, ama derlenen şeyin robot üzerindeki çalışma ortamıyla uyumlu olması ayrı bir koşuldur. Vendor library'ler de aynı kategoridedir ve proje başına kurulduğu için eski bir projede eski sürümleriyle durur. Buradaki asıl ders teşhisin sırasıdır: yeni yazılan kod en görünür şüphelidir, ama en görünür şüpheli her zaman en olası sebep değildir. Proje ve araç sürümleri elenmeden yeni sınıflarda arama yapmak zaman kaybıdır.",
+      "hint": "Kod derleniyor ama robotta açılmıyor. Derlenen şey ile robotun beklediği şey aynı mı?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html",
+      "sourceNote": "Vendor dependency'lerin proje başına kurulması: https://docs.wpilib.org/en/stable/docs/software/vscode-overview/3rd-party-libraries.html"
+    }
+  ]
+}

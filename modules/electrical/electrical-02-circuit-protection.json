@@ -1,0 +1,404 @@
+{
+  "id": "electrical-02-circuit-protection",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 2,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Circuit Protection: Branch Breaker ve Fuse Seçimi",
+  "summary": "PD'den çıkan her hattın tam olarak bir breaker veya fuse ile nasıl korunduğunu, cihaz türüne göre izin verilen koruma değerlerini ve kablo kalınlığının neden koruma değerine göre seçildiğini öğretir.",
+  "prerequisites": [
+    "electrical-01-power-path"
+  ],
+  "estimatedMinutes": 13,
+  "concept": {
+    "body": "Robotta iki katmanlı bir koruma vardır. Birinci katman önceki modülde görülen 120A main breaker'dır; battery ile PD arasındaki hattı ve dolaylı olarak robotun tamamını korur. İkinci katman branch circuit protection'dır (kol devresi koruması): PD'den çıkan her hat, PD üzerinde tam olarak bir breaker veya fuse ile korunur. Her devre gücünü yalnızca tek bir korumalı terminal çiftinden alır; bir yükü iki kanala paylaştırmak buna aykırıdır.\n\nKoruma değeri cihaz türüne göre sınırlanır. Motor controller'lar ve custom circuit'ler için üst sınır 40A'dir. Compressor süren PCM veya PH (pnömatik kontrol birimleri), Servo Hub, Spike relay module ve fan gibi cihazlar için üst sınır 20A'dir.\n\nKoruma elemanının tipi de sınırlıdır ve breaker ile fuse için sınırlar farklıdır. Breaker olarak Snap Action VB3-A, AT2-A, MX5-A ve MX5-L serileri ile REV ve CTR Electronics'in ATO auto-resetting breaker'ları 40A ve altı değerlerde kullanılabilir. Fuse olarak ATC/ATO tipinde yalnızca 10A ve altı, PDH'te ATM tipinde 15A ve altı değerler kullanılabilir; tek istisna PCM veya PH beslemek için kullanılan tek bir 20A fuse'dur. Donanım tarafında da bir ayrım vardır: PDH'in high-current channel'ları ATO/ATC boyutunu, low-current ve switchable channel'ları ATM/APM boyutunu alır.\n\nEn kritik nokta şudur: breaker cihazı değil, kabloyu korur. Bu nedenle kablo kalınlığı motorun çektiği akıma göre değil, o hattaki koruma değerine göre seçilir.",
+    "keyTerms": [
+      {
+        "term": "branch circuit protection",
+        "glossTr": "kol devresi koruması; PD'den çıkan her hattın kendi koruması"
+      },
+      {
+        "term": "branch circuit",
+        "glossTr": "PD'nin bir kanalından beslenen tek bir hat"
+      },
+      {
+        "term": "breaker",
+        "glossTr": "devre kesici"
+      },
+      {
+        "term": "auto-resetting breaker",
+        "glossTr": "aşırı akımda atan, soğuduktan sonra kendiliğinden kapanan ısıl devre kesici"
+      },
+      {
+        "term": "Snap Action",
+        "glossTr": "FRC'de kullanılan devre kesicilerin üretici markası; VB3-A, AT2-A ve MX5 serileri"
+      },
+      {
+        "term": "ATO / ATC fuse",
+        "glossTr": "standart boy otomotiv bıçak sigorta; PDH'te high-current channel'lara takılır"
+      },
+      {
+        "term": "ATM / APM fuse",
+        "glossTr": "mini boy otomotiv bıçak sigorta; PDH'te low-current ve switchable channel'lara takılır"
+      },
+      {
+        "term": "trip",
+        "glossTr": "breaker'ın aşırı akımda atması"
+      },
+      {
+        "term": "stall",
+        "glossTr": "motorun yük altında dönemeyip durması"
+      },
+      {
+        "term": "PH (Pneumatics Hub)",
+        "glossTr": "REV pnömatik kontrol birimi"
+      },
+      {
+        "term": "PCM (Pneumatics Control Module)",
+        "glossTr": "CTR Electronics pnömatik kontrol birimi"
+      },
+      {
+        "term": "compressor",
+        "glossTr": "pnömatik sistemi basınçlandıran kompresör"
+      },
+      {
+        "term": "Servo Hub",
+        "glossTr": "servo motorları besleyen ve süren birim"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-02-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CIRCUIT PROTECTION",
+      "front": "PD'den çıkan her hat tam olarak bir koruma elemanı taşır.",
+      "back": "Robotta iki katmanlı koruma vardır. Birinci katman battery ile PD arasındaki 120A main breaker'dır ve robotun tamamını kapsar. İkinci katman branch circuit protection'dır: PD'den çıkan her hat, PD üzerinde tam olarak bir breaker veya fuse ile korunur. Her devre gücünü yalnızca tek bir korumalı terminal çiftinden alır. Bir yükü iki kanala paylaştırmak bu şarta aykırıdır ve beklenen faydayı da sağlamaz; kablo uzunluğu ile temas dirençleri eşit olmadığı için akım iki kanala eşit bölünmez.",
+      "takeaway": "İki katman: 120A main breaker, sonra her hatta tek koruma elemanı",
+      "tags": [
+        "branch circuit protection",
+        "PD",
+        "tek terminal çifti"
+      ],
+      "estMinutes": 1,
+      "derivedFrom": [
+        "electrical-02-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "her devre gücünü yalnızca tek bir korumalı terminal çiftinden alır"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "her kol devresi PD üzerinde tam olarak bir breaker veya fuse ile korunur"
+        }
+      ]
+    },
+    {
+      "id": "electrical-02-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CIRCUIT PROTECTION",
+      "front": "Kablo kalınlığı neden motorun çektiği akıma göre seçilmez?",
+      "back": "Çünkü breaker cihazı değil, kabloyu korur. Normal çalışmada 15A çeken bir motor stall olduğunda veya hatta kısa devre oluştuğunda akım breaker'ın atma değerine kadar tırmanır. Kablo, breaker atana kadar geçen sürede o akımı ısınmadan taşıyabilmelidir. Bu yüzden kural kalınlığı ölçülen akıma değil, o hattaki koruma değerine bağlar: 31-40A koruma için en az 12 AWG, 21-30A için 14 AWG, 6-20A için 18 AWG. Koruma değeri değişirse kablo da değişir.",
+      "takeaway": "Kabloyu koruma değeri belirler, motorun normal akımı değil",
+      "tags": [
+        "kablo kalınlığı",
+        "koruma değeri",
+        "stall"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-02-d2"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "kablo kalınlığı devrenin koruma değerine göre seçilir"
+        }
+      ]
+    },
+    {
+      "id": "electrical-02-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CIRCUIT PROTECTION",
+      "front": "Mekanizma maç boyunca durup durup kendiliğinden geri geliyor. Ne oluyor?",
+      "back": "PD'ye takılabilen branch breaker'ların büyük çoğunluğu ısıl prensiple çalışır ve kendiliğinden kapanır. Sürekli aşırı akımda bimetal eleman ısınıp atar, soğuyunca devre yeniden kapanır ve yük hâlâ oradaysa döngü tekrarlar. Belirtinin tek bir mekanizmayla sınırlı kalması, drivetrain ile roboRIO'nun etkilenmemesi, sorunu o kanala indirger. Bu yüzden atan bir breaker bir arıza değil, bir belirtidir: sıkışan mekanizma, hizasız aktarma organı veya yanlış motor seçimi. Koruma değerini yükseltmek belirtiyi susturur, nedeni bırakır.",
+      "takeaway": "Atan breaker bir belirtidir; değerini yükseltmek nedeni gizler",
+      "tags": [
+        "stall",
+        "auto-resetting breaker",
+        "teşhis"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-02-d8",
+        "electrical-02-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R619",
+          "season": "2026",
+          "topic": "PD'de kullanılabilecek breaker serileri ve 40A üst sınırı"
+        }
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-02-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, güçlü bir mekanizmanın motor controller'ını PD'nin iki ayrı kanalına paralel bağlamış. Her iki kanalda da 40A breaker var. Gerekçeleri, akımın iki kanala bölüneceği ve her kanalın daha az yükleneceğidir. Bu bağlantı uygun mudur?",
+      "options": [
+        "Hayır. Her devre gücünü yalnızca tek bir korumalı terminal çiftinden almalı ve tam olarak bir koruma elemanı ile korunmalıdır; yükü iki kanala paylaştırmak bu şartı ihlal eder.",
+        "Evet, toplam akım iki kanala bölündüğü için her kanal daha az yüklenir.",
+        "Evet, iki kanalın breaker değerleri birbirine eşit olduğu sürece sorun yoktur.",
+        "Hayır, ancak kanallardan birine 20A breaker takılırsa uygun hâle gelir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural, her devrenin gücünü yalnızca PD'nin tek bir korumalı terminal çiftinden almasını ve o kol devresinin PD üzerinde tam olarak bir breaker veya fuse ile korunmasını ister. Uygulamada da beklenen fayda gerçekleşmez: iki kanal nominalde eşit görünse bile kablo uzunluğu, kroşe ve temas dirençleri ve breaker'ların geniş atma toleransı nedeniyle biri diğerinden önce atar. O andan itibaren akımın tamamı kalan tek kanala biner ve o kanal kendi değerinin üzerinde yüklenir. Koruma değerlerinin eşit olması bunu değiştirmez; bir kanalın değerini düşürmek de hattı tek korumaya indirmez. Mekanizma 40A'den fazlasını gerektiriyorsa çözüm elektrikte değil mekanik tasarımdadır.",
+      "hint": "Kural kaç koruma elemanına izin veriyor? İki breaker gerçekten aynı anda mı atar?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "her devre gücünü yalnızca tek bir korumalı terminal çiftinden alır"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "her branch circuit tam olarak bir breaker veya fuse ile korunur"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-02-d2",
+      "type": "multiple_choice",
+      "prompt": "Bir motor controller, 40A breaker takılı bir high-current channel'dan besleniyor ve besleme kablosu 18 AWG'dir. Takım, motorun ölçülen tepe akımının 15A olduğunu ve bu nedenle 18 AWG'nin yeterli olduğunu söylüyor. Değerlendiriniz.",
+      "options": [
+        "Evet, ölçülen akım 20A'in altında kaldığı için 18 AWG yeterlidir.",
+        "Hayır. Kablo kalınlığı motorun çektiği akıma göre değil, o hattaki koruma değerine göre seçilir; 40A koruma için en az 12 AWG gerekir.",
+        "Evet, kablo yeterince kısa olduğu sürece 18 AWG kullanılabilir.",
+        "Hayır, ancak kabloyu 14 AWG'ye çıkarmak sorunu çözer."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural, kablo kalınlığını devrenin koruma değerine bağlar: 31-40A koruma için en az 12 AWG, 21-30A için 14 AWG, 6-20A için 18 AWG. Gerekçe şudur: normal çalışmada 15A çeken bir motor stall olduğunda veya kısa devre oluştuğunda akım breaker'ın atma değerine kadar tırmanır. Kablonun bu akımı, breaker atana kadar hasar görmeden taşıması gerekir. Ölçülen normal akım bu nedenle ölçüt değildir. Dördüncü şıktaki 14 AWG, tablonun 21-30A satırındaki değerdir ve 40A koruma için yetersizdir. Takım 18 AWG kabloda ısrar ediyorsa doğru çözüm kanaldaki breaker'ı 20A veya altına düşürmektir.",
+      "hint": "Motor stall olduğunda akım nereye kadar yükselir? Kablo, breaker atana kadar bu akıma dayanmak zorunda mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "kablo kalınlığı devrenin koruma değerine göre seçilir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-02-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki kanal atamalarından kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takımın PDH kanal atama listesi aşağıdadır. Kanalların dördü kurallara uygundur, biri değildir.",
+      "elements": [
+        "Dört motor controller high-current channel'lara bağlanmış ve her birinin kanalında 40A breaker var.",
+        "Compressor süren PH, low-current channel'lardan birinden 20A fuse ile besleniyor.",
+        "Servo Hub, 40A breaker takılı bir high-current channel'dan besleniyor.",
+        "roboRIO, 10A ATM fuse takılı switchable olmayan bir low-current channel'dan besleniyor.",
+        "Bir custom circuit, 30A breaker takılı bir high-current channel'dan 14 AWG kablo ile besleniyor."
+      ],
+      "faultIndex": 2,
+      "explanation": "Servo Hub için izin verilen en yüksek koruma değeri 20A'dir; 40A breaker takılı bir kanaldan beslenemez. Kanal fiziksel olarak uygun olsa da breaker değeri düşürülmelidir. Diğer dört öğe kurallara uygundur: motor controller'lar için üst sınır 40A'dir; compressor süren PH için üst sınır 20A'dir ve kural PDH'te tam olarak bu amaçla tek bir 20A fuse'a izin verir; roboRIO switchable olmayan bir kanaldan 10A koruma ile beslenir ve PDH'in low-current channel'ları ATM boyutunu alır; 30A koruma için en az 14 AWG gerekir ve listede tam olarak 14 AWG kullanılmıştır. Bu tür hatalar boşta duran bir high-current channel'a düşük akımlı bir cihaz bağlanırken ortaya çıkar.",
+      "hint": "Her satırda cihaz türüne bakın. Hangi cihaz için üst sınır 40A değil?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "cihaz türüne göre en yüksek koruma değerleri; Servo Hub en fazla 20A"
+        },
+        {
+          "rule": "R620",
+          "season": "2026",
+          "topic": "çeldirici: PDH'te PCM/PH için tek 20A fuse istisnası"
+        },
+        {
+          "rule": "R615",
+          "season": "2026",
+          "topic": "çeldirici: roboRIO switchable olmayan kanaldan 10A koruma ile"
+        },
+        {
+          "rule": "R622",
+          "season": "2026",
+          "topic": "çeldirici: 30A koruma için 14 AWG"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Kanal başına fuse boyutları: https://docs.revrobotics.com/ion-control-system/pdh/specs"
+    },
+    {
+      "id": "electrical-02-d4",
+      "type": "multiple_choice",
+      "prompt": "Bir mekanizmanın 40A breaker'ı maçlarda tekrar tekrar atıyor. Takım, elindeki 50A otomotiv breaker'ını takmayı öneriyor. Bu öneriyi değerlendiriniz.",
+      "options": [
+        "50A breaker kullanılabilir, çünkü main breaker zaten 120A'dir ve asıl koruma odur.",
+        "50A breaker kullanılabilir, ancak kablo 10 AWG'ye çıkarılmalıdır.",
+        "PD'ye takılabilecek breaker'lar 40A ve altı değerlerle sınırlıdır. Ayrıca atan breaker mekanik bir sorunun belirtisidir; koruma değerini yükseltmek sorunu gizler ve kabloyu risk altına sokar.",
+        "Sorun breaker'da değil battery'dedir; tam şarjlı bir battery ile breaker atmaz."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kural, PD'de kullanılabilecek breaker'ları belirli serilerle ve 40A ve altı değerlerle sınırlar; 50A bir breaker hiçbir kanalda kullanılamaz. Kural yönü bir yana, mühendislik yönü de yanlıştır: breaker tekrar tekrar atıyorsa o hat gerçekten aşırı akım çekiyor demektir. Nedeni genellikle sıkışan bir mekanizma, yanlış redüksiyon oranı veya yazılımda current limit bulunmamasıdır. Koruma değerini yükseltmek belirtiyi ortadan kaldırır ancak nedeni ortadan kaldırmaz; bu kez kablo ve motor zarar görür. Main breaker bu hattı korumaz, çünkü 120A'e kadar akım geçmesine izin verir.",
+      "hint": "İki ayrı soru sorun: bu breaker takılabilir mi ve breaker'ın atması neyin belirtisidir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R619",
+          "season": "2026",
+          "topic": "PD'de kullanılabilecek breaker serileri ve 40A üst sınırı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-02-d5",
+      "type": "multiple_choice",
+      "prompt": "Takım, compressor'ı süren PH'i boşta duran bir high-current channel'dan beslemek istiyor. O kanalda hâlihazırda 40A breaker takılı. Ne yapılmalıdır?",
+      "options": [
+        "PH bu kanaldan beslenemez; yalnızca switchable channel'dan beslenebilir.",
+        "Hiçbir şey. High-current channel her cihazı besleyebilir.",
+        "Hiçbir şey. Compressor 40A'den az akım çektiği için 40A breaker güvenlidir.",
+        "Kanaldaki breaker, 20A veya daha düşük değerli bir koruma elemanı ile değiştirilmelidir; compressor süren PH için izin verilen en yüksek koruma değeri 20A'dir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Koruma değeri cihaz türüne göre sınırlıdır ve compressor süren PCM veya PH için üst sınır 20A'dir. Kanalın high-current olması bu sınırı değiştirmez; belirleyici olan kanalın adı değil, kanala takılan koruma elemanının değeridir. Üçüncü şık modül boyunca tekrarlanan yanlış anlamadır: koruma değeri cihazın normal akımına göre değil, kuralın izin verdiği üst sınıra ve kablonun taşıyabileceğine göre seçilir. Switchable channel yazılımla kapatılabilen bir kanaldır ve pnömatik kontrol birimi için zorunlu değildir.",
+      "hint": "Kanalın adı mı belirleyici, yoksa içine takılan koruma elemanının değeri mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "compressor süren PCM/PH için en fazla 20A koruma"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-02-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, PDH'in high-current channel'ına bağlı bir custom circuit'i 15A seviyesinde korumak istiyor ve kanala 15A değerinde bir ATO fuse takıyor. Kanalın 40A'e kadar dayandığını biliyorlar. Bu seçim uygun mudur?",
+      "options": [
+        "Hayır. ATC/ATO tipi fuse'lar yalnızca 10A ve altı değerlerde kullanılabilir; aynı kanala 15A değerinde bir ATO auto-resetting breaker takmak ise uygundur.",
+        "Evet, kanal 40A'e kadar dayandığı için 15A değerindeki her koruma elemanı uygundur.",
+        "Evet, koruma elemanının tipi değil yalnızca değeri önemlidir.",
+        "Hayır, high-current channel'lara yalnızca 40A değerinde koruma takılabilir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural fuse'lar ile breaker'lara farklı sınırlar koyar ve bu ayrım kolayca gözden kaçar. Fuse tarafında: tüm PD'ler için ATC/ATO tipi fuse'lar yalnızca 10A ve altı değerlerde, PDH'te ATM tipi fuse'lar 15A ve altı değerlerde kullanılabilir; tek istisna PCM veya PH beslemek için kullanılan tek bir 20A fuse'dur. Breaker tarafında ise izin verilen seriler ve REV ile CTR Electronics'in ATO auto-resetting breaker'ları 40A ve altı her değerde kullanılabilir. Bu nedenle 15A'lik koruma bu kanalda bir fuse ile değil, bir breaker ile sağlanmalıdır. Kanalın 40A taşıyabiliyor olması doğru bir bilgidir ancak yanlış sonuca götürür: donanımın dayanma sınırı ile kuralın izin verdiği değer aynı şey değildir.",
+      "hint": "Kural fuse'lar ile breaker'lar için aynı üst sınırı mı koyuyor? Aynı değeri iki farklı elemanla sağlamayı deneyin.",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R620",
+          "season": "2026",
+          "topic": "ATC/ATO fuse en fazla 10A, PDH'te ATM fuse en fazla 15A"
+        },
+        {
+          "rule": "R619",
+          "season": "2026",
+          "topic": "ATO auto-resetting breaker'lar 40A ve altı değerlerde kullanılabilir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Kanal başına fuse boyutları: https://docs.revrobotics.com/ion-control-system/pdh/specs"
+    },
+    {
+      "id": "electrical-02-d7",
+      "type": "numeric",
+      "prompt": "PDH üzerinde, compressor süren bir PH'i beslemek için kuralların izin verdiği en yüksek fuse değeri kaç amperdir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 20,
+      "tolerance": 0,
+      "unit": "A",
+      "explanation": "PDH'te ATM tipi fuse'lar için genel üst sınır 15A'dir. Kural bu sınıra tek bir istisna tanır: PCM veya PH beslemek için kullanılan tek bir 20A fuse. Bu değer, compressor süren PCM/PH için izin verilen en yüksek koruma değeri olan 20A ile örtüşür. Bu nedenle cevap 20A'dir. 15A yanıtı genel kuralı doğru yansıtır ancak istisnayı atlar; 40A yanıtı motor controller'lar için geçerli olan sınırı yanlış yere uygular.",
+      "hint": "PDH'in genel ATM sınırını hatırlayın, sonra kuralın bu sınıra tanıdığı tek istisnayı düşünün. İstisna tam olarak hangi cihaz için tanımlanmış?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R620",
+          "season": "2026",
+          "topic": "PDH'te PCM/PH için tek 20A fuse istisnası"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "compressor süren PCM/PH için en fazla 20A koruma"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."
+    },
+    {
+      "id": "electrical-02-d8",
+      "type": "diagnose",
+      "symptom": "Maç sırasında intake mekanizmasına bir cisim sıkıştı. Motor birkaç saniye zorlandı ve mekanizma çalışmayı bıraktı. Kısa bir süre sonra mekanizma kendiliğinden tekrar çalıştı, birkaç saniye sonra yine durdu ve bu döngü maç boyunca sürdü. Drivetrain, roboRIO ve radio hiç etkilenmedi; driver station bağlantısı kesilmedi.",
+      "prompt": "En olası neden aşağıdakilerden hangisidir?",
+      "options": [
+        "Battery zayıfladığı için robot brownout'a giriyor.",
+        "O kanaldaki breaker mekanizma stall olduğu için atıyor, soğuyunca kendiliğinden kapanıyor ve döngü tekrarlanıyor.",
+        "Motor controller'ın CAN bağlantısı gevşek ve zaman zaman kopuyor.",
+        "roboRIO'yu besleyen 10A fuse atmış."
+      ],
+      "correctIndex": 1,
+      "explanation": "PD'ye takılabilen branch breaker'ların büyük çoğunluğu ısıl prensiple çalışır ve kendiliğinden kapanır: hem kuralın izin verdiği Snap Action VB3-A, AT2-A ve MX5-A serileri hem de REV ve CTR Electronics'in ATO auto-resetting breaker'ları bu gruptadır. Sürekli aşırı akımda bimetal eleman ısınıp atar, soğuduktan sonra devre yeniden kapanır. Sıkışmış bir mekanizmada motor stall olur, akım breaker'ın atma değerine tırmanır ve tam olarak tarif edilen aç-kapa döngüsü ortaya çıkar. Birinci ve dördüncü şıklar belirtiyle çelişir: brownout veya atmış bir roboRIO fuse'u robotun tamamını etkilerdi, oysa drivetrain ve haberleşme sorunsuz çalışmıştır. Üçüncü şık da elenir: gevşek bir CAN bağlantısı düzenli aralıklarla kendini onaran bir döngü üretmez ve genellikle driver station'da hata olarak görünür. Doğru çözüm daha yüksek değerli bir breaker takmak değildir; sıkışmayı gideren mekanik düzeltme yapılmalı, uygun redüksiyon oranı seçilmeli veya yazılımda current limit uygulanmalıdır.",
+      "hint": "Robotun geri kalanının etkilenmemiş olması hangi şıkları tek başına eler? Geriye kalan neden, kendini tekrarlayan bir döngüyü nasıl üretir?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R619",
+          "season": "2026",
+          "topic": "PD'de kullanılabilen breaker serileri; ATO auto-resetting breaker'lar dahil"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Snap Action VB3/AT2 serilerinin Type I (otomatik kapanan) olduğu üretici datasheet'lerinden doğrulandı; üreticiler kapanma süresi için bir değer vermediğinden metinde süre belirtilmemiştir."
+    }
+  ]
+}

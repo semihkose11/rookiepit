@@ -1,0 +1,277 @@
+{
+  "id": "programming-12-competition",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 12,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Yarışmaya Hazırlık ve Yazılım Denetimi",
+  "summary": "Sürücü bilgisayarının maça hazırlanmasını, maç öncesi bağlantı sırasını ve departman boyunca öğrenilen olguların bir belirti karşısında birlikte nasıl kullanıldığını öğretir.",
+  "prerequisites": [
+    "programming-11-simulation"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Yazılım tarafının yarışmaya hazırlığı yalnızca kodun doğru olmasıyla bitmez; sürücü bilgisayarının kendisi de maçın bir parçasıdır. Kaynak bu bilgisayar için somut öneriler verir. Maç sırasında gerekmeyen programlar kapatılır. Güç ayarlarında cihazın uyku moduna geçmesi hem prize takılıyken hem pilde çalışırken Never yapılır, Energy Saver kapatılır ve Power Mode değeri Best Performance yapılır. Wi-Fi adaptörü, ister donanım anahtarıyla ister Quick Settings üzerinden kapatılır. Windows firewall da kapatılır.\n\nSahada uygulanacak alışkanlıklar yazılıdır. Laptop şarj cihazı sahaya götürülür; her player station'da güç sağlanır. Kaynak gerekçesini de yazar: Windows, laptop prize takılıyken güç yönetiminde daha az agresiftir ve FRC Driver Station uygulaması daha öngörülebilir davranır. Laptop, hook-and-loop tape ile player station rafına sabitlenir. Sizden önceki maç bitmeden laptop açık ve oturum açılmış olmalıdır. Sürücü bilgisayarı robota bağlandıktan sonra dashboard'ın da robota bağlandığı doğrulanır. FRC Driver Station uygulaması maç boyunca tam görünür ve odakta tutulur; kaynak bunun iki gerekçesini verir: Windows'un uygulamanın önceliğini düşürmesinden kaçınmak ve sorun gidermeyi kolaylaştırmak.\n\nJoystick ve controller'ların çalıştığından emin olunur. Yeşil görünmüyorlarsa F1 tuşundaki rescan düğmesi kullanılır. Aynı düğme yarışma sırasında da kullanılır: bir joystick veya controller çıkarılıp yeniden takıldığında ya da başka bir sebeple gri hâle geldiğinde F1 ile rescan yapılır.\n\nBu modül departmanın kapanışıdır. Önceki on bir modülde öğrenilen olgular etkinlikte tek tek değil birlikte kullanılır. Bir belirti karşısında hangi göstergenin neyi ölçtüğünü, hangi verinin hangi makinede tutulduğunu ve hangi kontrolün neyi doğrulayamayacağını bilmek, doğru yeri hızlı bulmayı sağlar.",
+    "keyTerms": [
+      {
+        "term": "rescan",
+        "glossTr": "joystick ve controller'ların yeniden taranması"
+      },
+      {
+        "term": "player station",
+        "glossTr": "sahada sürücü ekibinin durduğu istasyon"
+      },
+      {
+        "term": "Energy Saver",
+        "glossTr": "bilgisayarın güç tasarrufu modu"
+      },
+      {
+        "term": "Power Mode",
+        "glossTr": "bilgisayarın performans ile tasarruf arasındaki güç ayarı"
+      },
+      {
+        "term": "Wi-Fi adapter",
+        "glossTr": "bilgisayarın kablosuz ağ donanımı"
+      },
+      {
+        "term": "dashboard",
+        "glossTr": "robot verisinin görüntülendiği sürücü arayüzü"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-12-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "COMPETITION",
+      "front": "Sürücü bilgisayarının kendisi de maçın bir parçasıdır.",
+      "back": "Yazılım tarafının yarışmaya hazırlığı yalnızca kodun doğru olmasıyla bitmez. Maç sırasında gerekmeyen programlar kapatılır. Güç ayarlarında cihazın uyku moduna geçmesi hem prize takılıyken hem pilde çalışırken Never yapılır, Energy Saver kapatılır ve Power Mode değeri Best Performance yapılır. Wi-Fi adaptörü, ister donanım anahtarıyla ister Quick Settings üzerinden kapatılır. Windows firewall da kapatılır. Sahada laptop şarj cihazı götürülür ve prize takılır; gerekçesi yazılıdır: Windows, laptop prize takılıyken güç yönetiminde daha az agresiftir ve FRC Driver Station uygulaması daha öngörülebilir davranır. Laptop hook-and-loop tape ile player station rafına sabitlenir.",
+      "takeaway": "Maçta tepkisiz kalan bir robotun sebebi masadaki laptop olabilir",
+      "tags": [
+        "driver station",
+        "güç ayarları",
+        "Wi-Fi"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-12-d2",
+        "programming-12-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-12-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "COMPETITION",
+      "front": "Maç öncesi hazırlığın bir sırası var ve her adımın bir gerekçesi.",
+      "back": "Laptop, sizden önceki maç bitmeden açık ve oturum açılmış olmalıdır; açılış ve oturum açma sırası maçın başlamasını beklemez. Sürücü bilgisayarı robota bağlandıktan sonra dashboard'ın da robota bağlandığı doğrulanır; ikisi ayrı bağlantılardır ve biri kurulmuş olmakla diğeri kurulmuş olmaz. FRC Driver Station uygulaması maç boyunca tam görünür ve odakta tutulur; kaynak bunun iki gerekçesini verir: Windows'un uygulamanın önceliğini düşürmesinden kaçınmak ve sorun gidermeyi kolaylaştırmak. Son adım joystick ve controller'ların çalıştığından emin olmaktır; yeşil görünmüyorlarsa F1 tuşundaki rescan düğmesi kullanılır. Aynı düğme yarışma sırasında da kullanılır: bir cihaz çıkarılıp yeniden takıldığında ya da gri hâle geldiğinde.",
+      "takeaway": "Her adımın bir gerekçesi var; gerekçeyi bilmek adımı atlamayı zorlaştırır",
+      "tags": [
+        "maç öncesi",
+        "dashboard",
+        "F1 rescan"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-12-d3",
+        "programming-12-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-12-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "COMPETITION",
+      "front": "Yedek laptop'a geçildi. Autonomous varsayılana döndü ve eski loglar yok.",
+      "back": "İki gözlem tek bir sebeple açıklanır: her ikisi de sürücü bilgisayarında tutulur. Maç log dosyaları driver station bilgisayarında saklanır, dashboard'daki autonomous seçimi de o makinenin dashboard'ında yapılır. Yeni laptop'a driver station kurulup takım numarası girilmesi robotu bulmaya yeter, ama eski makinedeki hiçbir şeyi getirmez. Bu modül departmanın kapanışıdır ve buradaki yöntem tam olarak budur: önceki on bir modülde öğrenilen olgular etkinlikte tek tek değil birlikte kullanılır. Hangi göstergenin neyi ölçtüğünü, hangi verinin hangi makinede tutulduğunu ve hangi kontrolün neyi doğrulayamayacağını bilmek doğru yeri hızlı bulmayı sağlar. Geçen testler, başarılı deploy ve yeşil gösterge birlikte bile bir mekanizma denemesinin yerini tutmaz.",
+      "takeaway": "İki ayrı belirti tek bir sebebe çıkabilir; makineyi sorun, parçayı değil",
+      "tags": [
+        "yedek laptop",
+        "verinin yeri",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-12-d8",
+        "programming-12-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-12-d1",
+      "type": "multiple_choice",
+      "prompt": "Maç sırasında operatörün controller'ı kablosundan çekildi ve hemen geri takıldı. Driver Station'da controller artık gri görünüyor. Kaynağın bu durum için gösterdiği yol nedir?",
+      "options": [
+        "F1 tuşundaki rescan düğmesi kullanılır; bu düğme yarışma sırasında çıkarılıp takılan veya gri hâle gelen cihazlar içindir.",
+        "Driver Station uygulaması kapatılıp yeniden açılır; cihaz listesi yalnızca uygulama başlarken okunduğu için başka yolu yoktur.",
+        "Robot disable edilip yeniden enable edilir; controller listesi robot kodu yeniden başladığında tazelenir ve gri durum düzelir.",
+        "Sürücü bilgisayarı yeniden başlatılır; USB cihaz listesi yalnızca işletim sistemi açılışında oluşturulur ve sonradan değişmez."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak bu senaryoyu adıyla anar: joystick veya controller'lar yeşil görünmüyorsa F1 tuşundaki yeniden tarama düğmesi kullanılır ve aynı düğme yarışma sırasında da, bir joystick veya controller çıkarılıp yeniden takıldığında ya da başka bir sebeple gri hâle geldiğinde kullanılır. Bu bilgi maç içinde saniyeler kazandırır. Diğer üç şık aynı hatayı paylaşır: hepsi cihaz listesinin ancak büyük bir yeniden başlatmayla tazelenebileceğini varsayar. Maç sırasında uygulamayı kapatmak veya bilgisayarı yeniden başlatmak, kalan maç süresinin tamamını kaybettirir; robotu disable edip enable etmek ise sürücü bilgisayarındaki USB cihaz listesine hiç dokunmaz, çünkü o liste robot tarafında değil driver station tarafında tutulur.",
+      "hint": "Kaynak bu iş için tek bir tuş adı veriyor. Maç sırasında kullanılabilecek kadar hızlı olan hangisi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-best-practices.html"
+    },
+    {
+      "id": "programming-12-d2",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş sürücü bilgisayarı alışkanlığından dördü kaynağın önerdiği gibidir. Yanlış olanı seçiniz.",
+      "scenario": "Bir takım sürücü bilgisayarını etkinlik için hazırlıyor.",
+      "elements": [
+        "Uyku moduna geçme ayarı hem prize takılıyken hem pilde çalışırken Never yapılır.",
+        "Maç sırasında gerekmeyen programlar kapatılır.",
+        "Wi-Fi adaptörü donanım anahtarıyla veya Quick Settings üzerinden kapatılır.",
+        "Windows firewall açık bırakılır.",
+        "Laptop, hook-and-loop tape ile player station rafına sabitlenir."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak bunun tersini söyler: Windows firewall kapatılır. Kaynak bu maddede gerekçe vermez; yalnızca kapatılmasını ister ve nasıl yapılacağını anlatan bir sayfaya yönlendirir. O sayfa, FRC araçlarının çeşitli sebeplerle ağ erişimine ihtiyaç duyduğunu ve yapılandırmaya bağlı olarak Windows firewall'ın bu erişime karışabileceğini belirtir. Aynı sayfa bir uyarı da ekler: firewall kapatıldığında bilgisayar internete bağlanırken zararlı yazılımlara karşı daha savunmasız hâle gelir, bu yüzden kaynak ayrıca web gezinmesinin FRC ile ilgili sitelerle sınırlanmasını önerir. Diğer dört öğe kaynağın yazdığı gibidir ve dördü de aynı amaca hizmet eder: maç sırasında bilgisayarın dikkatini dağıtacak, gücünü kısacak veya bağlantısını bölecek her şeyi önceden ortadan kaldırmak.",
+      "hint": "Beş maddeden dördü kaynağın sürücü bilgisayarı listesinde geçiyor. Hangisi kaynağın söylediğinin tersi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-best-practices.html"
+    },
+    {
+      "id": "programming-12-d3",
+      "type": "multiple_choice",
+      "prompt": "Sürücü ekibi maç öncesi hazırlığı yapıyor. Kaynak, dashboard'ın robota bağlandığının ne zaman doğrulanmasını söyler?",
+      "explanation": "Kaynak sırayı doğrudan yazar: dashboard'ın robota bağlandığı, sürücü bilgisayarı robota bağlandıktan sonra doğrulanır. Bu bir doğrulama sırasıdır; dashboard robotla kendi bağlantısını kurar, ancak dashboard'ın bağlı olduğuna karar vermenin anlamlı olduğu an, driver station'ın robotla haberleştiği andır. Aynı listede bir zamanlama daha vardır ve ikisi birlikte hazırlığın çerçevesini kurar: laptop, sizden önceki maç bitmeden açık ve oturum açılmış olmalıdır. Sebebi pratiktir; açılış ve oturum açma süresi, sahada sıraya girdikten sonra bulunmayan bir süredir. Birinci şık sırayı tersine çevirir ve kaynakta karşılığı olmayan bir bağımlılık uydurur. Üçüncü şık dashboard bağlantısını enable durumuna bağlar; böyle bir şart kaynakta yoktur. Dördüncü şık da kaynakta bulunmayan bir saha kısıtı uydurur.",
+      "hint": "Kaynak bu doğrulamayı hangi başka olaya göre konumlandırıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-best-practices.html",
+      "options": [
+        "Sürücü bilgisayarı robota bağlanmadan önce; dashboard bağlantısı kurulmazsa driver station robotu hiç bulamaz.",
+        "Sürücü bilgisayarı robota bağlandıktan sonra; ayrıca laptop, sizden önceki maç bitmeden açık ve oturum açılmış olmalıdır.",
+        "Robot enable edildikten sonra; dashboard yalnızca robot enable durumdayken veri alabildiği için öncesinde bağlanamaz.",
+        "Maç başladıktan sonra; dashboard bağlantısı maç öncesinde saha tarafından engellenir ve ancak maç başında açılır."
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "programming-12-d4",
+      "type": "diagnose",
+      "symptom": "Maç sırasında robot birkaç kez, birer saniyeyi geçmeyen sürelerle tepkisiz kalıyor. Sürücü bilgisayarında maç boyunca bir tarayıcı ve bir video uygulaması açık duruyor ve laptop prize takılı değil, pilde çalışıyor. Aynı kod atölyede, aynı laptop prize takılıyken ve başka bir uygulama açık değilken saatlerce sorunsuz çalıştı.",
+      "prompt": "İlk olarak nerede düzeltme yapılır?",
+      "options": [
+        "Radio tarafında; kısa kesintiler kablosuz bağlantı sorununun tipik belirtisidir ve radio yeniden yapılandırılmalıdır.",
+        "Robot kodunda; kısa tepkisizlikler scheduler döngüsünün aşılmasından gelir ve periodic metotlarının hafifletilmesi gerekir.",
+        "Sürücü bilgisayarında; gereksiz programlar kapatılır, laptop prize takılır ve güç ayarları performansa alınır.",
+        "Battery tarafında; kısa tepkisizlikler brownout eşiğine yaklaşıldığını gösterir ve battery değiştirilmelidir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirtideki gözlemlerin tamamı sürücü bilgisayarını işaret ediyor ve kaynak bu üç düzeltmeyi ayrı ayrı önerir: maç sırasında gerekmeyen programlar kapatılır, laptop şarj cihazı sahaya götürülür ve güç ayarlarında uyku Never yapılıp Energy Saver kapatılarak Power Mode değeri Best Performance yapılır. Kaynak şarj gerekçesini de yazar: Windows, laptop prize takılıyken güç yönetiminde daha az agresiftir ve FRC Driver Station uygulaması daha öngörülebilir davranır. Belirtideki ayırt edici gözlem son cümledir: aynı kod, aynı laptop prize takılıyken ve başka uygulama açık değilken sorunsuz çalışmış. Kod değişmediğine göre ikinci şık düşer, çünkü bir scheduler döngüsü aşımı atölyede de aynı şekilde görünürdü. Birinci ve dördüncü şıklar tek başına düşünüldüğünde makuldür ancak belirtide onları destekleyen hiçbir gözlem yok. Bu drill'in noktası, en ucuz ve en hızlı düzeltmenin nerede olduğunu belirtiden okumaktır.",
+      "hint": "Belirtide kaç gözlem var ve kaçı aynı makineyi işaret ediyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-best-practices.html"
+    },
+    {
+      "id": "programming-12-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir takım maç sırasında canlı yayını izlemek için Driver Station penceresini küçültüp arkaya alıyor. Kaynak bu konuda ne diyor?",
+      "options": [
+        "Pencere küçültüldüğünde Driver Station robot bağlantısını tamamen keser; bu yüzden yayın ikinci bir bilgisayardan izlenmelidir.",
+        "Pencerenin küçültülmesi sakıncasızdır; Driver Station arka planda çalışırken de tam öncelikle işlem görür ve hiçbir davranışı değişmez.",
+        "Pencere küçültülebilir ancak yalnızca autonomous sırasında; teleop'ta odakta olması gerekir çünkü joystick girdileri yalnızca odaktaki pencereden okunur.",
+        "FRC Driver Station uygulaması maç boyunca tam görünür ve odakta tutulmalıdır; Windows aksi hâlde önceliğini düşürebilir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynağın ifadesi nettir: FRC Driver Station uygulaması maç sırasında tam görünür ve odakta olmalıdır; kaynak bunun iki gerekçesini verir, Windows'un uygulamanın önceliğini düşürmesinden kaçınmak ve sorun gidermeyi kolaylaştırmak. Kaynak önceliğin düşmesinin ne ürettiğini yazmaz; muhtemel sonuç bir kesinti değil bir yavaşlamadır ve bu, teşhis edilmesi en zor türden bir sorundur; robot bağlı görünür, göstergeler yeşildir, yalnızca tepkiler geç gelir ve kimse sebebini pencerede aramaz. İkinci şık kaynağın uyardığı davranışı sakıncasız sayar. Üçüncü şık kaynakta bulunmayan bir mode ayrımı ve yanlış bir mekanizma uydurur. Birinci şık ise riski abartır; kaynak bağlantının kesileceğini değil, önceliğin düşebileceğini söyler. Doğru çözüm basittir: yayın izlenecekse ikinci bir ekrandan veya başka bir kişinin telefonundan izlenir.",
+      "hint": "Kaynağın uyardığı şey bağlantının kopması mı, yoksa başka bir şey mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-best-practices.html"
+    },
+    {
+      "id": "programming-12-d6",
+      "type": "diagnose",
+      "symptom": "Sürücü bilgisayarı sahada oyuncu istasyonuna Ethernet ile bağlı. Maç sırasında bağlantı aralıklarla kopuyor ve Communications göstergesi kısa süreler için kırmızıya dönüyor. Bilgisayarın Wi-Fi adaptörü açık ve pit'teki takım ağına bağlı durumda. Robot tarafındaki radio ledleri maç boyunca normal.",
+      "prompt": "Pit'te ilk olarak ne denenir?",
+      "options": [
+        "Wi-Fi adapter kapatılır; kaynak etkinlikte bunu ister ve iki yol gösterir: donanım anahtarı veya Quick Settings.",
+        "Sahadaki Ethernet kablosunun arızalı olmasıdır; oyuncu istasyonundaki kablo değiştirilmeli ve saha ekibine bildirilmelidir.",
+        "Robot radio'sunun yeniden yapılandırılması gerekmesidir; radio sahaya her gelişte yeniden yapılandırılmak zorundadır.",
+        "Robot kodunun haberleşmeyi bloke etmesidir; periodic metotlarındaki ağır işler paket gönderimini geciktirir ve kesinti üretir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak bu önlemi etkinlik başlığı altında doğrudan sıralar: Wi-Fi adapter, ister dedike donanım Wi-Fi anahtarıyla ister Quick Settings içindeki Wi-Fi kontrolüyle kapatılır. Kaynak sebebini yazmaz. Pratikte beklenen mekanizma şudur ve bu bir çıkarımdır: bilgisayar aynı anda iki ağa bağlıdır ve işletim sistemi trafiği hangi arayüzden göndereceğine karar verirken robota giden paketleri yanlış arayüze yönlendirebilir. Robot tarafındaki radio ledlerinin maç boyunca normal kalması üçüncü şıkkı eler ve sorunun robot tarafında olmadığını söyler. Dördüncü şık da elenir; robot kodu takılsaydı Robot Code göstergesi etkilenirdi, oysa etkilenen gösterge Communications. İkinci şık mümkündür ve tamamen dışlanamaz; ancak pit'te önce ücretsiz olan, saniyeler süren ve dokümantasyonun zaten istediği düzeltme denenir. Kablo değişimi bundan sonra gelir.",
+      "hint": "Bilgisayar kaç ağa bağlı? Kaynak bu durum için bir önlem sıralıyor mu?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-best-practices.html"
+    },
+    {
+      "id": "programming-12-d7",
+      "type": "multiple_choice",
+      "prompt": "Maçtan önce bir takım şunları doğruladı: bütün unit testler geçiyor, kod deploy edildi ve Robot Code göstergesi yeşil. Bu üç kontrol birlikte neyi garanti eder?",
+      "options": [
+        "Robotun maça hazır olduğunu; bu üç kontrol yazılım tarafındaki bütün olasılıkları kapsar ve ayrıca bir mekanizma denemesine gerek bırakmaz.",
+        "Robotta bir kod çalıştığını ve kodun mantığının test edilen yerlerde beklendiği gibi davrandığını; güncelliği ve kablolamayı garanti etmez.",
+        "Kodun en son deploy edilen sürüm olduğunu ve bütün port numaralarının fiziksel bağlantılarla eşleştiğini; geriye yalnızca mekanik kontroller kalır.",
+        "Testlerin robot üzerinde çalıştığını ve dolayısıyla kablolama hatalarının da yakalandığını; bu yüzden mekanizmaların tek tek denenmesi gereksizdir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Üç kontrolün her biri dar bir şeyi ölçer ve üçü birlikte bile robotu kapsamaz. Robot Code göstergesi yalnızca takım kodunun çalıştığını bildirir; bunu robot kodu içindeki Driver Station Task'ının battery gerilimini güncelleyip güncellemediğine bakarak belirler, dolayısıyla kodun doğru veya güncel olduğunu göstermez. Unit testler ise her zaman desktop üzerinde simulation içinde çalışır; kodun mantığını kendine karşı doğrularlar ve port sabitlerinin fiziksel kabloya karşılık gelip gelmediğini göremezler. Gösterge ayrıca hangi sürümün çalıştığını da bilmez; yalnızca bir kodun çalıştığını bildirir. Geriye tek bir kontrol kalır ve o vazgeçilmezdir: her mekanizmayı robot üzerinde tek tek denemek. Diğer üç şık aynı hatayı farklı biçimlerde yapar ve yazılım kontrollerinin fiziksel robotu kapsadığını varsayar.",
+      "hint": "Üç kontrolden hangisi fiziksel robota dokunuyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html",
+      "sourceNote": "Robot Code göstergesinin ölçtüğü şey: https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station.html"
+    },
+    {
+      "id": "programming-12-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte sürücü bilgisayarı arızalandı ve yedek bir laptop'a geçildi. Yeni laptop'a driver station kuruldu ve takım numarası girildi. Sonraki maçta robot, seçilmesi gereken rutin yerine varsayılan autonomous rutinini çalıştırdı. Ayrıca takım, önceki maçların log dosyalarını yeni laptop'ta hiç bulamadı.",
+      "prompt": "Bu iki gözlem tek bir sebeple açıklanabilir mi?",
+      "options": [
+        "Hayır; log dosyaları roboRIO'da tutulur ve yeni laptop'a kendiliğinden kopyalanır, autonomous sorununun sebebi başka bir yerdedir.",
+        "Hayır; autonomous seçimi roboRIO üzerinde saklanır ve sorun robotta eski sürüm kodun çalışıyor olmasıdır, loglar ise ayrı bir konudur.",
+        "Evet; ikisi de sürücü bilgisayarına aittir, autonomous seçimi dashboard üzerinden yapılır ve loglar o bilgisayarda tutulur.",
+        "Evet; ancak ortak sebep takım numarasıdır, yanlış girilen bir takım numarası hem seçimin hem logların kaybolmasına yol açar."
+      ],
+      "correctIndex": 2,
+      "explanation": "İki gözlem de aynı yere, sürücü bilgisayarına bakıyor ve laptop değişimi ikisini birden açıklar. Autonomous seçimi dashboard üzerinde yapılır. Chooser, robot kodundan putData ile dashboard'a gönderilir; seçimi yapan taraf dashboard'dır. Kaynak, setDefaultOption ile eklenen seçeneğin dashboard açıldığında baştan seçili olan olduğunu söyler, dolayısıyla hiç seçim yapılmamış yeni bir laptop'ta varsayılan rutin çalışır. Log dosyaları da robotta değil, driver station bilgisayarında tutulur ve o dosyalar eski laptop'ta kalmıştır. Birinci ve ikinci şıklar iki verinin de robotta durduğunu varsayar ve bu, etkinlikte yanlış makineyi saatlerce aratan türden bir yanılgıdır. Dördüncü şık akla yatkındır ancak belirtiyle çelişir; takım numarası yanlış olsaydı robotla hiç haberleşilemezdi ve robot autonomous rutinini hiç çalıştıramazdı, oysa varsayılan rutin çalışmış. Bu drill'in kapanış dersi şudur: bir belirtiyle karşılaştığınızda önce hangi verinin hangi makinede durduğunu sorun.",
+      "hint": "Autonomous seçimi ve log dosyaları hangi makinede duruyor? Değişen makine hangisiydi?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/driverstation/driver-station-log-viewer.html",
+      "sourceNote": "Chooser ve getSelected: https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html"
+    }
+  ]
+}

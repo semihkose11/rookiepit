@@ -1,0 +1,301 @@
+{
+  "id": "cad-01-onshape-basics",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 1,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Onshape'e Giriş: Document, Part Studio ve Assembly",
+  "summary": "Onshape'in üç temel kabını, hangi işin hangisinde yapıldığını, tek bir Feature list'in birden çok part'ı nasıl sürdüğünü ve bulut tabanlı paylaşımın dosya göndermekten neden farklı olduğunu öğretir.",
+  "prerequisites": [],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Onshape'te her şey bir document içinde yaşar. Document, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran bir kaptır. Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir; bunların her biri kendi tab'inde durur. Part Studio'lar, Assembly'ler ve içe aktarılan yabancı dosyalar arayüzde tab olarak görünür.\n\nPart Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan bir kaptır. Kaynak onu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı sayar. Soldaki Feature list varsayılan geometriyi ve oluşturduğunuz bütün feature'ları içerir; tek bir Feature list birden çok part'ın şeklini sürer. Kaynağın buna bağlı iki cümlesi vardır: performans açısından iyi bir uygulama olarak bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir, ve yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır. Çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context feature'ı kullanılır ve Part Studio'lar küçük tutulur.\n\nAssembly, part ve subassembly instance'larından oluşan hiyerarşik yapının tanımlandığı yerdir; degrees of freedom ve relation'lar da burada tanımlanır. Temel adımlar şunlardır: part ve assembly'leri insert etmek, mate connector oluşturmak, mate'ler oluşturmak ve istenirse relation'lar oluşturmak. Part'lar aynı document'tan veya izinlere sahip olduğunuz ve versiyonlanmış başka document'lardan instance edilebilir. Varsayılan olarak bir subassembly'nin mate'leri üst seviye assembly tarafından da geçerli sayılır.\n\nDocument'lar buluttadır. Kaynak paylaşımı şöyle tarif eder: document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur; document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. İzinleri document sahibi atar ve dilediği zaman geri alabilir.",
+    "keyTerms": [
+      {
+        "term": "document",
+        "glossTr": "Onshape'te bütün proje verisini barındıran kap"
+      },
+      {
+        "term": "tab",
+        "glossTr": "document içinde bir veri türünü tutan sekme"
+      },
+      {
+        "term": "Part Studio",
+        "glossTr": "part, surface ve sketch'lerin oluşturulduğu kap"
+      },
+      {
+        "term": "Feature list",
+        "glossTr": "varsayılan geometriyi ve oluşturulan bütün feature'ları içeren sıralı liste"
+      },
+      {
+        "term": "feature",
+        "glossTr": "geometriyi oluşturan veya değiştiren tek bir tasarım adımı"
+      },
+      {
+        "term": "Assembly",
+        "glossTr": "part ve subassembly instance'larının birleştirildiği, degrees of freedom ve relation'ların tanımlandığı tab"
+      },
+      {
+        "term": "subassembly",
+        "glossTr": "başka bir assembly içinde kullanılan assembly"
+      },
+      {
+        "term": "instance",
+        "glossTr": "bir part veya assembly'nin assembly içindeki bir yerleşimi; kopya değildir, kaynağına bağlı kalır"
+      },
+      {
+        "term": "mate",
+        "glossTr": "assembly'de iki part'ın birbirine göre hareketini tanımlayan bağ"
+      },
+      {
+        "term": "mate connector",
+        "glossTr": "part'ların birbirine nerede bağlanacağını tanımlayan referans"
+      },
+      {
+        "term": "Derived part",
+        "glossTr": "başka bir Part Studio'dan geometri getiren feature"
+      },
+      {
+        "term": "In context",
+        "glossTr": "bir assembly bağlamında başka part'lara referans vererek tasarlama yolu"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-01-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "ONSHAPE BASICS",
+      "front": "Onshape'te üç ayrı kap var ve her işin bir yeri var.",
+      "back": "Onshape'te her şey bir document içinde yaşar; document, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran bir kaptır. Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir ve bunların her biri kendi tab'inde durur. Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan kaptır. Assembly ise part ve subassembly instance'larından oluşan hiyerarşik yapının tanımlandığı, degrees of freedom ve relation'ların kurulduğu yerdir. Bu ayrım bir üslup tercihi değildir: Assembly'de sketch aracı aramak, o kabın işi olmadığı için sonuçsuz kalır.",
+      "takeaway": "Bir aracı bulamıyorsanız, önce yanlış kapta olup olmadığınıza bakın",
+      "tags": [
+        "document",
+        "Part Studio",
+        "Assembly"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-01-d2",
+        "cad-01-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-01-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "ONSHAPE BASICS",
+      "front": "Bir Part Studio ne kadar büyük olmalı?",
+      "back": "Kaynak Part Studio'yu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı sayar. Soldaki Feature list varsayılan geometriyi ve oluşturduğunuz bütün feature'ları içerir ve tek bir Feature list birden çok part'ın şeklini sürer. Buna bağlı iki cümle vardır: performans açısından iyi bir uygulama olarak bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir, ve yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır. Aynı mile oturan bir dişli ile tutucu aynı kaba girer, çünkü delik çapları birlikte değişmelidir. Şasi ile elektrik paneli girmez. Çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context kullanılır ve Part Studio'lar küçük tutulur.",
+      "takeaway": "Aynı kapta olmak, birlikte değişmeyi kabul etmektir",
+      "tags": [
+        "Feature list",
+        "ortak referans",
+        "Derived part"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-01-d6",
+        "cad-01-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-01-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "ONSHAPE BASICS",
+      "front": "Etkinlikte STEP dosyası gönderildi, iki saat sonra yanlış parça geldi.",
+      "back": "Dışa aktarılan dosya, dışa aktarıldığı anın kopyasıdır ve document ile bir bağı yoktur. Document'taki delik deseni bir gün önce değiştiyse, gönderilen kopya o değişikliği taşımaz ve karşı taraf eski geometriyle üretir. Kaynağın tarif ettiği çalışma biçimi başkadır: document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur; document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. Bu, dosya formatı meselesi değildir; başka bir formata çevirmek sorunu çözmez, çünkü sorun formatta değil kopyanın donmuş olmasındadır. İzinleri document sahibi atar ve dilediği zaman geri alabilir, dolayısıyla paylaşmak denetimi kaybetmek de değildir.",
+      "takeaway": "Gönderilen dosya, gönderildiği andan sonra yalan söylemeye başlar",
+      "tags": [
+        "paylaşım",
+        "dışa aktarma",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-01-d8",
+        "cad-01-d7"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-01-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci robot için yeni bir bracket tasarlayacak. Bracket'i oluşturmak üzere hangi tab türünü açmalı ve neden?",
+      "options": [
+        "Part Studio; part'lar, surface'ler ve sketch'ler burada oluşturulur ve düzenlenir.",
+        "Assembly; yeni part'lar assembly içinde oluşturulur ve sonra Part Studio'ya aktarılır.",
+        "Drawing; geometri önce drawing'de çizilir, ardından üç boyuta dönüştürülür.",
+        "Feature Studio; bütün yeni geometri feature tanımı yazılarak oluşturulur."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın tanımı açıktır: Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan bir kaptır. Yeni geometri buraya çizilir. Assembly ise farklı bir iş yapar; orada part ve subassembly instance'larından oluşan hiyerarşik bir yapı ile degrees of freedom ve relation'lar tanımlanır, yani var olan part'lar bir araya getirilir. İkinci şık bu iki kabın işini ters çevirir ve yeni başlayanların en sık yaptığı karışıklıktır. Üçüncü şık iş akışını tersine çevirir; drawing var olan geometriden üretilir. Dördüncü şık gerçek bir tab türünü anar, çünkü Feature Studio kaynağın oluşturulabilir tab türleri arasında saydığı bir tab'dir; ancak part, surface ve sketch oluşturmayı kaynak Part Studio'ya verir, dolayısıyla gündelik part tasarımının yeri orası değildir. Bu ayrımı en baştan oturtmak önemlidir, çünkü yanlış kapta çalışmak bir hata mesajı üretmez; bu son gözlem kaynakta yazmayan, pratikten gelen bir uyarıdır.",
+      "hint": "İki kap var: biri parça yapmak, diğeri parçaları birleştirmek için. Hangisi yaratır?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"
+    },
+    {
+      "id": "cad-01-d2",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci robot şasisinin Assembly tab'ini açtı ve orada yeni bir sketch başlatmaya çalışıyor. Sketch aracını bulamıyor. Aynı öğrenci daha önce başka bir tab'de sorunsuz sketch çizmişti. Document'ta hiçbir hata mesajı görünmüyor.",
+      "prompt": "Neden bulamıyor?",
+      "options": [
+        "Assembly'de sketch çizebilmek için önce document sahibinden ek bir izin alınması gerekir.",
+        "Sketch'ler Part Studio'da oluşturulur; Assembly var olan instance'ların birleştirildiği yerdir.",
+        "Sketch aracı yalnızca document'ta en az bir drawing tab'i varsa etkinleşir; önce drawing eklenmelidir.",
+        "Assembly tab'i salt okunur açılmıştır; tab'in kilidini açmak için sağ tıklayıp düzenleme moduna geçilmelidir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Belirtideki en önemli ipucu hata mesajının olmamasıdır. Öğrenci bozuk bir şeyle karşılaşmıyor, yanlış kapta bulunuyor. Kaynak iki kabı ayrı ayrı tanımlar ve asıl dayanak bu olumlu tanımdır: Part Studio, part'ları, surface'leri ve sketch'leri oluşturmak ve düzenlemek için kullanılan kaptır; Assembly ise part ve subassembly instance'larından oluşan hiyerarşik yapının, degrees of freedom'un ve relation'ların tanımlandığı yerdir. Assembly'nin dört temel adımlık iş akışında da sketch çizmek geçmez, ancak bu liste kaynakta temel adımlar başlığıyla verildiği için tek başına bir kanıt değil, destekleyici bir gözlemdir. Birinci şık izin sistemini yanlış yere bağlar; izinler kimin düzenleyebileceğini belirler, hangi araçların hangi tab'de bulunduğunu değil. Üçüncü ve dördüncü şıklar kaynakta karşılığı olmayan koşullar uydurur.",
+      "hint": "Öğrenci bir hata almıyor, yalnızca aracı bulamıyor. Bu ne anlama gelir?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Assembly/assembly.htm",
+      "sourceNote": "Part Studio tanımı: https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"
+    },
+    {
+      "id": "cad-01-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir CAD ekibi yeni üyeler için Onshape'i anlatan bir sayfa hazırlıyor.",
+      "elements": [
+        "Bir document part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller içerebilir.",
+        "Part Studio'lar, Assembly'ler ve içe aktarılan yabancı dosyalar arayüzde tab olarak görünür.",
+        "Tek bir Feature list birden çok part'ın şeklini sürebilir.",
+        "Bir Assembly içinde yalnızca aynı document'taki part'lar kullanılabilir.",
+        "Varsayılan olarak bir subassembly'nin mate'leri üst seviye assembly tarafından da geçerli sayılır."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak bunun tersini söyler: part'ları birleştirme zamanı geldiğinde, birden çok Part Studio'dan, hatta farklı document'lardan gelen part'lar aynı Assembly içinde kullanılabilir. Kaynak buna iki şart bağlar ve bu şartlar pratikte belirleyicidir: part'lar aynı document'tan veya izinlere sahip olduğunuz ve versiyonlanmış başka document'lardan instance edilebilir. FRC takımları için doğrudan sonucu şudur: satın alınan bir COTS parçanın document'ı ayrı durabilir ve robot assembly'si o document'tan instance alabilir, ancak o document'ın versiyonlanmış olması gerekir. Yanlış inanç takımı her şeyi tek bir document'a kopyalamaya iter ve bu da güncellemeleri takip edilemez hâle getirir. Diğer dört ifade kaynağın yazdığı gibidir.",
+      "hint": "İfadelerden biri bir sınır koyuyor. Kaynak orada gerçekten bir sınır tarif ediyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm",
+      "sourceNote": "Document içeriği ve tab'ler: https://cad.onshape.com/help/Content/Document/documents.htm ve https://cad.onshape.com/help/Content/Document/document_tabs.htm"
+    },
+    {
+      "id": "cad-01-d4",
+      "type": "multiple_choice",
+      "prompt": "Bir takım robot projesini nasıl düzenleyeceğini tartışıyor. Bir üye her alt sistem için ayrı bir document açılmasını, diğeri tek bir document içinde ayrı tab'ler kullanılmasını öneriyor. Kaynağın document ve tab tanımına göre hangi ifade doğrudur?",
+      "options": [
+        "Tab'ler yalnızca içe aktarılan yabancı dosyalar için kullanılır; Part Studio ve Assembly arayüzde tab olarak görünmez.",
+        "Bir document yalnızca tek bir part ve tek bir assembly barındırabilir, bu yüzden alt sistem başına ayrı document zorunludur.",
+        "Bir document birden çok part, assembly ve drawing'i kendi tab'lerinde barındırabilir; bu düzen araç tarafından desteklenir.",
+        "Bir document içindeki tab'ler klasörlere konulamaz, bu yüzden çok tab'li document'lar kısa sürede düzensizleşir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak document'ı, CAD verinizi ve projeyle ilgili bütün destekleyici veriyi barındıran bir kap olarak tanımlar ve içerebileceklerini sayar: part'lar, assembly'ler, drawing'ler, içe aktarılmış veri ve görseller. Bunların her biri kendi tab'inde durur ve kaynak Part Studio'ların, Assembly'lerin ve içe aktarılan yabancı dosyaların arayüzde tab olarak göründüğünü açıkça söyler. Dolayısıyla çok tab'li bir document araç tarafından desteklenen bir düzendir. Dikkat edilmesi gereken nokta şudur: bu drill iki öneriden hangisinin daha iyi olduğunu sormuyor, hangisinin araç tarafından desteklendiğini soruyor. Kaynak document'ın nasıl bölüneceği konusunda tek bir doğru dayatmaz. Birinci ve i̇kinci şıklar tanımla doğrudan çelişir. Dördüncü şık da yanlıştır; kaynak tab'lerin klasörlere sürüklenip bırakılabildiğini ve klasörlerin iç içe kullanılabildiğini anlatır.",
+      "hint": "Kaynak bir document'ın neler içerebileceğini sayıyor. O liste kaç tab türü içeriyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/documents.htm",
+      "sourceNote": "Tab türleri ve klasörler: https://cad.onshape.com/help/Content/Document/document_tabs.htm"
+    },
+    {
+      "id": "cad-01-d5",
+      "type": "diagnose",
+      "symptom": "Bir takım robotun bütün part'larını tek bir Part Studio içine koydu: şasi, intake, kol ve elektrik paneli. Kol tasarlanırken kolun bir sketch'i, aynı Part Studio'da duran şasi geometrisinin bir kenarına referans verilerek çizilmişti ve bunu kimse fark etmemişti. Şasi genişliğini değiştiren bir düzenlemeden sonra kolun o feature'ı hata verdi. Feature list ayrıca çok uzamış ve her düzenleme sonrası yeniden hesaplama gözle görülür biçimde yavaşlamıştı.",
+      "prompt": "Bu davranışın kaynağı nedir?",
+      "options": [
+        "Document sahibi izinleri değiştirdiği için bazı feature'lar salt okunur hâle gelmiş ve yeniden hesaplanamamıştır.",
+        "Onshape'te bir Part Studio en fazla iki part barındırabilir; bu sınır aşıldığı için feature'lar bozulmuştur.",
+        "Part'lar arasında yanlışlıkla bir mate kurulmuştur; assembly'deki bu mate silindiğinde sorun ortadan kalkar.",
+        "Aynı Part Studio'daki part'lar birbirine istemeden referans verebilir; kaynak kapsamı bu yüzden sınırlar."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak Part Studio'yu bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamı olarak tanımlar ve iki tavsiye verir. Birincisi performansla ilgilidir: iyi bir uygulama olarak bütün assembly'nin part'ları tek bir Part Studio'da modellenmemelidir. İkincisi kapsamla ilgilidir: yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio içinde olmalıdır. Belirtideki iki ayrı sorun tam olarak bu iki tavsiyenin karşılığıdır. Yavaşlama performans tavsiyesinin, kırılan feature ise kapsam tavsiyesinin ihlalinden gelir. Burada dikkat edilmesi gereken bir ayrım var: aynı Part Studio'da olmak tek başına bir part'ı bozmaz. Bir feature ancak referans verdiği geometri değiştiğinde etkilenir. Aynı kapta olmak, bu istenmeyen referansın kurulmasını mümkün ve kolay hâle getirir; belirtide kolun sketch'inin şasi kenarına referans verdiği zaten söyleniyor. Kaynak çözümü de verir: çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context feature'ı kullanılır ve böylece Part Studio'lar küçük tutulabilir. Üçüncü şık yanlış kapta arıyor; mate'ler assembly'de yaşar. Birinci ve i̇kinci şıklar kaynakta karşılığı olmayan sınırlar uydurur.",
+      "hint": "Kimse kola dokunmadı ama kol değişti. Bu iki parçanın neyi paylaşıyor olması gerekir?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"
+    },
+    {
+      "id": "cad-01-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım, aynı mil üzerine oturan bir dişli ile bir tutucuyu tasarlıyor. İkisinin delik çapı her zaman aynı kalmalı. Kaynağın Part Studio tavsiyesine göre bu iki part nerede tasarlanmalıdır?",
+      "options": [
+        "Aynı Part Studio içinde; ortak referans paylaşması gereken part'lar için tasarlanmış ortam burasıdır.",
+        "Ayrı Part Studio'larda; iki part'ın aynı kapta olması Onshape'te her zaman kaçınılması gereken bir durumdur.",
+        "Ayrı document'larda; ölçü birliği ancak document seviyesinde kurulan bir bağ ile sağlanabilir ve tek yol budur.",
+        "Doğrudan Assembly içinde; part'lar arasındaki ortak ölçüler yalnızca mate'ler üzerinden korunabilir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Bu drill bir önceki drill'in tersini sorar ve tavsiyenin bir yasak olmadığını göstermek için oradadır. Olumlu yöndeki dayanak, kaynağın Part Studio tanımıdır: Part Studio bir model değil, ortak referans paylaşması gereken part'ları tasarlamaya yönelik bir tasarım ortamıdır. Buradaki iki part tam olarak o tarife uyuyor, çünkü delik çapları birbirine bağlı ve aynı milin ölçüsünden geliyor. Aynı Part Studio'da olduklarında tek bir Feature list ikisinin şeklini birden sürer ve mil çapı değiştiğinde ikisi birlikte güncellenir. İkinci şık bir önceki drill'in dersini mutlak bir yasağa çevirdiği için yanlıştır; kaynak böyle bir yasak koymaz. Yine de o şıkkın içindeki fikir tümüyle geçersiz değildir: kaynak, çok sayıda part arasında ortak geometrik referans gerektiğinde Derived part veya In context feature'ı ile part'ların ayrı Part Studio'larda tutulabileceğini söyler. Buradaki gibi iki part'lık basit bir durumda ise aynı Part Studio doğrudan ve yeterli çözümdür. Üçüncü ve dördüncü şıklar ortak ölçünün korunmasını kaynakta karşılığı olmayan tek yollara bağlar; mate'ler part'ların birbirine göre hareketini tanımlar, ölçülerini değil.",
+      "hint": "Bir önceki drill ayırmayı öğretti. Kaynağın cümlesi bir yasak mı, yoksa bir ölçüt mü?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/PartStudio/part_studios.htm"
+    },
+    {
+      "id": "cad-01-d7",
+      "type": "diagnose",
+      "symptom": "Takım kaptanı robot document'ının bağlantısını yeni bir üyeye gönderdi. Üye document'ı açabiliyor, bütün part'ları ve assembly'yi görebiliyor, ancak hiçbir şeyi değiştiremiyor. Bağlantı doğru, document açılıyor ve hiçbir hata mesajı yok.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Aynı document'ta aynı anda yalnızca bir kişi çalışabilir; kaptan document'ı kapatınca üye düzenleyebilecektir.",
+        "Üyeye verilen izin görüntülemeyle sınırlıdır; izinleri document sahibi atar ve dilediği zaman geri alabilir.",
+        "Yeni üyenin Onshape hesabı henüz doğrulanmamıştır; doğrulanana kadar bütün document'lar salt okunur açılır.",
+        "Document bir Assembly tab'i içerdiği için kilitlenmiştir; assembly içeren document'lar yalnızca sahibi tarafından düzenlenebilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak izin modelini açıkça tarif eder: bütün kullanıcılar aynı document'ı, hatta aynı part'ları eş zamanlı görüntüleyebilir ve izinleri varsa düzenleyebilir; document sahibi her kullanıcıya belirli bir document için izin atayabilir ve bu izinleri dilediği zaman geri alabilir. Belirtideki tablo bununla birebir örtüşüyor: erişim var, görüntüleme var, düzenleme yok. Birinci şık kaynağın söylediğinin tam tersidir; Onshape'in tasarım fikri zaten aynı document'ta aynı anda birlikte çalışmaktır ve kaynak bunu paylaşımın gerekçesi olarak sayar. Üçüncü ve dördüncü şıklar kaynakta karşılığı olmayan kısıtlar uydurur. Doğru düzeltme kaptanın paylaşım ayarlarından üyeye düzenleme izni vermesidir.",
+      "hint": "Üye document'ı görebiliyor. Görebilmek ile değiştirebilmek arasındaki farkı ne belirliyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/documents.htm"
+    },
+    {
+      "id": "cad-01-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte kırılan bir bracket'in yenisi gerekiyor. Takım üyesi Onshape'ten bracket'in STEP dosyasını dışa aktarıp atölyedeki kişiye e-posta ile gönderiyor. İki saat sonra parça geliyor, ancak delik deseni robota uymuyor. Onshape'teki document incelendiğinde bracket'in delik deseninin bir gün önce akşam değiştirildiği görülüyor.",
+      "prompt": "Ne oldu ve kaynağın önerdiği çalışma biçimi nedir?",
+      "options": [
+        "Document sahibi izinleri geri aldığı için atölyedeki kişi güncel geometriyi göremedi; izin verilseydi doğru parça çıkardı.",
+        "STEP formatı delik desenlerini taşımaz; parçanın IGES olarak dışa aktarılması gerekirdi ve format değişikliği sorunu çözer.",
+        "Dışa aktarılan dosya o anın kopyasıdır ve document değiştiğinde kendiliğinden güncellenmez; paylaşım dosya göndermeye dayanmaz.",
+        "Part Studio'daki Feature list bozulmuştu ve dışa aktarma sırasında eski geometri kullanıldı; Feature list onarılmalıdır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Dışa aktarılmış bir dosya, alındığı andaki geometrinin donmuş bir kopyasıdır. Document akşam değiştiğinde e-postadaki dosya eskidi ve kimseye bir uyarı gitmedi. Bu son gözlem kaynak sayfalarda yazmaz; dosya dışa aktarmanın genel bir özelliğidir ve modülün kendi yorumudur. Kaynağın bu duruma dair söylediği şey ise nettir: document'ları kopyalayıp iş arkadaşlarınıza veya tedarikçilerinize göndermenize gerek yoktur, document'ınızı ihtiyaç duyduğunuz kadar kullanıcıyla paylaşabilir ve aynı document içinde aynı anda birlikte çalışabilirsiniz. Etkinlikte bunun karşılığı, imalatı yapan kişiye document erişimi vermektir. Birinci şık belirtiyle çelişir; atölyedeki kişi bir document değil bir dosya aldı, dolayısıyla izinler bu olaya hiç girmedi. İkinci ve dördüncü şıklar teknik sebepler uydurur. Bu drill ileriye bir soru da bırakır: canlı bir document'ı paylaşmak, hangi hâlin imal edileceği konusunda anlaşmakla aynı şey değildir. Onshape'in bu iş için ayrı bir mekanizması vardır ve ilerideki modüllerin konusudur.",
+      "hint": "E-postadaki dosya, document akşam değiştiğinde ne oldu? Onu kim güncelleyecekti?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/documents.htm"
+    }
+  ]
+}

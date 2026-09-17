@@ -1,0 +1,305 @@
+{
+  "id": "programming-01-project-structure",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 1,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Proje Yapısı ve Robot Yaşam Döngüsü",
+  "summary": "Bir WPILib projesindeki dosyaların hangi işten sorumlu olduğunu, TimedRobot'un yaşam döngüsü metotlarının ne zaman çağrıldığını ve kodun neden Robot.java'ya değil kendi yerine yazıldığını öğretir.",
+  "prerequisites": [
+    "programming-00b-wpilib-temelleri"
+  ],
+  "estimatedMinutes": 16,
+  "concept": {
+    "body": "Bir WPILib projesi birkaç dosyanın belirli işleri paylaşması üzerine kuruludur. Main.java programın giriş noktasıdır ve ne yaptığınızdan kesin olarak emin olmadıkça main metodu değiştirilmemelidir; yalnızca Robot sınıfının adı veya paketi değişirse güncellenir. Robot.java programın akış kontrolünden sorumludur ve command-based bir projede büyük ölçüde boş kalmalıdır. RobotContainer örneği Robot sınıfının kurucusunda oluşturulur; dokümantasyon bunu açıkça ister, çünkü declarative kurulumun büyük bölümü RobotContainer'ın kurucusundan çağrılır. Eski projelerde aynı iş robotInit metodunda yapılırdı; WPILib artık robotInit'in kurucuyla işlevsel olarak aynı olduğunu ve kurucunun tercih edilmesi gerektiğini belirtir. RobotContainer.java kurulumun yapıldığı yerdir: subsystem'ler ve command'ler burada tanımlanır, command'ler tuş gibi tetikleyici olaylara burada bağlanır ve autonomous döneminde çalışacak command burada belirtilir. Constants.java ise hız, birim dönüşüm katsayısı, PID kazancı ve motor ile sensor port numarası gibi her yerden erişilebilir sabitleri tutar. Bunların yanında subsystems ve commands klasörleri, kütüphane bağımlılıkları için vendordeps klasörü ve robota kopyalanacak dosyalar için src/main/deploy klasörü bulunur.\n\nTimedRobot şablonunda kod, mod başına bir init ve bir periodic metoduna bölünür. Init metotları o moda girildiğinde bir kez, periodic metotları ise mod boyunca tekrar tekrar çağrılır. TimedRobot, autonomousPeriodic ve teleopPeriodic metotlarını her 20ms'de bir çağırır. robotPeriodic ise hangi modda olunduğuna bakmaksızın çalışır.\n\nCommand-based bir projede robotPeriodic içindeki CommandScheduler.getInstance().run() çağrısı zorunludur; bu çağrı olmadan scheduler hiçbir command'i çalıştırmaz.",
+    "keyTerms": [
+      {
+        "term": "TimedRobot",
+        "glossTr": "belirli aralıklarla periodic metotları çağıran robot şablonu"
+      },
+      {
+        "term": "lifecycle",
+        "glossTr": "yaşam döngüsü; robotun mod geçişlerine bağlı metot çağrıları"
+      },
+      {
+        "term": "periodic",
+        "glossTr": "düzenli aralıklarla tekrar çağrılan metot"
+      },
+      {
+        "term": "subsystem",
+        "glossTr": "robotun bir mekanizmasını temsil eden sınıf"
+      },
+      {
+        "term": "command",
+        "glossTr": "bir işi yapan, zamanlayıcı tarafından çalıştırılan davranış nesnesi"
+      },
+      {
+        "term": "CommandScheduler",
+        "glossTr": "command'leri sıraya alıp çalıştıran zamanlayıcı"
+      },
+      {
+        "term": "RobotContainer",
+        "glossTr": "subsystem, command ve tuş bağlamalarının tanımlandığı sınıf"
+      },
+      {
+        "term": "Constants",
+        "glossTr": "her yerden erişilebilen sabitlerin tutulduğu sınıf"
+      },
+      {
+        "term": "vendordeps",
+        "glossTr": "üretici kütüphane bağımlılıklarının tanımlandığı klasör"
+      },
+      {
+        "term": "deploy",
+        "glossTr": "kodun ve dosyaların robota gönderilmesi"
+      },
+      {
+        "term": "loop overrun",
+        "glossTr": "bir döngü adımının ayrılan süreyi aşması"
+      },
+      {
+        "term": "declarative",
+        "glossTr": "ne yapılacağını tarif eden, adım adım emir vermeyen programlama yaklaşımı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-01-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "PROJECT STRUCTURE",
+      "front": "Yeni bir satır kodu nereye yazacağınızı, çoğu zaman dosyanın adı söyler.",
+      "back": "Bir WPILib projesinde dosyalar işi paylaşır. Main.java programın giriş noktasıdır ve yeni kullanıcılar bu sınıfa dokunmamalıdır; yalnızca Robot sınıfının adı ya da paketi değişirse güncellenir. Robot.java akış kontrolünden sorumludur ve command-based bir projede büyük ölçüde boş kalır. RobotContainer.java kurulumun yapıldığı yerdir: subsystem'ler ve command'ler burada tanımlanır, command'ler tuş gibi tetikleyici olaylara burada bağlanır ve autonomous döneminde çalışacak command burada belirtilir. Constants.java ise hız, birim dönüşüm katsayısı, PID kazancı ve port numarası gibi her yerden erişilebilir sabitleri tutar. Bir sabiti subsystem'in içine gömdüğünüzde onu tek bir yerden değiştirme imkânını da kaybedersiniz.",
+      "takeaway": "Her dosyanın tek bir işi var; satır o işe ait olduğu dosyaya yazılır",
+      "tags": [
+        "proje yapısı",
+        "Constants",
+        "RobotContainer"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-01-d4",
+        "programming-01-d6"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-01-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "PROJECT STRUCTURE",
+      "front": "Init ile periodic arasındaki fark neden nesneyi nerede oluşturacağınızı belirler?",
+      "back": "TimedRobot şablonunda kod mod başına bir init ve bir periodic metoduna bölünür. Init metotları o moda girildiğinde bir kez, periodic metotları ise mod boyunca tekrar tekrar çağrılır. Varsayılan olarak periodic metotlar her 20ms'de bir çalışır; robotPeriodic ise hangi modda olunduğuna bakılmaksızın çalışır. Bu, 20ms'yi bir süre olmaktan çıkarıp bütçeye dönüştürür: bir döngü adımında çalışan her şeyin toplamı bu bütçeye sığmalıdır, aşılırsa loop overrun oluşur ve robotun tepkisi gecikir. Buradan pratik bir kural çıkar. Bir kez yapılacak iş bir kez çalışan yere yazılır; RobotContainer örneği de bu yüzden Robot sınıfının kurucusunda oluşturulur. Eski projelerdeki robotInit kurucuyla işlevsel olarak aynıdır ve dokümantasyon kurucunun kullanılmasını ister.",
+      "takeaway": "Bir kez çalışan yer ile sürekli çalışan yer farklı işler içindir",
+      "tags": [
+        "TimedRobot",
+        "20ms",
+        "kurucu"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-01-d2",
+        "programming-01-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-01-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "PROJECT STRUCTURE",
+      "front": "Kod derlendi, deploy oldu, robot hatasız açıldı. Hiçbir mekanizma yanıt vermiyor.",
+      "back": "Command-based bir projede robotPeriodic içindeki CommandScheduler.getInstance().run() çağrısı zorunludur; bu çağrı olmadan scheduler hiçbir scheduled command'i çalıştırmaz. Bu arıza sinsidir çünkü hiçbir hata üretmez: derleme geçer, deploy tamamlanır, roboRIO açılır ve sürücü istasyonu bağlanır. Yalnızca hiçbir şey hareket etmez. Aynı satırın yerine cancelAll yazmak da benzer bir tabloya yol açar, çünkü o çağrı her döngü adımında çalışan tüm command'leri, default command'ler dahil, iptal eder. Pit'te ilk bakılacak yer motor ya da kablo değil, robotPeriodic'in içidir. İkinci bakılacak yer ise autonomous çalışmıyorsa RobotContainer'da o dönemde çalışacak command'in belirtilip belirtilmediğidir.",
+      "takeaway": "Hatasız açılan bir robot, doğru yazılmış bir program demek değildir",
+      "tags": [
+        "CommandScheduler",
+        "teşhis",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-01-d1",
+        "programming-01-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-01-d1",
+      "type": "debug_code",
+      "prompt": "Aşağıdaki command-based projede hiçbir command çalışmıyor. Hatalı satırı bulup doğrusunu yazınız.",
+      "language": "java",
+      "code": "public class Robot extends TimedRobot {\n  private final RobotContainer m_robotContainer;\n\n  public Robot() {\n    m_robotContainer = new RobotContainer();\n  }\n\n  @Override\n  public void robotPeriodic() {\n    CommandScheduler.getInstance().cancelAll();\n  }\n}",
+      "buggyLine": 10,
+      "correctAnswer": "CommandScheduler.getInstance().run();",
+      "acceptableAnswers": [
+        "CommandScheduler.getInstance().run();",
+        "CommandScheduler.getInstance().run()"
+      ],
+      "explanation": "Command-based bir projede robotPeriodic içinde CommandScheduler.getInstance().run() çağrısı zorunludur; dokümantasyon bu çağrı olmadan scheduler'ın hiçbir scheduled command'i çalıştırmayacağını açıkça belirtir. Koddaki cancelAll ise tam tersini yapar: her 20ms'de bir çalışan tüm command'leri iptal eder. Sonuç, bir command'in başlaması ile iptal edilmesi arasında tek bir döngü adımı kalmasıdır, yani hiçbir şey çalışmıyor gibi görünür. Bu hata özellikle sinsidir çünkü kod derlenir, deploy olur ve robot hatasız açılır; yalnızca hiçbir mekanizma yanıt vermez. cancelAll'ın kendisi geçersiz bir metot değildir, ancak burada iki ayrı hata vardır. Birincisi yeri: bu çağrı her döngü adımında değil, yalnızca belirli mod geçişlerinde anlam taşır. İkincisi seçimi: teleop'a geçerken yalnızca autonomous command'ini durdurmak istendiğinde cancelAll değil, o command'in kendi cancel metodu çağrılır. Şablon bunu tam olarak böyle yapar. cancelAll çalışan tüm command'leri, default command'ler dahil, iptal eder.",
+      "hint": "Bu satır her 20ms'de bir çalışıyor. Her 20ms'de bir tüm command'leri iptal etmek ne anlama gelir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    },
+    {
+      "id": "programming-01-d2",
+      "type": "order_steps",
+      "prompt": "Bir maç boyunca aşağıdaki metotlar hangi sırayla ilk kez çağrılır? Adımları sıraya diziniz.",
+      "steps": [
+        "teleopInit çağrılır.",
+        "robotInit çağrılır.",
+        "autonomousInit çağrılır.",
+        "autonomousPeriodic ilk kez çağrılır.",
+        "teleopPeriodic ilk kez çağrılır."
+      ],
+      "correctOrder": [
+        1,
+        2,
+        3,
+        0,
+        4
+      ],
+      "explanation": "Sıralama robot programının ve maçın yapısından çıkar. robotInit program başladığında, robot ilk kez güç aldığında bir kez çalışır; bu, herhangi bir mod metodundan öncedir ve robot henüz enable değildir. Listede yer almasa da robotInit ile autonomousInit arasında robot disabled modundadır: disabledInit bir kez, disabledPeriodic ise maç başlayana kadar tekrar tekrar çağrılır. Maç autonomous ile başlar, dolayısıyla sıradaki autonomousInit'tir. Bir moda ait periodic metodu o modun init metodundan sonra çalışır, çünkü init o mod için hazırlığı yapar; bu nedenle autonomousPeriodic autonomousInit'ten sonra gelir. Autonomous bitip teleop başladığında teleopInit çağrılır ve aynı mantıkla teleopPeriodic onu izler. Bu sıralamayı bilmek pratik bir soruya cevap verir: bir nesneyi nerede oluşturacağınız. Her 20ms'de bir çalışan bir periodic metodunun içinde nesne oluşturmak bellek ve zaman israfıdır; oluşturma işi bir kez çalışan yere, Robot sınıfının kurucusuna aittir.",
+      "hint": "Hangi metot robot enable edilmeden önce çalışır? Bir modun init metodu ile periodic metodu arasındaki ilişki nedir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj/IterativeRobotBase.html",
+      "sourceNote": "init ve periodic ilişkisi ile 20ms değeri: https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robotbuilder/introduction/robotbuilder-created-code.html"
+    },
+    {
+      "id": "programming-01-d3",
+      "type": "numeric",
+      "prompt": "TimedRobot şablonunda teleopPeriodic metodu kaç milisaniyede bir çağrılır? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 20,
+      "tolerance": 0,
+      "unit": "ms",
+      "explanation": "TimedRobot, autonomousPeriodic ve teleopPeriodic metotlarını her 20ms'de bir çağırır. Bu sayı yalnızca bir ayrıntı değildir, kod yazarken sürekli akılda tutulması gereken bir bütçedir: bir döngü adımında çalışan her şeyin toplamının 20ms'den kısa sürmesi gerekir. Buna yalnızca o modun periodic metodu değil, robotPeriodic ve içindeki scheduler çağrısı da dahildir. Süre aşıldığında loop overrun oluşur ve robotun tepkisi gecikir. Bu nedenle periodic metotların içinde dosya okumak, ağ isteği yapmak veya her çağrıda yeni nesne oluşturmak gibi işlerden kaçınılır. Döngü periyodunu değiştirmek mümkündür ancak dokümantasyon bunun beklenmedik davranışlara ve loop overrun'lara yol açabileceğini belirtir; varsayılanı korumak neredeyse her zaman doğru seçimdir.",
+      "hint": "Bu değer aynı zamanda periodic metodunuzun içindeki kodun tamamlanması gereken süredir.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robotbuilder/introduction/robotbuilder-created-code.html",
+      "sourceNote": "Döngü periyodunu değiştirmenin loop overrun'a yol açabileceği: https://docs.wpilib.org/en/stable/docs/software/vscode-overview/creating-robot-program.html"
+    },
+    {
+      "id": "programming-01-d4",
+      "type": "multiple_choice",
+      "prompt": "Takım, intake motorunun CAN ID'sini ve hedef hızını koda yazacak. Bu değerler hangi dosyaya yazılmalıdır?",
+      "options": [
+        "Constants.java; port numaraları, hızlar, birim dönüşüm katsayıları ve PID kazançları gibi her yerden erişilebilir sabitler burada tutulur.",
+        "Robot.java; robotun tüm yapılandırması akış kontrolünden sorumlu dosyada toplanmalıdır.",
+        "Main.java; program buradan başladığı için sabitler de burada tanımlanmalıdır.",
+        "Doğrudan intake subsystem'inin içine; sabitleri ayrı bir dosyada tutmak gereksiz karmaşa yaratır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Constants.java tam olarak bu iş için vardır: hız, birim dönüşüm katsayısı, PID kazancı ve motor ile sensor port numarası gibi her yerden erişilebilir sabitleri tutar. Faydası pratiktir: bir motorun CAN ID'si değiştiğinde tek bir yerde güncellenir ve kodun her yerinde aynı değer kullanılır. İkinci şık dokümantasyonun uyardığı yönde hata yapar; Robot.java command-based bir projede büyük ölçüde boş kalmalıdır. Üçüncü şık daha da yanlıştır: Main.java'nın main metodu, ne yaptığından kesin olarak emin olunmadıkça değiştirilmemelidir. Dördüncü şık ilk bakışta makul görünür ancak aynı değer birden fazla yerde gerekince kopyalar oluşur ve biri güncellenmeyi unutur; sabitleri tek yerde toplamanın asıl amacı budur.",
+      "hint": "Bu değerler kaç farklı dosyadan okunacak? Değiştiğinde kaç yerde güncellenmeleri gerekir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    },
+    {
+      "id": "programming-01-d5",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki proje düzeninden dördü dokümantasyonun önerdiği yapıya uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Bir takım command-based projesinin dosya düzenini anlatıyor.",
+      "elements": [
+        "Subsystem sınıfları subsystems klasöründe, command sınıfları commands klasöründe tutuluyor.",
+        "Robot.java neredeyse boş; yalnızca yaşam döngüsü metotları ve scheduler çağrısı var.",
+        "Tuş bağlamaları ve autonomous command seçimi RobotContainer içinde yapılıyor.",
+        "Mekanizmaları süren kodun büyük bölümü doğrudan Robot.java içine, teleopPeriodic altına yazılmış.",
+        "Robota kopyalanacak yol dosyaları src/main/deploy klasöründe tutuluyor."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dokümantasyon bu konuda açıktır: Robot.java'ya büyük miktarda emir kipinde robot kodu yazmak command-based yaklaşımın declarative tasarım felsefesine aykırıdır ve karışık, düzensiz bir kod yapısına yol açabilir. Robot.java programın akış kontrolünden sorumludur ve büyük ölçüde boş kalmalıdır. Mekanizmaları süren kod subsystem ve command sınıflarına ait olmalıdır. Bunun pratik sonucu şudur: teleopPeriodic içine yazılan kod pratikte yeniden kullanılmaz; autonomous ile paylaşmak veya ayrı ayrı test etmek için önce oradan çıkarılması gerekir. Oysa bir command hem tuşa bağlanabilir hem autonomous rutininde kullanılabilir. Diğer dört öğe önerilen yapıya uygundur.",
+      "hint": "Öğelerden biri kodu, bir kez çalışıp bir daha kullanılamayacak bir yere koyuyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html",
+      "sourceNote": "src/main/deploy ve yol dosyaları için: https://docs.wpilib.org/en/stable/docs/software/basic-programming/deploy-directory.html"
+    },
+    {
+      "id": "programming-01-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, Robot sınıfının adını Robot'tan CompetitionRobot'a çevirmek istiyor. Bu değişiklik için ne yapılmalıdır?",
+      "options": [
+        "Yalnızca dosya adı değiştirilir; başka hiçbir yere dokunmak gerekmez.",
+        "Main.java güncellenmelidir; Robot sınıfının adı veya paketi değiştiğinde Main.java bu değişikliği yansıtmalıdır.",
+        "Main.java'nın main metodu tamamen yeniden yazılmalıdır.",
+        "Sınıf adı değiştirilemez; WPILib bu ismi zorunlu tutar."
+      ],
+      "correctIndex": 1,
+      "explanation": "Main.java programın giriş noktasıdır ve hangi sınıfın çalıştırılacağını bilir; bu nedenle Robot sınıfının adı veya paketi değişirse Main.java güncellenmelidir. Ancak bu, main metodunun yeniden yazılması anlamına gelmez. Dokümantasyon burada net bir uyarı verir: ne yaptığınızdan kesin olarak emin olmadıkça main metodu değiştirilmemelidir. Yani yapılması gereken, metodun içindeki sınıf referansını yeni isme çevirmekten ibarettir. Dördüncü şık yanlıştır; sınıf adı değiştirilebilir, yalnızca bu tek bağın güncellenmesi gerekir. Bu ayrım daha genel bir alışkanlığın örneğidir: bir dosyaya dokunulabilir olması, içindeki her şeyin serbestçe değiştirilebileceği anlamına gelmez.",
+      "hint": "Program hangi sınıfı çalıştıracağını nereden biliyor? Bu bilgiyi güncellemek ile o metodu yeniden yazmak aynı şey mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/creating-robot-program.html"
+    },
+    {
+      "id": "programming-01-d7",
+      "type": "diagnose",
+      "symptom": "Takım, projeyi bilgisayarındaki OneDrive klasörü altında tutuyor. Kod bazen sorunsuz derleniyor, bazen ise kaynak dosyalarında hiçbir değişiklik yapılmadığı hâlde derleme tuhaf hatalarla başarısız oluyor. Aynı proje başka bir bilgisayarda, OneDrive dışında bir klasörde her zaman sorunsuz derleniyor.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Kaynak dosyalarda görünmeyen bir sözdizimi hatası vardır.",
+        "Gradle sürümü bozuktur ve yeniden kurulmalıdır.",
+        "Projenin OneDrive altında tutulması; dokümantasyon bunun desteklenmediğini, önbelleklemenin derleme sistemine karıştığını belirtir.",
+        "Bilgisayarın belleği yetersizdir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Dokümantasyon projelerin OneDrive üzerinde oluşturulmasının desteklenmediğini açıkça belirtir; OneDrive'ın önbellekleme davranışı derleme sistemine karışır. Belirti de bunu doğrular: hata kaynak koda bağlı değildir, çünkü aynı proje başka bir konumda sorunsuz derlenmektedir ve hatalar tutarsız biçimde ortaya çıkmaktadır. Birinci ve i̇kinci şıklar bu tutarsızlığı açıklayamaz; bozuk bir Gradle kurulumu veya gerçek bir sözdizimi hatası her seferinde aynı sonucu verirdi. Çözüm basittir: proje senkronize edilen bir klasörün dışına, örneğin doğrudan kullanıcı klasörü altındaki yerel bir dizine taşınır. Bu, takımların sezon başında en çok zaman kaybettiği kurulum sorunlarından biridir.",
+      "hint": "Hata kaynak koda bağlı olsaydı başka bir bilgisayarda da çıkardı. Projenin bulunduğu konumun bir özelliği olabilir mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/vscode-overview/creating-robot-program.html"
+    },
+    {
+      "id": "programming-01-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte robot teleop döneminde kusursuz çalışıyor: tüm mekanizmalar tuşlara yanıt veriyor ve sürüş sorunsuz. Ancak autonomous döneminde robot hiç hareket etmiyor, on beş saniye boyunca hareketsiz duruyor. Driver station hata vermiyor, kod deploy edilmiş durumda ve hiçbir command hata döndürmüyor.",
+      "prompt": "İlk olarak nereye bakarsınız?",
+      "options": [
+        "Kodun deploy edilip edilmediğine.",
+        "Battery'nin şarj durumuna.",
+        "CAN zincirine; motor controller'lardan biri düşmüş olabilir.",
+        "RobotContainer içinde autonomous döneminde çalışacak command'in belirtilip belirtilmediğine."
+      ],
+      "correctIndex": 3,
+      "explanation": "Belirti sorunu tek bir yere daraltıyor. Teleop kusursuz çalışıyorsa donanım tarafı ayaktadır: motor controller'lar komut alıyor, CAN zinciri sağlam, battery yeterli ve kod gerçekten deploy edilmiş. Etkilenen tek şey autonomous dönemidir, dolayısıyla neden de yalnızca o döneme özgü olmalıdır. RobotContainer, autonomous döneminde hangi command'in çalışacağının belirtildiği yerdir; burası boş bırakıldığında veya seçilen command döndürülmediğinde robot autonomous boyunca hiçbir şey yapmaz ve bu bir hata olarak da görünmez, çünkü teknik olarak yanlış bir şey olmamıştır, yalnızca çalıştırılacak bir şey yoktur. Diğer üç şık teleop'un çalışıyor olmasıyla zaten elenir. Bu, sahada en sık görülen ve en sessiz yazılım hatalarından biridir: sistem hata vermez, sadece hiçbir şey yapmaz.",
+      "hint": "Teleop'un çalışıyor olması hangi olasılıkları tek başına eler? Geriye yalnızca autonomous'a özgü ne kalıyor?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    }
+  ]
+}

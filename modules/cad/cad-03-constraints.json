@@ -1,0 +1,304 @@
+{
+  "id": "cad-03-constraints",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 3,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Sketch Constraint'leri ve Tasarım Niyeti",
+  "summary": "Onshape'in constraint'lerinin her birinin ne yaptığını, benzer görünenlerin nerede ayrıldığını ve tam kısıtlanmış bir sketch'in neden doğru sketch anlamına gelmediğini öğretir.",
+  "prerequisites": [
+    "cad-02-sketching"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Constraint, sketch geometrisinin serbestliğini sınırlayan geometrik bir kuraldır. Coincident, iki veya daha fazla sketch entity'sinin sketch içinde aynı konumu paylaşmasını sağlar. Concentric, herhangi bir noktayı bir arc veya circle'ın merkeziyle coincident yapar; ayrıca seçilen arc ve circle'ların ortak bir merkez noktası paylaşmasını sağlar. Parallel iki veya daha fazla çizgiyi paralel, Perpendicular ise iki çizgiyi dik yapar. Tangent, iki sketch entity'si arasında veya bir sketch entity'si ile bir plane arasında teğetlik ilişkisi kurar.\n\nHorizontal, bir veya daha fazla çizgiyi ya da bir nokta kümesini yatay olmaya kısıtlar; Vertical aynısını dikey için yapar. Equal, birden çok çizgiyi uzunlukta veya birden çok arc'ı yarıçapta eşitler. Midpoint, bir sketch noktasını bir çizginin veya arc'ın orta noktasına kısıtlar. Normal, bir curve ile bir çizgiyi ya da bir curve ile bir plane'i dik yapar. Pierce, bir sketch entity'sini aktif sketch plane'inin dışındaki başka bir entity ile coincident yapar. Symmetric, aynı türden iki entity'yi bir çizgiye, plane'e veya doğrusal kenara göre simetrik yapar. Fix, bir sketch entity'sini sketch plane üzerine kilitler, böylece hareket etmez. Curvature, sketch spline veya conic'leri ile çevre geometri arasında eğrilik sürekliliği olan geçişler oluşturur.\n\nSketch geometrisinin rengi durumunu bildirir: mavi underconstrained, siyah fully constrained, kırmızı ise bir constraint sorunu yani overconstrained demektir. Constraint'ler ikon olarak görünür; Sketch dialog'unda Show constraints ile hepsi gösterilir. Constraint manager constraint'leri Type, Mode ve Status'a göre filtreler ve seçilen Type'taki constraint'leri sketch'te sarı çerçeveyle işaretler. Bir constraint silmek için ikonuna tıklanıp Delete tuşuna basılır ya da bağlam menüsünden Delete seçilir.",
+    "keyTerms": [
+      {
+        "term": "Coincident",
+        "glossTr": "iki veya daha fazla sketch entity'sinin sketch içinde aynı konumu paylaşması"
+      },
+      {
+        "term": "Concentric",
+        "glossTr": "bir noktanın arc merkeziyle çakışması veya arc ve circle'ların ortak merkez paylaşması"
+      },
+      {
+        "term": "Tangent",
+        "glossTr": "iki sketch entity'si arasında veya bir sketch entity'si ile plane arasında teğetlik"
+      },
+      {
+        "term": "Perpendicular",
+        "glossTr": "iki çizgiyi dik yapan constraint"
+      },
+      {
+        "term": "Normal",
+        "glossTr": "bir curve ile çizgiyi veya bir curve ile plane'i dik yapan constraint"
+      },
+      {
+        "term": "Equal",
+        "glossTr": "çizgileri uzunlukta veya arc'ları yarıçapta eşitleyen constraint"
+      },
+      {
+        "term": "Midpoint",
+        "glossTr": "bir noktayı bir çizginin veya arc'ın orta noktasına kısıtlayan constraint"
+      },
+      {
+        "term": "Symmetric",
+        "glossTr": "bir çizgi, plane veya doğrusal kenara göre aynı türden iki entity'yi simetrik yapan constraint"
+      },
+      {
+        "term": "Pierce",
+        "glossTr": "bir sketch entity'sini aktif sketch plane'inin dışındaki bir entity ile çakıştıran constraint"
+      },
+      {
+        "term": "Fix",
+        "glossTr": "bir entity'yi sketch plane üzerine kilitleyen constraint"
+      },
+      {
+        "term": "Curvature",
+        "glossTr": "sketch spline veya conic'leri ile çevre geometri arasında eğrilik sürekliliği sağlayan constraint"
+      },
+      {
+        "term": "design intent",
+        "glossTr": "tasarımın hangi ilişkilerinin korunması gerektiğine dair niyet; kaynağın kullandığı bir terim değil, öğretim çerçevesidir"
+      },
+      {
+        "term": "Constraint manager",
+        "glossTr": "constraint'leri Type, Mode ve Status'a göre görüntüleyip filtreleyen araç"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-03-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CONSTRAINT",
+      "front": "Tam kısıtlanmış bir sketch, doğru bir sketch demek değildir.",
+      "back": "Constraint, sketch geometrisinin serbestliğini sınırlayan geometrik bir kuraldır; bir dimension ise yalnızca bir sayı yazar. Aradaki fark sketch siyaha döndüğünde görünmez, çünkü ikisi de serbestliği bitirebilir. Bir bracket'in deliği iki kenarın tam ortasında olacaksa, sol kenardan verilen 40 mm'lik bir dimension bracket 80 mm genişken ortayı verir ve sketch tamamen siyah olur. Bracket 100 mm'ye genişletildiğinde delik artık ortada değildir, çünkü o sayı bir ilişkiyi değil bir anı kaydetmiştir. Kaynağın bu iş için verdiği constraint Midpoint'tir: bir sketch noktasını bir çizginin veya arc'ın orta noktasına kısıtlar. İki kenar arasına bir construction çizgisi çizilir ve delik merkezi o çizginin orta noktasına bağlanır; genişlik değiştiğinde çizgi de delik de birlikte hareket eder.",
+      "takeaway": "Bir dimension yazmadan önce, o sayının bir ilişkiyi mi yoksa yalnızca o anki bir ölçümü mü kaydettiğini sorun",
+      "tags": [
+        "constraint",
+        "Midpoint",
+        "tasarım niyeti"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-03-d2",
+        "cad-03-d1"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-03-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CONSTRAINT",
+      "front": "Benzer görünen iki tanım, iki ayrı iş yapar.",
+      "back": "Kaynak birbirine yakın duran işleri ayrı constraint'lere verir ve tanımlar birbirine karıştırılmamalıdır. Perpendicular iki çizgiyi dik yapar; tanımında ne curve ne plane geçer. Bir curve ile bir çizgiyi ya da bir curve ile bir plane'i dik yapan constraint ise Normal'dır. Aynı ayrım çakışmada da vardır. Coincident, iki veya daha fazla sketch entity'sinin sketch içinde aynı konumu paylaşmasını sağlar. Pierce ise bir sketch entity'sini aktif sketch plane'inin dışındaki başka bir entity ile coincident yapar; istenen ilişki yine bir çakışmadır, ancak çakışılacak entity başka bir plane üzerinde durur. Tanımda curve kelimesinin ya da aktif sketch plane'inin dışının geçip geçmediğine bakmak, aranacak constraint'i tek başına belirler. Constraint'ler ikon olarak görünür; Sketch dialog'unda Show constraints ile hepsi gösterilir ve Constraint manager onları Type, Mode ve Status'a göre filtreler.",
+      "takeaway": "Bir ilişkiyi kuramadığınızda aracı değil tanımı okuyun; curve veya plane dışı geçiyorsa aradığınız constraint başkasıdır",
+      "tags": [
+        "Perpendicular",
+        "Normal",
+        "Pierce"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-03-d7",
+        "cad-03-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-03-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CONSTRAINT",
+      "front": "Sketch Fix ile siyaha boyandı, plaka etkinlikte 5 mm dar kaldı.",
+      "back": "Fix, bir sketch entity'sini sketch plane üzerine kilitler, böylece hareket etmez. Bütün entity'lere Fix uygulanan bir sketch gerçekten siyaha döner, çünkü kilitlenmiş bir entity'nin serbestliği kalmaz. Ancak hareket etmeyen bir entity, bir dimension değiştirildiğinde de hareket etmez. Etkinlikte bir plakanın genişliği 5 mm artırılmak istendiğinde geometrinin bir kısmı hiç kıpırdamaz ve delikler eski konumlarında kalır; Feature list'te hiçbir hata da görünmez. Siyah renk iki farklı yoldan gelebilir: biri tasarım niyetini ifade eden gerçek constraint'lerden, diğeri yalnızca hareketi durduran kilitlerden. Rengin kendisi bu ikisini ayırmaz. Ayırmak için Sketch dialog'unda Show constraints işaretlenir veya Constraint manager'da Type filtresinden Fix seçilir; o türden bütün constraint'ler sketch'te sarı çerçeveyle işaretlenir. Doğru davranış Fix constraint'lerini silip yerlerine gerçek ilişkileri koymaktır.",
+      "takeaway": "Siyah bir sketch dimension değişimine cevap vermiyorsa Fix constraint'lerini bulup silin ve yerlerine gerçek ilişkileri kurun",
+      "tags": [
+        "Fix",
+        "siyah sketch",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-03-d8",
+        "cad-03-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-03-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir sketch noktasının bir çizginin tam ortasında durması isteniyor ve çizgi uzadığında noktanın ortada kalması gerekiyor. Hangi constraint bunu doğrudan sağlar?",
+      "options": [
+        "Midpoint; bir sketch noktasını bir çizginin veya arc'ın orta noktasına kısıtlar.",
+        "Symmetric; aynı türden iki entity'yi simetrik yapar ve tek bir nokta için de kullanılabilir.",
+        "Coincident; iki entity'nin aynı konumu paylaşmasını sağlar ve orta nokta da bir konumdur.",
+        "Fix; noktayı sketch plane üzerine kilitleyerek çizginin ortasında sabit tutar."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın tanımı bire bir bu işi tarif eder: Midpoint, bir sketch noktasını bir çizginin veya arc'ın orta noktasına kısıtlar. Sorudaki ikinci şart da bu constraint'in neden doğru seçim olduğunu gösteriyor; çizgi uzadığında orta nokta da kayar ve nokta onunla birlikte hareket eder, çünkü kısıtlanan şey bir konum değil bir ilişkidir. İkinci şık Symmetric'i yanlış tarif eder; kaynak onu aynı türden iki entity için tanımlar, tek bir nokta için değil. Üçüncü şık Coincident'ın tanımına uyuyor gibi görünür ancak ortada eşleştirilecek ikinci bir entity yoktur ve nokta belirli bir konuma çakıştırılsaydı çizgi uzadığında yerinde kalırdı. Dördüncü şık Fix'in tanımını doğru verir ama sonucu yanlış anlatır; kilitlenen bir nokta çizgi uzasa da kıpırdamaz, yani tam olarak istenmeyen davranışı üretir.",
+      "hint": "Çizgi uzayınca ne olmalı? Kısıtlanan şey bir konum mu, yoksa bir ilişki mi?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d2",
+      "type": "diagnose",
+      "symptom": "Bir bracket'in deliği iki kenarın tam ortasında olmalı. Öğrenci deliği sol kenardan 40 mm uzağa bir dimension ile yerleştirdi; bracket genişliği 80 mm olduğu için delik ortada göründü ve sketch tamamen siyah oldu. Sonradan bracket 100 mm'ye genişletildi ve delik artık ortada değil.",
+      "prompt": "Sketch tam kısıtlıydı ve hiçbir hata yoktu. Eksik olan neydi?",
+      "options": [
+        "Sketch aslında underconstrained kalmıştı; 40 mm dimension'ı yetersizdi ve bir dimension daha eklenmeliydi.",
+        "Delik merkezi, iki kenar arasına çizilen bir construction çizgisinin orta noktasına Midpoint ile bağlanmalıydı.",
+        "Deliğin kendisi iki kenara göre Symmetric constraint ile simetrik yapılmalıydı; bu tek adımda çözerdi.",
+        "Bracket genişliği bir dimension yerine bir Fix constraint ile tanımlanmalıydı ki delik yerinde kalsın."
+      ],
+      "correctIndex": 1,
+      "explanation": "Bu drill bir önceki modülün dersinin sınırını gösterir. Tam kısıtlanmış olmak, sketch'in artık hareket edemeyeceği anlamına gelir; doğru olduğu anlamına gelmez. Burada 40 sayısı, 80 mm genişlikte tesadüfen ortayı verdi; o sayı bir ilişkiyi değil, bir anı kaydetti. Genişlik değişince ilişki bozuldu, çünkü ortada korunacak bir ilişki hiç tanımlanmamıştı. Kaynağın bu iş için verdiği constraint Midpoint'tir: bir sketch noktasını bir çizginin veya arc'ın orta noktasına kısıtlar. İki kenar arasına bir construction çizgisi çizilir ve delik merkezi o çizginin orta noktasına bağlanır; genişlik değiştiğinde çizgi de delik de birlikte hareket eder. Üçüncü şık cazip görünür ama Symmetric'in tanımına uymaz: kaynak Symmetric'i bir çizgiye, plane'e veya doğrusal kenara göre aynı türden iki entity için tanımlar, yani bir referans ve iki özne ister. Tek bir deliği iki kenara göre simetrik yapmak diye bir seçim yoktur; Symmetric ile kurulacak yol, iki kenarı bir merkez çizgisine göre simetrik yapıp delik merkezini o çizgiye bağlamaktır. Birinci şık belirtiyle çelişir; sketch siyahtı. Dördüncü şık Fix'i yanlış işe koşar. Buradan çıkan alışkanlık şudur: bir dimension yazmadan önce, o sayının bir ilişkiyi mi yoksa yalnızca o anki bir ölçümü mü kaydettiğini sorun.",
+      "hint": "40 sayısı neyi kaydetti: bir ilişkiyi mi, yoksa o anki bir ölçümü mü?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d3",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş constraint tanımından dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir CAD ekibi constraint'leri anlatan bir başvuru kartı hazırlıyor.",
+      "elements": [
+        "Equal, birden çok çizgiyi uzunlukta veya birden çok arc'ı yarıçapta eşitler.",
+        "Pierce, bir sketch entity'sini aktif sketch plane'inin dışındaki başka bir entity ile coincident yapar.",
+        "Fix, bir sketch entity'sini sketch plane üzerine kilitler, böylece hareket etmez.",
+        "Perpendicular, bir curve ile bir çizgiyi ya da bir curve ile bir plane'i dik yapar.",
+        "Tangent, iki sketch entity'si arasında veya bir sketch entity'si ile bir plane arasında teğetlik ilişkisi kurar."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak bu iki işi iki ayrı constraint'e verir ve tanımları birbirine karıştırılmamalıdır. Perpendicular yalnızca iki çizgiyi dik yapar; tanımında ne curve ne plane geçer. Bir curve ile bir çizgiyi ya da bir curve ile bir plane'i dik yapan constraint ise Normal'dır. Fark önemsiz değildir; curve içeren bir ilişkide Perpendicular arayan bir öğrenci yanlış constraint'in peşine düşer ve aradığı ilişkiyi kuramaz. Diğer dört tanım kaynağın yazdığı gibidir. Bu kartın bir başvuru kartı olması da anlamlıdır: constraint isimleri günlük dildeki anlamlarıyla değil, kaynağın verdiği tanımlarla öğrenilmelidir.",
+      "hint": "İfadelerden biri bir constraint'e, başka bir constraint'in işini veriyor. Hangi ikisi karışmış olabilir?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d4",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci yeni bir sketch'i, var olan bir part'ın yüzeyine dik duran başka bir plane üzerinde çiziyor. Sketch'teki bir noktayı, aktif sketch plane'inin üzerinde bulunmayan bir model kenarına bağlamak istiyor. Coincident constraint'ini seçiyor ancak istediği eşleşmeyi kuramıyor.",
+      "prompt": "Hangi constraint bu iş içindir?",
+      "options": [
+        "Concentric; farklı plane'lerdeki entity'lerin ortak bir merkez paylaşmasını sağlar.",
+        "Normal; bir curve ile bir plane'i dik yapar ve bu diklik ilişkisi noktayı model kenarına bağlar.",
+        "Pierce; bir entity'yi aktif sketch plane'inin dışındaki bir entity ile coincident yapar.",
+        "Fix; noktayı sketch plane üzerine kilitleyerek model kenarıyla aynı hizada tutar."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak Pierce'i tam olarak bu durum için tanımlar: bir sketch entity'sini aktif sketch plane'inin dışındaki başka bir entity ile coincident yapar. Yani istenen ilişki gerçekten bir çakışmadır, ancak çakışılacak entity başka bir plane üzerinde durduğu için Coincident'ın alanının dışındadır. Kaynağın Coincident tanımı sketch içindeki entity'lerden söz eder; bir yasak koymaz, ancak plane dışına uzanan ilişki için ayrı bir constraint tanımlamış olması bu ayrımı gösterir. Bu ayrım, Onshape'te üç boyutlu bir bağlam içinde çizim yapmanın temel aracıdır ve bilinmediğinde öğrenci geometriyi elle hizalayıp sonradan kayan bir model üretir. İkinci şık Normal'ın tanımını doğru verir ama bu ilişki diklik kurar, bağlantı değil. Birinci şık Concentric'e kaynakta olmayan bir yetenek yükler; tanımı merkez paylaşımıyla ilgilidir, plane'ler arası bağlantıyla değil. Dördüncü şık Fix'i yine yanlış işe koşar; kilitlemek bir ilişki kurmaz, yalnızca hareketi durdurur.",
+      "hint": "İstenen ilişki bir çakışma. Peki çakışılacak şey nerede duruyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci sketch'ini siyah yapmak için bütün entity'lere Fix constraint uyguluyor ve sketch gerçekten siyaha dönüyor. Kaynağın Fix tanımına göre bu yaklaşımın sonucu nedir?",
+      "options": [
+        "Fix bütün eksik dimension'ları kendiliğinden ekler; sonuç elle kısıtlamakla aynıdır ve çok daha hızlıdır.",
+        "Fix geometriyi dimension'larına göre yeniden hesaplar; sketch hem siyah hem tam parametrik hâle gelir.",
+        "Fix yalnızca görünümü değiştirir; geometri arka planda underconstrained kalır ve sürüklenebilir olmayı sürdürür.",
+        "Fix entity'yi kilitler; geometri hareket etmez, dolayısıyla dimension değişikliği ona ulaşamaz."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynağın tanımı kısa ve kesindir: Fix, bir sketch entity'sini sketch plane üzerine kilitler, böylece hareket etmez. Sketch'in siyaha dönmesi bunun doğrudan sonucudur, çünkü kilitlenmiş bir entity'nin serbestliği kalmaz. İkinci sonuç ise kaynakta yazmayan, tanımdan çıkan bir çıkarımdır ve asıl önemli olan odur: hareket etmeyen bir entity, bir dimension değiştirildiğinde de hareket etmez. Yani öğrenci rengi kazanır ama parametrik tasarımı kaybeder. Fix'in meşru kullanımları vardır, örneğin bir referans geometriyi yerinde tutmak; ancak eksik constraint'lerin yerine geçmek için kullanılması, sorunu çözmek yerine görünmez kılar. Üçüncü şık kaynakla çelişir; Fix görünümü değil davranışı değiştirir ve tanım hareket etmeyeceğini söyler. Birinci ve i̇kinci şıklar Fix'e kaynakta olmayan yetenekler yükler ve ikisi de aynı yanlış umudu taşır: eksik constraint'lerin otomatik tamamlanacağı.",
+      "hint": "Kilitlenmiş bir entity, bir dimension değiştiğinde ne yapar?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d6",
+      "type": "multiple_choice",
+      "prompt": "Kaynak Concentric constraint'ini iki ayrı davranışla tanımlar. Bunlar nelerdir?",
+      "options": [
+        "Bir noktayı bir arc veya circle'ın merkeziyle coincident yapmak, ve arc ile circle'ların ortak merkez paylaşmasını sağlamak.",
+        "İki circle'ın yarıçaplarını eşitlemek, ve iki circle'ın kenarlarının birbirine teğet olmasını sağlamak; ikisi birlikte uygulanır.",
+        "Bir circle'ı bir plane üzerine kilitlemek, ve aynı circle'ı bir çizgiye göre simetrik hâle getirmek.",
+        "Bir noktayı bir çizginin orta noktasına bağlamak, ve o çizgiyi başka bir çizgiye paralel yapmak."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak Concentric'i iki cümleyle tarif eder ve ikisi farklı işlerdir. Birincisi bir nokta ile bir merkez arasındadır: herhangi bir noktayı bir arc veya circle'ın merkeziyle coincident yapar. İkincisi iki veya daha fazla eğri arasındadır: seçilen arc ve circle'ların ortak bir merkez noktası paylaşmasını sağlar. Bu ayrım pratikte işe yarar, çünkü bir mil deliği ile onu çevreleyen bir flanş çemberini hizalarken ikinci davranışı, bir vida deliğinin merkezine bir yapı noktası koyarken birinci davranışı kullanırsınız. İkinci şık Equal ile Tangent'ın işlerini Concentric'e yükler. Üçüncü şık Fix ile Symmetric'i karıştırır. Dördüncü şık Midpoint ile Parallel'i karıştırır. Üç yanlış şıkkın da ortak özelliği, kaynakta gerçekten var olan constraint'lerin tanımlarını yanlış isme bağlamalarıdır.",
+      "hint": "Kaynağın tanımı iki cümle. Biri bir nokta ile ilgili, diğeri ne ile ilgili?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d7",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci bir spline ile ona bağlanan düz bir çizgi arasında diklik kurmak istiyor. Perpendicular constraint'ini seçiyor ve iki entity'yi tıklıyor, ancak constraint uygulanmıyor. Sketch'te hiçbir hata mesajı çıkmıyor.",
+      "prompt": "Neden uygulanmıyor ve hangi constraint kullanılmalıdır?",
+      "options": [
+        "Perpendicular yalnızca yatay ve dikey çizgiler arasında çalışır; önce Horizontal constraint eklenmelidir.",
+        "Perpendicular yalnızca iki çizgi için tanımlıdır; curve içeren diklik için Normal kullanılır.",
+        "Spline'lar constraint kabul etmez; diklik ancak spline bir çizgi dizisine çevrildikten sonra kurulabilir.",
+        "Perpendicular önce Tangent constraint'i gerektirir; ikisi birlikte uygulandığında diklik kurulur."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak iki tanımı yan yana koyduğunda fark net görünür. Perpendicular iki çizgiyi dik yapar; tanımda curve geçmez. Normal ise bir curve ile bir çizgiyi ya da bir curve ile bir plane'i dik yapar. Öğrencinin elindeki ilişki bir spline ile bir çizgi arasında olduğu için Normal'ın alanına girer. Belirtideki hata mesajının olmaması senaryonun bir ayrıntısıdır; kaynak uygulanamayan bir constraint'te ne olacağını yazmaz, dolayısıyla bundan genel bir kural çıkarılmamalıdır. Kaynağın hata gösterimi hakkında söylediği şey farklıdır: çelişen constraint'ler kırmızı zemin üzerinde beyaz sembollerle gösterilir. Birinci şık Perpendicular'a kaynakta olmayan bir ön şart ekler. Üçüncü şık spline'ların constraint alamayacağını iddia eder; kaynak Curvature constraint'ini tam olarak spline ve conic'ler için tanımladığına göre bu yanlıştır. Dördüncü şık da kaynakta bulunmayan bir sıra şartı uydurur.",
+      "hint": "İki tanımı yan yana koyun. Hangisinde curve kelimesi geçiyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    },
+    {
+      "id": "cad-03-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte bir plakanın genişliği 5 mm artırılacak. Sketch tamamen siyah ve Feature list'te hiçbir hata yok. Genişlik dimension'ı değiştiriliyor, ancak geometrinin bir kısmı hiç kıpırdamıyor ve delikler eski konumlarında kalıyor. Sketch incelendiğinde birçok entity üzerinde Fix constraint ikonu görülüyor.",
+      "prompt": "Ne oldu ve etkinlikte ne yapılmalı?",
+      "options": [
+        "Genişlik dimension'ı yanlış kenara bağlanmıştır; doğru kenara taşındığında bütün geometri birlikte hareket edecektir.",
+        "Sketch overconstrained durumdadır; kırmızı görünmemesi Onshape'in çelişkiyi sessizce çözdüğünü gösterir ve dimension silinmelidir.",
+        "Fix entity'leri kilitlemiş; siyah renk tasarım niyetinden değil kilitten geliyordu ve Fix'ler kaldırılmalıdır.",
+        "Delikler ayrı bir sketch'te çizildiği için genişlik değişimi onlara ulaşmamıştır; iki sketch birleştirilmelidir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirtideki üç gözlem birlikte tek bir sonucu veriyor. Sketch siyah, yani tam kısıtlı. Hata yok, yani çelişki de yok. Ama geometri değişime cevap vermiyor. Kaynağın Fix tanımı bunu açıklar: Fix bir sketch entity'sini sketch plane üzerine kilitler, böylece hareket etmez. Kilitlenmiş bir entity'nin dimension değişse de yerinde kalması, tanımdan çıkan bir çıkarımdır ve kaynakta ayrıca yazmaz. Rengi de siyahtır, çünkü serbestliği yoktur. Yani siyah renk iki farklı yoldan gelebilir: biri tasarım niyetini ifade eden gerçek constraint'lerden, diğeri yalnızca hareketi durduran kilitlerden. Rengin kendisi bu ikisini ayırmaz, ancak kaynak ayırmanın yolunu verir: Sketch dialog'unda Show constraints işaretlenir, veya Constraint manager'da Type filtresinden Fix seçilir ve o türden bütün constraint'ler sketch'te sarı çerçeveyle işaretlenir. Belirtide zaten Fix ikonlarının görüldüğü söyleniyor. Etkinlikte doğru davranış Fix constraint'lerini silip yerlerine gerçek ilişkileri koymaktır; kaynak silmeyi de tarif eder, tek bir constraint ikonuna tıklanıp Delete tuşuna basılır ya da bağlam menüsünden Delete seçilir. İkinci şık belirtiyle çelişir; kırmızı yoksa overconstrained de yoktur. Birinci ve dördüncü şıklar Fix ikonlarının varlığını yok sayar. Bu modülün kapanış dersi şudur: siyah bir sketch iyi bir sketch değildir; iyi bir sketch, doğru ilişkileri kurulmuş olandır.",
+      "hint": "Sketch siyah ama değişime cevap vermiyor. Siyah renk kaç farklı yoldan gelmiş olabilir?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Sketch/working_with_constraints.htm"
+    }
+  ]
+}

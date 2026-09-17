@@ -1,0 +1,315 @@
+{
+  "id": "programming-08-pid",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 8,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Closed-Loop Kontrol ve PIDController",
+  "summary": "Error kavramını, üç terimin neye tepki verdiğini, calculate metodunun düzenli çağrılma şartını ve integral gain'in FRC'de neden önerilmediğini öğretir.",
+  "prerequisites": [
+    "programming-07-sensors"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Closed-loop kontrol, ölçülen durum ile istenen durum arasındaki farkı kullanarak çıkış üretir. İstenen duruma setpoint veya reference, ölçülen duruma output veya process variable denir. İkisi arasındaki farka error denir ve reference eksi output olarak tanımlanır. PIDController sınıfı bu farktan üç ayrı terimle çıkış üretir. Proportional term, anlık pozisyon hatasıyla orantılı katkı yaparak hatayı sıfıra sürmeye çalışır. Derivative term, hatanın türeviyle orantılı katkı yaparak hatanın türevini sıfıra sürmeye çalışır. Kaynak integrator'ların geri besleme sistemlerine kararsızlık ve histerezis soktuğunu da söyler. Integral term ise geçmiş bütün hataların toplamıyla orantılı katkı yaparak biriken toplam hatayı sıfıra sürmeye çalışır.\n\nPIDController kP, kI ve kD gain'leriyle oluşturulur; isteğe bağlı dördüncü parametre controller'ın çalışacağı period'u belirler. Sınıf öncelikle ana robot döngüsünden synchronous kullanım için tasarlandığı için bu değer 20 ms olarak varsayılmıştır. calculate metodu ölçüm ile setpoint'i alır ve çıkışı döndürür. Burada kesin bir kural vardır: PIDController, calculate metodunun yapılandırılan period ile tutarlı aralıklarla düzenli çağrıldığını varsayar ve bunun yapılmaması istenmeyen döngü davranışına yol açar.\n\nsetTolerance metodu error tolerance'ını ve saniye başına error derivative tolerance'ını belirler; API'deki parametre adları positionTolerance ve velocityTolerance'tır. atSetpoint metodu, hata ve hatanın türevi bu tolerance'ların altındaysa true döner. enableContinuousInput, açı gibi dairesel ölçümlerde en kısa hata yolunun seçilmesini sağlar. Bunun bir uyarısı vardır: mekanizma tam sürekli dönme hareketi yapamıyorsa, sınırı geçmesini engelleyen ek bir güvenlik önlemi uygulanmadıkça continuous input etkinleştirilmemelidir. Integral gain FRC'de genellikle önerilmez; steady-state error'ı gidermek için feedforward controller kullanmak neredeyse her zaman daha iyidir. Kullanılacaksa windup'a karşı koruma şarttır ve sınıf bunun için setIntegratorRange ile IZone sunar.",
+    "keyTerms": [
+      {
+        "term": "closed-loop",
+        "glossTr": "ölçümü geri besleyerek çıkış üreten kontrol biçimi"
+      },
+      {
+        "term": "setpoint",
+        "glossTr": "mekanizmanın ulaşması istenen durum"
+      },
+      {
+        "term": "error",
+        "glossTr": "reference ile output arasındaki fark"
+      },
+      {
+        "term": "PIDController",
+        "glossTr": "üç terimli closed-loop kontrol üreten WPILib sınıfı"
+      },
+      {
+        "term": "gain",
+        "glossTr": "bir terimin çıkışa katkısını ölçekleyen katsayı"
+      },
+      {
+        "term": "calculate",
+        "glossTr": "ölçüm ile setpoint'i alıp çıkış döndüren metot"
+      },
+      {
+        "term": "setTolerance",
+        "glossTr": "error ve error derivative için kabul edilebilir aralığı belirleyen metot"
+      },
+      {
+        "term": "atSetpoint",
+        "glossTr": "hata ve hatanın türevi tolerance içindeyse true dönen metot"
+      },
+      {
+        "term": "enableContinuousInput",
+        "glossTr": "dairesel ölçümlerde en kısa hata yolunu seçtiren ayar"
+      },
+      {
+        "term": "integral windup",
+        "glossTr": "hata toplamının aşırı büyüyüp çıkışı taşırması"
+      },
+      {
+        "term": "steady-state error",
+        "glossTr": "sistem oturduktan sonra kalan sabit hata"
+      },
+      {
+        "term": "feedforward",
+        "glossTr": "hatadan değil, istenen durumdan doğrudan çıkış üreten kontrol bileşeni"
+      },
+      {
+        "term": "process variable",
+        "glossTr": "controller'ın ölçtüğü büyüklük; output ile aynı şeyi adlandırır"
+      },
+      {
+        "term": "setIntegratorRange",
+        "glossTr": "integral teriminin çıkışa katkısını sınırlayan ayar"
+      },
+      {
+        "term": "IZone",
+        "glossTr": "hata bu değerden büyükse biriken hatayı sıfırlayıp integral gain'i devre dışı bırakan eşik"
+      },
+      {
+        "term": "overshoot",
+        "glossTr": "mekanizmanın hedefi aşması"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-08-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CLOSED-LOOP",
+      "front": "Üç terim, üç ayrı şeye tepki verir.",
+      "back": "Closed-loop kontrol, ölçülen durum ile istenen durum arasındaki farkı kullanarak çıkış üretir. İstenen duruma setpoint veya reference, ölçülen duruma output veya process variable denir; ikisi arasındaki farka error denir ve reference eksi output olarak tanımlanır. PIDController bu farktan üç ayrı terimle çıkış üretir. Proportional term anlık pozisyon hatasıyla orantılı katkı yapar. Derivative term hatanın türeviyle orantılı katkı yapar. Integral term geçmiş bütün hataların toplamıyla orantılı katkı yapar. Üçünün de hedefi aynıdır, tepki verdikleri şey farklıdır: biri şu anki fark, biri değişim hızı, biri geçmişin toplamı.",
+      "takeaway": "Aynı hatanın üç farklı okuması, üç farklı katkı üretir",
+      "tags": [
+        "error",
+        "setpoint",
+        "PIDController"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-08-d4",
+        "programming-08-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-08-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CLOSED-LOOP",
+      "front": "calculate metodunun düzenli çağrılması bir tercih değil, bir şart.",
+      "back": "PIDController kP, kI ve kD gain'leriyle oluşturulur ve isteğe bağlı dördüncü parametre controller'ın çalışacağı period'u belirler. Sınıf öncelikle ana robot döngüsünden synchronous kullanım için tasarlandığı için bu değer 20 ms olarak varsayılmıştır. Buradan kesin bir kural çıkar: PIDController, calculate metodunun yapılandırılan period ile tutarlı aralıklarla düzenli çağrıldığını varsayar ve bunun yapılmaması istenmeyen döngü davranışına yol açar. Düzensiz çağrılan bir controller bazen düzgün oturur, bazen aşırı aşar, bazen çok yavaş yaklaşır; davranış tekrarlanabilir olmaktan çıkar ve gain ayarlamak imkânsızlaşır. Bu yüzden calculate çağrısının yeri, her döngüde çalışan bir metottur.",
+      "takeaway": "Düzensiz çağrılan bir controller ayarlanamaz, çünkü aynı şeyi iki kez yapmaz",
+      "tags": [
+        "calculate",
+        "period",
+        "20 ms"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-08-d2",
+        "programming-08-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-08-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CLOSED-LOOP",
+      "front": "kI eklendi, kol oturdu. Üçüncü maçta kol takıldı ve kurtulunca fırladı.",
+      "back": "Integral term geçmiş bütün hataların toplamıyla orantılı katkı yapar. Kol takılı kaldığı sürece hata kapanmadığı için bu toplam büyümeye devam etti ve mekanizma serbest kaldığı anda birikmiş katkı boşaldı. Buna integral windup denir ve ilk iki maçın sorunsuz geçmesi bir güvence değil, koşulların henüz oluşmamasıdır. Sorunun kaynağı aslında daha önce başlar: hedefe birkaç derece kala kalan sabit hatayı kapatmak için seçilen araç integral gain'di. Dokümantasyon FRC kullanımı için integral gain'i genellikle önermez ve steady-state error'ı gidermek için feedforward controller kullanmanın neredeyse her zaman daha iyi olduğunu söyler. Kullanılacaksa windup'a karşı koruma şarttır; sınıf bunun için setIntegratorRange ile IZone sunar.",
+      "takeaway": "İki maç sorunsuz geçmesi, üçüncüde sorun olmayacağı anlamına gelmez",
+      "tags": [
+        "integral windup",
+        "feedforward",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-08-d8",
+        "programming-08-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-08-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir kol, PIDController ile sürüldüğünde hedefe birkaç derece kala duruyor ve orada kalıyor. Bir öğrenci kalan bu sabit hatayı kapatmak için kI eklemeyi öneriyor. Dokümantasyon bu duruma ne diyor?",
+      "options": [
+        "Integral term geçmiş hataların toplamına tepki verdiği için doğru terimi seçmiştir, ancak kaynak FRC kullanımı için integral gain'i genellikle önermez ve steady-state error için feedforward controller'ı tavsiye eder.",
+        "Integral term bu duruma tepki veremez; sabit bir hatanın toplamı büyümediği için kalan hata yalnızca kD artırılarak kapatılabilir ve kaynak bu yolu tavsiye eder.",
+        "Doğru terimi seçmiştir ve kaynak integral gain'i FRC'de steady-state error için standart çözüm olarak önerir; feedforward yalnızca ileri seviye takımlar içindir.",
+        "Kalan sabit hata mekanik sürtünmeden gelir ve hiçbir kontrol bileşeniyle giderilemez; kaynak bu durumda toleransın büyütülmesini önerir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Öğrencinin teşhisi doğru, önerisi ise kaynağın tavsiyesiyle çelişiyor. Integral term gerçekten geçmiş bütün hataların toplamıyla orantılı katkı yapar ve biriken toplam hatayı sıfıra sürmeye çalışır, yani steady-state error tam olarak onun konusudur. Ancak kaynak açık bir tercih bildirir: integral gain FRC kullanımı için genellikle önerilmez ve steady-state error'ı gidermek için feedforward controller kullanmak neredeyse her zaman daha iyidir. Kaynak ayrıca integral gain kullanılacaksa integral windup'a karşı koruma sağlamanın kritik olduğunu ve integrator'ların geri besleme sistemlerine kararsızlık ile histerezis soktuğunu ekler. İkinci şık derivative term hakkında yanlıştır; derivative hatanın türevine tepki verir ve sabit bir hatanın türevi sıfırdır, yani kD bu duruma hiç katkı yapmaz. Üçüncü şık kaynağın söylediğinin tersidir. Dördüncü şık da yanlıştır; kaynak çözümü adıyla veriyor.",
+      "hint": "Öğrencinin hangi terimi seçtiği doğru mu, yoksa kaynak başka bir araç mı öneriyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-pid.html"
+    },
+    {
+      "id": "programming-08-d2",
+      "type": "diagnose",
+      "symptom": "Bir PIDController varsayılan periyotla oluşturuldu. calculate metodu yalnızca dashboard'dan bir değer değiştiğinde, yani düzensiz aralıklarla çağrılıyor. Mekanizma bazen düzgün oturuyor, bazen aşırı aşıyor, bazen çok yavaş yaklaşıyor ve davranış tekrarlanabilir değil.",
+      "prompt": "Bu davranışın kaynağı nedir?",
+      "options": [
+        "kP değeri çok yüksektir; yüksek kP her çağrıda çıkışı taşırdığı için davranış çağrıdan çağrıya değişir ve değerin düşürülmesi gerekir.",
+        "PIDController, calculate metodunun yapılandırılan period ile tutarlı aralıklarla düzenli çağrıldığını varsayar; bunun yapılmaması istenmeyen döngü davranışına yol açar.",
+        "Encoder okuması gürültülüdür; gürültü her ölçümde farklı bir hata ürettiği için sonuç tekrarlanamaz olur ve okumanın filtrelenmesi gerekir.",
+        "atSetpoint metodu hiç çağrılmadığı için controller hedefin neresinde olduğunu bilemez ve her çağrıda farklı bir varsayımla çalışır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon bu şartı bir not kutusunda kural olarak koyar: PIDController, calculate metodunun yapılandırılan period ile tutarlı bir aralıkta düzenli olarak çağrıldığını varsayar ve bunun yapılmaması istenmeyen döngü davranışına yol açar. Kaynak gerekçeyi vermez; ancak sınıfın uygulanışından çıkan açıklama şudur: integral ve derivative terimleri zamana bağlı hesaplardır ve sınıf gerçek geçen süreyi ölçmek yerine yapılandırılan period değerini kullanır, dolayısıyla gerçek aralık farklı olduğunda bu terimlerin katkısı yanlış ölçeklenir. Belirtideki tekrarlanamazlık bunun tipik işaretidir: aynı kP, kI ve kD değerleriyle her seferinde farklı davranış. Kaynak calculate'in ana robot döngüsünden, örnek olarak autonomousPeriodic metodundan çağrılmasını gösterir; command-based'de aynı düzenli cadence'i command'in execute metodu sağlar. Birinci şık kalıcı ve tekrarlanabilir bir örüntü üretirdi. Üçüncü şık titreme üretirdi, sistematik aşma veya yavaşlama değil. Dördüncü şık yanlıştır; setpoint calculate metoduna verilir, atSetpoint yalnızca tolerance içinde olunup olunmadığını bildirir.",
+      "hint": "Belirti 'tekrarlanabilir değil' diyor. Aynı gain'lerle davranışın değişmesi neye işaret eder?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html"
+    },
+    {
+      "id": "programming-08-d3",
+      "type": "debug_code",
+      "language": "java",
+      "prompt": "Bu command hedef açıya dönmek yerine ters yöne dönüyor ve hedeften uzaklaşıyor. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "code": "public class TurnToAngleCommand extends Command {\n  private final Drivetrain m_drive;\n  private final PIDController m_pid = new PIDController(0.02, 0.0, 0.001);\n  private final double m_targetDegrees;\n\n  public TurnToAngleCommand(Drivetrain drive, double targetDegrees) {\n    m_drive = drive;\n    m_targetDegrees = targetDegrees;\n    m_pid.setTolerance(2.0);\n    addRequirements(m_drive);\n  }\n\n  @Override\n  public void execute() {\n    double output = m_pid.calculate(m_targetDegrees, m_drive.getHeading());\n    m_drive.arcadeDrive(0.0, MathUtil.clamp(output, -0.5, 0.5), false);\n  }\n\n  @Override\n  public boolean isFinished() {\n    return m_pid.atSetpoint();\n  }\n\n  @Override\n  public void end(boolean interrupted) {\n    m_drive.arcadeDrive(0.0, 0.0, false);\n  }\n}",
+      "buggyLine": 15,
+      "correctAnswer": "double output = m_pid.calculate(m_drive.getHeading(), m_targetDegrees);",
+      "acceptableAnswers": [
+        "double output = m_pid.calculate(m_drive.getHeading(), m_targetDegrees);",
+        "double output = m_pid.calculate(m_drive.getHeading(), m_targetDegrees)"
+      ],
+      "explanation": "calculate metodu iki argüman alır ve sırası anlamlıdır: önce ölçüm, sonra setpoint. Kaynaktaki örnek de bu sırayı gösterir. Argümanlar ters verildiğinde controller error'ı ters işaretle hesaplar, çünkü error reference eksi output olarak tanımlıdır ve iki argümanın yeri değişince fark da işaret değiştirir. Sonuç, çıkışın hedefe yaklaştıracak yönün tam tersinde olmasıdır; robot uzaklaştıkça hata büyür, çıkış büyür ve uzaklaşma hızlanır. Belirtinin bu kadar net olmasının sebebi budur. Sınıfın geri kalanı bilerek eksiksiz yazılmıştır ki tek savunulabilir hata bu satırda kalsın: çıkış MathUtil.clamp ile sınırlanıyor, arcadeDrive squaring kapalı çağrılıyor çünkü değer bir PIDController'dan geliyor, isFinished atSetpoint ile bitiş koşulunu veriyor ve end metodu drivetrain'i durduruyor.",
+      "hint": "calculate metodunun iki argümanı var. Hangisi önce geliyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html"
+    },
+    {
+      "id": "programming-08-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi PIDController kullanımını anlatan bir sayfa hazırlıyor.",
+      "elements": [
+        "Error, reference eksi output olarak tanımlanır.",
+        "Proportional term, anlık pozisyon hatasıyla orantılı katkı yapar.",
+        "PIDController'ın isteğe bağlı period parametresinin varsayılanı 20 ms'dir.",
+        "Dokümantasyon FRC kullanımı için integral gain'i standart çözüm olarak tavsiye eder.",
+        "atSetpoint metodu, hata ve hatanın türevi setTolerance ile belirlenen tolerance'ların altındaysa true döner."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak tam tersini söyler: integral gain FRC kullanımı için genellikle önerilmez ve steady-state error'ı gidermek için feedforward controller kullanmak neredeyse her zaman daha iyidir. Kaynak integral gain'i tümüyle yasaklamaz, ancak kullanılacaksa integral windup'a karşı koruma sağlamanın kritik olduğunu ekler. Bu ifadeyi tavsiye sanmak, rookie takımların en sık düştüğü tuzaklardan birine yol açar: hedefe oturmayan bir mekanizmaya kI eklemek, sorunu şartların çoğunda gizler ve mekanizma bir kez takıldığında ortaya çıkan tehlikeli bir davranış bırakır. Diğer dört ifade dokümantasyonun yazdığı gibidir.",
+      "hint": "Dört ifade tanım veriyor. Biri bir tavsiye iddiasında bulunuyor. Kaynak o tavsiyeyi veriyor mu, tersini mi söylüyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-pid.html",
+      "sourceNote": "Periyot varsayılanı ve atSetpoint: https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html"
+    },
+    {
+      "id": "programming-08-d5",
+      "type": "diagnose",
+      "symptom": "Sürekli dönebilen bir turret, gyro'dan gelen açıyı -180 ile 180 arasında raporluyor. Turret 179 derecede iken setpoint -179 dereceye ayarlanıyor. Turret iki derecelik kısa yolu izlemek yerine 358 derece geri dönüyor.",
+      "prompt": "Eksik olan nedir?",
+      "options": [
+        "kP değeri çok düşüktür; düşük kP büyük hatalarda yönü doğru hesaplayamaz ve controller ters yöne sapar.",
+        "setTolerance çağrılmamıştır; tolerance tanımlanmadan controller hedefin hangi yönde olduğunu belirleyemez ve varsayılan olarak pozitif yönü seçer.",
+        "enableContinuousInput etkinleştirilmemiştir; bu ayar açı gibi dairesel ölçümlerde iki olası hatadan küçük olanın seçilmesini sağlar.",
+        "calculate metodu yeterince sık çağrılmıyordur; seyrek çağrı controller'ın açı geçişini kaçırmasına ve yolu yanlış hesaplamasına yol açar."
+      ],
+      "correctIndex": 2,
+      "explanation": "Controller aslında matematiksel olarak doğru davranıyor. Error, reference eksi output olarak hesaplanır; -179 eksi 179 işlemi -358 verir ve controller bu büyük hatayı kapatmak için turret'i uzun yoldan geri döndürür. Ölçümün dairesel olduğunu, yani 180 ile -180'in aynı fiziksel yön olduğunu controller kendiliğinden bilmez. enableContinuousInput tam olarak bunu bildirmek içindir ve etkinleştirildiğinde en kısa hata yolu seçilir. İkinci şık yanlıştır; setTolerance yalnızca atSetpoint'in ne zaman true döneceğini belirler, hedefi tanımlamaz. Birinci şık elenir; düşük kP yavaş yaklaşma üretirdi, yanlış yöne gitme değil. Dördüncü şık elenir; düzensiz çağrı tekrarlanamayan davranış üretirdi, oysa burada davranış tutarlı ve açıklanabilir. Bu drill'in noktası, controller'ın yanlış davranmadığını, yalnızca ölçümün dairesel olduğunun ona söylenmediğini görmektir.",
+      "hint": "Controller -179 ile 179 arasındaki farkı kaç derece hesaplıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html"
+    },
+    {
+      "id": "programming-08-d6",
+      "type": "diagnose",
+      "symptom": "Bir takım turret için yazdığı kodu, kablo demeti nedeniyle yalnızca -100 ile 100 derece arasında dönebilen bir kola uyarladı. Kodda enableContinuousInput çağrısı olduğu gibi kaldı ve mekanizmayı sınırda durduran ayrı bir önlem yok. Kol 95 derecede iken setpoint -95 dereceye ayarlanıyor.",
+      "prompt": "Ne olması beklenir ve dokümantasyon bu konuda ne diyor?",
+      "options": [
+        "Kol 190 derecelik uzun yoldan güvenli biçimde döner; continuous input yalnızca hesabı hızlandırır ve seçilen yolu değiştirmez.",
+        "Kol hedefe ulaşamaz ve controller hata belirli bir süre kapanmayınca çıkışı kendiliğinden sıfırlar.",
+        "enableContinuousInput yalnızca gyro ile kullanılabilir; kol encoder'ıyla çağrıldığında hiçbir etkisi olmaz ve ayar sessizce yok sayılır.",
+        "Continuous input en kısa yolu seçer ve bu yol mekanizmanın dönemeyeceği bölgeden geçer; dokümantasyon, mekanizma tam sürekli dönme hareketi yapamıyorsa sınırı geçmesini engelleyen ek bir güvenlik önlemi uygulanmadıkça continuous input'un etkinleştirilmemesi gerektiğini uyarır."
+      ],
+      "correctIndex": 3,
+      "explanation": "95 dereceden -95 dereceye giden iki yol vardır: sıfırın üzerinden geçen 190 derecelik yol ve artı eksi 180'in üzerinden geçen 170 derecelik kısa yol. Kolun izleyebileceği yol birincisidir, çünkü hareket aralığı -100 ile 100 derece arasındadır ve artı eksi 180 bu aralığın dışındadır. Continuous input etkinken controller kısa yolu seçer, çünkü tanımı gereği dairesel ölçümde iki olası hatadan küçük olanı kullanır. Dokümantasyon uyarıyı tam olarak bu durum için yazar: mekanizma tam sürekli dönme hareketi yapamıyorsa, sınırını geçmesini engelleyen ek bir güvenlik önlemi uygulanmadıkça continuous input etkinleştirilmemelidir. Belirtide böyle bir önlem olmadığı açıkça söyleniyor. Ortaya çıkan şey mekanik hasar riskidir; kol sınıra dayanır, controller hata kapanmadığı için çıkışı sürdürür ve kablolar zorlanır. Kaynak hasarı öngörmez, yalnızca bu önlemi şart koşar. Birinci şık ayarın ne yaptığını yanlış anlar. Üçüncü şık yanlıştır; ayar ölçümün dairesel olup olmadığıyla ilgilidir, sensor türüyle değil. İkinci şık da yanlıştır; controller hata kapanmadıkça çıkış üretmeyi sürdürür.",
+      "hint": "95 dereceden -95 dereceye giden iki yol var. Controller hangisini seçer ve kol o yoldan geçebilir mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html"
+    },
+    {
+      "id": "programming-08-d7",
+      "type": "numeric",
+      "prompt": "Bir PIDController kP değeri 0.5, kI değeri 0 ve kD değeri 0 ile oluşturuldu. Setpoint 2.0 metre, o anki ölçüm 1.4 metre. calculate metodunun döndüreceği çıkış nedir?",
+      "answer": 0.3,
+      "tolerance": 0.001,
+      "unit": "birimsiz",
+      "explanation": "Error, reference eksi output olarak tanımlıdır; burada 2.0 eksi 1.4, yani 0.6 metredir. kI ve kD sıfır olduğu için yalnızca proportional term katkı yapar ve bu terim anlık pozisyon hatasıyla orantılıdır: 0.5 çarpı 0.6 işlemi 0.3 verir. Bu sayının kendisinden çok gösterdiği ilişki önemlidir. Çıkış hatayla doğru orantılı olduğu için mekanizma hedefe yaklaştıkça çıkış küçülür ve hareket yavaşlar; bu, proportional kontrolün karakteristik davranışıdır. Aynı ilişki, hata küçüldükçe çıkışın da küçülmesi nedeniyle kalan küçük bir hatanın kapanamamasının da sebebidir, çünkü çok küçük bir çıkış mekanizmayı hareket ettirmeye yetmeyebilir. Steady-state error kavramı buradan doğar.",
+      "hint": "Önce error'ı hesaplayın. kI ve kD sıfır olduğuna göre kaç terim katkı yapıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-pid.html"
+    },
+    {
+      "id": "programming-08-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte kol hedefe birkaç derece kala duruyordu. Çözüm olarak kI eklendi ve kol hedefe oturdu, iki maç sorunsuz geçti. Üçüncü maçta kol bir oyun parçasına takıldı ve birkaç saniye hiç hareket edemedi. Parça kurtulduğu anda kol şiddetle fırladı ve hedefi çok aştı.",
+      "prompt": "Ne oldu ve dokümantasyon bu konuda ne diyor?",
+      "options": [
+        "Integral term geçmiş bütün hataların toplamıyla orantılı katkı yapar; kol takılı kaldığı sürece bu toplam büyümeye devam etti ve mekanizma serbest kaldığında birikmiş katkı boşaldı. Buna integral windup denir.",
+        "kI değeri çok küçüktür; küçük kI birikimi yavaşlattığı için kol takıldığında geç tepki verir ve değerin artırılması gerekir.",
+        "kD eksiktir; derivative term eklenirse hızlı hareket bastırılır ve fırlama tamamen ortadan kalkar.",
+        "Motor Safety devreye girmiş, kol takılıyken çıkışı biriktirmiş ve serbest kaldığında biriken çıkışı tek seferde uygulamıştır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Integral term'ün tanımı sonucu doğrudan verir: geçmiş bütün hataların toplamıyla orantılı katkı yapar ve biriken toplam hatayı sıfıra sürmeye çalışır. Kol takılıyken hata her döngüde aynı kalır ama toplam büyümeye devam eder, çünkü mekanizma hiç yaklaşamaz. Birkaç saniyede biriken bu toplam, kol serbest kaldığı anda çok büyük bir çıkış olarak boşalır. Dokümantasyon bu senaryoyu iki ifadeyle kapsar: integral gain FRC kullanımı için genellikle önerilmez ve steady-state error için feedforward controller kullanmak neredeyse her zaman daha iyidir; integral gain yine de kullanılacaksa integral windup'a karşı koruma sağlamak kritiktir. Kaynak ayrıca integrator'ların geri besleme sistemlerine kararsızlık ve histerezis soktuğunu, başka hiçbir çözüm işe yaramıyorsa kullanılması gerektiğini söyler. Korumanın somut karşılığı da belgelidir: setIntegratorRange ile integral teriminin çıkışa katkısı sınırlanabilir, IZone ile hata belirli bir değerden büyükken biriken hata sıfırlanıp integral gain devre dışı bırakılabilir. Belirtideki en öğretici ayrıntı iki maçın sorunsuz geçmesidir; windup yalnızca mekanizma hedefe uzun süre yaklaşamadığında ortaya çıkar, yani atölyede test edilmesi en zor durumlarda. İkinci şık sorunu büyütür. Üçüncü şık iki nedenle yanlıştır: derivative term birikmiş integral katkısını boşaltamaz, ve kaynak derivative'in overshoot'u tamamen ortadan kaldıracağına dair bir vaat vermez. Dördüncü şık elenir; Motor Safety çıkış güncellenmediğinde mekanizmayı disable eder, çıkış biriktirmez.",
+      "hint": "Kol takılıyken hata sıfırlanıyor mu? Peki hataların toplamı ne yapıyor?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/introduction-to-pid.html",
+      "sourceNote": "setIntegratorRange ve IZone: https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/pidcontroller.html"
+    }
+  ]
+}

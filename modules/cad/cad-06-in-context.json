@@ -1,0 +1,292 @@
+{
+  "id": "cad-06-in-context",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 6,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-01",
+  "imageRef": null,
+  "title": "Multi-Part Part Studio ve In-Context Tasarım",
+  "summary": "Bir part'ı assembly bağlamında tasarlamayı, context'in canlı bir bağ değil bir snapshot olduğunu, güncellemenin neden hiçbir zaman kendiliğinden yapılmadığını ve bunun etkinlikte ne anlama geldiğini öğretir.",
+  "prerequisites": [
+    "cad-05-variables-configurations"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Bir Part Studio birden çok part barındırabilir ve tek bir Feature list birden çok part'ın şeklini sürer. Kaynağın ölçütü şudur: yalnızca ortak referanslarını paylaşması gereken part'lar aynı Part Studio'da olmalıdır ve performans açısından bütün assembly tek bir Part Studio'da modellenmemelidir. Çok sayıda part arasında ortak geometrik referans gerekiyorsa Derived part veya In context feature'ı kullanılır.\n\nIn-context tasarım, kullanıcının bir part'ı Part Studio içinde, assembly'deki diğer part'lara göre seçip düzenlemesini sağlar. Assembly'de part'a sağ tıklanıp Edit in context veya Create new context seçilerek başlanır. Context, assembly'nin o andaki fotoğrafıdır: bileşenlerin geometrisi ve konumları assembly içinde yakalanır ve bir assembly context snapshot'ında saklanır. Bileşenler farklı konumlara getirilerek birden çok context oluşturulabilir. Verilen referanslar kalıcıdır; kaynağın ifadesiyle bu referanslar hiçbir zaman kaybolmaz veya kopmaz.\n\nEn kritik kural şudur: güncellemeler hiçbir zaman kendiliğinden uygulanmaz. Kaynak gerekçeyi de verir; bu davranış, assembly'deki diğer part'ların taşınması veya yeniden tanımlanması sonucu in context part'larda oluşabilecek kazara değişiklikleri önler. Context'in dayandığı bir feature değiştiğinde Assembly contexts etiketinin yanında dolu mavi bir daire simgesi belirir; assembly'de ise aynı simge part'ın yanında bir tooltip ile görünür. Simge yalnızca haber verir. Güncelleme iki yerden yapılır: assembly'de part'a sağ tıklanıp Update context seçilir, veya Part Studio'da Assembly contexts listesinden context seçilip üç nokta menüsünden Update context çalıştırılır.\n\nKaynağın üç uyarısı vardır. Revision reference instance'ları in context düzenlenemez. Assembly context'inin, context kapatıldıktan sonra Part Studio'da kalıcı olması için bir entity'ye referans verilmiş olması gerekir. In context düzenlenen part'a referans vermeden oluşturulan part'lar assembly'ye kendiliğinden eklenmez.",
+    "keyTerms": [
+      {
+        "term": "in-context",
+        "glossTr": "bir part'ı assembly'deki diğer part'lara göre düzenleme biçimi"
+      },
+      {
+        "term": "context",
+        "glossTr": "assembly geometrisinin ve konumlarının yakalandığı snapshot"
+      },
+      {
+        "term": "snapshot",
+        "glossTr": "belirli bir andaki durumun donmuş kaydı"
+      },
+      {
+        "term": "Update context",
+        "glossTr": "bir context'i assembly'nin güncel hâline getiren komut"
+      },
+      {
+        "term": "Assembly contexts",
+        "glossTr": "Part Studio'da mevcut context'leri gösteren liste"
+      },
+      {
+        "term": "Derived part",
+        "glossTr": "başka bir Part Studio'dan geometri getiren feature"
+      },
+      {
+        "term": "entity",
+        "glossTr": "referans verilebilen tekil geometri öğesi"
+      },
+      {
+        "term": "revision",
+        "glossTr": "yayımlanmış ve sabitlenmiş bir sürüm kaydı"
+      },
+      {
+        "term": "Edit in context",
+        "glossTr": "bir part'ı assembly bağlamında düzenlemeyi başlatan komut"
+      },
+      {
+        "term": "named position",
+        "glossTr": "assembly'de adlandırılmış bileşen konumu"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-06-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CONTEXT",
+      "front": "In-context tasarım canlı bir bağ kurmaz; yakalanmış bir fotoğrafa bakar.",
+      "back": "In-context tasarım, kullanıcının bir part'ı Part Studio içinde, assembly'deki diğer part'lara göre seçip düzenlemesini sağlar. Assembly'de part'a sağ tıklanıp Edit in context veya Create new context seçilerek başlanır. Ortaya çıkan context, assembly'nin o andaki fotoğrafıdır: bileşenlerin geometrisi ve konumları assembly içinde yakalanır ve bir assembly context snapshot'ında saklanır. Buradaki ayrım bu modülün tamamını taşır. Kurulan şey iki Part Studio arasında canlı bir bağ değildir; part kendi Part Studio'sunda kalmaya devam eder ve yalnızca tasarım sırasında diğer part'ların geometrisine göre ölçü alır. Verilen referanslar kalıcıdır; kaynağın ifadesiyle bu referanslar hiçbir zaman kaybolmaz veya kopmaz. Kalıcı olmayan şey bağ değil, snapshot'ın güncelliğidir.",
+      "takeaway": "Bir in context part'a bakarken sorulacak soru bağlı mı değil, bu fotoğraf ne zaman çekildi olmalıdır",
+      "tags": [
+        "in-context",
+        "context",
+        "snapshot"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-06-d1",
+        "cad-06-d2"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-06-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CONTEXT",
+      "front": "Snapshot eskidiğinde Onshape ne yapar, güncellemeyi kim başlatır?",
+      "back": "En kritik kural şudur: güncellemeler hiçbir zaman kendiliğinden uygulanmaz. Kaynak gerekçeyi de verir; bu davranış, assembly'deki diğer part'ların taşınması veya yeniden tanımlanması sonucu in context part'larda oluşabilecek kazara değişiklikleri önler. Onshape sessiz de kalmaz. Context'in dayandığı bir feature değiştiğinde Assembly contexts etiketinin yanında dolu mavi bir daire simgesi belirir; assembly'de ise aynı simge part'ın yanında bir tooltip ile görünür. Simge yalnızca haber verir, güncellemeyi başlatmaz. Güncelleme iki yerden yapılır: assembly'de part'a sağ tıklanıp Update context seçilir, veya Part Studio'da Assembly contexts listesinden context seçilip üç nokta menüsünden Update context çalıştırılır. Hangi tab'de olduğunuz hangi yolu kullanacağınızı belirler; güncelleme bir yan etki değil, bilinçli bir eylemdir.",
+      "takeaway": "Mavi daire bir hata değil bir haberdir; gördüğünüz yerde Update context'i siz çalıştırın",
+      "tags": [
+        "Update context",
+        "Assembly contexts",
+        "snapshot"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-06-d4",
+        "cad-06-d3"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-06-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CONTEXT",
+      "front": "Etkinlikte kırılan plaka yeniden imal edildi, delikler şasiye oturmadı.",
+      "back": "Plakanın Part Studio'sunda hiçbir hata yoktu: sketch'ler siyahtı ve Feature list temizdi. Yalnızca Assembly contexts etiketinin yanında dolu mavi bir daire simgesi duruyordu ve şasi sezon içinde iki kez değiştirilmişti. Context o günden beri güncellenmediği için snapshot hâlâ aylar önceki şasiyi tutuyordu; plaka kendisine verilen bilgiye göre doğru şekillenmişti, sorun o bilginin ne zamana ait olduğuydu. Kaynak bunu bir arıza saymaz, çünkü güncellemeler hiçbir zaman kendiliğinden uygulanmaz. Aynı sessizlik referans vermemekte de vardır: in context düzenlenen part'a referans vermeden oluşturulan part'lar assembly'ye kendiliğinden eklenmez. Simge aylardır oradaydı; kimse bakmadı ve bedel atölyede değil, parça yerine oturmadığında ödendi.",
+      "takeaway": "In context tasarlanmış bir parçayı imalata göndermeden önce Assembly contexts etiketine bakın; simge varsa Update context çalıştırıp sonucun değişip değişmediğini kontrol edin",
+      "tags": [
+        "pit",
+        "Update context",
+        "referans"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-06-d8",
+        "cad-06-d6"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-06-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci intake plakasını, robot şasisine tam oturacak biçimde tasarlamak istiyor. Şasi ayrı bir Part Studio'da ve ikisi bir assembly'de bir araya geliyor. In-context tasarım ona ne sağlar?",
+      "options": [
+        "Şasi geometrisini intake'in Part Studio'suna kalıcı olarak kopyalar ve iki part tek Feature list'i paylaşır.",
+        "Kullanıcının bir part'ı Part Studio içinde, assembly'deki diğer part'lara göre seçip düzenlemesini sağlar.",
+        "İki Part Studio arasında canlı bir bağ kurar; birinde yapılan her değişiklik diğerine anında yansır.",
+        "Assembly'yi tek bir part hâline getirir; böylece bütün geometri aynı anda düzenlenebilir hâle gelir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynağın tanımı doğrudan budur: in-context tasarım, kullanıcının bir part'ı Part Studio içinde, assembly'deki diğer part'lara göre seçip düzenlemesini sağlar. Yani intake plakası kendi Part Studio'sunda kalır, ancak tasarım sırasında şasinin geometrisi referans olarak görünür ve ona göre ölçü alınabilir. Üçüncü şık en tehlikeli yanılgıdır ve bu modülün asıl konusudur: kurulan şey canlı bir bağ değildir, çünkü kaynak context'i bir snapshot olarak tanımlar ve güncellemelerin hiçbir zaman kendiliğinden uygulanmadığını söyler. Referansın kendisi kalıcıdır; kaynağa göre bu referanslar hiçbir zaman kaybolmaz veya kopmaz. Kalıcı olmayan şey bağ değil, snapshot'ın güncelliğidir. Birinci şık kopyalama fikrini getirir; in-context bir kopyalama işlemi değildir ve part'lar kendi Part Studio'larında kalmaya devam eder. Dördüncü şık assembly ile Part Studio'nun işlerini birbirine karıştırır.",
+      "hint": "Part hangi kapta kalıyor ve neye göre düzenleniyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d2",
+      "type": "diagnose",
+      "symptom": "Bir intake plakası şasiye göre in-context tasarlandı. Üç hafta sonra şasi genişliği 20 mm artırıldı ve assembly güncellendi. Intake plakasının Part Studio'su açıldığında referans aldığı şasi geometrisi hâlâ eski genişlikte görünüyor. Hiçbir hata işareti yok; yalnızca Assembly contexts etiketinin yanında dolu mavi bir daire simgesi duruyor.",
+      "prompt": "Neden eski hâlini gösteriyor?",
+      "options": [
+        "Assembly'de bir mate eksiktir; mate eklendiğinde context kendini yeniler ve geometri güncellenir.",
+        "Part Studio salt okunur açılmıştır; düzenleme moduna geçildiğinde geometri kendiliğinden güncellenecektir.",
+        "Şasi Part Studio'sunda bir hata vardır; hata giderilmeden context yeni geometriyi alamaz.",
+        "Context bir snapshot'tır ve kaynağın ifadesiyle güncellemeler hiçbir zaman kendiliğinden uygulanmaz."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak context'i bir snapshot olarak tanımlar: bileşenlerin bütün geometrisi ve konumları assembly içinde yakalanır ve bilgi bir assembly context snapshot'ında saklanır. Snapshot, alındığı andaki hâli tutar. Kaynağın en kesin cümlesi de buna eşlik eder: güncellemeler hiçbir zaman kendiliğinden uygulanmaz. Yani üç hafta önce alınmış fotoğraf hâlâ üç hafta önceki şasiyi gösteriyor ve bu bir arıza değil, tasarlanmış davranıştır. Kaynak gerekçeyi de yazar: bu davranış, assembly'deki diğer part'ların taşınması veya yeniden tanımlanması sonucu in context part'larda oluşabilecek kazara değişiklikleri önler. Onshape durumu bir hata olarak işaretlemez, ancak sessiz de kalmaz; context'in dayandığı bir feature değiştiğinde Assembly contexts etiketinin yanında dolu mavi bir daire simgesi göstererek güncellemenin mevcut olduğunu bildirir. Belirtideki simge tam olarak budur. Çözüm Update context komutunu çalıştırmaktır. Diğer üç şık sorunu mate'te, salt okunurlukta ve başka bir Part Studio'da arar; üçü de belirtideki hata yokluğunu ve mavi daire simgesini birlikte açıklayamaz.",
+      "hint": "Etiketin yanındaki mavi daire ne bildiriyor, ne yapmıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d3",
+      "type": "find_the_fault",
+      "prompt": "Bir takım aşağıdaki beş adımı planlıyor. Dördü işe yarar. Planlandığı gibi sonuç vermeyecek olanı seçiniz.",
+      "scenario": "Takım, şasiye göre in context tasarlanmış bir intake plakasını sezon ortasında revize edecek.",
+      "elements": [
+        "Kolun açık ve kapalı konumları için ayrı ayrı context oluşturup plakayı her ikisine karşı kontrol ederler.",
+        "Plakanın Part Studio'sunda Assembly contexts listesini açıp etiketin yanında mavi daire simgesi olup olmadığına bakarlar.",
+        "Şasiyi assembly'de değiştirdikten sonra plakanın Part Studio'sunu açıp güncellenmiş geometriyi doğrudan görmeyi beklerler.",
+        "Revision olarak eklenmiş bir COTS parçayı in context düzenlemek yerine kendi part'larını düzenlerler.",
+        "In context çalışırken oluşturdukları yeni part'a, düzenledikleri part'tan en az bir referans verirler."
+      ],
+      "faultIndex": 2,
+      "explanation": "Üçüncü adım kaynağın kesin bir dille söylediğinin tersini bekler: güncellemeler hiçbir zaman kendiliğinden uygulanmaz. Şasi assembly'de değiştiğinde plakanın context'i eski snapshot'ı tutmaya devam eder; güncellenmiş geometriyi görmek için Update context çalıştırmak gerekir. Bu tek cümle in-context tasarımın bütün risk profilini belirler; kendiliğinden güncellendiğini sanan bir ekip kontrol etmez ve fark ancak parça imal edilip yerine oturmadığında görülür. Diğer dört adım kaynağın yazdıklarına uyar: aynı assembly için farklı konumlarda birden çok context oluşturulabilir, mavi daire simgesi güncellemenin mevcut olduğunu bildirir, revision reference instance'ları in context düzenlenemez ve referans verilmeden oluşturulan part'lar assembly'ye kendiliğinden eklenmez.",
+      "hint": "Adımlardan biri bir şeyin kendiliğinden olmasını bekliyor. Kaynak orada ne diyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d4",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci Part Studio tab'indedir. Assembly contexts etiketinin yanında dolu mavi bir daire simgesi görüyor ve assembly'yi açmadan devam etmek istiyor. Ne yapmalıdır?",
+      "options": [
+        "Assembly contexts listesinden ilgili context'i seçip üç nokta menüsünden Update context komutunu çalıştırmalıdır.",
+        "Assembly'yi açıp part'a sağ tıklamalıdır; güncelleme Part Studio tarafından hiçbir biçimde başlatılamaz.",
+        "Beklemelidir; simge güncellemenin arka planda sürdüğünü gösterir ve iş bitince kendiliğinden kaybolur.",
+        "Yeni bir context oluşturmalıdır; var olan bir context tazelenemez, yalnızca yenisiyle değiştirilebilir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak Update context komutuna iki giriş noktası verir. Assembly içinde, in context düzenlenen part'a sağ tıklanır, Update context seçilir ve hangi context'in güncelleneceği belirtilir. Part Studio içinde ise Assembly contexts listesinden ilgili context seçilir, üç nokta menüsü açılır ve Update context seçilir. Öğrenci zaten Part Studio'dadır, dolayısıyla ikinci yol tam olarak bu duruma yazılmıştır ve ikinci şıkkı eler. Üçüncü şık simgenin işini yanlış anlar; simge güncellemenin mevcut olduğunu bildirir, güncellemeyi başlatmaz ve kaynak güncellemelerin hiçbir zaman kendiliğinden uygulanmadığını söyler. Dördüncü şık var olan context'in tazelenemeyeceğini iddia eder; Update context'in tanımı zaten budur. Buradaki asıl nokta, Onshape'in bu iş için adı konmuş bir komut sunmasıdır; güncelleme bir yan etki değil, bilinçli bir eylemdir.",
+      "hint": "Öğrenci hangi tab'de? Kaynak o tab için hangi yolu tarif ediyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d5",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci assembly'de bir part'ı in context düzenlemeye başladı, birkaç sketch çizdi ama hiçbirinde başka bir part'ın geometrisine referans vermedi. İşi bitirip çıktı. Daha sonra Part Studio'ya döndüğünde oluşturduğu context'i Assembly contexts listesinde bulamıyor.",
+      "prompt": "Neden bulamıyor?",
+      "options": [
+        "Context'ler yalnızca assembly açıkken görünür; assembly kapatıldığında listeden geçici olarak kaldırılırlar.",
+        "Context oluşturmak için önce Update context komutunun çalıştırılması gerekir; bu yapılmadığı için context kaydedilmemiştir.",
+        "Assembly context'inin, kapatıldıktan sonra Part Studio'da kalıcı olması için bir entity'ye referans verilmiş olması gerekir.",
+        "Context'ler yalnızca mate kurulmuş part'lar için oluşturulur; öğrencinin part'ında mate bulunmamaktadır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynağın uyarı listesindeki bir madde bu durumu doğrudan kapsar: bir assembly context'inin, context kapatıldıktan sonra Part Studio'da kalıcı olması için bir entity'ye referans verilmiş olması gerekir. Context'in var olma sebebi başka part'lara referans vermektir; hiçbir referans verilmemişse tutulacak bir bağ da yoktur ve context kapanışta kalıcı olmaz. Öğrencinin çizdiği sketch'ler Part Studio'nun kendi feature'ları olduğu için yerinde durmaya devam eder; bu bir çıkarımdır, kaynağın söylediği yalnızca context'in kalıcı olmadığıdır. Doğru yol, in context çalışırken en az bir gerçek referans vermektir. Birinci şık kaynakta karşılığı olmayan bir görünürlük kuralı uydurur. İkinci şık Update context'in işini yanlış anlar; o komut var olan bir context'i tazeler, yeni bir context oluşturmaz. Dördüncü şık da mate ile context arasında kaynakta bulunmayan bir şart kurar.",
+      "hint": "Context neyi tutmak için var? Tutulacak bir şey yoksa ne olur?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci in context çalışırken iki yeni part oluşturdu. Birincisi düzenlediği part'ın bir kenarına referans veriyor, ikincisi hiçbir referans vermiyor. Assembly'ye döndüğünde birinci part orada, ikinci part yok. Bu farkın sebebi nedir?",
+      "options": [
+        "Assembly'ye eklenme mate kurulmasına bağlıdır; birinci part'a mate kurulmuş, ikincisine kurulmamıştır.",
+        "Belirleyici olan oluşturulma sırasıdır; bir oturumda yalnızca ilk oluşturulan part assembly'ye eklenir.",
+        "İkinci part önce bir versiyon oluşturulmasını bekler; versiyon alındığında assembly'ye kendiliğinden eklenir.",
+        "In context düzenlenen part'a referans vermeden oluşturulan part'lar assembly'ye kendiliğinden eklenmez."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynağın uyarı listesindeki üçüncü madde budur: in context düzenlenen part'a referans vermeden oluşturulan part'lar assembly'ye kendiliğinden eklenmez. İki part arasındaki tek fark referanstır ve sonuç tam olarak bu maddeye uyar. İfadedeki şart önemlidir; kaynak in context oluşturulan part'ların hiçbir zaman eklenmediğini söylemez, referans verilmemiş olanların eklenmediğini söyler. Birinci part'ın eklenmiş olması da bunu gösterir. Yani referans vermek yalnızca geometrik bir kolaylık değil, part'ın assembly ile ilişkisini kuran şeydir. Bu bir kez daha aynı temaya bağlanır: in-context tasarımda ilişki kendiliğinden oluşmaz, referans vererek kurulur ve Update context ile tazelenir. Öğrencinin yapması gereken ikinci part'ı assembly'ye elle insert etmek veya ona da bir referans vermektir. Diğer üç şık mate, sıra ve versiyon üzerinden kaynakta karşılığı olmayan ön şartlar uydurur ve hiçbiri iki part arasındaki gerçek farkı kullanmaz.",
+      "hint": "İki part arasında yalnızca tek bir fark var. Kaynağın cümlesindeki şart tam olarak o mu?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım kolu tamamen kapalı konumdayken bir context oluşturdu ve kol koruma sacını o context'e göre tasarladı. Sac üretildi ve kapalı konumda mükemmel oturdu. Kol açık konuma getirildiğinde sac başka bir parçaya çarpıyor.",
+      "prompt": "Tasarım aşamasında ne yapılmalıydı?",
+      "options": [
+        "Sac ayrı bir document'ta tasarlanmalıydı; aynı document içindeki part'lar hareketli konumları hesaba katamaz.",
+        "Bileşenler farklı konumlara getirilerek birden çok context oluşturulmalı ve sac hepsine karşı kontrol edilmeliydi.",
+        "Context yerine Derived part kullanılmalıydı; Derived part hareketli konumları kendiliğinden hesaba katar.",
+        "Sac tasarlanmadan önce bütün mate'ler kaldırılmalıydı; mate'ler context'in doğru geometri almasını engeller."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak bu imkânı doğrudan verir: aynı assembly için, bileşenler farklı konumlara getirilerek birden çok context oluşturulabilir. Bir context yalnızca alındığı andaki konumu yakalar, dolayısıyla tek bir context'e göre tasarlanan bir parça yalnızca o konum için doğrudur. Hareketli bir mekanizmada anlamlı olan, hareketin uç noktalarını ayrı context'ler olarak yakalamak ve tasarımı her birine karşı sınamaktır; kapalı konum, açık konum ve varsa ara duraklar. Bu, FRC'de kol, intake ve elevator gibi hareketli alt sistemlerde doğrudan uygulanabilir bir alışkanlıktır. Kaynak bir adım daha ileri gider: bir assembly context'i bir named position'a bağlanabilir ve bu durumda named position view veya geometri değişmedikçe context güncelliğini yitirmez. Birinci şık document ayrımıyla hareketi karıştırır. Üçüncü şık Derived part'a kaynakta olmayan bir yetenek yükler. Dördüncü şık mate'leri sorun olarak gösterir; oysa mate'ler bileşenleri farklı konumlara getirebilmenin ta kendisidir.",
+      "hint": "Kaynak aynı assembly için kaç context oluşturulabileceğini söylüyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    },
+    {
+      "id": "cad-06-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte kırılan bir montaj plakası yeniden imal edildi. Plaka aylar önce şasiye göre in context tasarlanmıştı. Yeni parça geldiğinde delikleri şasiye oturmuyor. CAD incelendiğinde plakanın Part Studio'sunda hiçbir hata olmadığı, sketch'lerin siyah olduğu ve Feature list'in temiz olduğu görülüyor; yalnızca Assembly contexts etiketinin yanında dolu mavi bir daire simgesi duruyor. Şasi ise sezon içinde iki kez değiştirilmiş.",
+      "prompt": "Ne oldu?",
+      "options": [
+        "Context o günden beri güncellenmemiştir; kaynağa göre güncellemeler kendiliğinden uygulanmaz, snapshot eski şasiyi tutar.",
+        "Sketch'ler siyah göründüğü hâlde aslında underconstrained kalmıştır; imalattan önce sürüklenmiş olmalıdırlar.",
+        "Şasi Part Studio'sundaki değişiklikler plakanın Part Studio'suna aktarılmış ancak Feature list yeniden hesaplanmamıştır.",
+        "Plaka yanlış configuration'dan dışa aktarılmıştır; doğru configuration seçildiğinde delikler oturacaktır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Plakanın Part Studio'su temiz, çünkü orada gerçekten bir hata yok; plaka kendisine verilen bilgiye göre doğru şekillenmiş durumda. Sorun o bilginin ne zamana ait olduğudur. Kaynak context'i bir snapshot olarak tanımlar ve en kesin cümlesiyle güncellemelerin hiçbir zaman kendiliğinden uygulanmadığını söyler. Şasi iki kez değiştiği hâlde kimse Update context çalıştırmadıysa, plaka hâlâ aylar önceki şasiye göre doğrudur. Onshape bunu bir hata olarak işaretlemez, ama haber verir: context'in dayandığı bir feature değiştiğinde Assembly contexts etiketinin yanında dolu mavi bir daire simgesi belirir ve assembly'de aynı simge in context part'ın yanında bir tooltip ile görünür. Belirtideki simge aylardır oradaydı; kimse bakmadı. Etkinlik alışkanlığı buradan çıkar: in context tasarlanmış bir parçayı imalata göndermeden önce Assembly contexts etiketine bakılır, simge varsa Update context çalıştırılır ve sonucun değişip değişmediği kontrol edilir. İkinci şık başka bir modülün belirtisidir ve burada sketch'lerin siyah olduğu söyleniyor. Üçüncü şık kaynakta karşılığı olmayan bir aktarım mekanizması uydurur. Dördüncü şık configuration'a bağlar; belirtide birden çok configuration'dan söz edilmiyor.",
+      "hint": "Plakanın CAD'i temiz, ama ekranda duran bir simge var. O simge ne diyor?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/in-context.htm"
+    }
+  ]
+}

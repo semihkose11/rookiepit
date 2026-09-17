@@ -1,0 +1,372 @@
+{
+  "id": "electrical-11-control-system",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 11,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor",
+  "summary": "Core control system birimlerine neden dokunulamayacağını, hangi değişikliklerin buna rağmen serbest olduğunu, komutların nereden doğmak zorunda olduğunu ve MXP ile co-processor kullanımının sınırlarını öğretir.",
+  "prerequisites": [
+    "electrical-08-motors",
+    "electrical-09-custom-circuits"
+  ],
+  "estimatedMinutes": 15,
+  "concept": {
+    "body": "Robotun beyni tek bir programlanabilir roboRIO'dur ve üzerindeki imaj sürümü o sezon için belirtilen sürüm veya daha yenisi olmalıdır. Bunun etrafındaki birimler core control system olarak adlandırılır: driver station yazılımı, roboRIO, PD, PCM ve PH'ler, VRM ve RPM'ler, RSL, 120A main breaker, motor controller'lar, aktüatör kontrolünde kullanılan MXP cihazları, ilgili maddede tanımlanan relay module'ler, wireless bridge, PD üzerindeki breaker ve fuse'lar, Servo Power Module, Servo Hub, motor power adapter board'lar ve battery'ler.\n\nKural bu birimlerin hiçbir şekilde kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar. Ancak yasak mutlak değildir: kural harflendirilmiş uzun bir istisna listesi sayar ve bunların arasında kullanıcı kodu yazmak, motor controller kalibrasyonu, kablolama, bağlantı elemanları, firmware güncellemeleri ve cihazın performansı ile teknik özellikleri değişmemek şartıyla onarımlar vardır. Yani bir motor controller'ın firmware'ini güncellemek serbesttir, kapağını açıp içindeki bir parçayı değiştirmek değildir.\n\nKomutların kaynağı da sabittir. Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır. Robot üzerinde co-processor bulundurmak yasak değildir; şart, tüm power regulating device'ları enable ve disable eden komutların roboRIO'dan çıkmasıdır.\n\nMXP üzerinden bir motor sürülüyorsa, o motorun power regulating device'ı ya doğrudan PWM pinlerine, ya pasif iletkenlerden oluşan bir ağ ile, ya da kuralda tek tek sayılan onaylı aktif cihazlardan biri üzerinden bağlanmalıdır.",
+    "keyTerms": [
+      {
+        "term": "control system devices",
+        "glossTr": "kuralda tek tek sayılan, kurcalanması yasak kontrol birimleri; manual bu birimleri madde içinde listeler"
+      },
+      {
+        "term": "image version",
+        "glossTr": "roboRIO'ya yüklenen yazılım imajının sürümü"
+      },
+      {
+        "term": "firmware",
+        "glossTr": "cihazın içindeki gömülü yazılım"
+      },
+      {
+        "term": "co-processor",
+        "glossTr": "roboRIO'ya yardımcı olan ek işlemci kartı"
+      },
+      {
+        "term": "operator console",
+        "glossTr": "sürücülerin robotu kontrol ettiği istasyon"
+      },
+      {
+        "term": "MXP",
+        "glossTr": "roboRIO üzerindeki genişleme portu"
+      },
+      {
+        "term": "passive conductor",
+        "glossTr": "sinyali işlemeden yalnızca ileten iletken"
+      },
+      {
+        "term": "active device",
+        "glossTr": "sinyali işleyen veya üreten kart"
+      },
+      {
+        "term": "bandwidth",
+        "glossTr": "birim zamanda taşınabilen veri miktarı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-11-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CONTROL SYSTEM",
+      "front": "Core control system birimlerine dokunulmaz — ama yasak mutlak değil.",
+      "back": "Kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar ve ardından uzun bir istisna listesi sayar. İstisnalar arasında kullanıcı kodu yazmak, motor controller kalibrasyonu, kablolama, bağlantı elemanları, firmware güncellemeleri ve cihazın performansı ile teknik özellikleri değişmemek şartıyla yapılan onarımlar vardır. Ayrım nettir: bir motor controller'ın firmware'ini güncellemek serbesttir, kapağını açıp içindeki bir bileşeni değiştirmek değildir.",
+      "takeaway": "Cihazın yazılımına ve bağlantısına dokunmak serbest, içine dokunmak yasak",
+      "tags": [
+        "core control system",
+        "firmware",
+        "istisna listesi"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-11-d1",
+        "electrical-11-d2"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R710",
+          "season": "2026",
+          "topic": "control system birimleri kurcalanamaz, değiştirilemez, ayarlanamaz; harflendirilmiş istisna listesi"
+        }
+      ]
+    },
+    {
+      "id": "electrical-11-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CONTROL SYSTEM",
+      "front": "Co-processor serbestse, neden motora doğrudan komut veremiyor?",
+      "back": "Kural iki şeyi birden sabitler: sinyalin kaynağını ve yolunu. Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır; robotun kendi kablosuz ağına bağlanan bir telefon bu tanımın dışındadır. Robot üzerinde co-processor bulundurmak yasak değildir, hatta kural bunu açıkça mümkün kılar. Şart şudur: tüm power regulating device'ları enable ve disable eden komutlar roboRIO'dan çıkmalıdır. Co-processor hedefi görebilir, hesaplayabilir ve sonucu roboRIO'ya verebilir; motoru enable etme yetkisi roboRIO'da kalır.",
+      "takeaway": "Co-processor hesaplar, roboRIO karar verir; enable yetkisi devredilemez",
+      "tags": [
+        "co-processor",
+        "operator console",
+        "enable"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-11-d4",
+        "electrical-11-d6"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R701",
+          "season": "2026",
+          "topic": "tüm power regulating device'ları enable ve disable eden komutlar roboRIO'dan çıkmalı"
+        },
+        {
+          "rule": "R706",
+          "season": "2026",
+          "topic": "tüm sinyaller operator console'dan doğar ve robota arena Ethernet ağı üzerinden ulaşır"
+        }
+      ]
+    },
+    {
+      "id": "electrical-11-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CONTROL SYSTEM",
+      "front": "RSL'in plastik muhafazasını daha ince bir muadiliyle değiştirdiniz. Elektriksel hiçbir şey değişmedi.",
+      "back": "RSL, core control system listesinde açıkça sayılan birimlerden biridir ve kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar. Yasak elektriksel değişikliklerle sınırlı değildir; cihazın fiziksel olarak değiştirilmesi de kapsam içindedir. Muhafazanın daha ince olması görünürlüğü artırsa bile sonucu değiştirmez, çünkü tartışılan şey performans değil, cihaza dokunulmuş olmasıdır. Pit'te böyle bir değişiklik yapmadan önce sorulacak soru tek: bu cihaz listede mi?",
+      "takeaway": "Listede olan bir cihazda değişiklik, iyi niyetle ve zararsız da olsa değişikliktir",
+      "tags": [
+        "RSL",
+        "muhafaza",
+        "denetim"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-11-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R710",
+          "season": "2026",
+          "topic": "control system birimleri fiziksel olarak değiştirilemez"
+        }
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-11-d1",
+      "type": "multiple_choice",
+      "prompt": "Takım, bir motor controller'da bilinen bir hatayı gidermek için üreticinin yayınladığı yeni firmware'i yüklemek istiyor. Bir takım arkadaşı 'motor controller core control system parçası, ona dokunamayız' diyor. Kim haklı?",
+      "options": [
+        "Firmware güncellemesi kuralın saydığı istisnalar arasındadır ve serbesttir; yasak olan cihazın kendisini fiziksel olarak değiştirmektir.",
+        "Takım arkadaşı haklı; core control system birimlerine hiçbir şekilde müdahale edilemez.",
+        "Firmware güncellemesi yalnızca etkinlik dışında yapılabilir; etkinlikte yasaktır.",
+        "Motor controller core control system parçası değildir, bu yüzden tartışma konusuz kalır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural core control system birimlerinin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar, ancak bu yasağa harflendirilmiş uzun bir istisna listesi tanır ve firmware güncellemeleri bunların arasındadır. Aynı istisna listesinde kullanıcı kodu yazmak, motor controller kalibrasyonu, kablolama, bağlantı elemanları ve performans ile teknik özellikleri değiştirmeyen onarımlar da yer alır. Yani ayrım şuradadır: cihazı üreticinin öngördüğü şekilde güncellemek, kalibre etmek ve kablolamak serbesttir; kapağını açıp içindeki bir bileşeni değiştirmek veya cihazı fiziksel olarak dönüştürmek yasaktır. Dördüncü şık da yanlıştır, motor controller'lar core control system listesinde açıkça sayılır. Bu ayrımı bilmemek takımların gereksiz yere bilinen bir hatayla maça çıkmasına yol açar.",
+      "hint": "Yasak mutlak mı? Kuralın istisna listesinde ne var, ne yok?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R710",
+          "season": "2026",
+          "topic": "control system birimleri kurcalanamaz; kural harflendirilmiş bir istisna listesi sayar ve firmware güncellemeleri bunlardandır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kuralın kapsamı resmi denetim listesiyle doğrulandı (\"Components - Must not be modified, except for modifications/repairs/maintenance/calibrations specified\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf — tam istisna listesi aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-11-d2",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki uygulamalardan dördü kurallara uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Bir takım kontrol sistemi üzerinde yaptığı çalışmaları anlatıyor.",
+      "elements": [
+        "roboRIO'ya yeni kullanıcı kodu yazılmış ve deploy edilmiş.",
+        "Motor controller'ların firmware'i üreticinin son sürümüne güncellenmiş.",
+        "PD'nin kapağı açılıp içindeki bir bileşen daha yüksek değerli bir muadili ile değiştirilmiş.",
+        "Kırılan bir motor controller, onarım sonrası performansı ve teknik özellikleri onarım öncesiyle aynı olacak şekilde onarılmış.",
+        "Bir motor controller, üreticinin talimatlarında tarif edildiği şekilde kalibre edilmiş."
+      ],
+      "faultIndex": 2,
+      "explanation": "PD, core control system listesinde yer alan bir birimdir ve kapağını açıp içindeki bir bileşeni değiştirmek tam olarak kuralın yasakladığı şeydir. Kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar ve bileşen değişimi hiçbir istisnaya girmez. Üstelik değiştirilen bileşenin daha yüksek değerli olması durumu ağırlaştırır, çünkü cihazın koruma davranışı üreticinin öngördüğünden farklı hâle gelir. Diğer dört öğe kuralın açıkça saydığı istisnalar arasındadır: kullanıcı kodu yazmak, firmware güncellemek, performans ve teknik özellikleri değiştirmeyen bir onarım yapmak ve motor controller kalibrasyonu.",
+      "hint": "Dört öğe cihazı üreticinin öngördüğü şekilde kullanıyor. Biri cihazın içine giriyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R710",
+          "season": "2026",
+          "topic": "core control system birimleri kurcalanamaz, değiştirilemez veya ayarlanamaz; istisnalar arasında kod, kalibrasyon, kablolama, firmware ve onarım vardır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kuralın kapsamı resmi denetim listesiyle doğrulandı (\"Components - Must not be modified, except for modifications/repairs/maintenance/calibrations specified\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf — tam istisna listesi aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-11-d3",
+      "type": "numeric",
+      "prompt": "VH-109 radio kullanan bir robotta, robota ve robottan yapılan haberleşme en fazla kaç Mbit/saniye olabilir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 7,
+      "tolerance": 0.05,
+      "unit": "Mbit/s",
+      "explanation": "Kural haberleşme bant genişliğine bir üst sınır koyar ve bu sınır radio modeline göre değişir: VH-109 için 7.0 Mbit/saniye, eski OpenMesh radio'lar için 4.0 Mbit/saniyedir. Sınırın varlığı sahadaki tüm takımların aynı kablosuz ortamı paylaşmasından kaynaklanır; bir takımın aşırı veri göndermesi diğerlerinin bağlantısını bozar. Pratikte bu sınırı zorlayan şey neredeyse her zaman kamera görüntüsüdür. Bu nedenle vision kullanan takımlar çözünürlüğü, kare hızını ve sıkıştırmayı bu bütçeye göre seçmek zorundadır; görüntüyü robot üzerindeki bir co-processor'da işleyip yalnızca sonucu göndermek de bu sınırı aşmamanın yaygın bir yoludur.",
+      "hint": "Sınır radio modeline göre değişiyor. Soruda hangi model belirtilmiş?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R704",
+          "season": "2026",
+          "topic": "VH-109 için en fazla 7.0 Mbit/s, OpenMesh için 4.0 Mbit/s haberleşme"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-11-d4",
+      "type": "multiple_choice",
+      "prompt": "Takım, görüntü işlemek için robota bir co-processor eklemek istiyor. Planları, co-processor'ın hedefi gördüğünde turret motor controller'ına doğrudan CAN üzerinden komut göndermesi. Bu plan uygun mudur?",
+      "options": [
+        "Uygundur; co-processor kullanmak serbesttir ve nasıl kullanılacağına takım karar verir.",
+        "Uygun değildir. Co-processor bulundurmak serbesttir, ancak tüm power regulating device'ları enable ve disable eden komutların roboRIO'dan çıkması şarttır.",
+        "Uygun değildir; robot üzerinde co-processor bulundurmak yasaktır.",
+        "Uygundur, co-processor da CAN zincirine bağlı olduğu sürece."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural co-processor kullanımını yasaklamaz; aksine bunu açıkça mümkün kılar. Ancak bir şartı vardır: tüm power regulating device'ları enable ve disable eden komutlar roboRIO'dan doğmalıdır. Sorudaki plan bu şartı ihlal eder, çünkü co-processor motor controller'a doğrudan komut vermektedir. Doğru mimari şudur: co-processor görüntüyü işler ve sonucu roboRIO'ya bildirir, roboRIO da bu bilgiye dayanarak motor controller'ı sürer. Bu düzen yalnızca kural gereği değildir, güvenlik gereğidir de: robot disable edildiğinde tüm aktüatörlerin durduğundan emin olmanın tek yolu, komut zincirinin tek bir noktadan geçmesidir. Dördüncü şık bu nedenle yanlıştır; CAN zincirine bağlı olmak komutun kaynağını değiştirmez.",
+      "hint": "Kural co-processor'ı yasaklamıyor. Peki komutun nereden çıkması gerektiği konusunda ne diyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R701",
+          "season": "2026",
+          "topic": "co-processor'lar serbesttir; power regulating device'ları enable ve disable eden komutlar roboRIO'dan çıkmalıdır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-11-d5",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki MXP kullanımlarından üçü kurallara uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Bir takım roboRIO'nun MXP portunu farklı amaçlarla kullanmış.",
+      "elements": [
+        "MXP üzerinden sürülen bir motorun power regulating device'ı doğrudan MXP'nin PWM pinlerine bağlanmış.",
+        "MXP üzerinden sürülen bir motorun power regulating device'ı, PWM pinlerini uzatan yalnızca pasif iletkenlerden oluşan bir ağ üzerinden bağlanmış.",
+        "MXP üzerinden sürülen bir motorun power regulating device'ı, takımın kendi tasarlayıp ürettiği bir sinyal işleme kartı üzerinden bağlanmış.",
+        "MXP portuna, kuralda adı geçen onaylı aktif cihazlardan biri takılmış ve bir motorun power regulating device'ı bu cihaz üzerinden sürülüyor."
+      ],
+      "faultIndex": 2,
+      "explanation": "Kural MXP üzerinden bir motor sürülüyorsa power regulating device'ın üç yoldan biriyle bağlanmasını şart koşar: doğrudan PWM pinlerine, PWM pinlerini uzatan pasif iletkenlerden oluşan bir ağ ile, veya kuralda tek tek sayılan onaylı aktif cihazlardan biri üzerinden. Takımın kendi tasarladığı bir sinyal işleme kartı bu üç yolun hiçbirine girmez; aktif bir cihazdır ancak onaylı listede yer almaz. Ayrımın gerekçesi öngörülebilirliktir: motor komutunun geçtiği yolda ne olduğunu sahadaki görevlilerin bilmesi gerekir. Diğer üç öğe kuralın saydığı yollardır.",
+      "hint": "Kural üç yol sayıyor. Dördüncü öğe bunlardan hangisine giriyor, üçüncü öğe hangisine?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R713",
+          "season": "2026",
+          "topic": "MXP üzerinden motor sürülüyorsa power regulating device doğrudan PWM pinlerine, pasif iletken ağı ile veya onaylı bir aktif cihaz üzerinden bağlanır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-11-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, sürücünün maç sırasında telefonundan doğrudan robota bağlanıp bazı mekanizmaları kontrol edebileceği bir uygulama yazmak istiyor. Telefon robotun kendi kablosuz ağına bağlanacak. Bu plan uygun mudur?",
+      "options": [
+        "Uygundur; telefon da bir kontrol cihazıdır ve robota bağlandığı sürece sorun yoktur.",
+        "Uygundur, telefon operator console'un yanında durduğu sürece.",
+        "Uygun değildir. Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır.",
+        "Uygundur, ancak yalnızca autonomous döneminde kullanılabilir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kural sinyalin hem kaynağını hem yolunu sabitler: tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır. Telefonun robotun kendi ağına bağlanması bu yolun dışına çıkmaktır. Ayrıca maç sırasında robota veri gönderip almanın izin verilen tek cihazı robotun wireless bridge'idir. İkinci şık fiziksel yakınlığı kuralın yerine koyar; belirleyici olan cihazın nerede durduğu değil, sinyalin hangi yoldan gittiğidir. Dördüncü şık da durumu kurtarmaz: bu kurallar maçın hangi döneminde olunduğuna bakmaksızın geçerlidir, dolayısıyla autonomous ile teleop arasında bir ayrım yoktur. İstenen işlev operator console'a bağlı bir kontrol cihazı ile yapılabilir.",
+      "hint": "Kural iki şeyi birden belirliyor: sinyal nereden doğacak ve hangi yoldan gidecek. Telefon bunların hangisini bozuyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R706",
+          "season": "2026",
+          "topic": "tüm sinyaller operator console'dan doğar ve arena Ethernet ağı üzerinden robota ulaşır"
+        },
+        {
+          "rule": "R702",
+          "season": "2026",
+          "topic": "maç sırasında haberleşme için izin verilen tek cihaz wireless bridge'tir"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "R702 resmi denetim listesiyle de doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-11-d7",
+      "type": "diagnose",
+      "symptom": "Etkinliğe geldiniz. Robot pit'te çalışıyor, kod deploy ediliyor ve mekanizmalar yanıt veriyor. Ancak denetimde inspector roboRIO'nun imaj sürümünü kontrol ediyor ve sürümün bu sezon için istenenden eski olduğunu görüyor. Takım, robot çalıştığı için sorun olmadığını düşünüyor.",
+      "prompt": "Bu durumu nasıl değerlendirirsiniz?",
+      "options": [
+        "Robot çalıştığına göre sorun yoktur; imaj sürümü yalnızca bir öneridir.",
+        "Sorun kodun kendisindedir; kod yeniden deploy edilirse imaj da güncellenir.",
+        "İmaj sürümü yalnızca yazılım ekibini ilgilendirir; denetim kapsamı dışındadır.",
+        "Kural roboRIO'nun o sezon için belirtilen imaj sürümünde veya daha yenisinde olmasını şart koşar; robotun çalışıyor olması bu şartı karşılamaz ve imaj güncellenmelidir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural robotun tek bir programlanabilir roboRIO ile kontrol edilmesini ve o roboRIO'nun sezon için belirtilen imaj sürümünde ya da daha yenisinde olmasını ister. Robotun çalışıyor olması bu şartı karşılamaz; kural bir işlev testi değil, bir sürüm şartıdır. Gerekçesi de somuttur: imaj sürümü roboRIO'nun saha sistemleriyle nasıl haberleştiğini belirler ve eski bir imaj pit'te sorunsuz görünürken sahada bağlantı sorunu çıkarabilir. İkinci şık yaygın bir karışıklıktır: kod deploy etmek ile imaj yüklemek farklı işlemlerdir ve kod deploy etmek imaj sürümünü değiştirmez. İmaj, üreticinin aracıyla ayrıca yüklenir.",
+      "hint": "Kural bir işlev mi yoksa bir sürüm mü şart koşuyor? Kod deploy etmek ile imaj yüklemek aynı işlem mi?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R701",
+          "season": "2026",
+          "topic": "tek bir programlanabilir roboRIO ve sezon için belirtilen imaj sürümü veya daha yenisi"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "İmaj sürümü resmi denetim listesiyle doğrulandı (\"The roboRIO image (2026_v1.2 or later) and DS (26.0 or later) must be loaded\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-11-d8",
+      "type": "diagnose",
+      "symptom": "Denetimde inspector, robotun RSL'ini inceliyor ve lambanın orijinal muhafazasının çıkarılıp yerine takımın 3D yazıcıyla ürettiği daha ince bir muhafazanın takıldığını fark ediyor. Takım, lambanın elektriksel olarak hiç değiştirilmediğini, yalnızca daha dar bir alana sığması için muhafazanın yenilendiğini söylüyor.",
+      "prompt": "Bu durum nasıl değerlendirilir?",
+      "options": [
+        "RSL core control system listesinde yer alır ve bu birimlerin fiziksel olarak değiştirilmesi yasaktır; elektriksel bir değişiklik olmaması sonucu değiştirmez.",
+        "Sorun yoktur; elektriksel bir değişiklik yapılmadığı için kural ihlali sayılmaz.",
+        "Sorun yoktur; RSL core control system parçası değildir.",
+        "Sorun yalnızca lambanın görünürlüğü etkilendiyse vardır; muhafaza daha ince olduğu için görünürlük artmıştır."
+      ],
+      "correctIndex": 0,
+      "explanation": "RSL, core control system listesinde açıkça sayılan birimlerden biridir ve kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar. Yasak elektriksel değişikliklerle sınırlı değildir; cihazın fiziksel olarak dönüştürülmesi de kapsamdadır. Takımın gerekçesi ihtiyacı açıklar ancak kuralı karşılamaz. Doğru çözüm lambayı orijinal hâliyle kullanmak ve montaj sorununu robot tarafında çözmektir; unutulmamalıdır ki RSL'in ayrıca robotun en az bir yanından belirli bir uzaklıkta görülebilir olması da gerekir, yani konum kararı zaten tasarımın erken aşamasında verilmelidir. Dördüncü şık ilginç bir yan yol açar ancak kuralı yanlış okur: görünürlüğün artması, izin verilmeyen bir değişikliği izin verilir hâle getirmez.",
+      "hint": "Yasak yalnızca elektriksel değişiklikleri mi kapsıyor? Ve RSL o listede var mı?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R710",
+          "season": "2026",
+          "topic": "RSL dahil core control system birimleri kurcalanamaz, değiştirilemez veya ayarlanamaz"
+        },
+        {
+          "rule": "R709",
+          "season": "2026",
+          "topic": "RSL robotun en az bir yanından 36in uzaklıktan görülebilmeli"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kuralın kapsamı resmi denetim listesiyle doğrulandı (\"Components - Must not be modified, except for modifications/repairs/maintenance/calibrations specified\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf — tam istisna listesi aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    }
+  ]
+}

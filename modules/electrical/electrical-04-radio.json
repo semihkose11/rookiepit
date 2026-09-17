@@ -1,0 +1,361 @@
+{
+  "id": "electrical-04-radio",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 4,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Radio: Besleme, Bağlantı ve Status Lights",
+  "summary": "Robotun tek kablosuz haberleşme cihazı olan radio'nun nereden besleneceğini, roboRIO'ya nasıl bağlanacağını, nasıl monte edileceğini ve status LED'lerinin ne anlattığını öğretir.",
+  "prerequisites": [
+    "electrical-01-power-path",
+    "electrical-02-circuit-protection"
+  ],
+  "estimatedMinutes": 14,
+  "concept": {
+    "body": "Robot ile driver station arasındaki tek haberleşme yolu radio'dur (kablosuz köprü). Kurallara göre robot üzerinde yalnızca tek bir radio bulunabilir ve maç sırasında robota veri gönderip almanın izin verilen tek yolu budur. Bluetooth modülü veya ikinci bir kablosuz bağlantı eklenemez; kuralın tanıdığı istisnalar dardır ve etkinliğin sağladığı konum etiketleri ile yalnızca robot içinde kullanılan RFID/NFC sistemleriyle sınırlıdır.\n\nBesleme iki yoldan yapılabilir: radio'nun 12V Weidmuller girişine PD'den doğrudan kablo çekilerek ya da RIO portuna passive injector ile PD'den enjekte edilerek. İkisi birlikte de kullanılabilir; üretici bu durumda her iki beslemenin aynı kaynaktan ve aynı gerilimden gelmesini şart koşar. VRM ve RPM bu sezon radio besleme yolları arasından çıkarılmıştır. Besleme, PD üzerinde switchable olmayan ve 10A fuse veya breaker ile korunan bir terminal çiftinden gelmelidir.\n\nroboRIO bağlantısı radio sürümüne göre değişir. Mavi holografik etiketli radio v1.5'te roboRIO, RIO etiketli porta bağlanır.\n\nRadio, LED'leri saha görevlileri tarafından kolayca görülebilecek şekilde monte edilmelidir. Ayrıca her etkinlikte radio'nun o etkinlik için kiosk'ta programlanmış olması gerekir.",
+    "keyTerms": [
+      {
+        "term": "wireless bridge",
+        "glossTr": "kablosuz köprü; robotun saha ile haberleşme cihazı"
+      },
+      {
+        "term": "radio",
+        "glossTr": "robotun kablosuz haberleşme cihazı; kuralların tanıdığı model Vivid-Hosting VH-109"
+      },
+      {
+        "term": "driver station",
+        "glossTr": "sürücü istasyonu; robotu kontrol eden bilgisayar"
+      },
+      {
+        "term": "PoE (Power over Ethernet)",
+        "glossTr": "ethernet kablosu üzerinden besleme"
+      },
+      {
+        "term": "passive injector",
+        "glossTr": "ethernet kablosuna besleme ekleyen pasif ara kablo veya adaptör"
+      },
+      {
+        "term": "RIO port",
+        "glossTr": "radio üzerinde roboRIO için ayrılmış ethernet portu"
+      },
+      {
+        "term": "AUX port",
+        "glossTr": "radio üzerindeki ek ethernet portları"
+      },
+      {
+        "term": "RPM (Radio Power Module)",
+        "glossTr": "REV'in radio besleme modülü; 2026 kurallarında radio için yasal besleme yolu değildir"
+      },
+      {
+        "term": "VRM (Voltage Regulator Module)",
+        "glossTr": "gerilim düzenleyici modül; 2026 kurallarında radio için yasal besleme yolu değildir"
+      },
+      {
+        "term": "PWR / SYS LED",
+        "glossTr": "radio üzerindeki besleme ve sistem durum ledleri"
+      },
+      {
+        "term": "AP (access point)",
+        "glossTr": "radio'nun kendi ağını yayınladığı yapılandırma modu"
+      },
+      {
+        "term": "power cycle",
+        "glossTr": "cihazın gücünü kesip yeniden vermek"
+      },
+      {
+        "term": "kiosk",
+        "glossTr": "etkinlikte radio'nun programlandığı görevli bilgisayarı"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-04-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "RADIO",
+      "front": "Robotun saha ile tek bağlantısı tek bir radio'dur.",
+      "back": "Robot ile driver station arasındaki tek haberleşme yolu radio'dur. Kurallara göre robot üzerinde yalnızca tek bir radio bulunabilir ve maç sırasında robota veri gönderip almanın izin verilen tek yolu budur. Bluetooth modülü veya ikinci bir kablosuz bağlantı eklenemez; modülün robotu kontrol etmiyor, yalnızca veri gönderiyor olması bu şartı değiştirmez. Kuralın tanıdığı istisnalar dardır: etkinliğin sağladığı konum etiketleri ve yalnızca robot içinde kullanılan RFID/NFC sistemleri.",
+      "takeaway": "Tek radio; ikinci bir kablosuz yol eklenemez",
+      "tags": [
+        "radio",
+        "wireless bridge",
+        "tek cihaz"
+      ],
+      "estMinutes": 1,
+      "derivedFrom": [
+        "electrical-04-d6"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R707",
+          "season": "2026",
+          "topic": "maç sırasında robota veri gönderip almanın izin verilen tek cihazı tek bir radio'dur"
+        }
+      ]
+    },
+    {
+      "id": "electrical-04-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "RADIO",
+      "front": "Radio beslemesi neden switchable olmayan bir kanaldan gelmek zorunda?",
+      "back": "Radio, robotun saha ile tek bağlantısıdır. Yazılımla kapatılabilen bir kanaldan beslenirse bir yazılım hatası veya yanlış bir komut bu bağlantıyı maçın ortasında kesebilir; kesildiği anda onu geri açacak komutu gönderecek yol da ortadan kalkar. Bu yüzden kural, radio'yu besleyen cihazın PD üzerinde switchable olmayan ve 10A fuse veya breaker ile korunan bir terminal çiftine bağlanmasını ister. Maçta donan radio'yu uzaktan yeniden başlatma fikri bu nedenle kural dışıdır.",
+      "takeaway": "Yazılımla kapatılabilen kanal, kendini geri açamayan bir bağlantı yaratır",
+      "tags": [
+        "switchable değil",
+        "10A",
+        "besleme"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-04-d1",
+        "electrical-04-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R706",
+          "season": "2026",
+          "topic": "radio'yu besleyen cihaz PD'nin switchable olmayan, 10A ile korunan terminal çiftine bağlanır"
+        }
+      ]
+    },
+    {
+      "id": "electrical-04-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "RADIO",
+      "front": "PWR sabit; SYS, 2.4G ve 6G üçü birden çok hızlı yanıp sönüyor. Ne oldu?",
+      "back": "Üretici bu birleşimi ayrı bir satır olarak tanımlar: radio access point olarak yapılandırılmış ve üzerinde bir battery algılanmıştır; bu durumda kablosuz, durum düzeltilip cihaz power cycle edilene kadar devre dışı bırakılır. Sebebi tasarımdır, arıza değil: access point modu ayrı satılan bir AC-DC adaptörle çalışır ve battery ile kullanılamaz. Evde kendi ağını yayınlaması için AP yapılandırılan bir radio, robota takıldığında tam olarak bu duruma girer. Çözüm yapılandırmayı geri almak ve etkinlikte kiosk'ta yeniden programlatmaktır.",
+      "takeaway": "AP yapılandırması battery ile birleşince radio kablosuzu kendisi kapatır",
+      "tags": [
+        "AP",
+        "LED",
+        "power cycle"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-04-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-04-d1",
+      "type": "multiple_choice",
+      "prompt": "Takım, maç sırasında donan radio'yu yeniden başlatabilmek için radio beslemesini PDH'in switchable channel'ından almayı planlıyor. Böylece sürücü, radio'yu koddan power cycle edebilecek. Bu plan uygun mudur?",
+      "options": [
+        "Uygun değildir. Radio beslemesi PD üzerinde switchable olmayan, korumalı bir terminal çiftinden gelmelidir.",
+        "Uygundur ve akıllıca bir çözümdür; switchable channel tam olarak bu amaç için vardır.",
+        "Uygundur, ancak switchable channel'a daha yüksek değerli bir koruma takılması şartıyla.",
+        "Uygun değildir, çünkü switchable channel radio'yu besleyecek akımı veremez."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural, radio'yu besleyen cihazın doğrudan PD'nin switchable olmayan bir terminal çiftine bağlanmasını ister. Gerekçe pratiktir: radio robotun saha ile tek bağlantısıdır ve yazılımla kapatılabilen bir kanaldan beslenirse, bir yazılım hatası veya yanlış bir komut robotu tamamen erişilemez hâle getirebilir. Bu durumda radio'yu geri açacak komutu gönderecek bağlantı da kalmaz. Dördüncü şık yanlış bir gerekçedir: sorun kanalın akım kapasitesi değil, kapatılabilir olmasıdır. Aynı zorunluluk roboRIO beslemesi için de geçerlidir; ayrıca bu korumaya başka bir yük bağlanamaz.",
+      "hint": "Radio kapanırsa onu geri açma komutunu robota nasıl ulaştırırsınız?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R617",
+          "season": "2026",
+          "topic": "radio beslemesi switchable olmayan, korumalı bir terminal çiftinden gelir ve o korumaya başka yük bağlanamaz"
+        },
+        {
+          "rule": "R616",
+          "season": "2026",
+          "topic": "radio beslemesi 12V girişinden ve/veya RIO portuna PoE ile PD'den gelir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/TeamUpdates/REBUILT_TeamUpdate-Combined.pdf",
+      "sourceNote": "R617'nin güncel metni resmi Team Update dosyasından, R616 ise resmi 2026 FRC Inspection Checklist'ten doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-04-d2",
+      "type": "multiple_choice",
+      "prompt": "Elinizde mavi holografik etiketli radio v1.5 var. Takım, roboRIO'nun ethernet kablosunu radio'nun AUX1 portuna takmış ve robot çalışıyor. Bu bağlantı kurallara uygun mudur?",
+      "options": [
+        "Uygundur; AUX portları da ethernet portudur ve robot çalıştığına göre sorun yoktur.",
+        "Uygun değildir. v1.5 radio'da roboRIO, RIO etiketli porta bağlanmalıdır; bu bağlantı doğrudan, Cat5 pigtail ile veya passive PoE injector ile yapılabilir.",
+        "Uygundur, ancak AUX2 kullanılması şartıyla.",
+        "Uygun değildir; roboRIO radio'ya yalnızca passive PoE injector üzerinden bağlanabilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural, roboRIO bağlantısını radio sürümüne göre ayırır. Radio v1.5 için roboRIO, RIO etiketli porta doğrudan, bir Cat5 ethernet pigtail ile veya passive PoE injector kablosu ya da adaptörü ile bağlanır. AUX portuna DIP switch kapalı konumda bağlanmak, v1.0 sürümü için tanımlanmış bir seçenektir ve v1.5 için geçerli değildir. Sürümü ayırt etmenin pratik yolu mavi holografik etikettir. Robotun pit'te çalışıyor olması kural uygunluğunu göstermez; denetim sürüme göre yapılır. Dördüncü şık da yanlıştır çünkü v1.5'te doğrudan bağlantı ve pigtail seçenekleri de tanımlıdır.",
+      "hint": "Elinizdeki radio hangi sürüm? Kural her sürüm için aynı portları mı sayıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R703",
+          "season": "2026",
+          "topic": "roboRIO'nun radio'ya bağlantısı; v1.5 için RIO portu, v1.0 için injector veya AUX"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi maddesi: \"roboRIO Ethernet - Must connect to VH-109 v1.5 (blue holo sticker) RIO port or to VH-109 v1.0 through PoE injector or modified Ethernet cable, or to an AUX port with DIP switch off (default). <R703>\""
+    },
+    {
+      "id": "electrical-04-d3",
+      "type": "numeric",
+      "prompt": "Radio'yu besleyen kanal PD üzerinde kaç amperlik fuse veya breaker ile korunmalıdır? PDP 1.0'ın paylaşımlı VRM/PCM terminal çiftini hesaba katmayınız. Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 10,
+      "tolerance": 0,
+      "unit": "A",
+      "explanation": "Kural, radio'yu besleyen cihazın PD üzerinde 10A fuse veya circuit breaker ile korunan, switchable olmayan bir terminal çiftine bağlanmasını ister. Bu değer radio'nun 12V girişinden beslenmesi hâlinde de, RIO portuna passive injector ile PoE enjekte edilmesi hâlinde de aynıdır; belirleyici olan besleme yöntemi değil, beslemenin PD üzerinde nasıl korunduğudur. Kuralın tek istisnası PDP 1.0'ın paylaşımlı VRM/PCM terminal çiftidir: orada 20A fuse veya breaker kullanılabilir. Ayrıca bu korumaya başka hiçbir elektriksel yük bağlanamaz; tek ayrıcalık, PDP 1.0'ın paylaşımlı portları kullanılıyorsa tek bir PCM'dir.",
+      "hint": "Bu değer roboRIO beslemesinde de karşınıza çıkmıştı. Radio için farklı bir sayı mı geçerli?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R617",
+          "season": "2026",
+          "topic": "radio beslemesi switchable olmayan, 10A korumalı bir çiftten gelir; PDP 1.0 paylaşımlı VRM/PCM çiftinde 20A'ya izin verilir"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/TeamUpdates/REBUILT_TeamUpdate-Combined.pdf",
+      "sourceNote": "R617'nin PDP 1.0 istisnasını içeren güncel metni resmi Team Update dosyasından doğrulandı. Bu istisna sezon içinde eklenmiştir; ilk yazımda kullanılan ayna metinde yoktu."
+    },
+    {
+      "id": "electrical-04-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki kurulumda üretici dokümantasyonuna ve kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takım robotuna bir vision co-processor ve bir ethernet switch eklemiş. Ağ kurulumunun öğeleri aşağıda listelenmiştir.",
+      "elements": [
+        "Vision co-processor, radio'nun AUX1 portuna bağlanmış.",
+        "Ek ethernet switch, radio'nun RIO portuna araya power injector konmadan doğrudan takılmış; roboRIO da bu switch üzerinden bağlanıyor.",
+        "Radio beslemesi PD üzerinde switchable olmayan, 10A fuse ile korunan bir kanaldan 12V Weidmuller girişine geliyor.",
+        "Radio, diagnostic LED'leri saha görevlileri tarafından kolayca görülebilecek şekilde monte edilmiş."
+      ],
+      "faultIndex": 1,
+      "explanation": "Bu öğe iki ayrı nedenle hatalıdır. Üretici, radio'nun RIO portuna araya bir power injector konmadan switch takılmamasını açıkça uyarır; bu port üzerindeki besleme switch'e geri beslenerek cihaza zarar verebilir. Ayrıca kural, roboRIO'nun radio'ya bağlanma yollarını sayarken araya switch koymayı saymaz ve manual, roboRIO ile radio arasına konan bir switch'in saha görevlilerinin bağlantı sorunlarını gidermesini zorlaştırdığını belirtir. Doğru yaklaşım roboRIO'yu doğrudan RIO portuna bağlamak, switch'i ise AUX portlarından birine almaktır. Diğer üç öğe doğrudur.",
+      "hint": "Öğelerden biri, üzerinde besleme bulunan porta besleme beklemeyen bir cihaz bağlıyor. Ayrıca roboRIO'nun radio'ya bağlanma yolları arasında bu var mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R703",
+          "season": "2026",
+          "topic": "roboRIO'nun radio'ya bağlanma yolları arasında switch sayılmaz"
+        }
+      ],
+      "source": "https://frc-radio.vivid-hosting.net/overview/wiring-your-radio",
+      "sourceNote": "Üretici uyarısı: \"DO NOT plug a switch into the RIO port on the VH-109 radio without using a power injector... Without these, power can be back fed which can damage the switch.\" Kural tarafı resmi denetim listesinden doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-04-d5",
+      "type": "diagnose",
+      "symptom": "Sahada maç öncesi robotunuz driver station'da hiç görünmüyor. Radio'ya baktığınızda PWR LED'i sabit yanıyor, SYS LED'i saniyede yaklaşık bir kez yanıp sönüyor. roboRIO ve tüm motor controller'lar normal çalışıyor, PDH üzerindeki LED'ler normal.",
+      "prompt": "Bu LED durumu size ne söyler?",
+      "options": [
+        "Radio hiç beslenmiyor; besleme kanalındaki koruma atmış olmalı.",
+        "Radio firmware yüklüyor; işlem bitene kadar beklemek gerekir.",
+        "Radio beslenmiş ve açılmış, ancak saha tarafındaki IP adresine ulaşamıyor; sorun radio ile saha arasındaki bağlantıdadır.",
+        "roboRIO'nun kodu çökmüş ve radio'ya veri gitmiyor."
+      ],
+      "correctIndex": 2,
+      "explanation": "Üretici dokümantasyonunda PWR sabit ve SYS 1 Hz hızında yanıp sönüyorsa anlamı nettir: radio açıktır ancak saha tarafındaki IP adresine ulaşamamaktadır. Birinci şık elenir çünkü PWR LED'inin sabit yanması radio'nun beslendiğini gösterir; besleme kesik olsaydı PWR hiç yanmazdı. İkinci şık elenir çünkü firmware yükleme sırasında SYS 20 Hz gibi çok daha hızlı bir tempoda yanıp söner; saniyede bir kez yanıp sönme farklı bir satırdır. Dördüncü şık da elenir çünkü roboRIO'nun normal çalıştığı belirtilmiştir ve SYS LED'i roboRIO kodunu değil, saha tarafı erişilebilirliğini raporlar.",
+      "hint": "Önce PWR LED'inin ne söylediğine bakın; bu tek başına hangi şıkları eler? Sonra yanıp sönme hızının anlamına geçin.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://frc-radio.vivid-hosting.net/overview/led-status-indications"
+    },
+    {
+      "id": "electrical-04-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, maç sırasında robottan mekanizma verisi toplamak için küçük bir Bluetooth telemetri modülü eklemek istiyor. Modül robotu kontrol etmeyecek, yalnızca tek yönlü veri gönderecek. Bu uygun mudur?",
+      "options": [
+        "Uygundur, çünkü modül robotu kontrol etmiyor, yalnızca veri gönderiyor.",
+        "Uygundur, modül PD üzerinden beslendiği ve uygun bir koruma ile korunduğu sürece.",
+        "Uygundur, ancak modülün yalnızca pit'te çalıştırılması ve sahada gücünün kesilmesi şartıyla.",
+        "Uygun değildir. Maç sırasında robota ve robottan yapılan kablosuz haberleşme için izin verilen tek cihaz radio'dur (wireless bridge)."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural iki kademelidir. Önce maç sırasında robota veri gönderip almanın izin verilen tek cihazının, takım numarasına göre yapılandırılmış tek bir radio olduğu söylenir. Ardından ayrı bir madde, kullanılabilecek kablosuz haberleşme biçimlerini sayılanlarla sınırlar. Bu maddenin tanıdığı istisnalar dardır ve bir telemetri modülünü kapsamaz: etkinliğin sağladığı konum belirleme etiketleri ile yalnızca robot içinde kullanılan RFID/NFC sistemleri. Verinin tek yönlü olması veya cihazın robotu kontrol etmemesi bu sınırı değiştirmez. Üçüncü şık pratikte de risklidir: sahada kapalı olduğu varsayılan bir cihaz, denetimde robot üzerinde bulunduğu için sorun çıkarır.",
+      "hint": "Kural cihazın ne yaptığına mı, yoksa kablosuz haberleşmenin kendisine mi sınır koyuyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R702",
+          "season": "2026",
+          "topic": "maç sırasında haberleşme için izin verilen tek cihaz radio"
+        },
+        {
+          "rule": "R707",
+          "season": "2026",
+          "topic": "izin verilen kablosuz haberleşme biçimleri sınırlıdır; dar istisnalar tanımlıdır"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf",
+      "sourceNote": "Denetim listesi R702 ve R707'yi radio maddesinde birlikte anar. R707'nin istisna listesi (etkinliğin sağladığı konum etiketleri, robot içi RFID/NFC) yalnızca ayna metinden doğrulanabildi: https://www.frcmanual.com/2026/robot-construction-rules-(r)"
+    },
+    {
+      "id": "electrical-04-d7",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki dört besleme düzeninden üçü uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Dört farklı takım radio beslemesini farklı şekilde kurmuş. Düzenler aşağıda anlatılmıştır.",
+      "elements": [
+        "Radio yalnızca 12V Weidmuller girişinden, PD üzerindeki switchable olmayan 10A korumalı bir kanaldan besleniyor.",
+        "Radio hem 12V Weidmuller girişinden hem de RIO portuna passive injector ile besleniyor; her iki besleme de aynı kanaldan, aynı kaynaktan geliyor.",
+        "Radio hem REV RPM çıkışından hem de aynı anda 12V Weidmuller girişinden besleniyor.",
+        "Radio yalnızca RIO portuna passive injector ile enjekte edilen beslemeyi kullanıyor; injector doğrudan PD'ye bağlı."
+      ],
+      "faultIndex": 2,
+      "explanation": "Üçüncü öğe iki ayrı nedenle hatalıdır. Birincisi kuraldır: bu sezon radio beslemesi olarak yalnızca PD'den 12V girişine doğrudan kablolama ve PD'den RIO portuna passive injector ile enjeksiyon sayılır; VRM ve RPM sezon başında bu listeden çıkarılmıştır. İkincisi üretici uyarısıdır: radio aynı anda hem RPM'den hem 12V girişinden beslenmemelidir, bu kombinasyon radio'ya zarar verebilir. İkinci öğe ilk bakışta aynı hataya benzer ancak öyle değildir; üretici 12V girişi ile RIO portundaki passive PoE beslemesinin aynı anda kullanılabileceğini, yalnızca her ikisinin aynı kaynaktan ve aynı gerilimden gelmesi gerektiğini belirtir ve kural da beslemenin bu iki yoldan biri veya her ikisi ile yapılabileceğini söyler. Aradaki fark hangi iki kaynağın birleştirildiğidir.",
+      "hint": "İki öğe de radio'yu iki yoldan besliyor. Biri açıkça izinli, diğeri açıkça yasak. Kuralın saydığı besleme kaynakları hangileri?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R616",
+          "season": "2026",
+          "topic": "besleme yalnızca 12V girişinden ve/veya RIO portuna PoE ile PD'den yapılır; VRM ve RPM listeden çıkarıldı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/TeamUpdates/2026TeamUpdate00.pdf",
+      "sourceNote": "Team Update 00: R616 \"Updated to remove VRM and RPM as legal ways of powering the VH-109 radio.\" Üretici uyarısı: \"DO NOT use both the RPM and 12VDC to power the radio. Doing this can damage your radio.\" https://frc-radio.vivid-hosting.net/overview/wiring-your-radio"
+    },
+    {
+      "id": "electrical-04-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlik sabahı pit'te robotu açtınız. Radio'da PWR LED'i sabit yanıyor; SYS, 2.4G ve 6G LED'lerinin üçü birden çok hızlı yanıp sönüyor. Hiçbir cihaz robotun kablosuz ağını göremiyor. Radio'yu en son evde, kendi ağını yayınlaması için access point olarak yapılandırmıştınız.",
+      "prompt": "Bu durumun nedeni nedir ve ne yapılmalıdır?",
+      "options": [
+        "Radio access point olarak yapılandırılmış ve üzerinde battery algılanmıştır; bu durumda kablosuz devre dışı bırakılır. Yapılandırma düzeltilip radio power cycle edilmelidir.",
+        "Radio'nun beslemesi yetersiz; 12V girişine ek olarak RIO portundan da PoE verilmelidir.",
+        "Radio firmware yüklüyor; yükleme bitene kadar beklenmelidir.",
+        "SYS, 2.4G ve 6G LED'leri normalde birlikte hızlı yanıp söner; sorun radio'da değil driver station bilgisayarındadır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Üretici bu LED birleşimini ayrı bir satır olarak tanımlar: PWR sabit, SYS, 2.4G ve 6G 20 Hz hızında yanıp sönüyorsa radio access point olarak yapılandırılmış ve üzerinde bir battery algılanmıştır; bu durumda kablosuz, durum düzeltilip cihaz power cycle edilene kadar devre dışı bırakılır. Bu, evde kendi ağını yayınlaması için yapılandırılmış bir radio'nun robota takılıp etkinliğe getirilmesiyle ortaya çıkan tipik bir sabah sorunudur. İkinci şık elenir çünkü PWR LED'inin sabit yanması radio'nun beslendiğini gösterir. Üçüncü şık dikkat ister: firmware yüklemede de SYS 20 Hz yanıp söner, ancak o satırda 2.4G ve 6G LED'leri söniktir. İki durumu ayıran işaret tam olarak bu iki LED'in de yanıp sönmesidir.",
+      "hint": "Radio'yu en son nasıl yapılandırdığınız ipucudur. Ayrıca hangi LED'lerin yanıp söndüğüne dikkat edin; yalnızca SYS mi, yoksa üçü birden mi?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://frc-radio.vivid-hosting.net/overview/led-status-indications"
+    }
+  ]
+}

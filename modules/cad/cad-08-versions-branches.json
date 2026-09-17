@@ -1,0 +1,292 @@
+{
+  "id": "cad-08-versions-branches",
+  "department": "cad",
+  "language": "tr",
+  "moduleNumber": 8,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-01",
+  "imageRef": null,
+  "title": "Version, Branch ve Merge",
+  "summary": "Bir tasarımın belirli bir hâlini dondurmayı, paralel çalışmak için branch açmayı, branch'leri merge ile birleştirmeyi ve merge'ün hangi sınırlarla çalıştığını öğretir.",
+  "prerequisites": [
+    "cad-07-mates"
+  ],
+  "estimatedMinutes": 40,
+  "concept": {
+    "body": "Onshape'te üç kavram birbirinden ayrılır. Workspace, kaynağın tanımıyla bir modelleme ve tasarım alanıdır; üzerinde çalıştığınız yer burasıdır. Version, document'ın adlandırılmış ve kaydedilmiş bir hâlidir; version'lar immutable'dır, workspace'lerden ayrıdır ve View only olarak açılır. Branch ise document'ın ayrıldığı ve yeni bir workspace'in oluşturulduğu noktadır.\n\nKaynak branch'in yapısını da verir: bir branch sıfır veya daha fazla version, en fazla bir workspace içerebilir. Bir version'dan branch açtığınızda, içinde yeni version'lar bulunabilecek yeni bir branch ve bu branch'in ucunda yeni bir workspace oluşturursunuz. Version graph'ta version'lar dolu nokta, workspace'ler boş nokta ile gösterilir; aktif workspace solundaki mavi kutudan anlaşılır.\n\nMerge, bir version veya workspace'teki değişiklikleri (source) aktif workspace'e (target) taşır. Kaynağın tanımı şudur: merge, base'den source'a olan farkı alır ve target'a uygular. Varsayılan seçenek Merge changes'tir; ayrıca Keep ve Replace seçenekleri vardır. İki sınır önemlidir. Bir tab'in içindeki değişiklikler tek tek seçilemez; her tab'in bütün değişiklikleri ya tutulur, ya merge edilir, ya da değiştirilir. Merge changes from both seçeneği Drawings ve PCB Studios tab'lerinde bulunmaz; bu tab'ler için yalnızca Keep veya Replace seçilebilir. Kaynak bu seçeneğin ayrıca yalnızca iki branch'te de o tab değişmişse sunulduğunu belirtir.\n\nMerge'ü engelleyen başka durumlar da vardır: document kullanımdaysa, FeatureScript sürümleri uyuşmuyorsa veya süregelen bir sistem güncellemesi varsa. Protected branch'lerle çalışırken ise merge yapılabilmesi için çalışma branch'inin protected branch ile güncel tutulmuş olması gerekir. Kaynağın bir uyarısı da şudur: merge'den sonra document'ta yapılan bir değişiklik, merge geri alındığında kaybolur. Restore ise bir branch'teki önceki bir noktadan aynı branch'e geri dönmeyi sağlar.",
+    "keyTerms": [
+      {
+        "term": "workspace",
+        "glossTr": "üzerinde çalışılan modelleme ve tasarım alanı"
+      },
+      {
+        "term": "version",
+        "glossTr": "document'ın adlandırılmış, değişmez ve View only hâli"
+      },
+      {
+        "term": "branch",
+        "glossTr": "document'ın ayrıldığı ve yeni workspace'in oluştuğu nokta"
+      },
+      {
+        "term": "merge",
+        "glossTr": "bir source'taki değişiklikleri aktif workspace'e taşıma işlemi"
+      },
+      {
+        "term": "source",
+        "glossTr": "merge veya restore işleminde değişikliklerin alındığı taraf"
+      },
+      {
+        "term": "target",
+        "glossTr": "merge veya restore işleminde değişikliklerin uygulandığı workspace"
+      },
+      {
+        "term": "base",
+        "glossTr": "source ile target'ın ayrıldığı ortak nokta"
+      },
+      {
+        "term": "protected branch",
+        "glossTr": "geometri ve drawing değişikliklerinin doğrudan yapılamadığı, bu değişikliklerin bir branch'te yapılıp merge edilmesini gerektiren branch"
+      },
+      {
+        "term": "version graph",
+        "glossTr": "version ve branch yapısını gösteren şema"
+      },
+      {
+        "term": "restore",
+        "glossTr": "aynı branch içinde önceki bir noktaya dönme işlemi"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "cad-08-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "VERSION",
+      "front": "Adı olan bir girdiyi açtınız; model dönüyor ama hiçbir modelleme komutu çalışmıyor.",
+      "back": "Onshape'te üç kavram birbirinden ayrılır. Workspace, kaynağın tanımıyla bir modelleme ve tasarım alanıdır; üzerinde çalıştığınız yer burasıdır. Version, document'ın adlandırılmış ve kaydedilmiş bir hâlidir; version'lar immutable'dır, workspace'lerden ayrıdır ve View only olarak açılır. Branch ise document'ın ayrıldığı ve yeni bir workspace'in oluşturulduğu noktadır. Açtığınız girdide komutlar çalışmıyorsa, açtığınız şey bir workspace değil bir version'dır. Aynı document'ın workspace'inde aynı kullanıcı rahatça çalışabiliyorsa sorun izinde veya document'ta değil, açılan girdinin türündedir. Çözüm de aynı tanımın içindedir: o version'dan bir branch açarsınız ve branch'in ucunda oluşan yeni workspace'te çalışmaya devam edersiniz. Bu ayrım version graph'ta da görünür: version'lar dolu nokta, workspace'ler boş nokta ile gösterilir ve aktif workspace solundaki mavi kutudan anlaşılır.",
+      "takeaway": "Bir hâlin altı ay sonra da aynı açılması isteniyorsa onu workspace'te değil, adlandırılmış bir version'da tutun",
+      "tags": [
+        "version",
+        "workspace",
+        "View only"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "cad-08-d1",
+        "cad-08-d2"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-08-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "BRANCH",
+      "back": "Kaynak branch'in yapısını verir: bir branch sıfır veya daha fazla version, en fazla bir workspace içerebilir. Bir version'dan branch açtığınızda, içinde yeni version'lar bulunabilecek yeni bir branch ve bu branch'in ucunda yeni bir workspace oluşturursunuz. İki kişi paralel çalışacaksa iki ayrı branch gerekir, çünkü tek bir branch iki çalışma alanı taşıyamaz. Birleştirme merge ile olur: merge, bir version veya workspace'teki değişiklikleri aktif workspace'e taşır ve bunu base'den source'a olan farkı alıp target'a uygulayarak yapar. Varsayılan seçenek Merge changes'tir; ayrıca Keep ve Replace vardır. Seçim birimi feature değil tab'dir; bir tab'in içindeki değişiklikler tek tek seçilemez, her tab'in bütün değişiklikleri ya tutulur, ya merge edilir, ya da değiştirilir.",
+      "front": "İki kişi aynı anda çalışacak ve sonunda işler birleşecek; yapı nasıl kurulur?",
+      "takeaway": "Her paralel iş için ayrı bir branch açın ve merge'te tab tab karar verin, feature tek tek seçilemez",
+      "tags": [
+        "branch",
+        "merge",
+        "tab"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-08-d3",
+        "cad-08-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "cad-08-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "MERGE",
+      "front": "Merge geri alındı; merge'den sonra yapılan iki günlük çalışma da kayboldu.",
+      "back": "Kaynağın uyarısı açıktır: merge'den sonra document'ta yapılan bir değişiklik, merge geri alındığında kaybolur. Bir merge'ü salı günü yapıp çarşamba ve perşembe aynı workspace'te başka işler yaptıysanız, cuma günü merge'ü geri aldığınızda o iki günün işi de gider. İkinci bir kayıp yolu merge'ün sınırlarından gelir. Merge changes from both seçeneği Drawings ve PCB Studios tab'lerinde bulunmaz; bu tab'ler için yalnızca Keep veya Replace seçilebilir ve tab'in içindeki değişiklikler tek tek seçilemez. Aynı drawing tab'i iki branch'te de değiştirildiyse, merge anında bir branch'in drawing çalışması kaybedilir. Bu yüzden drawing çalışması tek bir branch'te toplanmalıdır.",
+      "takeaway": "Merge'ü geri almadan önce ve drawing'i ikinci bir branch'te açmadan önce durun; ikisi de iş kaybıyla biter",
+      "tags": [
+        "merge",
+        "geri alma",
+        "drawing"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "cad-08-d8",
+        "cad-08-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "cad-08-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım şasi CAD'ini atölyeye gönderdi ve sezon boyunca aynı document'ta çalışmaya devam edecek. Atölyeye giden hâlin altı ay sonra da aynı açılabilmesi isteniyor. Takım ne yapmalıdır?",
+      "options": [
+        "Yeni bir branch açıp orada çalışmalıdır; main workspace atölyeye giden hâlde kalır ve bir daha değişmez.",
+        "O hâlde adlandırılmış bir version oluşturmalıdır; version'lar immutable olduğu için sonradan değiştirilemez.",
+        "İkisi de aynı sonucu verir; bir branch'in ucundaki workspace de tıpkı version gibi kaydedilmiş bir hâl tutar.",
+        "Document'ın bir kopyasını çıkarmalıdır; aynı document içinde geçmiş bir hâli saklamanın başka yolu yoktur."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak version'ı şöyle tanımlar: version, document'ın adlandırılmış ve kaydedilmiş bir hâlidir, version'lar immutable'dır ve workspace'lerden ayrıdır. Oluşturulan version'ların View only olduğu da açıkça yazılır. Altı ay sonra aynı açılması istenen bir hâl için gereken tam olarak budur. Birinci şık ilk bakışta işe yarar görünür ama kaynağın tanımına takılır; branch açmak main workspace'i dondurmaz, çünkü workspace kaynağın tanımıyla bir modelleme ve tasarım alanıdır ve düzenlenmeye açık kalır. Üçüncü şık aynı hatayı açıkça yapar ve workspace ile version'ı eşitler; oysa kaynak version'ların workspace'lerden ayrı olduğunu söyler. Dördüncü şık kopya çıkarmayı tek yol sayar; version zaten aynı document içinde bu işi görür ve version graph üzerinde geçmişle birlikte durur.",
+      "hint": "Altı ay sonra aynı açılması istenen hâl, değişebilen bir alanda mı yoksa değişmeyen bir kayıtta mı duruyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/versions_and_history.htm"
+    },
+    {
+      "id": "cad-08-d2",
+      "type": "diagnose",
+      "symptom": "Bir öğrenci Versions and history panelinden 'Kickoff v1' adlı girdiyi açtı. Model ekranda görünüyor, döndürülebiliyor ve ölçüleri okunabiliyor. Ancak toolbar'daki modelleme komutları soluk görünüyor ve tıklanamıyor. Aynı öğrenci aynı document'ın Main workspace'ini açtığında sketch düzenleyebiliyor ve feature ekleyebiliyor. Document'ta hiçbir hata yok.",
+      "prompt": "Neden düzenleyemiyor ve ne yapmalıdır?",
+      "options": [
+        "Document salt okunur biçimde paylaşılmıştır; sahibinden düzenleme izni istemesi ve beklemesi gerekir.",
+        "Part Studio suppress edilmiştir; suppress kaldırıldığında toolbar komutları yeniden çalışır hâle gelir.",
+        "Document şu anda başka bir kullanıcı tarafından açıktır; o kullanıcı çıktığında düzenleme mümkün olur.",
+        "Açtığı şey bir version'dır ve version'lar View only'dir; o version'dan branch açmalıdır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Belirtideki ayrım belirleyici: aynı öğrenci aynı document'ın Main workspace'inde rahatça çalışabiliyor, yalnızca bu girdide çalışamıyor. Demek ki sorun izinde veya document'ta değil, açılan girdinin türündedir. Kaynak sebebini doğrudan yazar; oluşturulan version'lar View only'dir ve version'lar immutable'dır. Öğrenci bir workspace değil, bir version açmıştır. Kaynak çözümü de aynı cümlede verir: bir version'dan branch açılarak yeni bir workspace oluşturulur ve o branch'in ucundaki workspace'te çalışmaya devam edilir. Birinci şık paylaşım iznine bağlar; izin sorunu olsaydı Main workspace de düzenlenemezdi. İkinci şık suppress'i tab düzeyinde bir işlem sanır; suppress feature düzeyinde uygulanır ve bir tab'i View only hâline getirmez. Üçüncü şık başka kullanıcıya bağlar; document'ın başkasında açık olması merge'ü engelleyebilir, ancak bir version'ın düzenlenememesinin sebebi değildir.",
+      "hint": "Açtığı girdinin adı var ve kaydedilmiş. Kaynak bu türden girdiler için hangi kelimeyi kullanıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/versions_and_history.htm"
+    },
+    {
+      "id": "cad-08-d3",
+      "type": "multiple_choice",
+      "prompt": "İki öğrenci aynı anda çalışmak istiyor. Biri intake'i, diğeri elevator'ü tasarlayacak ve ikisi de birbirinin yarım işini görmek istemiyor. Kaynağın branch yapısına göre bu nasıl kurulur?",
+      "options": [
+        "Her öğrenci için bir version'dan ayrı birer branch açılır; her branch'in ucunda kendi workspace'i bulunur.",
+        "Aynı branch üzerinde iki workspace açılır; bir branch birden çok workspace taşıyabildiği için bu yeterlidir.",
+        "İki ayrı version oluşturulur ve her öğrenci kendi version'ı üzerinde çalışır; version'lar bağımsız düzenlenir.",
+        "Tek bir workspace'te çalışılır ve öğrenciler sırayla girer; Onshape aynı anda iki kişinin çalışmasına izin vermez."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın iki cümlesi bu kurulumu belirler. Birincisi yapısaldır: bir branch sıfır veya daha fazla version, en fazla bir workspace içerebilir. Yani iki bağımsız çalışma alanı isteyen iki kişi tek bir branch'e sığmaz ve ikinci şık bu cümleyle elenir. İkincisi işlemi tarif eder: bir version'dan branch açtığınızda, içinde yeni version'lar bulunabilecek yeni bir branch ve bu branch'in ucunda yeni bir workspace oluşturursunuz. Her öğrenci kendi branch'inin ucundaki workspace'te çalışır ve diğerinin yarım işini görmez. İşler bittiğinde branch'ler merge ile birleştirilir. Üçüncü şık version'ları düzenlenebilir sanır; oysa version'lar immutable'dır ve View only açılır. Dördüncü şık Onshape'in aynı anda çalışmayı tümden engellediğini iddia eder; engellenen şey bu değildir, yalnızca bir branch'in tek bir workspace'i olabilir.",
+      "hint": "Bir branch en fazla kaç workspace taşıyabilir?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/Document/versions_and_history.htm"
+    },
+    {
+      "id": "cad-08-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş adımın dördü planlandığı gibi sonuç verir. Vermeyecek olanı seçiniz.",
+      "scenario": "Bir takım, intake branch'indeki çalışmayı ana workspace'e almak için merge planını yazıyor.",
+      "elements": [
+        "Merge'den önce target workspace'i aktif hâle getirir, sonra Versions and history panelinde source'a sağ tıklarlar.",
+        "Merge dialog'unda genel strateji olarak varsayılan Merge changes seçeneğiyle devam etmeyi planlarlar.",
+        "Intake Part Studio'sunda source'tan yalnızca iki feature'ı seçip alır, gerisini dışarıda bırakırlar.",
+        "Drawing tab'i için Merge changes from both bulunmadığından Keep veya Replace arasında seçim yaparlar.",
+        "Merge'den önce çalışma branch'lerinin protected main branch ile güncel olduğunu doğrulamayı planlarlar."
+      ],
+      "faultIndex": 2,
+      "explanation": "Üçüncü adım kaynağın açık bir kuralına çarpar: bir tab'in içindeki değişiklikler tek tek seçilemez ve her tab'in bütün değişiklikleri ya tutulur, ya merge edilir, ya da değiştirilir. Seçim birimi feature değil, tab'dir. Bir tab'in yalnızca bir kısmını almak isteyen takımın yapması gereken, istemediği değişikliği merge'den sonra kendi workspace'inde geri almaktır. Diğer dört adım kaynakla uyumludur: merge, target workspace aktifken source'a sağ tıklanıp Merge into current workspace seçilerek başlatılır; Merge changes varsayılan seçenektir; Merge changes from both seçeneği Drawings ve PCB Studios dışındaki bütün tab türlerinde bulunur, dolayısıyla drawing için Keep veya Replace kalır; protected branch'lerle çalışırken merge yapılabilmesi için çalışma branch'inin güncel tutulmuş olması gerekir.",
+      "hint": "Merge dialog'unda seçim yaptığınız birim nedir? Feature mı, tab mı?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/merge.htm"
+    },
+    {
+      "id": "cad-08-d5",
+      "type": "diagnose",
+      "symptom": "Bir takım drawing'i iki ayrı branch'te paralel güncellemeyi planlıyor. Her iki branch'te de aynı drawing tab'i değiştirilecek ve sonunda iki branch merge edilerek her iki drawing çalışmasının birleştirilmesi bekleniyor.",
+      "prompt": "Merge anında ne olacak?",
+      "options": [
+        "Her iki branch'in drawing değişiklikleri birleştirilir; drawing tab'i Part Studio ve assembly ile aynı biçimde davranır.",
+        "Merge dialog'u drawing tab'indeki değişiklikleri tek tek listeler ve takım hangilerinin kalacağını seçebilir.",
+        "Drawing için Merge changes from both sunulmaz; Keep veya Replace seçilir ve bir branch'in drawing çalışması kaybedilir.",
+        "Merge hiç başlatılamaz; iki branch'te de değişmiş bir drawing bulunduğunda Onshape merge işlemini engeller."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak bu planın nerede tıkanacağını iki cümleyle belirler. Birincisi: merge edilecek tab'ler seçilirken Merge changes from both seçeneği Drawings ve PCB Studios dışındaki bütün tab türlerinde bulunur, yani drawing için bulunmaz. İkincisi: bir tab'in içindeki değişiklikler tek tek seçilemez, her tab'in bütün değişiklikleri ya tutulur, ya merge edilir, ya da değiştirilir. İkisi birlikte şu sonucu verir: takım drawing için yalnızca Keep veya Replace seçebilir ve hangi branch'in drawing çalışmasını kaybedeceğine karar vermek zorunda kalır. Planın kendisi bu yüzden baştan yanlıştır; drawing çalışması tek bir branch'te toplanmalıdır. Birinci şık drawing'i Part Studio ile eş sayar ve tam da kaynağın istisna olarak saydığı tab türünü unutur. İkinci şık tab içi tek tek seçim yapılabildiğini varsayar. Dördüncü şık merge'ün tümden engelleneceğini iddia eder; kaynak merge'ü engellemez, yalnızca seçenekleri daraltır.",
+      "hint": "Kaynak hangi tab türlerini istisna olarak sayıyor ve bir tab'in içinde seçim yapılabiliyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/merge.htm"
+    },
+    {
+      "id": "cad-08-d6",
+      "type": "diagnose",
+      "symptom": "Bir takım elevator branch'indeki çalışmayı bitirdi ve protected olarak işaretlenmiş main branch'e merge etmek istiyor. Merge işlemi kabul edilmiyor. Document başka hiçbir pencerede ve başka hiçbir kullanıcıda açık değil, FeatureScript sürümleri güncel, süregelen bir sistem güncellemesi yok ve hiçbir tab'de hata yok. Elevator branch'i açıldıktan sonra main branch'e başka bir takım arkadaşı iki merge daha yapmış.",
+      "prompt": "Merge neden kabul edilmiyor?",
+      "options": [
+        "Protected branch'lere hiçbir koşulda merge yapılamaz; protected işareti kaldırılmadan merge kabul edilmez.",
+        "Çalışma branch'i protected branch ile güncel değildir; kaynak merge öncesi güncelliği şart koşar.",
+        "Bir branch'e yalnızca bir kez merge yapılabilir; main'e iki merge yapıldığı için üçüncüsü reddedilmektedir.",
+        "Elevator branch'inde henüz version oluşturulmamıştır; merge için source tarafında version bulunması şarttır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Belirtideki son cümle belirleyici: elevator branch'i açıldıktan sonra main iki merge daha almış, yani main ilerlemiş ve elevator branch'i geride kalmıştır. Kaynak bu durumu doğrudan düzenler: protected branch'lerle çalışırken, merge yapılabilmesi için çalışma branch'inin protected branch ile güncel tutulmuş olması gerekir. Yapılacak iş main'i önce elevator branch'ine merge etmek, farkları orada çözmek ve ancak ondan sonra ters yöndeki merge'ü denemektir. Belirtideki diğer ayrıntılar kaynağın saydığı öteki engelleri tek tek eliyor: document kullanımda değil, FeatureScript sürümleri uyuşuyor ve süregelen bir güncelleme yok. Birinci şık protected branch'i tümden merge'e kapalı sayar; oysa kaynak protected workspace'in salt okunur olmadığını, düzenleme izni olan kullanıcıların branch açıp merge ederek her zaman değişiklik yapabildiğini söyler. Üçüncü şık kaynakta bulunmayan bir sayı sınırı uydurur. Dördüncü şık source tarafında version zorunluluğu uydurur; kaynak source'un bir version veya workspace olabileceğini söyler.",
+      "hint": "Elevator branch'i açıldıktan sonra main'de ne oldu? Kaynak protected branch için hangi ön şartı koyuyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/merge.htm"
+    },
+    {
+      "id": "cad-08-d7",
+      "type": "multiple_choice",
+      "prompt": "Bir takım restore dialog'unu inceliyor. Sezon boyunca kullandıkları drawing tab'inde ünlem işareti, bir Part Studio tab'inde kırmızı çarpı, diğer üç tab'de yeşil onay işareti görünüyor. Hangi tab daha ağır bir sonuçla karşı karşıyadır?",
+      "options": [
+        "Part Studio; kırmızı çarpı tab'in tümden silineceğini, ünlem ise yalnızca içeriğinin eskiyeceğini bildirir.",
+        "İkisi de aynıdır; her iki işaret de tab'in eski hâline döneceğini, aradaki farkın yalnızca uyarı düzeyi olduğunu bildirir.",
+        "Part Studio; ünlem işareti değişikliklerin korunacağını, kırmızı çarpı ise değişikliklerin kaybolacağını bildirir.",
+        "Drawing; ünlem tab'in restore sonrası hiç bulunmayacağını, kırmızı çarpı ise eski version ile değiştirileceğini bildirir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kaynak restore dialog'undaki üç işareti ayrı ayrı tanımlar. Yeşil onay işareti, tab'in değişikliklerinin restore işleminden sonra da kalacağını gösterir. Kırmızı çarpı, tab'in eski version ile değiştirileceğini gösterir. Ünlem işareti ise tab'in restore işleminden sonra target workspace'te hiç bulunmayacağını gösterir. İkisi arasındaki fark küçük görünür ama sonuçları farklıdır: kırmızı çarpıda tab yerinde kalır ve içeriği eskir, ünlemde tab ortadan kalkar. Sezon boyunca kullanılan bir drawing tab'i için bu, bütün teknik resmin kaybı demektir, dolayısıyla ağır olan taraf drawing'dir. Birinci ve üçüncü şıklar iki işaretin anlamlarını yer değiştirir. İkinci şık ikisini eş sayar ve tam da bu modülün ayırt etmesi gereken farkı siler. Kaynakta yazmayan ama takım için işe yarayan bir alışkanlık şudur: restore'dan önce o hâlde bir version oluşturulur, böylece kaybolan tab o version'dan geri alınabilir.",
+      "hint": "Bir işaret tab'i eskitiyor, diğeri tab'i ortadan kaldırıyor. Hangisi geri dönülmesi daha zor bir sonuç?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/restore.htm"
+    },
+    {
+      "id": "cad-08-d8",
+      "type": "diagnose",
+      "symptom": "Bir takım salı günü intake branch'ini main'e merge etti. Çarşamba ve perşembe günü iki öğrenci main workspace'te elevator ve bumper üzerinde çalıştı. Cuma günü intake tasarımının yanlış olduğuna karar verildi ve merge geri alındı. Merge geri alındıktan sonra elevator ve bumper çalışmalarının da kaybolduğu görüldü.",
+      "prompt": "Ne oldu?",
+      "options": [
+        "Merge geri alma işlemi yalnızca son değişikliği geri alır; elevator ve bumper başka bir sebeple kaybolmuştur.",
+        "Elevator ve bumper çalışmaları farklı bir branch'te yapılmıştır; main workspace'te zaten hiç bulunmuyorlardı.",
+        "Kaynağa göre merge'den sonra document'ta yapılan bir değişiklik, merge geri alındığında kaybolur.",
+        "Main branch protected olduğu için geri alma işlemi bütün workspace'i son version'a döndürmüştür."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak bu sonucu doğrudan yazar ve bir uyarı olarak verir: siz veya başka bir kullanıcı merge'den sonra document'ta bir değişiklik yaparsanız ve ardından merge'ü geri alırsanız, o değişiklik kaybolur. Çarşamba ve perşembe yapılan elevator ile bumper çalışmaları tam olarak bu tanıma girer; merge'den sonra ve geri almadan önce yapılmışlardır. Kaynakta yazmayan ama takım için işe yarayan bir alışkanlık şudur: bir merge'ü geri almadan önce, o merge'den sonra yapılan bütün çalışma için bir version oluşturulur, böylece kaybolan iş o version'dan geri alınabilir. Birinci şık geri almanın kapsamını daraltır; kaynak tam tersini söyler. İkinci şık belirtiyi yok sayar, çünkü çalışmanın main workspace'te yapıldığı açıkça yazılmıştır. Dördüncü şık protected branch'e kaynakta bulunmayan bir davranış yükler.",
+      "hint": "Merge ile geri alma arasında geçen iki günde ne yapıldı? Kaynak bu aralık için ne diyor?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://cad.onshape.com/help/Content/merge.htm"
+    }
+  ]
+}

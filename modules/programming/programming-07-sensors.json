@@ -1,0 +1,293 @@
+{
+  "id": "programming-07-sensors",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 7,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Sensor'ler: Encoder, Limit Switch ve Gyro",
+  "summary": "Digital input'ların pull-up nedeniyle ters okunmasını, encoder ham sayısının anlamlı birime çevrilmesini ve gyro ölçümünün neye göre sıfır olduğunu öğretir.",
+  "prerequisites": [
+    "programming-04-subsystems"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "roboRIO'nun digital input'ları yalnızca iki durum okur: high veya low. FPGA en fazla 26 digital input destekler; bunların 10'u roboRIO üzerindeki DIO portlarından, 16'sı MXP breakout portundan kullanılabilir. Burada kolay atlanan bir ayrıntı vardır: dahili pull-up dirençleri nedeniyle roboRIO üzerindeki portlar varsayılan olarak high okur ve DigitalInput sınıfının get metodu devre açıkken true döner. Yani normally open bağlanmış bir limit switch'te basılmamış hâl true, basılmış hâl false verir. Bağlantı biçimi bu yönü belirler; kaynak normally open ile normally closed ayrımını tarif etmez.\n\nEncoder, dönme hareketini sayıya çeviren sensor'dür. Quadrature encoder'lar çeyrek periyot faz farkıyla iki kanalda kare dalga üretir ve DIO pinlerine bağlanır. Encoder sınıfı getDistance ile toplam alınan yolu, getRate ile anlık değişim hızını verir; reset metodu okumayı sıfıra döndürür. Ham pulse sayısı yerine anlamlı bir birim elde etmek için setDistancePerPulse kullanılır. Dokümantasyonun açık bir uyarısı vardır: bu sınıflar yalnızca doğrudan roboRIO'ya takılan encoder'lar içindir.\n\nGyro, robot heading'ini ölçmek veya dengelemek için kullanılan bir angular rate sensor'dür. Verdiği açı her zaman keyfi bir sıfır açısına göredir; bu sıfır, robotun açıldığı andaki veya bir sıfırlama metodunun çağrıldığı andaki gyro açısıdır. Ölçüm ayrıca drift denilen, kullanım süresi uzadıkça büyüyen birikimli bir hataya tabidir. Calibration sırasında robotun sabit kalması kritiktir. FRC maçları kısa olduğu için bir maç boyunca biriken toplam drift yönetilebilir ölçüde küçük kalır; iyi bir gyro için birkaç derece mertebesindedir.",
+    "keyTerms": [
+      {
+        "term": "digital input",
+        "glossTr": "yalnızca high veya low okuyan girdi"
+      },
+      {
+        "term": "DIO",
+        "glossTr": "roboRIO üzerindeki digital input output portları"
+      },
+      {
+        "term": "MXP",
+        "glossTr": "roboRIO üzerindeki genişletme portu"
+      },
+      {
+        "term": "pull-up",
+        "glossTr": "girdiyi bağlantı yokken high tutan dahili direnç"
+      },
+      {
+        "term": "DigitalInput",
+        "glossTr": "bir digital input portunu okuyan WPILib sınıfı"
+      },
+      {
+        "term": "quadrature encoder",
+        "glossTr": "çeyrek periyot faz farkıyla iki kanalda kare dalga üreten encoder"
+      },
+      {
+        "term": "setDistancePerPulse",
+        "glossTr": "her pulse'ın kaç birim yola karşılık geldiğini tanımlayan metot"
+      },
+      {
+        "term": "getRate",
+        "glossTr": "encoder'ın anlık değişim hızını veren metot"
+      },
+      {
+        "term": "gyro",
+        "glossTr": "heading ölçmek için kullanılan angular rate sensor"
+      },
+      {
+        "term": "drift",
+        "glossTr": "gyro ölçümünde zamanla biriken hata"
+      },
+      {
+        "term": "calibration",
+        "glossTr": "sensor'ün referans değerinin belirlendiği başlangıç işlemi"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-07-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "SENSORS",
+      "front": "Digital input beklediğinizin tersini okur.",
+      "back": "roboRIO'nun digital input'ları yalnızca iki durum okur: high veya low. Kolay atlanan ayrıntı, dahili pull-up dirençleridir: roboRIO üzerindeki portlar varsayılan olarak high okur ve DigitalInput sınıfının get metodu devre açıkken true döner. Normally open bağlanmış bir limit switch'te basılmamış hâl true, basılmış hâl false verir. Bu okumaya lambda ile bir Trigger kurup command bağlayan takım, kol sınıra hiç değmeden command'in çalıştığını görür. Kodda hata yoktur; okuma mantığı bağlantı biçimine göre ters çevrilmelidir. FPGA en fazla 26 digital input destekler: 10'u roboRIO üzerindeki DIO portlarından, 16'sı MXP breakout portundan.",
+      "takeaway": "Doğru okunan bir sensor, yanlış yorumlanınca ters bir mekanizma üretir",
+      "tags": [
+        "DigitalInput",
+        "pull-up",
+        "DIO"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-07-d1",
+        "programming-07-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-07-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "SENSORS",
+      "front": "Encoder'ın ham sayısı hiçbir birim taşımaz.",
+      "back": "Quadrature encoder'lar çeyrek periyot faz farkıyla iki kanalda kare dalga üretir ve DIO pinlerine bağlanır. Encoder sınıfı getDistance ile toplam alınan yolu, getRate ile anlık değişim hızını verir. Ama bu değerler ölçeklenmedikçe yalnızca pulse sayar. Anlamlı bir birim elde etmek için setDistancePerPulse kullanılır: tekerleğin çevresi bir turdaki pulse sayısına bölünür. 0.512 metre çevre ve turda 1024 pulse için pulse başına 0.0005 metre çıkar. Hesapta kullanılan pulse sayısı decoding tipinden bağımsızdır; 4x decoding için dörtle çarpılmaz. Ölçekleme yapılmazsa iki metre sanılan hedefe birkaç santimetrede ulaşılır ve robot erken durur.",
+      "takeaway": "Birimi sensor değil, setDistancePerPulse verir",
+      "tags": [
+        "Encoder",
+        "setDistancePerPulse",
+        "quadrature"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-07-d2",
+        "programming-07-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-07-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "SENSORS",
+      "front": "Autonomous her maçta 30-40 derece sapıyor. Takım gyro drift'ini suçluyor.",
+      "back": "Teşhis yanlıştır. Dokümantasyona göre bir FRC maçı boyunca biriken toplam drift yönetilebilir ölçüde küçük kalır ve iyi bir gyro için birkaç derece mertebesindedir. Onlarca derecelik bir sapmanın kaynağı başka yerdedir. Gyro'nun verdiği açı her zaman keyfi bir sıfır açısına göredir; bu sıfır, robotun açıldığı andaki veya bir sıfırlama metodunun çağrıldığı andaki gyro açısıdır. Robot sahaya yerleştirildikten hemen sonra açılıyor ve bu sırada itilerek hizalanıyorsa, calibration sırasında sabit kalmamış demektir. Daha pahalı bir gyro bu sorunu çözmez; robotu açıp calibration bitene kadar beklemek çözer.",
+      "takeaway": "Doğru ölçülen bir değer, yanlış bir sıfıra göre ölçülüyorsa işe yaramaz",
+      "tags": [
+        "gyro",
+        "calibration",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-07-d8",
+        "programming-07-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-07-d1",
+      "type": "diagnose",
+      "symptom": "Kolun üst sınırındaki limit switch, roboRIO üzerindeki bir DIO portuna bağlandı ve DigitalInput ile okunuyor. Bu okumaya lambda ile bir Trigger kuruldu ve kolu durduran command onTrue ile bağlandı. Kol sınıra hiç değmeden command çalışıyor; kol sınıra dayandığında ise command duruyor.",
+      "prompt": "Neden ters çalışıyor?",
+      "options": [
+        "roboRIO üzerindeki portlar dahili pull-up dirençleri nedeniyle varsayılan olarak high okur ve get metodu devre açıkken true döner; okuma mantığı ters çevrilmelidir.",
+        "Limit switch'in kabloları ters bağlanmıştır; NO ve NC uçları değiştirilmelidir.",
+        "Trigger lambda ile kurulamaz; JoystickButton kullanılmalıdır.",
+        "onTrue yerine whileTrue kullanılmalıdır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon bir cümle ve örnek koddaki bir yorum satırıyla bu davranışı verir: roboRIO üzerindeki dahili portlar pull-up dirençleri nedeniyle varsayılan olarak high okur ve get metodu devre açık olduğunda true döner. Yani sensor'e hiç dokunulmadığı durum true, switch kapandığında ise false'tur. Yeni başlayanların sezgisi bunun tersidir; basılmış bir tuşun true olması beklenir. Belirtideki simetri tam olarak bunu gösteriyor. İkinci şık geçerli bir donanım düzeltmesi tarif eder ve gerçekten okumayı ters çevirir; ancak soru nedeni sormaktadır ve bu şık nedeni yanlış yere koyar. Kablolama hatalı değildir, okuma açık devreyi doğru bildirmektedir. Doğru teşhis, kodun bu true değerini basılmışlık sanmasıdır ve en doğrudan düzeltme okumanın kodda ters çevrilmesidir. Üçüncü şık yanlıştır; Trigger bir boolean üreten lambda ile kurulabilir, JoystickButton zorunlu değildir. Dördüncü şık bağlamanın zamanlamasını değiştirir, mantığın yönünü değiştirmez.",
+      "hint": "Hiçbir şeye dokunulmayan bir DIO portu ne okur?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/digital-inputs-software.html",
+      "sourceNote": "Lambda ile Trigger kurma: https://docs.wpilib.org/en/stable/docs/software/commandbased/binding-commands-to-triggers.html"
+    },
+    {
+      "id": "programming-07-d2",
+      "type": "numeric",
+      "prompt": "Bir quadrature encoder tekerlek miline bağlı ve tekerleğin bir tam turunda 1024 pulse üretiyor. Tekerleğin çevresi 0.512 metredir. getDistance metodunun metre cinsinden değer döndürmesi için setDistancePerPulse metoduna hangi değer verilmelidir?",
+      "answer": 0.0005,
+      "tolerance": 1e-05,
+      "unit": "metre/pulse",
+      "explanation": "setDistancePerPulse, her bir pulse'ın kaç birim yola karşılık geldiğini tanımlar. Bir tam turda tekerlek çevresi kadar yol alınır, yani 0.512 metre, ve bu tur boyunca 1024 pulse üretilir. Bir pulse'a düşen yol 0.512 bölü 1024, yani 0.0005 metredir. Bu değer verildikten sonra getDistance ham sayı yerine metre döndürür ve getRate metre bölü saniye verir. Buradaki asıl kavram, birimin sensor'den değil sizin tanımınızdan gelmesidir; encoder yalnızca sayar, o sayının ne anlama geldiğini setDistancePerPulse söyler. Aynı encoder farklı bir tekerleğe takıldığında bu değerin yeniden hesaplanması gerekir, aksi hâlde kod sessizce yanlış mesafe raporlar.",
+      "hint": "Bir tam turda kaç metre yol alınıyor ve bu yola kaç pulse düşüyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/encoders-software.html"
+    },
+    {
+      "id": "programming-07-d3",
+      "type": "multiple_choice",
+      "prompt": "Autonomous'ta robotun sahaya yerleştirildiği açı her maçta biraz farklı oluyor. Takım, gyro'nun getAngle metodunun sahaya göre bir heading verdiğini varsayarak rutini yazdı. Bu varsayım neden yanlıştır?",
+      "options": [
+        "Gyro açısı saha koordinat sistemine otomatik hizalanır ve her maç başında kendiliğinden sıfırlanır.",
+        "Gyro açısı her zaman keyfi bir sıfır açısına göredir; bu sıfır, robotun açıldığı andaki veya bir sıfırlama metodunun çağrıldığı andaki gyro açısıdır.",
+        "Gyro yalnızca angular rate ölçer, açı hiç veremez.",
+        "Gyro sahayı görmediği için değer üretemez; heading yalnızca vision ile bulunabilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon bunu açıkça yazar: gyro açı ölçümleri her zaman keyfi bir sıfır açısına göredir ve bu sıfır, robotun açıldığı andaki ya da bir sıfırlama metodunun çağrıldığı andaki gyro açısıyla belirlenir. Yani gyro sahaya göre değil, kendi başlangıç anına göre ölçer. Robot her maçta biraz farklı bir açıyla yerleştirilip orada açıldığında sıfır da her maçta farklı bir gerçek yöne denk gelir ve aynı rutin farklı yönlere gider. Birinci şık aynı cümle tarafından doğrudan çürütülür; sahaya hizalanma ve kendiliğinden sıfırlanma diye bir şey yoktur, sıfırlama ancak açılış anıyla veya çağrılan bir sıfırlama metoduyla belirlenir. Üçüncü şıkkın ilk yarısı doğrudur, gyro gerçekten bir angular rate sensor'dür; ancak ikinci yarısı yanlıştır, çünkü kaynak bu sensor'ün heading ölçmek ve dengelemek için kullanıldığını söyler. Dördüncü şık da yanlıştır. Sahaya göre çalışmak isteyen takımlar bu yüzden robotu bilinen bir yönde başlatmayı veya sıfırı bilinçli olarak belirlemeyi bir prosedür hâline getirir.",
+      "hint": "Gyro sıfır noktasını nereden alıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/gyros-software.html"
+    },
+    {
+      "id": "programming-07-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi sensor kullanımını anlatan bir sayfa hazırlıyor.",
+      "elements": [
+        "roboRIO üzerindeki DIO portları dahili pull-up dirençleri nedeniyle varsayılan olarak high okur.",
+        "Quadrature encoder'lar çeyrek periyot faz farkıyla iki kanalda kare dalga üretir.",
+        "Gyro açı ölçümleri drift denilen, kullanım süresi uzadıkça büyüyen birikimli bir hataya tabidir.",
+        "Encoder sınıfı, motor controller'ın data portuna takılan encoder'ları da okuyabilir.",
+        "Calibration sırasında robotun sabit kalması kritiktir."
+      ],
+      "faultIndex": 3,
+      "explanation": "Dokümantasyon bu konuda bir uyarı kutusu koyar: bu sayfadaki sınıflar yalnızca doğrudan roboRIO'ya takılan encoder'lar içindir. Bir encoder motor controller'ın data portuna takıldığında okuma o cihazın kendi vendor library'si üzerinden yapılır, WPILib'in Encoder sınıfıyla değil. Bu ayrımı bilmemek, kod derlendiği hâlde encoder'ın hiç saymadığı ve kimsenin nedenini bulamadığı bir duruma yol açar; hata mesajı yoktur, yalnızca hep sıfır kalan bir değer vardır. Diğer dört ifade dokümantasyonun yazdığı gibidir.",
+      "hint": "İfadelerden biri bir sınıfın kapsamı hakkında iddiada bulunuyor. Kaynak o kapsamı sınırlıyor mu?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/encoders-software.html"
+    },
+    {
+      "id": "programming-07-d5",
+      "type": "diagnose",
+      "symptom": "Autonomous rutini robotu iki metre ileri sürmek üzere yazıldı ve encoder okuması hedefe ulaşınca duruyor. Robot birkaç santimetre gidip duruyor. Encoder sağlam, kablolar sağlam ve dashboard'da encoder değeri hareket ettikçe artıyor.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Motor Safety devreye girip robotu durduruyor.",
+        "Encoder ters yönde sayıyor; işaret düzeltilmelidir.",
+        "setDistancePerPulse hiç çağrılmamıştır; getDistance metre değil, ölçeklenmemiş bir sayı döndürüyor ve iki değerine birkaç santimetrede ulaşılıyor.",
+        "Command'in isFinished metodu hiç yazılmamıştır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirtinin iki parçası birlikte okununca sonuç netleşir: encoder sayıyor, yani donanım ve okuma çalışıyor; ama robot hedefe olması gerekenden çok önce ulaşmış sayılıyor. setDistancePerPulse çağrılmadığında getDistance anlamlı bir birim değil, ölçeklenmemiş bir sayı döndürür. Kaynak bunu şöyle ifade eder: Encoder sınıfı mesafe birimi hakkında hiçbir varsayımda bulunmaz ve distance per pulse değerini hesaplarken hangi birim kullanıldıysa o birimde değer döndürür. Kod bu ölçeklenmemiş sayıyı metre sanarak iki ile karşılaştırır ve tekerlek birkaç santimetre döner dönmez sayaç ikiyi geçer, rutin bitmiş sayılır. Buradaki kavram, birimin sensor'den değil tanımdan gelmesidir. İkinci şık elenir; ters sayım hedefe hiç ulaşmama veya değerin azalması olarak görünürdü, oysa değer artıyor. Birinci şık elenir; Motor Safety çıkışın güncellenmemesiyle ilgilidir ve burada rutin kendi kararıyla duruyor. Dördüncü şık da elenir, çünkü eksik bir isFinished command'in hiç bitmemesine yol açardı, erken bitmesine değil.",
+      "hint": "Kod hangi sayıyı iki ile karşılaştırıyor ve o sayının birimi ne?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/encoders-software.html"
+    },
+    {
+      "id": "programming-07-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci 4x decoding kullandığı için, encoder'ın bir turda ürettiği pulse sayısını dörtle çarpıp setDistancePerPulse hesabını buna göre yapmayı öneriyor. Bu öneri doğru mudur?",
+      "options": [
+        "Doğrudur; 4x decoding her pulse'ı dört ayrı sayıma böldüğü için hesap dörtle çarpılmalıdır.",
+        "Yanlıştır; hesap dörde bölünmelidir.",
+        "Doğrudur; ancak yalnızca quadrature encoder'lar için geçerlidir.",
+        "Yanlıştır. Dokümantasyon distance per pulse hesabında kullanılan pulse sayısının decoding tipine bağlı olmadığını, her pulse'ın daima tam bir çevrim yani dört edge sayılması gerektiğini söyler."
+      ],
+      "correctIndex": 3,
+      "explanation": "Dokümantasyon bu noktayı bir not kutusuyla ayrıca vurgular, çünkü sık yapılan bir hatadır: distance per pulse hesabında kullanılan pulse sayısı decoding tipine bağlı değildir ve her pulse daima tam bir çevrim, yani dört edge olarak düşünülmelidir. Yani hesap encoder'ın turda kaç pulse ürettiğine göre yapılır; decoding tipi bu hesabı değiştirmez. Öğrencinin sezgisi mantıklı görünür, çünkü 4x decoding gerçekten daha çok edge sayar; ancak notun söylediği tam olarak bu farkın hesaba girmemesi gerektiğidir. Önerinin sonucu, mesafe okumasının dört kat yanlış çıkması ve autonomous rutinlerinin sistematik biçimde uzun veya kısa kalmasıdır; bu son cümle kaynakta yazmayan, notun doğrudan sonucudur. Birinci ve üçüncü şıklar bu hatayı tekrarlar, i̇kinci şık ise aynı hatayı ters yönde yapar.",
+      "hint": "Kaynak bu konuda özel bir not düşmüş. Not, pulse sayısının neye bağlı olmadığını söylüyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/encoders-software.html"
+    },
+    {
+      "id": "programming-07-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım encoder'ı motor controller'ın data portuna taktı. Kodda new Encoder(0, 1) ile bir Encoder nesnesi oluşturuldu ve DIO 0 ile 1 portları boş. Kod hatasız derleniyor ve deploy oluyor, Robot Code göstergesi yeşil, ancak getDistance her zaman sıfır dönüyor ve dashboard'daki değer hiç değişmiyor.",
+      "prompt": "Neden hiç saymıyor?",
+      "options": [
+        "WPILib'in Encoder sınıfı yalnızca doğrudan roboRIO'ya takılan encoder'lar içindir; bu encoder motor controller'a takılı olduğu için okuma o cihazın vendor library'si üzerinden yapılmalıdır.",
+        "setDistancePerPulse çağrılmadığı için değer sıfır kalıyor.",
+        "Encoder'ın reset metodu her döngüde çağrılıyordur.",
+        "MXP breakout portu kullanıldığı için roboRIO üzerindeki DIO portları devre dışı kalmıştır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyonun uyarısı bu durumu doğrudan kapsar: bu sınıflar yalnızca doğrudan roboRIO'ya takılan encoder'lar içindir ve motor controller'a takılan encoder'lar için ilgili vendor'ın dokümantasyonuna bakılması gerekir. Kod, DIO 0 ve 1 portlarını okumaya çalışıyor; o portlarda hiçbir şey bağlı olmadığı için sayım da yok. Bu hatanın sinsi yanı hiçbir hata mesajı üretmemesidir. Nesne başarıyla oluşur, kod derlenir, deploy olur ve Robot Code göstergesi yeşil yanar; yalnızca değer hiç değişmez. Doğru yol, encoder'ın takılı olduğu cihazın vendor library'si üzerinden okumaktır. İkinci şık elenir; setDistancePerPulse yalnızca ölçeği belirler ve çağrılmasa bile ham sayı artardı, sıfırda kalmazdı. Üçüncü şık teorik olarak sıfır üretebilir ancak belirtide böyle bir kod yok. Dördüncü şık belirtiyle elenir; senaryoda MXP hiç kullanılmıyor ve encoder motor controller'a takılı.",
+      "hint": "Kod hangi fiziksel portları okuyor ve encoder gerçekte nereye takılı?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/encoders-software.html"
+    },
+    {
+      "id": "programming-07-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte autonomous rutini her maçta farklı yöne sapıyor ve sapma bazen 30 ile 40 derece arasında. Takım gyro drift'ini suçluyor ve pit'te daha pahalı bir gyro almayı tartışıyor. Robot her maçta sahaya yerleştirildikten hemen sonra açılıyor ve bu sırada teknisyenler robotu iterek hizalamaya devam ediyor.",
+      "prompt": "Takımın teşhisi doğru mu?",
+      "options": [
+        "Doğrudur; bir FRC maçı boyunca biriken drift 30 ile 40 derece arasına ulaşabilir ve tek çözüm daha iyi bir gyro'dur.",
+        "Yanlıştır. Dokümantasyona göre bir FRC maçı boyunca toplam drift yönetilebilir ölçüde küçük kalır ve iyi bir gyro için birkaç derece mertebesindedir. Belirtideki asıl sorun robotun calibration sırasında hareket ettirilmesidir; calibration sırasında robotun sabit kalması kritiktir.",
+        "Doğrudur, ancak çözüm gyro'yu her scheduler döngüsünde reset etmektir.",
+        "Yanlıştır; sorun encoder'ların setDistancePerPulse ayarındadır."
+      ],
+      "correctIndex": 1,
+      "explanation": "İki ayrı doküman ifadesi bu teşhisi çürütür. Birincisi büyüklük hakkındadır: FRC maçları kısa olduğu için bir maç boyunca biriken toplam gyro drift'i yönetilebilir ölçüde küçük kalır ve iyi bir gyro için birkaç derece mertebesindedir. 30 ile 40 derecelik bir sapma bu ölçeğin çok dışındadır, dolayısıyla drift açıklaması sayıyı taşımaz. İkincisi sebep hakkındadır: calibration sırasında robotun sabit kalması kritiktir. Belirti tam olarak bunun ihlal edildiğini söylüyor, çünkü robot açıldığı sırada itiliyor. Pit'te bu hatanın maliyeti yüksektir: takım para ve zaman harcayıp donanım değiştirir, sorun aynı kalır. Doğru düzeltme bedavadır ve bir prosedürdür; robot açıldıktan sonra calibration bitene kadar hiç kimse robota dokunmamalıdır. Üçüncü şık zararlıdır. Kaynak reset metodunu adıyla tartışmaz, ancak sonuç yukarıdaki keyfi sıfır cümlesinden doğrudan çıkar: her döngüde sıfırlamak sıfırı sürekli o anki açıya kaydırır ve biriken açı ölçümünü tamamen anlamsız kılar. Dördüncü şık belirtiyle uyuşmaz, çünkü sapma yön hatasıdır, mesafe hatası değil.",
+      "hint": "Kaynak drift'in bir maçtaki büyüklüğü için bir sayı veriyor. Belirtideki sayı o mertebede mi?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/hardware-apis/sensors/gyros-software.html"
+    }
+  ]
+}

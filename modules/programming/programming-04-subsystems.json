@@ -1,0 +1,288 @@
+{
+  "id": "programming-04-subsystems",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 4,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Subsystem'ler ve Default Command'ler",
+  "summary": "Subsystem'in ne olduğunu, periodic metodunun dar tanımlı görevini ve default command mekanizmasının requirement sistemi üzerine nasıl kurulduğunu öğretir.",
+  "prerequisites": [
+    "programming-03-command-based"
+  ],
+  "estimatedMinutes": 30,
+  "concept": {
+    "body": "Subsystem, command-based paradigmasında robot organizasyonunun temel birimidir ve bir birim olarak birlikte çalışan donanım grubunun soyutlamasıdır. Önerilen yol, subsystem sınıfını SubsystemBase'den türetmektir. Bu sınıf constructor'ında register metodunu çağırarak subsystem'i scheduler'a kaydeder; bu kayıt, periodic metodunun scheduler çalışırken çağrılabilmesi için gereklidir. Ayrıca Sendable interface'ini uygulayarak subsystem'in dashboard'a gönderilmesini sağlar.\n\nScheduler her döngüde belirli bir sıra izler: önce kayıtlı subsystem'lerin periodic metodunu çalıştırır, ardından schedule edilmiş command'lerin execute metodunu çalıştırır, en sonda da boşta kalan subsystem'lerin default command'ini schedule eder. periodic her scheduler döngüsünde bir kez, tipik olarak 20 ms'de bir çalışır; dokümantasyon tipik kullanımını telemetry ile subsystem'i o anda gerektiren command'e karışmayan düzenli işler olarak tanımlar. simulationPeriodic ise yalnızca Simulation sırasında çalışır ve robotun durumunu güncellemek için kullanılır.\n\nBir subsystem'e setDefaultCommand ile default command atanabilir; default command, subsystem başka bir command tarafından kullanılmadığı sürece çalışır. Kural nettir: default command olarak atanan command o subsystem'i requirement olarak bildirmek zorundadır. Subsystem'i gerektiren başka bir command schedule edildiğinde, varsayılan kCancelSelf davranışında default command iptal edilir; subsystem yeniden boşta kaldığında scheduler default command'i yeniden schedule eder ve initialize metodu bu sırada tekrar çalışır. Dokümantasyon default command ile periodic'in benzer işleri yapabileceğini de söyler ve takımların hangisini kullandıkları konusunda tutarlı olmalarını ister.",
+    "keyTerms": [
+      {
+        "term": "SubsystemBase",
+        "glossTr": "subsystem'lerin türetildiği, register çağrısını ve Sendable'ı kendiliğinden yapan temel sınıf"
+      },
+      {
+        "term": "periodic",
+        "glossTr": "her scheduler döngüsünde bir kez çalışan subsystem metodu"
+      },
+      {
+        "term": "simulationPeriodic",
+        "glossTr": "yalnızca Simulation sırasında çalışan subsystem metodu"
+      },
+      {
+        "term": "default command",
+        "glossTr": "subsystem başka bir command tarafından kullanılmadığında çalışan command"
+      },
+      {
+        "term": "setDefaultCommand",
+        "glossTr": "bir subsystem'e default command atayan metot"
+      },
+      {
+        "term": "Sendable",
+        "glossTr": "bir nesnenin dashboard ile veri alışverişini sağlayan interface"
+      },
+      {
+        "term": "telemetry",
+        "glossTr": "robottan dashboard'a gönderilen ölçüm ve durum verisi"
+      },
+      {
+        "term": "register",
+        "glossTr": "bir subsystem'i scheduler'a kaydeden metot"
+      },
+      {
+        "term": "scheduler run sequence",
+        "glossTr": "scheduler'ın her döngüde izlediği sabit adım sırası"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-04-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "SUBSYSTEMS",
+      "front": "Subsystem'in periodic metodu dar tanımlı bir iş içindir.",
+      "back": "periodic her scheduler döngüsünde bir kez, tipik olarak 20 ms'de bir çalışır ve hangi command çalışıyor olursa olsun çalışır. Dokümantasyon tipik kullanımını telemetry ile subsystem'i o anda gerektiren command'e karışmayan düzenli işler olarak tanımlar. Bu tanım bir sınırdır: encoder değerlerini dashboard'a göndermek buraya aittir, çünkü hangi command çalışırsa çalışsın akması gerekir. Aynı satırları sürüş command'inin execute metoduna yazan takım, hizalama command'i devreye girdiğinde ya da robot boşta beklerken sayıların donduğunu görür. Ayrı bir metot olan simulationPeriodic ise yalnızca Simulation sırasında çalışır ve gerçek robotta hiç çağrılmaz.",
+      "takeaway": "Her komutta akması gereken iş periodic'e, eylemin kendisi command'e ait",
+      "tags": [
+        "periodic",
+        "telemetry",
+        "simulationPeriodic"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-04-d2",
+        "programming-04-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-04-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "SUBSYSTEMS",
+      "front": "Default command neden requirement bildirmek zorunda?",
+      "back": "Çünkü default command mekanizması requirement sisteminin üzerine kuruludur. Scheduler her döngünün sonunda boşta kalan subsystem'lerin default command'ini schedule eder ve bir subsystem'in boşta olup olmadığını requirement'lardan bilir. Default command o subsystem'i bildirmezse sistem onu hiç sahiplenmemiş olur. Zincirin kalanı da aynı kuraldan çıkar: subsystem'i gerektiren başka bir command schedule edildiğinde varsayılan davranışta default command iptal edilir, subsystem yeniden boşta kaldığında scheduler default command'i yeniden schedule eder ve initialize metodu bu sırada tekrar çalışır. SubsystemBase'den türetmek de bu düzenin parçasıdır: kendi constructor'ında register çağırır, çünkü periodic ancak kayıtlı bir subsystem için çağrılabilir.",
+      "takeaway": "Default command bir istisna değil, requirement kuralının bir sonucu",
+      "tags": [
+        "default command",
+        "requirement",
+        "SubsystemBase"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-04-d3",
+        "programming-04-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-04-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "SUBSYSTEMS",
+      "front": "Kol düşüyordu, periodic'e tutma çıkışı eklendi. Hiçbir şey değişmedi.",
+      "back": "Scheduler her döngüde önce kayıtlı subsystem'lerin periodic metodunu, daha sonra command'lerin execute metodunu çalıştırır. periodic'in yazdığı motor çıkışını aynı döngüde çalışan default command üzerine yazar; sonuç, eklenen satırın hiç etkisi olmamasıdır. Kodda hata yoktur, satırın yeri yanlıştır. Aynı sıradan çıkan ikinci bir pit daha vardır: teleop'ta joystick aniden hiçbir şey yapmıyorsa ve dashboard değerleri hâlâ akıyorsa, büyük olasılıkla bitmeyen bir command subsystem'i bırakmıyordur. Subsystem hiç boşta kalmadığı için default command bir daha devreye girmez. Belirti aynıdır, sebep farklıdır: bir yanda hiç atanmamış default command, diğer yanda hiç bitmeyen bir command.",
+      "takeaway": "Aynı döngüde sonra çalışan, öncekinin çıkışını üzerine yazar",
+      "tags": [
+        "scheduler sırası",
+        "default command",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-04-d8",
+        "programming-04-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-04-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci subsystem sınıfını SubsystemBase'den türetmek yerine temel Subsystem interface'ini kendisi uyguladı. SubsystemBase'in kendiliğinden yaptığı iki işi böylece elle yapmak zorunda kaldı. Bu iki iş nedir?",
+      "options": [
+        "Subsystem'i scheduler'a kaydetmek ve dashboard haberleşmesi için Sendable interface'ini uygulamak.",
+        "Motor controller nesnelerini oluşturmak ve CAN device ID'lerini atamak.",
+        "Default command'i oluşturmak ve joystick tuşuna bağlamak.",
+        "Robot sınıfındaki robotPeriodic metodunu oluşturmak ve CommandScheduler.run çağrısını eklemek."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon SubsystemBase'in iki katkısını sayar. Birincisi, constructor'ında register metodunu çağırarak subsystem'i scheduler'a kaydetmesidir ve doküman bu kaydın ne işe yaradığını parantez içinde söyler: periodic metodunun scheduler çalışırken çağrılabilmesi için gereklidir. İkincisi, Sendable interface'ini uygulayarak subsystem'in dashboard'a gönderilebilmesini sağlamasıdır. Bunlar elle yapılmazsa ortaya çıkan belirtiler birbirinden farklı ve teşhis edilmesi zordur; periodic hiç çalışmaz ve subsystem dashboard'da görünmez. İkinci şık subsystem'in kendi constructor'ında yaptığı iştir, temel sınıfın değil. Üçüncü şık takımın tercihidir; SubsystemBase kimseye default command atamaz. Dördüncü şık Robot sınıfının sorumluluğudur. Bu drill'in noktası, bir temel sınıftan türetmenin görünmez ama gerçek işler yaptığını fark etmektir.",
+      "hint": "Temel sınıf robot donanımı hakkında hiçbir şey bilmez. O hâlde ne yapabilir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html"
+    },
+    {
+      "id": "programming-04-d2",
+      "type": "diagnose",
+      "symptom": "Bir takım drive subsystem'inin encoder değerlerini dashboard'a gönderiyor. Bu satırlar sürüş command'inin execute metodunun içinde. Sürücü sürerken değerler güncelleniyor, ancak hizalama command'i devreye girdiğinde veya robot boşta beklerken dashboard'daki sayılar donuyor.",
+      "prompt": "Bu kodun yeri neden yanlış ve nereye taşınmalıdır?",
+      "options": [
+        "Telemetry satırları RobotContainer'ın constructor'ına taşınmalıdır; orada robot açılırken çalışırlar.",
+        "Telemetri satırları subsystem'in periodic metoduna taşınmalıdır; bu metot her scheduler döngüsünde, hangi command çalışıyor olursa olsun çalışır.",
+        "Sürüş command'i hiç bitmeyecek biçimde yazılmalıdır ki execute her zaman çalışsın.",
+        "Dashboard bağlantısı kopmuştur; Diagnostics sekmesinden bağlantı göstergeleri kontrol edilmelidir."
+      ],
+      "correctIndex": 1,
+      "explanation": "execute metodu yalnızca o command schedule edilmiş olduğu sürece çalışır. Telemetri satırları oraya konulduğunda telemetri de command ile birlikte doğar ve command ile birlikte ölür; belirtideki iki durum, yani command'in başka bir command ile değişmesi ve robotun boşta beklemesi, tam olarak bunu gösterir. Doğru yer subsystem'in periodic metodudur ve dokümantasyon periodic'in tipik kullanımı olarak zaten telemetriyi sayar. Birinci şık yanlıştır; constructor bir kez çalışır, düzenli güncelleme üretmez. Üçüncü şık soruna çare gibi görünüp daha büyük bir sorun yaratır: hiç bitmeyen bir command subsystem'i serbest bırakmaz ve default command geri dönemez. Dördüncü şık belirtiyle çelişir, çünkü sürücü sürerken değerler güncelleniyorsa dashboard bağlantısı çalışıyordur.",
+      "hint": "Belirti iki farklı durumda donuyor. Bu iki durumun ortak yanı nedir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html"
+    },
+    {
+      "id": "programming-04-d3",
+      "type": "multiple_choice",
+      "prompt": "Arm subsystem'i için kolu tutma pozisyonunda sabit tutacak bir default command yazılıyor. Aşağıdakilerden hangisi bu command için zorunludur?",
+      "options": [
+        "Command'in isFinished metodu true dönmelidir.",
+        "Command, RobotContainer'ın constructor'ında elle schedule edilmelidir.",
+        "Command, arm subsystem'ini requirement olarak bildirmelidir.",
+        "Command'in InterruptionBehavior değeri kCancelIncoming olmalıdır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Dokümantasyonun kuralı açıktır: bir subsystem'e default command olarak atanan command, o subsystem'i requirement olarak bildirmek zorundadır. Bunun sebebi mekanizmanın tamamen requirement sistemi üzerine kurulu olmasıdır; scheduler default command'i subsystem'i kimse gerektirmediğinde çalıştırır ve biri gerektirdiğinde durdurur. Requirement bildirilmezse bu bağ hiç kurulmaz. Birinci şık tam tersini ister; hemen biten bir default command işe yaramaz ve zaten isFinished'in varsayılan davranışı olan hiç bitmeme burada istenen davranıştır. İkinci şık gereksizdir, çünkü schedule işini setDefaultCommand üstlenir. Dördüncü şık amacı bozar: kCancelIncoming, kolu kullanmak isteyen diğer command'lerin schedule edilmesinı engeller, yani default command kolu kimseye bırakmaz.",
+      "hint": "Default command'in ne zaman durup ne zaman devam edeceğini scheduler neye bakarak bilir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html",
+      "sourceNote": "isFinished varsayılanı ve kCancelIncoming: https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html"
+    },
+    {
+      "id": "programming-04-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi subsystem yapısını anlatan bir sayfa hazırlıyor.",
+      "elements": [
+        "periodic metodu her scheduler döngüsünde bir kez, tipik olarak 20 ms'de bir çalışır.",
+        "simulationPeriodic yalnızca Simulation sırasında çalışır.",
+        "Default command, subsystem başka bir command tarafından kullanılmadığı sürece çalışır.",
+        "periodic metodu, subsystem'i o anda kullanan command'in motor çıkışını geçersiz kılmak için uygun yerdir.",
+        "Default command olarak atanan command, o subsystem'i requirement olarak bildirmek zorundadır."
+      ],
+      "faultIndex": 3,
+      "explanation": "Bu ifade iki ayrı nedenle yanlıştır. Birincisi amaç bakımından: dokümantasyon periodic'i telemetry ve subsystem'i o anda gerektiren command ile çakışmayan düzenli işler için tanımlar, yani command'in çıkışını geçersiz kılmak tanımın dışladığı şeyin kendisidir. Burada bir ayrımı korumak gerekir; doküman periodic'e hiç davranış yazılamayacağını söylemez, tam tersine default command ile periodic'in benzer işleri yapabileceğini ve takımların hangisini kullandıkları konusunda tutarlı olmaları gerektiğini söyler. Yasaklanan şey davranış yazmak değil, çalışan command'e karışmaktır. İkincisi mekanizma bakımından: scheduler her döngüde önce kayıtlı subsystem'lerin periodic metodunu, daha sonra command'lerin execute metodunu çalıştırır. Bu sırada periodic'in yazdığı çıkışı aynı döngüde command ezer, dolayısıyla periodic bir command'in çıkışını zaten geçersiz kılamaz. Diğer dört ifade dokümantasyonun yazdığı gibidir.",
+      "hint": "Scheduler bir döngüde önce hangisini çalıştırır: subsystem'in periodic metodunu mu, command'in execute metodunu mu?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html",
+      "sourceNote": "Scheduler adım sırası: https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html"
+    },
+    {
+      "id": "programming-04-d5",
+      "type": "diagnose",
+      "symptom": "Teleop'ta sürücü joystick ile normal sürüyor. Hizalama tuşuna bir kez basıldıktan sonra robot duruyor ve hizalama bitmiş gibi görünüyor, ancak joystick artık hiçbir şey yapmıyor. Robot Code göstergesi yeşil ve dashboard'daki encoder değerleri güncellenmeye devam ediyor.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Joystick bağlantısı düşmüştür; Status Pane'deki Joysticks göstergesi kontrol edilmelidir.",
+        "Drive subsystem'inin periodic metodu motor çıkışını sıfırlıyor.",
+        "Drive subsystem'ine hiç default command atanmamıştır.",
+        "Hizalama command'i hiç bitmiyor; drive subsystem'i serbest kalmadığı için default command geri dönemiyor."
+      ],
+      "correctIndex": 3,
+      "explanation": "Default command, subsystem başka bir command tarafından kullanılmadığı sürece çalışır; scheduler her döngünün sonunda boşta kalan subsystem'lerin default command'ini yeniden schedule eder. Buradaki kilit ayrım, bir command'in görevini bitirmesi ile bitmesinin aynı şey olmamasıdır. Hizalama command'i motorları durdurup işini tamamlamış olabilir; isFinished metodu yazılmadıysa varsayılan olarak false döner ve command schedule edilmiş kalmaya devam eder. Drive subsystem'i hiç boşta kalmadığı için default command yeniden schedule edilemez ve joystick etkisiz kalır. Birinci şık elenir, çünkü hizalama tuşuna basılabildiğine göre joystick tanınıyordu. Üçüncü şık elenir, çünkü hizalamadan önce joystick ile sürüş çalışıyordu, yani bir default command vardı. İkinci şık elenir, çünkü periodic her döngüde çalışır ve çıkışı sıfırlasaydı sürüş en baştan bozuk olurdu; ayrıca encoder değerlerinin güncellenmeye devam etmesi periodic'in normal çalıştığını gösterir.",
+      "hint": "Bir command'in görevini bitirmesi ile bitmesi aynı şey mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html",
+      "sourceNote": "isFinished varsayılanı: .../commandbased/commands.html | Default command'in yeniden schedule edilmesi ve initialize'ın tekrar çalışması: https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html"
+    },
+    {
+      "id": "programming-04-d6",
+      "type": "numeric",
+      "prompt": "Bir subsystem'in periodic metodu her scheduler döngüsünde bir kez çalışıyor ve CommandScheduler.run çağrısı robotPeriodic içinden yapıldığı için döngü tipik olarak 20 ms sürüyor. Robot kodu 40 saniye boyunca çalıştıysa bu subsystem'in periodic metodu yaklaşık kaç kez çağrılmıştır?",
+      "answer": 2000,
+      "tolerance": 20,
+      "unit": "çağrı",
+      "explanation": "Döngü tipik olarak 20 ms sürer, yani saniyede 50 döngü olur. 40 saniye için 40 çarpı 50 işlemi 2000 verir. Dokümantasyonun kendi ifadesi de kesin değil, yaklaşıktır: periodic her scheduler döngüsünde bir kez, genellikle 20 ms'de bir çalışır. Scheduler'ın kendine ait bir frekansı yoktur; run metodu ne sıklıkla çağrılırsa o sıklıkta döner ve 20 ms rakamı robotPeriodic metodunun varsayılan periyodundan gelir. Sayının çıkardığı sonuç şudur: periodic sıcak bir yoldur ve robotta altı subsystem varsa her döngüde altı periodic metodu çalışır. Bu son cümle dokümantasyonda geçmeyen, mühendislik tarafından eklenmiş bir yorumdur; kaynağın periodic'e koyduğu sınır bir hız sınırı değil, çalışan command'e karışmama sınırıdır.",
+      "hint": "Döngü tipik olarak 20 ms. Saniyede kaç döngü eder?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html"
+    },
+    {
+      "id": "programming-04-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım elevator subsystem'ini Simulation'da test etti ve her şey doğru çalıştı: pozisyon güncelleniyor, sınır mantığı tetikleniyor. Aynı kod gerçek robota deploy edildiğinde elevator pozisyonu hiç değişmiyormuş gibi davranıyor ve sınır mantığı hiç tetiklenmiyor. Dashboard'da subsystem görünüyor ve diğer telemetri değerleri geliyor.",
+      "prompt": "Kodda büyük olasılıkla ne yapılmıştır?",
+      "options": [
+        "Pozisyon güncellemesi simulationPeriodic metodunun içine yazılmıştır; bu metot yalnızca Simulation sırasında çalışır.",
+        "periodic metodu gerçek robotta çalışmaz, yalnızca Simulation'da çalışır.",
+        "Deploy başarısız olmuştur ve robotta eski sürüm çalışmaktadır.",
+        "Elevator subsystem'i SubsystemBase'den türetilmediği için scheduler'a kaydedilmemiştir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon simulationPeriodic metodunun yalnızca Simulation sırasında çalıştığını ve robotun durumunu güncellemek için kullanıldığını söyler. Gerçek robotta çalışması gereken bir güncelleme oraya yazılırsa kod tam olarak belirtideki gibi davranır: Simulation'da kusursuz, gerçek robotta ölü. İkinci şık ifadenin tersidir ve yanlıştır. Üçüncü şık belirtiyle uyuşmaz, çünkü diğer telemetri değerleri geliyor, yani kod çalışıyor. Dördüncü şık ilk bakışta akla yatkındır ancak belirtinin kendisi tarafından elenir: kayıt yapılmamış olsaydı periodic Simulation'da da çalışmazdı ve subsystem dashboard'da görünmezdi; oysa her ikisi de oluyor. Bu eleme, belirtideki ayrıntıların hangi olasılıkları kestiğini okumanın örneğidir.",
+      "hint": "Belirtide iki bilgi var: Simulation'da çalışıyor ve dashboard'da görünüyor. İkincisi hangi şıkkı kesiyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html"
+    },
+    {
+      "id": "programming-04-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte kol bırakıldığında hafifçe düşüyor. Hızlı çözüm olarak arm subsystem'inin periodic metoduna, kolu yukarıda tutan sabit bir motor çıkışı satırı eklendi. Subsystem'in ayrıca kolu setpoint'te tutan bir default command'i de var. Değişiklikten sonra davranış hiç değişmedi: kol yine aynı şekilde düşüyor ve eklenen satır hiçbir etki yapmıyormuş gibi görünüyor.",
+      "prompt": "Scheduler'ın adım sırasına göre ne oluyor?",
+      "options": [
+        "periodic metodu yalnızca hiçbir command çalışmadığında çalışır; default command çalıştığı için periodic hiç çağrılmıyor.",
+        "Scheduler her döngüde önce kayıtlı subsystem'lerin periodic metodunu, daha sonra command'lerin execute metodunu çalıştırır; periodic'in yazdığı çıkışı aynı döngüde default command'in execute metodu eziyor.",
+        "periodic metoduna motor çıkışı yazmak exception fırlatır ve satır hiç çalışmaz.",
+        "Requirement sistemi periodic'i engelliyor; arm subsystem'i default command tarafından tutulduğu için periodic yazamıyor."
+      ],
+      "correctIndex": 1,
+      "explanation": "Scheduler'ın adım sırası bu belirtiyi tek başına açıklar. İlk adımda kayıtlı her subsystem'in periodic metodu çalışır; command'lerin execute metodu daha sonraki bir adımda çalışır. Aynı motora aynı döngüde iki kez yazılır ve motorun gördüğü değer sonuncusudur, yani default command'in yazdığıdır. Eklenen satır bu yüzden hiçbir etki üretmez: arm subsystem'ini gerektiren bir command çalıştığı sürece periodic'in yazdığı değer her döngüde ezilir ve default command tasarımı gereği hep çalışmaktadır. Birinci şık yanlıştır; periodic her döngüde koşulsuz çalışır. İkinci şıktaki mekanizma doğrudur. Üçüncü şık yanlıştır ve önemli bir yanlış anlamayı temsil eder: periodic'e davranış yazmak yasak değildir, doküman default command ile periodic'in benzer işleri yapabileceğini açıkça söyler ve takımlardan yalnızca hangisini kullandıkları konusunda tutarlı olmalarını ister. Buradaki hata ikisini birden kullanmaktır. Dördüncü şık da yanlıştır ve modülün asıl dersini içerir: requirement sistemi command'leri birbirine karşı düzenler, subsystem'in kendi periodic metodunu hiç kapsamaz. Doğru çözüm, tutma davranışını tek bir yerde toplamaktır; default command zaten bu iş için vardır ve doküman kolu setpoint'te tutmayı default command'in tipik kullanımları arasında sayar.",
+      "hint": "Aynı motora bir döngüde iki kez yazılıyorsa motor hangisini görür? Scheduler önce hangisini çalıştırır?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html",
+      "sourceNote": "Scheduler adım sırası: https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html"
+    }
+  ]
+}

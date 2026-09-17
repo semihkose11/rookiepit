@@ -1,0 +1,319 @@
+{
+  "id": "electrical-05-brownout",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 5,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Brownout: Voltage Sag ve Current Draw",
+  "summary": "Battery geriliminin yük altında neden düştüğünü, roboRIO'nun hangi eşiklerde hangi çıkışları kapattığını, brownout'un sahada nasıl tanınacağını ve battery bakımının bu zincirdeki yerini öğretir.",
+  "prerequisites": [
+    "electrical-01-power-path",
+    "electrical-02-circuit-protection"
+  ],
+  "estimatedMinutes": 16,
+  "concept": {
+    "body": "Brownout, battery gerilimi bir eşiğin altına düştüğünde roboRIO'nun robotu korumak için çıkışları kapatmasıdır. Nedeni genellikle battery'nin boşalması değil, o andaki current draw'dur (akım çekişi).\n\nFRC battery'si kurallara göre 12V, 17-18.2Ah bir SLA battery'dir ve kısa süreliğine 180A'in üzerinde akım verebilir. Tam dolu bir battery açık devrede 12.7-13.5V arasındadır. Yük altında bu gerilim düşer: battery'nin internal resistance'ı (iç direnç) üzerinden geçen akım bir voltage drop (gerilim düşümü) yaratır. İç direnç ne kadar yüksekse aynı akımda gerilim o kadar çok düşer. Çoğu battery'nin üretici değeri 0.011 ohm'dur ve ideal değer 0.015 ohm'un altındadır; 0.020 ohm'u aşan bir battery'nin maçlarda kullanılmaması değerlendirilmelidir.\n\nroboRIO 1'de gerilim 6.8V'un altına indiğinde PWM pinlerindeki 6V çıkışı düşmeye başlar. 6.3V'un altında roboRIO brownout protection durumuna girer: PWM çıkışları kapatılır, 6V, 5V ve 3.3V user rail'ler devre dışı kalır, GPIO çıkışları High-Z konumuna geçer, relay çıkışları kapatılır, CAN üzerindeki motor controller'lara açık bir disable komutu gönderilir ve PCM ile PH gibi pnömatik cihazlar devre dışı bırakılır. Bu eşik roboRIO 1'de sabittir; roboRIO 2'de varsayılan olarak 6.75V'tur ve yazılımdan değiştirilebilir.\n\nroboRIO bu durumdan ancak gerilim 7.5V'un üzerine çıktığında çıkar. Giriş eşiğinden yüksek olan bu çıkış eşiği, brownout'un anlık değil birkaç saniyelik bir kesinti gibi görünmesinin nedenidir.",
+    "keyTerms": [
+      {
+        "term": "brownout",
+        "glossTr": "gerilim düşünce roboRIO'nun çıkışları kapatması"
+      },
+      {
+        "term": "current draw",
+        "glossTr": "o anda çekilen akım"
+      },
+      {
+        "term": "internal resistance",
+        "glossTr": "battery'nin iç direnci"
+      },
+      {
+        "term": "voltage drop",
+        "glossTr": "gerilim düşümü"
+      },
+      {
+        "term": "voltage sag",
+        "glossTr": "yük altında gerilimin anlık çökmesi"
+      },
+      {
+        "term": "open circuit voltage",
+        "glossTr": "yük bağlı değilken ölçülen gerilim"
+      },
+      {
+        "term": "brownout protection",
+        "glossTr": "roboRIO'nun çıkışları kapattığı koruma durumu"
+      },
+      {
+        "term": "user rail",
+        "glossTr": "roboRIO'nun kullanıcıya verdiği 6V, 5V ve 3.3V besleme hatları"
+      },
+      {
+        "term": "High-Z",
+        "glossTr": "yüksek empedans; çıkışın ne yüksek ne alçak sürüldüğü boşta durum"
+      },
+      {
+        "term": "power budget",
+        "glossTr": "güç bütçesi; mekanizmalara akım paylaştırma planı"
+      },
+      {
+        "term": "current limit",
+        "glossTr": "yazılımda motora izin verilen en yüksek akım"
+      },
+      {
+        "term": "average charge current",
+        "glossTr": "şarj sırasında uygulanan ortalama akım"
+      },
+      {
+        "term": "Driver Station Log Viewer",
+        "glossTr": "maç sonrası gerilim ve akım kaydını inceleyen araç"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-05-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "BROWNOUT",
+      "front": "Robot bir anda durdu, kimse durdurmadı.",
+      "back": "Brownout, battery gerilimi bir eşiğin altına düştüğünde roboRIO'nun robotu korumak için çıkışları kapatmasıdır. Kapanan tek bir yol değildir: PWM çıkışları kapatılır, 6V, 5V ve 3.3V user rail'ler devre dışı kalır, GPIO çıkışları High-Z konumuna geçer, relay çıkışları kapatılır, CAN üzerindeki motor controller'lara açık bir disable komutu gönderilir ve PCM ile PH gibi pnömatik cihazlar devre dışı bırakılır. Bu yüzden 'CAN cihazları besleme alıyordu, demek ki brownout değildi' akıl yürütmesi yanlıştır: beslenmek ile komut almak aynı şey değildir.",
+      "takeaway": "Brownout PWM, CAN ve pnömatik yolların üçünü birden durdurur",
+      "tags": [
+        "brownout protection",
+        "disable",
+        "user rail"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-05-d2",
+        "electrical-05-d3"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-05-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "BROWNOUT",
+      "front": "Battery boşalmadığı hâlde gerilim neden çöküyor?",
+      "back": "Gerilimi düşüren battery'nin dolu olup olmaması değil, o andaki current draw'dur. Akım battery'nin internal resistance'ı üzerinden geçerken bir voltage drop yaratır; iç direnç ne kadar yüksekse aynı akımda gerilim o kadar çok düşer. Çoğu battery'nin üretici değeri 0.011 ohm, ideal değer 0.015 ohm'un altıdır. Kabloyu çekiştirmek veya battery'yi düşürmek iç yapıda yorulma hasarı bırakır ve iç direnci yükseltir; o battery aynı yükte brownout eşiğine daha çabuk iner.",
+      "takeaway": "Gerilim düşümü = çekilen akım × battery'nin iç direnci",
+      "tags": [
+        "internal resistance",
+        "voltage drop",
+        "current draw"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-05-d4",
+        "electrical-05-d5"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-05-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "BROWNOUT",
+      "front": "Climber tek başına çalışıyor, sürüş tek başına çalışıyor; ikisi birlikte robot ölüyor.",
+      "back": "Her mekanizma tek başına sorunsuzsa sorun tek bir devrede değil, toplam current draw'dadır. Çözüm koruma değerini yükseltmek değildir; breaker'ı büyütmek kabloyu risk altına sokar ve gerilim düşümünü ortadan kaldırmaz. Dokümantasyonun önerisi bir güç bütçesi çıkarmak, mekanizmalara current limit uygulamak ve birbirini dışlayan mekanizmaların aynı anda tam güçle çalışmasını yazılımda engellemektir. Maç sonrası Driver Station Log Viewer kaydı, gerilimin hangi anda ve hangi akımda çöktüğünü gösterir.",
+      "takeaway": "Toplam akımı bütçelemeden brownout'u breaker büyüterek çözemezsiniz",
+      "tags": [
+        "power budget",
+        "current limit",
+        "log viewer"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-05-d8"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-05-d1",
+      "type": "numeric",
+      "prompt": "roboRIO 1 kullanan bir robotta battery gerilimi yük altında düşüyor. roboRIO'nun brownout protection durumuna girdiği eşik gerilimi kaç volttur? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 6.3,
+      "tolerance": 0.01,
+      "unit": "V",
+      "explanation": "roboRIO 1'de iki ayrı eşik vardır ve karıştırılmamalıdır. 6.8V'un altında PWM pinlerindeki 6V çıkışı düşmeye başlar; bu henüz koruma durumu değildir. 6.3V'un altında ise roboRIO brownout protection durumuna girer ve çıkışları kapatır. 4.5V'un altında cihaz tamamen kapanabilir ve ancak 4.65V'un üzerinde toparlanır. roboRIO 1'de bu eşik sabittir ve değiştirilemez; roboRIO 2'de varsayılan 6.75V'tur ve yazılımdan ayarlanabilir. Soruda hangi sürümün kullanıldığının belirtilmesinin nedeni budur.",
+      "hint": "İki eşik var: biri PWM rail'in düşmeye başladığı, diğeri roboRIO'nun koruma durumuna geçtiği. Soru hangisini soruyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html"
+    },
+    {
+      "id": "electrical-05-d2",
+      "type": "diagnose",
+      "symptom": "Maç sırasında robot birkaç kez kısa süreliğine tamamen tepkisiz kaldı ve sonra kendiliğinden geri geldi. Bu anlarda driver station'da gerilim göstergesinin arka planı kırmızıya döndü ve roboRIO'nun power LED'i amber renge geçti. CAN zincirinde ve breaker'larda bir sorun bulunamadı.",
+      "prompt": "Ne yaşanmıştır?",
+      "options": [
+        "Robot brownout yaşamıştır; battery gerilimi roboRIO'nun koruma eşiğinin altına düşmüştür.",
+        "Bir branch breaker atmış, soğuyup kendiliğinden geri kapanmıştır.",
+        "CAN zincirinde bir kopukluk oluşmuş ve zincirin gerisindeki cihazlar düşmüştür.",
+        "Radio saha bağlantısını kaybetmiştir."
+      ],
+      "correctIndex": 0,
+      "explanation": "İki gösterge bu duruma özgüdür ve birlikte görüldüğünde başka bir anlama gelmez: roboRIO'nun power LED'inin amber renge dönmesi ve driver station'da gerilim göstergesinin arka planının kırmızıya dönmesi brownout'un doğrudan işaretleridir. Üçüncü bir gösterge daha vardır: driver station'ın mod göstergesi Voltage Brownout yazar. Diğer şıklar belirtiyle çelişir. Atan bir branch breaker yalnızca o kol devresindeki mekanizmayı durdurur, robotun tamamını değil. CAN kopukluğu zincirin yalnızca kopmadan sonraki kısmını etkiler ve gerilim göstergesini kırmızıya çevirmez. Radio bağlantı kaybı ise haberleşme kaybı olarak görünür. Robotun kendiliğinden geri gelmesi de tutarlıdır: roboRIO bu durumdan ancak gerilim 7.5V'un üzerine çıktığında çıkar. Maçtan sonra Driver Station Log Viewer ile kayıt incelenerek gerilimin ne kadar düştüğü görülebilir.",
+      "hint": "Robotun tamamı mı etkilendi, yoksa bir bölümü mü? Gerilim göstergesinin rengi hangi şıkları tek başına eler?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html"
+    },
+    {
+      "id": "electrical-05-d3",
+      "type": "multiple_choice",
+      "prompt": "Takım şöyle diyor: 'Brownout olsaydı her şey dururdu. Ama sorun anında CAN üzerindeki motor controller'lar besleme almaya devam ediyordu, demek ki yaşadığımız şey brownout değildi.' Bu akıl yürütmeyi değerlendiriniz.",
+      "options": [
+        "Doğru. Brownout yalnızca PWM çıkışlarını etkiler; CAN üzerindeki motor controller'lar bundan etkilenmez.",
+        "Yanlış. Brownout protection durumunda CAN üzerindeki motor controller'lara da açık bir disable komutu gönderilir.",
+        "Doğru. CAN cihazları beslemelerini doğrudan PD'den aldığı için brownout'tan bağımsız çalışır.",
+        "Yanlış. Brownout yalnızca CAN cihazlarını etkiler; PWM çıkışları çalışmaya devam eder."
+      ],
+      "correctIndex": 1,
+      "explanation": "Brownout protection durumunda roboRIO aynı anda altı şey yapar: PWM çıkışlarını kapatır, 6V, 5V ve 3.3V user rail'leri devre dışı bırakır, GPIO çıkışlarını High-Z konumuna alır, relay çıkışlarını kapatır, CAN üzerindeki motor controller'lara açık bir disable komutu gönderir ve PCM ile PH gibi pnömatik cihazları devre dışı bırakır. Yani PWM, CAN ve pnömatik yolların üçü birden durur. Üçüncü şık besleme ile komutu birbirine karıştırır: motor controller'lar gerçekten de beslemelerini PD'den alır ve elektriksel olarak ayaktadır, ancak roboRIO'dan gelen disable komutu nedeniyle motoru sürmeyi bırakırlar. Cihazın ışığının yanıyor olması onun komut aldığı anlamına gelmez.",
+      "hint": "Bir motor controller'ın beslenmesi ile komut alması aynı şey mi? Brownout hangisini keser?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html"
+    },
+    {
+      "id": "electrical-05-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki battery bakım uygulamalarından dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir takımın pit'teki battery bakım alışkanlıkları aşağıda listelenmiştir.",
+      "elements": [
+        "Maçtan çıkan battery, kasası soğuyana kadar bekletiliyor ve ancak elle dokunulduğunda ılık gelmediğinde şarja takılıyor.",
+        "Battery'ler raftan alınırken ve robota taşınırken kablolarından tutulup çekiliyor.",
+        "Kullanılmayan battery'ler tam şarjlı olarak saklanıyor.",
+        "Şarj sırasında battery'nin havalandırma delikleri açık bırakılıyor ve ortalama şarj akımı 6A'in altında tutuluyor.",
+        "İç direnci 0.020 ohm'u aşan battery'ler maçlarda kullanılmıyor, yalnızca pit denemelerinde tutuluyor."
+      ],
+      "faultIndex": 1,
+      "explanation": "Battery'yi kablolarından tutup çekmek iç yapısında yorulma hasarı yaratır; bu hasar battery'nin internal resistance'ını yükseltir ve battery'yi zamanından önce tüketir. Sonuç doğrudan bu modülün konusudur: iç direnç yükseldikçe aynı akımda gerilim daha çok düşer, yani brownout eşiğine daha çabuk ulaşılır. Battery kasasından tutulmalıdır. Aynı nedenle battery düşürülmemelidir; düşme iç plakaları eğebilir. Diğer dört uygulama doğrudur. Şarj öncesi soğutma ve tam şarjlı saklama dokümantasyonun önerileridir. Havalandırma deliklerinin şarj sırasında kapatılmaması ve ortalama şarj akımının 6A'i aşmaması ise kural gereğidir.",
+      "hint": "Öğelerden biri battery'ye fiziksel hasar veriyor. Bu hasarın brownout ile ne ilgisi olabilir?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R601",
+          "season": "2026",
+          "topic": "tek battery; şarj için havalandırma delikleri kapatılmamalı"
+        },
+        {
+          "rule": "R604",
+          "season": "2026",
+          "topic": "şarjda 6A ortalama şarj akımı aşılamaz"
+        }
+      ],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html",
+      "sourceNote": "Havalandırma ve battery özellikleri resmi denetim listesinden doğrulandı: \"A single 12V, 17-18.2Ah ROBOT battery, securely fastened inside ROBOT with vents unobstructed for charging. <R601, R605, & R606>\" https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"
+    },
+    {
+      "id": "electrical-05-d5",
+      "type": "numeric",
+      "prompt": "Bir battery'nin iç direncini ölçtünüz. Kaç ohm'un üzerindeki bir değer, o battery'nin artık maçlarda kullanılmamasının değerlendirilmesi gerektiğine işaret eder? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 0.02,
+      "tolerance": 0.0005,
+      "unit": "ohm",
+      "explanation": "Dokümantasyon üç ayrı değer verir ve bunlar karıştırılmamalıdır. Çoğu battery'nin üretici değeri 0.011 ohm'dur. İdeal iç direnç 0.015 ohm'un altındadır. 0.020 ohm'u aşan bir battery için ise maçlarda kullanılmaması değerlendirilmelidir; bu bir kural yasağı değil, dokümantasyonun önerisidir. Sınırın önemi doğrudan brownout ile ilgilidir: iç direnç yükseldikçe aynı akım çekişinde gerilim daha çok düşer, dolayısıyla battery dolu olsa bile robot koruma eşiğine daha çabuk iner. Yani yüksek iç dirençli bir battery, şarj göstergesi iyi görünse de maç ortasında robotu düşürebilir.",
+      "hint": "Üç değer var: üretici tipik değeri, ideal üst sınır ve kullanmama sınırı. Soru hangisini soruyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"
+    },
+    {
+      "id": "electrical-05-d6",
+      "type": "multiple_choice",
+      "prompt": "Maçtan on dakika önce robot boşta beklerken driver station 12.5V gösteriyor. Ne yapmalısınız?",
+      "options": [
+        "Battery'yi yüksek akımlı bir şarj cihazına takıp maça kadar kalan on dakikada takviye etmelisiniz.",
+        "Bir şey yapmanıza gerek yok; 12V nominal bir battery için 12.5V fazlasıyla yeterlidir.",
+        "Battery'yi değiştirip şarj etmelisiniz; boştaki bir robotta 12.5V okuyan bir battery maç öncesi değiştirilmelidir.",
+        "Bir şey yapmanıza gerek yok; gerilim yalnızca yük altında ölçüldüğünde anlam taşır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Dokümantasyon bu durumu açıkça tarif eder: boştaki bir robotta 12.5V okuyan battery'ler maçtan önce değiştirilmeli ve şarj edilmelidir. Tam dolu bir battery açık devrede 12.7-13.5V arasındadır, dolayısıyla 12.5V zaten kısmen boşalmış demektir ve yük altında gerilim buradan çok daha aşağı iner. İkinci şık yaygın bir yanılgıdır: cihazın adı yanıltıcıdır, tam dolu bir battery 12.0V değildir. Birinci şık hem kuralın izin verdiği ortalama şarj akımıyla çelişir hem de on dakikada anlamlı bir şarj sağlamaz. Dördüncü şık yanlıştır çünkü boştaki gerilim şarj durumunun doğrudan bir göstergesidir.",
+      "hint": "Tam dolu bir battery boşta kaç volt gösterir? 12.5V bu aralığın neresinde kalıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"
+    },
+    {
+      "id": "electrical-05-d7",
+      "type": "multiple_choice",
+      "prompt": "Takım, maçlar arasında battery'leri daha hızlı doldurmak için etkinliğe 10A değerinde bir şarj cihazı getirmiş ve cihazı en yüksek ayarında kullanıyor. Bu uygun mudur?",
+      "options": [
+        "Uygundur; şarj hızı yalnızca battery ömrünü ilgilendirir, bir kural konusu değildir.",
+        "Uygun değildir; etkinlikte takımların kendi şarj cihazını kullanması yasaktır, şarj yalnızca görevlilerin istasyonunda yapılır.",
+        "Uygundur; cihaz yalnızca maçlar arasında ve kısa süreyle en yüksek ayarında çalıştırıldığı sürece sakınca yoktur.",
+        "Uygun değildir; kural, bir robot battery'sinin 6A ortalama şarj akımını aşacak şekilde şarj edilmesine izin vermez."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural, bir robot battery'sini şarj eden hiçbir cihazın 6A ortalama şarj akımını aşacak şekilde kullanılamayacağını söyler. Buradaki incelik önemlidir: kısıt cihazın etiketinde yazan değer değil, uygulanan ortalama şarj akımıdır. 10A'lik bir cihaz, ortalama şarj akımı 6A'i aşmayacak şekilde ayarlanabiliyorsa kullanılabilir; sorudaki gibi en yüksek ayarında çalıştırılırsa kural ihlal edilir. Üçüncü şık bu nedenle yanlıştır: süre kısaltmak ortalama akımı kuralın izin verdiği seviyeye indirmez. İkinci şık ise fazla ileri gider; takımlar kendi şarj cihazlarını kullanabilir, ayrıca kural şarj cihazının uygun Anderson SB connector'a sahip olmasını ister. Mühendislik gerekçesi de aynı yöne bakar: hızlı şarj battery'yi ısıtır ve maçtan yeni çıkmış, zaten sıcak bir battery'nin soğumadan yüksek akımla şarj edilmesi ömrünü kısaltır.",
+      "hint": "Kısıt cihazın etiketinde yazan değer mi, yoksa gerçekten uygulanan şarj akımı mı?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R604",
+          "season": "2026",
+          "topic": "şarjda 6A ortalama şarj akımı aşılamaz; etkinlik boyunca geçerlidir"
+        },
+        {
+          "rule": "R603",
+          "season": "2026",
+          "topic": "şarj cihazında uygun Anderson SB connector bulunmalı"
+        }
+      ],
+      "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf",
+      "sourceNote": "R603 ve R604'ün metni iki bağımsız ayna üzerinden doğrulandı (frcmanual.com ve frctools.com); resmi PDF 8. bölüme ulaşmadan kesildiği ve bu iki kural Team Update ile denetim listesinde geçmediği için resmi kaynaktan doğrulanamadı. Şarj öncesi soğutma önerisi: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"
+    },
+    {
+      "id": "electrical-05-d8",
+      "type": "diagnose",
+      "symptom": "Robot sürüşte tek başına ve climber çalışırken tek başına sorunsuz. Ancak maç sonunda climber çalışırken aynı anda sürüş yapıldığında robot iki kez brownout yaşadı. Battery yeni ve iç direnci 0.011 ohm ölçüldü. Hiçbir breaker atmadı ve CAN zincirinde sorun yok.",
+      "prompt": "Bu duruma en uygun çözüm nedir?",
+      "options": [
+        "Bir güç bütçesi çıkarıp climber ile sürüşün aynı anda tam güçle çalışmasını yazılımda engellemek veya bu mekanizmalara current limit uygulamak.",
+        "İlgili kanallara daha yüksek değerli breaker'lar takarak akım sınırını yükseltmek.",
+        "Battery'yi değiştirmek; iç direnç ölçümü yanıltıcı olabilir.",
+        "roboRIO 2 kullanılıyorsa brownout eşiğini yazılımdan düşürerek korumanın devreye girmesini geciktirmek."
+      ],
+      "correctIndex": 0,
+      "explanation": "Belirti nedeni doğrudan gösteriyor: her mekanizma tek başına sorunsuz, ikisi birlikte değil. Yani sorun tek bir devrede değil, toplam current draw'da. Dokümantasyonun brownout'tan kaçınma önerileri tam olarak budur: sürekli çekilebilecek en yüksek akımı belirlemek, mekanizmalar arasında bir güç bütçesi yapmak ve birbirini dışlayan mekanizmaların aynı anda çalışmasını yazılımda engellemeyi değerlendirmek. Üçüncü şık elenir, çünkü 0.011 ohm üreticinin tipik değeridir ve battery sağlıklıdır. İkinci şık durumu kötüleştirir: breaker kabloyu korur, battery'yi değil; değerini yükseltmek daha fazla akım geçmesine izin verir ve gerilim daha da düşer, ayrıca kanal başına izin verilen üst sınırlar bellidir. Dördüncü şık ise sorunu çözmez: eşiği düşürmek robota güç eklemez, yalnızca korumanın daha düşük bir gerilimde devreye girmesini sağlar ve aşırı akım çekişi olduğu gibi kalır. Üstelik bu ayar yalnızca roboRIO 2'de mümkündür; roboRIO 1'de eşik sabittir.",
+      "hint": "Her mekanizma tek başına çalışıyor, birlikte çalışmıyor. Bu bilgi sorunu hangi tek büyüklüğe indirger?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html",
+      "sourceNote": "Battery iç direnç değerleri için: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"
+    }
+  ]
+}

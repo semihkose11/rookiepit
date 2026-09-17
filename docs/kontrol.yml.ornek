@@ -1,0 +1,21 @@
+# Her push ve pull request'te depo bütünlüğünü denetler.
+# Denetlenenler: modül kaynaklarının şeması, kaynak adreslerinin varlığı,
+# kart merdiveni, sayfa ile kaynak arasındaki tutarlılık, karşılama
+# sayfasının duyurduğu sayılar, görev altyapısının bütünlüğü ve
+# config.js içine gizli bir anahtar kaçıp kaçmadığı.
+name: kontrol
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  kontrol:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node tools/kontrol.mjs

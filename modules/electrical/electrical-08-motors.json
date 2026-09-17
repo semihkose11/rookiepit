@@ -1,0 +1,380 @@
+{
+  "id": "electrical-08-motors",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 8,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Motorlar ve Motor Controller'lar",
+  "summary": "Hangi motorların kullanılabileceğini, bir motor controller'a kaç motor bağlanabileceğini, PWM ve CAN cihazlarının roboRIO ile nasıl ilişkilendiğini ve motor çıkışlarının nereye bağlanamayacağını öğretir.",
+  "prerequisites": [
+    "electrical-02-circuit-protection",
+    "electrical-03-can-bus"
+  ],
+  "estimatedMinutes": 15,
+  "concept": {
+    "body": "Robottaki her aktüatör, doğrudan besleme hattına değil, bir power regulating device üzerinden sürülür. Motorlar için bu cihaz motor controller'dır. Motor controller'lar kapalı bir model listesinden seçilir; motorlar ise hem tek tek sayılan modellerden hem de kuralın tanımladığı kategorilerden gelebilir. Piyasadan alınmış, listelenmemiş bir sürücüyü takmak ise hiçbir koşulda serbest değildir.\n\nTemel kısıt şudur: motor controller'ların büyük çoğunluğu tek ve yalnızca tek bir elektriksel yükü sürebilir. Kurallar bu kurala dar bir istisna listesi tanır; AndyMark 9015, VEXpro BAG, PG, NeveRest, Snow Blower ve HD Hex gibi belirli motorlarda tek bir controller'a en fazla iki motor bağlanabilir. Listede olmayan bir motorda iki motoru tek controller'a bağlamak kurallara aykırıdır.\n\nKontrol tarafında iki yol vardır. PWM ile sürülen motor controller'lar, relay module'ler ve servo'lar roboRIO üzerindeki karşılık gelen porta bağlanır: relay'ler Relay portuna, servo ve PWM controller'lar PWM portuna. Bu bağlantı doğrudan, WCP Spartan Sensor Board üzerinden veya kurallara uygun bir MXP bağlantısıyla yapılabilir. CAN ile sürülen motor controller'lar ise enable ve disable girişlerini roboRIO'dan alır; bu, doğrudan ya da zincirdeki başka bir CAN cihazı üzerinden olabilir.\n\nSon olarak bir yasak vardır ve sık ihlal edilir: ne 12VDC besleme ne de relay module veya motor controller çıkışları roboRIO'ya doğrudan bağlanabilir. Kuralın tek istisnası roboRIO'nun bu iş için ayrılmış 12VDC güç girişidir; roboRIO yalnızca oradan, PD üzerinden ve 10A koruma arkasından beslenir. Sinyal portlarının hiçbiri güç taşımaz.",
+    "keyTerms": [
+      {
+        "term": "power regulating device",
+        "glossTr": "aktüatöre giden gücü ayarlayan cihaz"
+      },
+      {
+        "term": "actuator",
+        "glossTr": "aktüatör; hareket üreten eleman"
+      },
+      {
+        "term": "PWM",
+        "glossTr": "darbe genişlik modülasyonu; sinyal kablosuyla kontrol yöntemi"
+      },
+      {
+        "term": "relay module",
+        "glossTr": "aç-kapa kontrolü sağlayan röle modülü"
+      },
+      {
+        "term": "servo",
+        "glossTr": "açı kontrolü yapan küçük motorlu birim"
+      },
+      {
+        "term": "stall current",
+        "glossTr": "motor dönemeyip durduğunda çektiği akım"
+      },
+      {
+        "term": "electrical load",
+        "glossTr": "elektriksel yük; bir çıkışa bağlı cihaz"
+      },
+      {
+        "term": "brushless motor",
+        "glossTr": "fırçasız motor"
+      },
+      {
+        "term": "COTS",
+        "glossTr": "Commercial Off-The-Shelf; piyasadan hazır alınan ürün"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-08-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "MOTORS",
+      "front": "Bir motor controller tek bir yük sürer.",
+      "back": "Motor controller'ların büyük çoğunluğu tek ve yalnızca tek bir elektriksel yükü sürebilir. Kurallar bu kurala dar bir istisna tanır: AndyMark 9015, VEXpro BAG, PG, NeveRest, Snow Blower ve HD Hex gibi belirli motorlarda tek bir controller'a en fazla iki motor bağlanabilir. Listede olmayan bir motorda iki motoru tek controller'a bağlamak kurallara aykırıdır; toplam akımın controller'ın sınırının altında kalması bunu değiştirmez. Motor controller'lar da motorlar gibi listelenmiştir, piyasadan alınmış listelenmemiş bir sürücü hiçbir koşulda kullanılamaz.",
+      "takeaway": "Akım sınırı değil, kuralın kendisi belirleyicidir: bir controller, bir yük",
+      "tags": [
+        "motor controller",
+        "tek yük",
+        "istisna listesi"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-08-d1",
+        "electrical-08-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R505",
+          "season": "2026",
+          "topic": "motor controller'lar tek ve yalnızca tek elektriksel yük sürer; belirli motorlarda en fazla iki"
+        },
+        {
+          "rule": "R504",
+          "season": "2026",
+          "topic": "aktüatörler listelenmiş power regulating device'lar ile sürülür"
+        }
+      ]
+    },
+    {
+      "id": "electrical-08-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "MOTORS",
+      "front": "roboRIO'nun sinyal portlarına neden hiçbir güç bağlanamaz?",
+      "back": "roboRIO bir sinyal cihazıdır; girişleri motor sürme gerilimini taşımak için tasarlanmamıştır. Bu yüzden ne 12VDC besleme ne de relay module veya motor controller çıkışları roboRIO'ya doğrudan bağlanabilir. Kuralın tek istisnası roboRIO'nun bu iş için ayrılmış 12VDC güç girişidir; besleme oradan, PD üzerindeki switchable olmayan ve 10A ile korunan bir kanaldan gelir. Kontrol tarafında iki ayrı yol vardır: PWM ile sürülen controller'lar, relay module'ler ve servo'lar roboRIO'nun karşılık gelen portuna bağlanır; CAN ile sürülenler enable ve disable girişlerini zincir üzerinden roboRIO'dan alır.",
+      "takeaway": "Güç ve sinyal ayrı yollardır; roboRIO'ya güç yalnızca kendi 12V girişinden girer",
+      "tags": [
+        "PWM",
+        "CAN",
+        "12V girişi"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-08-d2",
+        "electrical-08-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R711",
+          "season": "2026",
+          "topic": "12VDC besleme ve motor controller çıkışları roboRIO'ya doğrudan bağlanamaz"
+        },
+        {
+          "rule": "R712",
+          "season": "2026",
+          "topic": "PWM motor controller, relay module ve servo roboRIO'nun karşılık gelen portuna bağlanır"
+        }
+      ]
+    },
+    {
+      "id": "electrical-08-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "MOTORS",
+      "front": "Mekanizmanın gücü maç boyunca azalıyor, controller elle tutulamayacak kadar sıcak ama hiçbir breaker atmadı.",
+      "back": "Belirtiler birlikte okunduğunda tek bir tabloya işaret eder: akım breaker'ı attıracak seviyeye çıkmıyor ama sürekli yüksek kalıyor. Motor ve controller ısınır, ısındıkça performans düşer. Koruma elemanının atmaması sorunun olmadığı anlamına gelmez; breaker kabloyu korur, motorun ısınmasını değil. Çözüm mekanik yükü azaltmak veya yazılımda current limit uygulamaktır. Controller'ı değiştirmek belirtiyi bir sonraki maçta aynen tekrarlatır, çünkü sebebi ortadan kaldırmaz.",
+      "takeaway": "Breaker'ın atmaması, akımın makul olduğunu göstermez",
+      "tags": [
+        "current limit",
+        "ısınma",
+        "mekanik yük"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-08-d8"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-08-d1",
+      "type": "multiple_choice",
+      "prompt": "Takım, bir mekanizmada güç artırmak için iki NEO brushless motoru tek bir SPARK MAX motor controller'ın çıkışına paralel bağlamayı öneriyor. Bu uygun mudur?",
+      "options": [
+        "Uygun değildir. Motor controller'lar kural gereği tek ve yalnızca tek bir elektriksel yük sürer; iki motora izin verilen dar istisna listesinde NEO yoktur.",
+        "Uygundur; iki motorun toplam akımı controller'ın 40A sınırını aşmadığı sürece sorun yoktur.",
+        "Uygundur, iki motor birebir aynı model olduğu sürece.",
+        "Uygun değildir; hiçbir motor controller'a ikiden fazla yük bağlanamaz, ancak iki motor her modelde serbesttir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kural, motor controller'ların tek ve yalnızca tek bir elektriksel yük sürmesini ister ve buna yalnızca belirli motorlar için istisna tanır: AndyMark 9015, VEXpro BAG, PG, NeveRest, Snow Blower ve HD Hex gibi modellerde tek controller'a en fazla iki motor bağlanabilir. NEO bu listede değildir. İkinci şık yaygın bir yanılgıdır: sınır akım değil, kuralın izin verdiği yük sayısıdır; akım hesabı doğru çıksa da bağlantı kurallara aykırı kalır. Üçüncü şık da yeterli değildir, çünkü belirleyici olan motorların birbirinin aynısı olması değil, o modelin istisna listesinde bulunmasıdır. Doğru çözüm her motora kendi controller'ını vermektir.",
+      "hint": "Sınırı belirleyen akım mı, yoksa kuralın izin verdiği yük sayısı mı? Kullandığınız motor istisna listesinde mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R505",
+          "season": "2026",
+          "topic": "motor controller'lar tek ve yalnızca tek elektriksel yük sürer; belirli motorlarda controller başına en fazla iki"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor. Motor başına koruma sınırı için ayrıca bkz. electrical-02."
+    },
+    {
+      "id": "electrical-08-d2",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki kurulumda kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takım kontrol sistemini kurmuş ve bağlantıları anlatıyor.",
+      "elements": [
+        "PWM ile sürülen motor controller'ın sinyal kablosu roboRIO üzerindeki karşılık gelen PWM portuna bağlanmış.",
+        "Bir motor controller'ın motor çıkışı, mekanizmanın konumunu okumak için roboRIO'nun bir analog portuna da bağlanmış.",
+        "CAN ile sürülen motor controller'lar zincir üzerinden roboRIO'dan enable ve disable girişlerini alıyor.",
+        "Her motor controller'ın beslemesi PD üzerinde 40A breaker takılı bir high-current channel'dan 12 AWG kablo ile geliyor.",
+        "Bir servo, roboRIO üzerindeki karşılık gelen porta bağlanmış."
+      ],
+      "faultIndex": 1,
+      "explanation": "Kural açıkça yasaklar: ne 12VDC besleme ne de relay module veya motor controller çıkışları roboRIO'ya doğrudan bağlanabilir. roboRIO bir sinyal cihazıdır ve girişleri motor sürme gerilimini taşımak için tasarlanmamıştır; böyle bir bağlantı roboRIO'yu kalıcı olarak bozar. Kuralın tek istisnası roboRIO'nun bu iş için ayrılmış 12VDC güç girişidir; roboRIO oradan beslenir ve yasak bunun dışındaki portlar içindir. Konum okumak isteniyorsa doğru yol bir encoder veya potentiometer gibi bir sensor kullanmaktır. Diğer dört öğe kurallara uygundur: PWM cihazları roboRIO'nun karşılık gelen portuna bağlanır, CAN motor controller'lar enable ve disable girişlerini roboRIO'dan doğrudan veya zincirdeki başka bir CAN cihazı üzerinden alabilir, motor controller besleme koruması 40A üst sınırındadır ve o değer için 12 AWG kablo yeterlidir, servo'lar da roboRIO'nun karşılık gelen portuna bağlanır.",
+      "hint": "roboRIO hangi tür bağlantıyı taşımak için tasarlanmış? Öğelerden biri ona güç taşıyan bir hat bağlıyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R711",
+          "season": "2026",
+          "topic": "12VDC besleme ve motor controller çıkışları roboRIO'ya doğrudan bağlanamaz"
+        },
+        {
+          "rule": "R712",
+          "season": "2026",
+          "topic": "çeldirici: PWM motor controller, relay module ve servo roboRIO'nun karşılık gelen portuna bağlanır"
+        },
+        {
+          "rule": "R714",
+          "season": "2026",
+          "topic": "çeldirici: CAN motor controller'lar enable/disable girişini roboRIO'dan alır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-08-d3",
+      "type": "numeric",
+      "prompt": "Bir PWM COTS döner (rotational) servo'nun kurallara uygun olabilmesi için stall current değeri en fazla kaç amper olabilir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 4,
+      "tolerance": 0,
+      "unit": "A",
+      "explanation": "Kural döner PWM COTS servo'ları iki ayrı ölçüyle sınırlar: stall current en fazla 4A ve 6V'ta mekanik çıkış gücü en fazla 8W. Doğrusal (linear) PWM COTS servo'lar ayrı bir maddededir ve onlarda sınır 6V'ta en fazla 1A stall current'tır; bu nedenle servo'nun türünü bilmeden değer aramak yanlış sonuca götürür. İki ölçünün birlikte verilmesi önemlidir, çünkü bir servo'nun kataloğunda yalnızca tork ve hız yazıyor olabilir; kurala uygunluk için üreticinin verdiği stall current ve çıkış gücü değerlerine bakmak gerekir. Stall current, motorun yük altında dönemeyip durduğu andaki akımdır ve normal çalışma akımından çok daha yüksektir; bu nedenle koruma ve kablo seçimi de bu değere göre değerlendirilir.",
+      "hint": "Kural servo'yu iki ayrı ölçüyle sınırlar. Soru bunlardan akım olanını soruyor.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R501",
+          "season": "2026",
+          "topic": "döner PWM COTS servo: stall current en fazla 4A ve 6V'ta çıkış gücü en fazla 8W; doğrusal servo: en fazla 1A"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-08-d4",
+      "type": "multiple_choice",
+      "prompt": "Takım, elindeki akülü matkabın içinden çıkan güçlü bir 12V motoru bir mekanizmada kullanmak istiyor. Motor 12V için üretilmiş ve kolayca bulunuyor. Bu uygun mudur?",
+      "options": [
+        "Uygundur; 12V için üretilmiş her motor robotta kullanılabilir.",
+        "Kurallar hangi motorların kullanılabileceğini listeler; bir motorun 12V olması tek başına yeterli değildir, listedeki kategorilerden birine girmesi gerekir.",
+        "Uygundur, motor 40A breaker ile korunduğu sürece.",
+        "Uygun değildir; robotta yalnızca kit of parts ile gelen motorlar kullanılabilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural izin verilen motorları tek tek ve kategori olarak listeler; listede yer almayan bir motor kullanılamaz. Liste yalnızca belirli modellerden ibaret değildir, bazı kategoriler de tanımlanmıştır; örneğin nominal 120mm ve 12VDC'de 10W sınırları içindeki fan'lar, COTS bilgisayar cihazlarının içinde fabrikada takılı gelen titreşim ve otomatik odak motorları, belirli sınırlar içindeki PWM COTS servo'lar ve 12V için dereceli COTS brushed motorlar izinlidir. Bu son kategori üç koşulu birden ister: motor COTS ve brushed olacak, onaylı bir power regulating device ile sürülecek ve 20A veya daha küçük bir breaker'ın arkasında bulunacak. Somut olarak matkabın içinden çıkan motor brushed ve 12V için dereceli ise, bu üç koşul sağlandığı sürece kategoriye girer ve kullanılabilir; brushless ise ya da 20A koruma sağlanamıyorsa kullanılamaz. Bu nedenle sorunun doğru cevabı kesin bir evet ya da hayır değil, listeye bakmaktır: söz konusu matkap motoru listedeki bir kategoriye giriyorsa kullanılabilir, girmiyorsa kullanılamaz. Dördüncü şık fazla dardır; liste kit of parts ile sınırlı değildir. Üçüncü şık ise koruma değerini yanlış hatırlar: COTS brushed motor kategorisinde breaker değeri gerçekten belirleyicidir, ancak üst sınır 40A değil 20A'dır.",
+      "hint": "Kural motorun gerilimine mi, yoksa listede bulunup bulunmadığına mı bakıyor? Liste yalnızca model adlarından mı oluşuyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R501",
+          "season": "2026",
+          "topic": "izin verilen motorlar listelenmiştir: tek tek modeller ve kategoriler; COTS brushed motorlar 12V dereceli ve en fazla 20A breaker arkasında olmak koşuluyla"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-08-d5",
+      "type": "diagnose",
+      "symptom": "Robotta dört CAN motor controller ve bir PWM motor controller var. Kod deploy edildi, driver station bağlantısı sorunsuz ve robot enable durumda. Dört CAN controller komutlara yanıt veriyor, PWM ile sürülen controller ise hiç tepki vermiyor. PWM controller'ın besleme ledi yanıyor ve breaker'ı atmamış.",
+      "prompt": "İlk olarak neyi kontrol edersiniz?",
+      "options": [
+        "PWM controller'ın CAN ID'sini; büyük olasılıkla diğerleriyle çakışıyor.",
+        "Battery gerilimini; robot brownout yaşıyor olabilir.",
+        "PWM sinyal kablosunun roboRIO üzerindeki karşılık gelen porta gerçekten takılı olup olmadığını ve koddaki port numarasının bu porta uyduğunu.",
+        "CAN zincirindeki terminating resistor'ları."
+      ],
+      "correctIndex": 2,
+      "explanation": "Belirti sorunu tek bir cihaza indirger ve o cihaz diğerlerinden farklı bir yolla sürülmektedir. PWM ile sürülen cihazlar roboRIO üzerindeki karşılık gelen porta bağlanır; sinyal kablosu takılı değilse veya kodda başka bir port numarası kullanılıyorsa cihaz beslense bile hiçbir komut almaz. Besleme ledinin yanıyor olması tam da bu ayrımı gösterir: güç var, sinyal yok. Birinci şık elenir çünkü PWM ile sürülen bir cihazın CAN ID'si yoktur; kontrol yolu CAN değildir. İkinci ve dördüncü şıklar da elenir çünkü brownout ve CAN zinciri sorunları dört CAN controller'ı da etkilerdi, oysa onlar sorunsuz çalışıyor.",
+      "hint": "Çalışmayan cihaz diğerlerinden hangi yönüyle ayrılıyor? O yolun kendine ait bir bağlantısı var mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R712",
+          "season": "2026",
+          "topic": "PWM motor controller, relay module ve servo roboRIO'nun karşılık gelen portuna bağlanır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-08-d6",
+      "type": "multiple_choice",
+      "prompt": "Takım, motor controller'ları soğutmak için elektronik panosuna bir fan eklemek istiyor. Elinde 140mm çapında ve 12VDC'de 14W sürekli güç çeken bir bilgisayar fanı var. Bu fan kullanılabilir mi?",
+      "options": [
+        "Kullanılabilir; fan'lar motor sayılmadığı için kurallarda bir sınır yoktur.",
+        "Kullanılamaz; robotta hiçbir fan kullanılamaz.",
+        "Kullanılabilir; yalnızca boyut sınırı vardır ve 140mm bu sınırın içindedir.",
+        "Kullanılamaz. Fan'lar için hem boyut hem güç sınırı vardır: nominal 120mm ve 12VDC'de sürekli 10W aşılamaz; bu fan her iki sınırı da aşıyor."
+      ],
+      "correctIndex": 3,
+      "explanation": "Fan'lar izin verilen motorlar listesinde ayrı bir kategori olarak yer alır ve iki ölçüyle sınırlanır: nominal boyut en fazla 120mm ve 12VDC'de sürekli elektriksel giriş gücü en fazla 10W. Sorudaki fan 140mm ve 14W ile iki sınırı da aşmaktadır, dolayısıyla kullanılamaz. Birinci şık yanlıştır çünkü fan bir motor içerir ve motor listesinde kendi kategorisi vardır. Üçüncü şık sınırlardan yalnızca birini hatırlar; iki ölçünün birden sağlanması gerekir. İkinci şık ise fazla ileri gider, sınırlar içinde kalan fan'lar serbesttir. Ayrıca fan'ların koruma değeri için de ayrı bir üst sınır bulunur.",
+      "hint": "Fan bir motor içerir mi? İçeriyorsa kuralın onun için tanımladığı kaç ölçü var?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R501",
+          "season": "2026",
+          "topic": "fan'lar en fazla nominal 120mm ve 12VDC'de sürekli 10W"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "fan'lar için en fazla 20A koruma"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor. Fan koruma sınırı için bkz. electrical-02."
+    },
+    {
+      "id": "electrical-08-d7",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki dört uygulamadan üçü kurallara uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Bir takım mekanizmalarının motor ve controller seçimlerini anlatıyor.",
+      "elements": [
+        "Dört tekerlekli drivetrain'de her tekerlek kendi Kraken X60 motoruna ve her motor kendi entegre motor controller'ına sahip.",
+        "Bir mekanizmada iki VEXpro BAG motoru tek bir motor controller'a bağlanmış.",
+        "Bir mekanizmada, piyasadan alınmış ve kurallarda listelenmeyen bir marka motor controller kullanılmış.",
+        "Bir döner PWM servo, roboRIO'nun karşılık gelen portuna bağlanmış ve stall current değeri 3A."
+      ],
+      "faultIndex": 2,
+      "explanation": "Motor controller'lar da motorlar gibi listelenmiştir; listede yer almayan bir marka veya model kullanılamaz. Kural, aktüatörlerin bir power regulating device üzerinden sürülmesini ister ve hangi cihazların bu amaçla kullanılabileceğini tek tek sayar. Diğer üç uygulama uygundur. Dört tekerlekli bir drivetrain'de her motorun kendi controller'ına sahip olması temel kuraldır ve Kraken X60 entegre controller'ı ile kullanılır. İki VEXpro BAG motorunun tek controller'a bağlanması ise istisna listesinde yer alan bir durumdur; BAG, controller başına iki motora izin verilen modellerden biridir. Döner servo'nun 3A stall current değeri de o tür için geçerli olan 4A üst sınırının altındadır.",
+      "hint": "Üç öğe motorlarla, biri motoru süren cihazla ilgili. O cihaz için de bir liste var mı?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R504",
+          "season": "2026",
+          "topic": "aktüatörler listelenmiş power regulating device'lar ile sürülür"
+        },
+        {
+          "rule": "R505",
+          "season": "2026",
+          "topic": "çeldirici: VEXpro BAG controller başına iki motora izin verilen modellerden"
+        },
+        {
+          "rule": "R501",
+          "season": "2026",
+          "topic": "çeldirici: PWM servo stall current en fazla 4A"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-08-d8",
+      "type": "diagnose",
+      "symptom": "Maçların ortasında bir mekanizmanın gücü belirgin şekilde azalıyor, sonra maç sonuna doğru toparlanıyor. Pit'te mekanizmanın motor controller'ı elle dokunulamayacak kadar sıcak. Breaker atmıyor, brownout yaşanmıyor, CAN zinciri sağlam ve battery iç direnci normal.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Mekanizma sürekli olarak kapasitesinin üzerinde akım çekiyor; motor ve controller ısınıyor ve ısındıkça performans düşüyor. Mekanik yük azaltılmalı veya yazılımda current limit uygulanmalıdır.",
+        "Motor controller arızalıdır ve değiştirilmelidir.",
+        "Battery yetersizdir; daha yüksek kapasiteli bir battery kullanılmalıdır.",
+        "CAN zincirinde gecikme vardır; controller komutları geç alıyor."
+      ],
+      "correctIndex": 0,
+      "explanation": "Belirtiler birlikte okunduğunda tek bir tabloya işaret eder: güç kademeli olarak azalıyor, controller aşırı ısınmış, ancak koruma elemanlarının hiçbiri devreye girmemiş. Bu, akımın breaker'ı attıracak seviyeye çıkmadığı ama sürekli olarak yüksek kaldığı bir yüklenme durumudur. Breaker'ın atmaması sorun olmadığı anlamına gelmez; breaker kabloyu korur, motoru veya controller'ı değil. Çözüm mekanik yükü azaltmak, redüksiyon oranını gözden geçirmek veya yazılımda current limit uygulamaktır. İkinci şık aceledir: controller'ı değiştirmek aynı yük altında aynı sonucu verir. Üçüncü şık elenir çünkü battery iç direnci normal ve brownout yaşanmıyor. Dördüncü şık da elenir; CAN gecikmesi ısınma yaratmaz ve zincir sağlam bulunmuştur.",
+      "hint": "Hiçbir koruma devreye girmemiş ama bir şey aşırı ısınmış. Breaker'ın atmaması neyin kanıtı değildir?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html",
+      "sourceNote": "Breaker'ın kabloyu koruduğu, cihazı korumadığı ilkesi için bkz. electrical-02; kural metinleri: https://www.frcmanual.com/2026/robot-construction-rules-(r)"
+    }
+  ]
+}

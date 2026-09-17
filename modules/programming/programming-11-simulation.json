@@ -1,0 +1,288 @@
+{
+  "id": "programming-11-simulation",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 11,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Simulation ve Unit Test",
+  "summary": "Robot olmadan kodu denemenin yollarını, test dosyalarının nerede durduğunu, donanım nesnelerinin testler arasında nasıl kapatıldığını ve bir testin neyi doğrulayamayacağını öğretir.",
+  "prerequisites": [
+    "programming-04-subsystems"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Takımlar çoğu zaman kodu ellerinde gerçek bir robot olmadan denemek ister. WPILib bunun için robotun çeşitli özelliklerini basit gradle komutlarıyla simulation altında çalıştırma imkânı verir. Desktop Simulator'ın kullanılabilmesi için önce Desktop Support etkinleştirilmelidir; bu, proje oluşturulurken ilgili kutunun işaretlenmesiyle, WPILib: Change Desktop Support Enabled Setting komutuyla veya build.gradle içindeki includeDesktopSupport değerinin true yapılmasıyla olur. Kaynak burada uyarır: bu desteği açmanın istenmeyen sonuçları olabilir, çünkü bütün vendor'lar bu seçeneği desteklemez ve onların library'lerini kullanan kod simulation çalıştırılmaya çalışıldığında çökebilir.\n\nSimulation, VS Code'da WPILib: Simulate Robot Code komutuyla başlatılır; VS Code dışında Java için ./gradlew simulateJava, C++ için ./gradlew simulateNative kullanılır. WPILib düğmesinin yanında görülebilen çalıştır düğmesi simulation'ı düzgün kurmaz ve kullanılmamalıdır.\n\nUnit test, kodu mümkün olan en küçük birimlere bölüp her birimi ayrı ayrı sınamak demektir; robot kodunda bu, her subsystem'in kodunu tek başına sınamak anlamına gelebilir. Testler test source set'inin içine, yani src/test/java klasörüne konur. Bu source root'un dışındaki dosyaların test framework'üne erişimi yoktur ve çözülemeyen referanslar yüzünden build başarısız olur. Testler Command Palette'ten Test Robot Code seçilerek çalıştırılır ve her zaman masaüstünüzde simulation içinde çalışırlar.\n\nTestlerde donanım nesneleri açılıp kapatılır. Java'da bunun yolu AutoCloseable interface'ini ve close metodunu uygulamaktır; close içinde her üye nesnenin kendi close metodu çağrılır. BeforeEach ile işaretlenmiş metotlar her testten önce, AfterEach ile işaretlenmiş metotlar her testten sonra çalışır. Gerçek donanımın yerine PWMSim ve DoubleSolenoidSim gibi simulation sınıfları kullanılır. Ondalıklı karşılaştırma kesin olmadığı için bir DELTA değeri verilmelidir.",
+    "keyTerms": [
+      {
+        "term": "simulation",
+        "glossTr": "robot özelliklerinin bilgisayarda taklit edilmesi"
+      },
+      {
+        "term": "unit test",
+        "glossTr": "kodu en küçük birimlere bölüp her birimi ayrı sınama yöntemi"
+      },
+      {
+        "term": "test source set",
+        "glossTr": "test dosyalarının konulduğu ayrı kaynak klasörü"
+      },
+      {
+        "term": "AutoCloseable",
+        "glossTr": "close metoduyla kaynaklarını serbest bırakabilen interface"
+      },
+      {
+        "term": "BeforeEach",
+        "glossTr": "her testten önce çalışan metodu işaretleyen etiket"
+      },
+      {
+        "term": "AfterEach",
+        "glossTr": "her testten sonra çalışan metodu işaretleyen etiket"
+      },
+      {
+        "term": "PWMSim",
+        "glossTr": "bir PWM çıkışını testte taklit eden simulation sınıfı"
+      },
+      {
+        "term": "DELTA",
+        "glossTr": "ondalıklı karşılaştırmada kabul edilen hata payı"
+      },
+      {
+        "term": "Desktop Support",
+        "glossTr": "projenin masaüstünde çalışabilmesini açan ayar"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-11-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "SIMULATION",
+      "front": "Robot olmadan kodu denemenin belirli bir yolu var.",
+      "back": "WPILib robotun çeşitli özelliklerini basit gradle komutlarıyla simulation altında çalıştırma imkânı verir. Desktop Simulator'ın kullanılabilmesi için önce Desktop Support etkinleştirilmelidir; bu, proje oluşturulurken ilgili kutunun işaretlenmesiyle, Change Desktop Support Enabled Setting komutuyla veya build.gradle içindeki includeDesktopSupport değerinin true yapılmasıyla olur. Simulation VS Code'da Simulate Robot Code komutuyla başlatılır; VS Code dışında Java için gradlew simulateJava kullanılır. WPILib düğmesinin yanında görülebilen çalıştır düğmesi simulation'ı düzgün kurmaz ve kullanılmamalıdır. Unit test ise kodu mümkün olan en küçük birimlere bölüp her birimi ayrı sınamaktır; robot kodunda bu, her subsystem'in kodunu tek başına sınamak anlamına gelebilir.",
+      "takeaway": "Doğru komut belirlidir; en görünür düğme doğru düğme değildir",
+      "tags": [
+        "Desktop Support",
+        "simulateJava",
+        "unit test"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-11-d5",
+        "programming-11-d1"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-11-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "SIMULATION",
+      "front": "Testler arasında donanım nesnelerinin kapatılması neden şart?",
+      "back": "Testlerde gerçek donanımın yerine PWMSim ve DoubleSolenoidSim gibi simulation sınıfları kullanılır, ama bu nesneler yine de açılıp kapatılmalıdır. Java'da bunun yolu AutoCloseable interface'ini ve close metodunu uygulamaktır; close içinde her üye nesnenin kendi close metodu çağrılır. BeforeEach ile işaretlenmiş metotlar her testten önce, AfterEach ile işaretlenmiş metotlar her testten sonra çalışır. AfterEach yazılmazsa belirti sinsi bir biçimde ortaya çıkar: her test tek başına çalıştırıldığında geçer, hepsi birlikte çalıştırıldığında ilki geçer ve sonrakiler subsystem'in constructor'ında hata verir. Testlerin yeri de bir tercih değildir: src/test/java klasörüne konur ve bu source root'un dışındaki dosyaların test framework'üne erişimi yoktur.",
+      "takeaway": "Tek başına geçen bir test, birlikte geçeceği anlamına gelmez",
+      "tags": [
+        "AutoCloseable",
+        "AfterEach",
+        "src/test/java"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-11-d6",
+        "programming-11-d2"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-11-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "SIMULATION",
+      "front": "Bütün testler geçiyor, RioLog beklenen çıktıyı veriyor, motor dönmüyor.",
+      "back": "Testler her zaman masaüstünüzde simulation içinde çalışır ve subsystem'i kodun kendi port sabitiyle kurar. Yani test, kodun o port numarasıyla ne yaptığını doğrular; o port numarasının gerçekte hangi fiziksel çıkışa karşılık geldiğini doğrulamaz. Motor controller'ın ledinin hiç değişmemesi bu ayrımı gösterir: kod komutu üretti, ama komut başka bir yere gitti. Testin sınırını bilmek onu değersizleştirmez, nereye bakılacağını söyler. Geçen testler kodun mantığını eler ve aramayı port numarası ile kabloya çevirir. Benzer bir sınır simulation'ın kendisinde de vardır: bütün vendor'lar desktop desteğini sağlamaz ve onların library'lerini kullanan kod simulation çalıştırılmaya çalışıldığında çökebilir, oysa robota deploy etmek sorunsuz sürer.",
+      "takeaway": "Bir testin geçmesi, doğrulamadığı şey hakkında hiçbir şey söylemez",
+      "tags": [
+        "testin sınırı",
+        "port",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-11-d8",
+        "programming-11-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-11-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım robot kodu için unit test yazmaya başlamak istiyor ancak nereden başlayacağını bilmiyor. Kaynak, robot kodunda bir birimin ne olabileceğini nasıl tarif ediyor?",
+      "options": [
+        "Kod en küçük birimlere bölünür ve her birim ayrı sınanır; robot kodunda bu, her subsystem'i tek başına sınamak olabilir.",
+        "Bir birim tam bir maç senaryosudur; testler autonomous ve teleop dönemlerini uçtan uca birlikte çalıştırmalıdır.",
+        "Bir birim tek bir metottur ve kaynak yalnızca tek metotluk testleri geçerli kabul eder, sınıf düzeyinde test yazılamaz.",
+        "Bir birim tek bir donanım parçasıdır; test edilecek şey kod değil, motor ile sensor'ün fiziksel davranışıdır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynağın tanımı iki cümledir ve ikincisi robot koduna özeldir: unit test, kodu mümkün olan en küçük birimlere bölüp her birimi sınama yöntemidir; robot kodunda bu, her subsystem'in kodunu tek başına sınamak anlamına gelebilir. Bu, başlangıç noktasını da verir; takım tüm robotu değil, tek bir subsystem'i alır ve o subsystem'in metotları çağrıldığında doğru çıkışı verip vermediğini sınar. İkinci şık tam tersini önerir ve uçtan uca senaryolar unit test değildir; bir yerde bozulduğunda hangi birimin sorumlu olduğunu söylemezler. Üçüncü şık kaynakta olmayan bir kısıt uydurur. Dördüncü şık en yaygın yanılgıdır: test edilen şey koddur, donanımın fiziksel davranışı değil.",
+      "hint": "Kaynak robot kodu için özel bir örnek veriyor. O örnekteki birim ne kadar büyük?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html"
+    },
+    {
+      "id": "programming-11-d2",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci test sınıflarını src/main/java klasörünün içine, sınadığı subsystem'lerin yanına koydu. Kaynağa göre bunun sonucu ne olur ve testler nasıl çalıştırılır?",
+      "options": [
+        "Testler src/main/java içinde durabilir ancak yalnızca deploy edildikten sonra robot üzerinde çalıştırılabilirler.",
+        "Testler test source set'ine, yani src/test/java klasörüne konur; Command Palette'ten Test Robot Code seçilerek çalıştırılır.",
+        "Testlerin yeri fark etmez; hangi klasörde olurlarsa olsunlar build sırasında otomatik olarak ayrılır ve çalıştırılırlar.",
+        "Testler ayrı bir gradle projesine konmalıdır; robot projesinin içinde test dosyası bulunması build'i bozar."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynak yeri açıkça söyler: testler test source set'inin içine konur ve Java için bu klasör src/test/java'dır. Gerekçeyi de kaynak verir ve gerekçe deploy ile ilgili değildir: bu source root'un dışındaki dosyaların test framework'üne erişimi yoktur ve bu, çözülemeyen referanslar yüzünden build'in başarısız olmasına yol açar. Yani testleri src/main/java içine koyan bir öğrenci sessiz bir yanlışlık değil, doğrudan bir build hatası alır. Çalıştırma yolu da bellidir; Command Palette'ten Test Robot Code seçilir. Birinci şık testlerin robota gidip orada çalıştığını varsayar; kaynak testlerin her zaman masaüstünde simulation içinde çalıştığını söyler. Üçüncü şık kaynakta karşılığı olmayan bir otomatiklik varsayar. Dördüncü şık gereksiz bir ayrım önerir; robot projesi zaten test source set'ini barındıracak biçimde kurulur.",
+      "hint": "İki source set var. Hangisi robota gidiyor, hangisi yalnızca bilgisayarda kalıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html"
+    },
+    {
+      "id": "programming-11-d3",
+      "type": "debug_code",
+      "language": "java",
+      "prompt": "Bu test kalıyor, ancak beklenen değer ile alınan değer ekranda aynı görünüyor. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "code": "public class IntakeTest {\n  static final double DELTA = 1e-2;\n  Intake m_intake;\n  PWMSim m_simMotor;\n\n  @BeforeEach\n  void setup() {\n    assert HAL.initialize(500, 0);\n    m_intake = new Intake();\n    m_simMotor = new PWMSim(IntakeConstants.kMotorPort);\n  }\n\n  @AfterEach\n  void shutdown() throws Exception {\n    m_intake.close();\n  }\n\n  @Test\n  void activateSetsMotorSpeed() {\n    m_intake.deploy();\n    m_intake.activate(0.5);\n    assertEquals(0.5, m_simMotor.getSpeed());\n  }\n}",
+      "buggyLine": 22,
+      "correctAnswer": "assertEquals(0.5, m_simMotor.getSpeed(), DELTA);",
+      "acceptableAnswers": [
+        "assertEquals(0.5, m_simMotor.getSpeed(), DELTA);",
+        "assertEquals(0.5, m_simMotor.getSpeed(), DELTA)"
+      ],
+      "explanation": "Kaynak bunu bir not olarak ayrıca yazar: ondalıklı sayıların karşılaştırılması kesin değildir, bu yüzden karşılaştırma kabul edilebilir bir hata payı ile yapılmalıdır. Ekranda aynı görünen iki sayının bit düzeyinde farklı olması ondalıklı aritmetikte olağandır ve hata payı verilmeyen bir karşılaştırma bu farkı hata sayar. Sınıfın ikinci satırında zaten bir DELTA sabiti tanımlanmış durumda, yani düzeltme onu karşılaştırmaya üçüncü argüman olarak eklemektir. Sınıfın geri kalanı kaynağın örneğiyle aynı biçimde yazılmıştır: setup metodu önce HAL'i başlatıyor, donanım nesnesi BeforeEach ile her testten önce kuruluyor, AfterEach ile her testten sonra close çağrılıyor, gerçek donanım yerine PWMSim kullanılıyor ve motor sürülmeden önce mekanizma deploy ediliyor. m_simMotor'ın kapatılmaması da kaynağa uygundur; close metodu olmayan bir nesnenin kapatılmasına muhtemelen gerek yoktur.",
+      "hint": "Sınıfın ikinci satırında tanımlanmış ama hiç kullanılmayan bir sabit var. Nerede kullanılması gerekirdi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html"
+    },
+    {
+      "id": "programming-11-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi test yazma konusunda bir başvuru sayfası hazırlıyor.",
+      "elements": [
+        "Testler src/test/java klasörüne konur ve Command Palette'ten Test Robot Code ile çalıştırılır.",
+        "BeforeEach ile işaretlenmiş metotlar her testten önce, AfterEach ile işaretlenmiş metotlar her testten sonra çalışır.",
+        "Ondalıklı değerlerin karşılaştırılması kabul edilebilir bir hata payı ile yapılmalıdır.",
+        "Testler robot üzerinde çalışır; bu yüzden kablolama hatalarını da yakalarlar.",
+        "Java'da donanım nesnelerini serbest bırakmak için AutoCloseable interface'i ve close metodu uygulanır."
+      ],
+      "faultIndex": 3,
+      "explanation": "Kaynak bunun tersini bir not olarak yazar: testler her zaman masaüstünüzde simulation içinde çalışır. Yani hiçbir test robota gitmez ve hiçbir test kabloya dokunmaz. Bu ayrımı bilmemek, en tehlikeli türden bir yanlış güven üretir; testler yeşil olduğu için takım robotu ayrıca denemez ve fiziksel bir sorun ancak maç sırasında ortaya çıkar. Testlerin doğruladığı şey, kodun kendi mantığının beklenen çıkışı üretmesidir; o çıkışın gerçek bir motora ulaşıp ulaşmadığı testin görebileceği bir şey değildir. Diğer dört ifade kaynağın yazdığı gibidir; test dosyalarının yeri kaynakta ayrıca bir Important kutusuyla vurgulanır.",
+      "hint": "İfadelerden biri testlerin nerede çalıştığını iddia ediyor. Kaynak bu konuda ne diyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html"
+    },
+    {
+      "id": "programming-11-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir öğrenci simulation'ı başlatmak için VS Code'da WPILib düğmesinin yanındaki çalıştır düğmesini kullanıyor. Kaynak bu düğme hakkında ne diyor?",
+      "options": [
+        "O düğme yalnızca C++ projelerinde çalışır; Java projelerinde ./gradlew simulateNative komutu kullanılmalıdır.",
+        "O düğme simulation'ı başlatmanın kısa yoludur ve Command Palette ile aynı işi yapar, yalnızca çıktı penceresi farklıdır.",
+        "O düğme simulation'ı düzgün kurmaz ve kullanılmamalıdır; simulation WPILib: Simulate Robot Code komutuyla başlatılır.",
+        "O düğme kodu robota deploy eder; simulation için önce robot bağlantısının kesilmesi gerekir."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak bu konuda doğrudan uyarır: WPILib düğmesinin yanında görülebilen çalıştır düğmesi simulation'ı düzgün kurmaz ve kullanılmamalıdır. Doğru yol VS Code'da WPILib: Simulate Robot Code komutunu çalıştırmaktır; VS Code dışında ise Java için ./gradlew simulateJava, C++ için ./gradlew simulateNative komutları vardır. Bu uyarının önemi, yanlış düğmenin bir hata mesajı vermemesidir; bir şeyler başlar ve öğrenci simulation'ın çalıştığını sanır, oysa kurulum eksiktir. Birinci şık iki komutu birbirine karıştırır; simulateNative C++ içindir. Dördüncü şık düğmenin işini yanlış tarif eder.",
+      "hint": "Kaynak bu düğme için bir uyarı kutusu koymuş. Uyarı ne diyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html"
+    },
+    {
+      "id": "programming-11-d6",
+      "type": "diagnose",
+      "symptom": "Bir subsystem için üç test yazıldı. Testlerin her biri tek başına çalıştırıldığında geçiyor. Hepsi birlikte çalıştırıldığında ilki geçiyor, sonraki ikisi subsystem'in constructor'ında hata veriyor. Test sınıfında AfterEach ile işaretlenmiş hiçbir metot yok.",
+      "prompt": "En olası neden nedir?",
+      "options": [
+        "Vendor library simulation'ı desteklemiyordur ve ilk testten sonra çöküyordur.",
+        "Testler aynı anda paralel çalıştığı için birbirlerinin değişkenlerini bozuyorlar; sıralı çalıştırma açılmalıdır.",
+        "DELTA değeri fazla küçük seçilmiştir ve sonraki testler bu yüzden kalıyordur.",
+        "Önceki testin donanım nesneleri serbest bırakılmıyor; her testten sonra close çağrılmalıdır."
+      ],
+      "correctIndex": 3,
+      "explanation": "Belirtideki en güçlü ipucu, testlerin tek başına geçip birlikte kalmasıdır; bu, sorunun testin kendi mantığında değil, testler arasında kalan bir durumda olduğunu söyler. Kaynak bu duruma çözümü adıyla verir: her teste temiz bir başlangıç sağlamak için nesneyi yok eden ve bütün donanım tahsislerini serbest bırakan bir fonksiyona ihtiyaç vardır; Java'da bunun yolu AutoCloseable interface'ini ve close metodunu uygulamak, close içinde her üye nesnenin kendi close metodunu çağırmaktır. Bu çağrının her testten sonra yapılmasını sağlayan da AfterEach ile işaretlenmiş bir metottur ve belirtide böyle bir metodun hiç bulunmadığı zaten söyleniyor. Kaynak, close çağrılmadığında tam olarak neyin nerede bozulacağını yazmaz; bu, serbest bırakılmayan donanım tahsisi ifadesinden çıkan bir sonuçtur. Üçüncü şık elenir; DELTA sorunu karşılaştırma aşamasında hata verir, nesne kurulurken değil. Birinci ve i̇kinci şıklar belirtiyle uyuşmaz.",
+      "hint": "Tek başına geçip birlikte kalan testler, testin kendisiyle mi yoksa testler arasında kalan bir şeyle mi ilgilidir?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html"
+    },
+    {
+      "id": "programming-11-d7",
+      "type": "diagnose",
+      "symptom": "Bir takımın simulation'ı haftalarca sorunsuz çalıştı. Projeye yeni bir motor controller için vendor library eklendi ve subsystem kodu o library'nin sınıflarını kullanacak biçimde değiştirildi. Şimdi simulation başlatılmaya çalışıldığında program çöküyor. Robota deploy edilen kod ise normal çalışıyor.",
+      "prompt": "Ne oluyor ve kaynak bu konuda ne diyor?",
+      "options": [
+        "Bütün vendor'lar desktop ve simulation desteği seçeneğini desteklemez; onların library'lerini kullanan kod çökebilir.",
+        "Vendor library eklendiğinde simulation komutu değişir; artık gradlew simulateNative kullanılması gerekir.",
+        "Vendor library'ler yalnızca test source set'ine eklenebilir; main source set'e eklenmesi simulation'ı bozar.",
+        "Simulation yalnızca WPILib'in kendi sınıflarıyla çalışır ve herhangi bir vendor library eklenmesi her durumda simulation'ı devre dışı bırakır."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak bunu Desktop Support bölümünde bir Important kutusu olarak yazar: bu desteği açmanın istenmeyen sonuçları olabilir, bütün vendor'lar bu seçeneği desteklemez ve onların library'lerini kullanan kod simulation çalıştırılmaya çalışıldığında çökebilir. Uyarıdaki bu seçenek ifadesi genel olarak simulation'ı değil, Desktop Support'u işaret eder. Belirti tarifle birebir örtüşüyor; simulation eskiden çalışıyordu, tek değişiklik vendor library'sinin eklenmesi ve kodun onun sınıflarını kullanmaya başlaması, ve robota deploy edilen kod hâlâ çalışıyor, yani sorun robot tarafında değil. Dördüncü şık aynı konuyu abartıp genelleştirir; kaynak bütün vendor library'lerinin simulation'ı bozduğunu söylemez, desteğin vendor'a göre değiştiğini söyler. Bu ayrım pratikte önemlidir, çünkü doğru adım simulation'dan vazgeçmek değil, o vendor'ın dokümantasyonuna bakmaktır. İkinci ve üçüncü şıklar kaynakta bulunmayan kurallar uydurur.",
+      "hint": "Belirtide tek bir değişiklik var ve robot tarafı etkilenmemiş. Kaynak vendor'lar hakkında ne uyarısı yapıyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/introduction.html"
+    },
+    {
+      "id": "programming-11-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte intake subsystem'i için yazılmış bütün unit testler geçiyor. Kod deploy ediliyor, Robot Code göstergesi yeşil ve tuşa basıldığında RioLog'da beklenen çıktı görünüyor. Ancak intake motoru hiç dönmüyor ve motor controller'ın kendi ledi de hiç değişmiyor.",
+      "prompt": "Testler bu sorunu neden yakalayamadı?",
+      "options": [
+        "Testlerde DELTA kullanılmadığı için ondalıklı karşılaştırma hatası bu sorunu gizlemiş ve testler yanlışlıkla geçmiştir.",
+        "Testler her zaman masaüstünde simulation içinde çalışır ve subsystem'i kodun kendi port sabitiyle kurar.",
+        "Testler AfterEach içinde close çağırmadığı için önceki testin donanım nesnesi açık kalmış ve sonraki sonuçları bozmuştur.",
+        "Vendor library simulation'ı desteklemediği için testler hiç çalıştırılmadan sessizce atlanmış ve geçmiş sayılmıştır."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kaynağın notu bu drill'in tamamını taşır: testler her zaman masaüstünüzde simulation içinde çalışır. Bunun sonucu, bir unit testin karşılaştırmasının iki tarafının da koddan gelmesidir. Bu ikinci nokta kaynağın düz metninde değil, örnek kodunda görünür. Kaynağın örneğinde test, subsystem'i ve simulation sınıfını aynı port sabitiyle constructor'a geçirir ve o sabitin fiziksel robotta hangi kabloya karşılık geldiğini hiçbir zaman bilmez. Yani kod ile kablolama arasındaki bir uyumsuzluk, testin görebileceği türden bir hata değildir. Belirti bunu doğruluyor: RioLog'da beklenen çıktının görünmesi kodun çalıştığını ve motoru sürmeyi denediğini gösterir, motor controller'ın ledinin hiç değişmemesi ise komutun cihaza hiç ulaşmadığını gösterir. Aranacak yer bu ikisinin arasıdır: yanlış port numarası, yanlış porta takılmış bir kablo veya gevşek bir bağlantı. Diğer üç şık belirtiyle çelişir, çünkü hepsi testlerin kalması veya çalışmaması anlamına gelirdi, oysa belirtide testler geçiyor. Bu modülün asıl dersi budur: bir unit test kodu kendine karşı doğrular, robota karşı değil.",
+      "hint": "Testin karşılaştırdığı iki değer nereden geliyor? İkisi de aynı kaynaktan geliyorsa test neyi doğrulamış olur?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/wpilib-tools/robot-simulation/unit-testing.html"
+    }
+  ]
+}

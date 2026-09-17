@@ -1,0 +1,321 @@
+{
+  "id": "electrical-00-tools",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 0,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-11",
+  "imageRef": null,
+  "title": "Aletler: Elektrik Ekibinin Takım Çantası",
+  "summary": "Kablolamada kullanılan aletleri, her birinin hangi iş için olduğunu ve bir bağlantının sıkı olup olmadığının neden gözle değil aletle anlaşıldığını öğretir.",
+  "prerequisites": [],
+  "estimatedMinutes": 12,
+  "concept": {
+    "body": "Elektrik işi aletle yapılır ve yanlış alet bağlantıyı görünüşte doğru, gerçekte güvenilmez hâle getirir. WPILib'in kablolama kılavuzu işe başlamak için belirli bir alet takımı ister; bu modül o takımı tanıtır.\n\nKesme ve soyma: yan keski (wire cutter) kabloyu keser, kablo soyucu (wire stripper) yalıtımı soyar ve 6, 10, 18 ve 22 AWG kalınlıklarını desteklemelidir. Makas yalıtım bandı ve zip tie içindir; güç kablosu kesmek için değildir.\n\nBağlama: 6 AWG kablo pabucunu sıkıştırmak için sıkma pensesi (terminal crimper) veya mengene kullanılır. Battery, main breaker ve PDH'in vidalı bağlantıları 7/16 inç yıldız anahtar veya lokma tornavida ile sıkılır; somunu karşıdan tutmak için ikinci bir anahtar ya da yıldız tornavida gerekir. Küçük terminaller gözlükçü boyu, çok küçük bir düz tornavida ister. Çok telli kabloyu Weidmuller terminaline yeniden takarken WAGO aleti işi kolaylaştırır. Robotu monte etmek için 6 mm (1/4 inç) uçlu bir matkap kullanılır.\n\nKontrol: robot içi karanlıktır, bu yüzden bağlantı noktalarını incelemek için el feneri kullanılır. Multimetre veya Battery Beak, yalıtım bandının sertleşmesi yüzünden sıkı görünen gevşek bağlantıları ortaya çıkarır. Yük test cihazı (load tester) iç direnci ölçer; bu ölçüm maç performansı bakımından yüksüz gerilim değerinden daha anlamlıdır. Blade fuse'u çıkarmak için pense gerekir, çünkü doğru oturmuş bir fuse elle çıkarılamaz.",
+    "keyTerms": [
+      {
+        "term": "yan keski",
+        "glossTr": "kabloyu kesen pense; İngilizce kaynaklarda wire cutter"
+      },
+      {
+        "term": "kablo soyucu",
+        "glossTr": "yalıtımı soyan alet; AWG kalınlığına göre ayarlanır · wire stripper"
+      },
+      {
+        "term": "sıkma pensesi",
+        "glossTr": "kablo ucuna pabuç sıkıştıran alet · terminal crimper"
+      },
+      {
+        "term": "kablo pabucu",
+        "glossTr": "kablo ucuna takılan, vidalanabilir bağlantı ucu · terminal lug"
+      },
+      {
+        "term": "yıldız anahtar",
+        "glossTr": "yıldız ağızlı anahtar; burada 7/16 inç · box end wrench"
+      },
+      {
+        "term": "lokma tornavida",
+        "glossTr": "somun sıkmak için tornavida biçiminde anahtar · nut driver"
+      },
+      {
+        "term": "yıldız tornavida",
+        "glossTr": "yıldız uçlu tornavida · Phillips screwdriver"
+      },
+      {
+        "term": "düz tornavida",
+        "glossTr": "düz uçlu tornavida; küçük terminaller için gözlükçü boyu · flat head screwdriver"
+      },
+      {
+        "term": "WAGO aleti",
+        "glossTr": "Weidmuller terminaline çok telli kabloyu takmayı kolaylaştıran açılı alet"
+      },
+      {
+        "term": "pense",
+        "glossTr": "blade fuse çıkarmak ve tutmak için kullanılan alet · pliers"
+      },
+      {
+        "term": "multimetre",
+        "glossTr": "gerilim ölçen alet; yüksüz gerilim gösterir"
+      },
+      {
+        "term": "Battery Beak",
+        "glossTr": "FRC battery'lerini ölçmek için kullanılan el aleti"
+      },
+      {
+        "term": "yük test cihazı",
+        "glossTr": "battery'yi yük altında ölçerek iç direnç hakkında bilgi veren cihaz · load tester"
+      },
+      {
+        "term": "iç direnç",
+        "glossTr": "battery'nin akım verirken kendi içinde kaybettiği gerilimin ölçüsü"
+      },
+      {
+        "term": "mengene",
+        "glossTr": "sıkma pensesi yoksa 6 AWG pabuç sıkıştırmakta kullanılabilen tezgâh aleti · vice"
+      }
+    ],
+    "videoRefs": [
+      {
+        "provider": "youtube",
+        "id": "t-zb7j4ikHM",
+        "start": 0,
+        "label": "WAGO konektörü nasıl kullanılır",
+        "title": "How to Use Wago Connectors | Quick Wiring Tips & Best Practices for Robotics and Electrical Projects",
+        "channel": "CTR Electronics",
+        "lang": "en",
+        "note": "WPILib'in Introduction to FRC Robot Wiring sayfasında gömülü olan video. WAGO aletinin ne işe yaradığını gösterir.",
+        "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html",
+        "verifiedOn": "2026-09-12"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-00-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "ALETLER",
+      "front": "Her bağlantı türünün kendi aleti vardır.",
+      "back": "Kablolama kılavuzu işe başlamak için belirli bir takım ister: kesmek için yan keski, soymak için 6-22 AWG arasını destekleyen kablo soyucu, 6 AWG pabuç için sıkma pensesi veya mengene, vidalı bağlantılar için 7/16 inç yıldız anahtar veya lokma tornavida ve somunu karşıdan tutacak ikinci bir anahtar ya da yıldız tornavida, küçük terminaller için gözlükçü boyu düz tornavida. Makas listede vardır ama işi bant ve zip tie'dır, güç kablosu değil.",
+      "takeaway": "Alet seçimi bağlantı türüne göre yapılır, eldekine göre değil",
+      "tags": [
+        "kablo soyucu",
+        "sıkma pensesi",
+        "yıldız anahtar"
+      ],
+      "estMinutes": 1,
+      "derivedFrom": [
+        "electrical-00-d1"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-00-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "ALETLER",
+      "front": "Bir bağlantının sıkı olduğu neden gözle anlaşılmaz?",
+      "back": "Yalıtım bandı zamanla sertleşir ve gevşek bir bağlantıyı sıkı gibi gösterir. Bu yüzden kontrol göze değil alete bırakılır: multimetre veya Battery Beak gevşek bağlantıyı ortaya çıkarır, el feneri karanlık robot içinde bağlantı noktalarını görünür kılar. Vida tipi bağlantılarda ölçüt nettir: kablo veya terminal elle döndürülememelidir. Battery'nin sağlığı için de yüksüz gerilim yeterli değildir; yük test cihazı iç direnci ölçer ve bu ölçüm maç performansı bakımından daha anlamlıdır.",
+      "takeaway": "Gözle 'sıkı' diye karar verilmez; ölçüt elle dönmemesi ve ölçüm sonucudur",
+      "tags": [
+        "multimetre",
+        "yük test cihazı",
+        "iç direnç"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-00-d6",
+        "electrical-00-d4"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "electrical-00-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "ALETLER",
+      "front": "Fuse yerine oturmuş görünüyor ama kanal ölü. Ne atlandı?",
+      "back": "Blade fuse'ları tam oturtmak beklenenden fazla kuvvet ister. Yüzeyden bakıldığında yerinde görünen bir fuse, temas etmeyecek kadar yukarıda kalmış olabilir. Ölçüt şudur: doğru oturmuş bir fuse'u elle, pense kullanmadan çıkarmak neredeyse imkânsız olmalıdır. Elle kolayca çıkıyorsa tam oturmamıştır. Pit'te bu yüzden pense, fuse'u çıkarmak için olduğu kadar oturup oturmadığını sınamak için de bulunur.",
+      "takeaway": "Elle kolay çıkan fuse oturmamıştır; sınama aleti pensedir",
+      "tags": [
+        "blade fuse",
+        "pense",
+        "pit"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-00-d8"
+      ],
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-00-d1",
+      "type": "multiple_choice",
+      "prompt": "Battery kablosunun ucuna 6 AWG kablo pabucu takacaksınız. Kılavuz bu iş için hangi aleti ister?",
+      "options": [
+        "Sıkma pensesi (terminal crimper); elde yoksa pabucu sıkıştırmak için mengene kullanılabilir.",
+        "Pense; pabucu iki yandan kuvvetle bastırmak bu iş için yeterli bir sıkıştırma sağlar.",
+        "Kablo soyucu; soyma çenesi pabucu da sıkıştırır ve ayrı alet gerekmez.",
+        "Yıldız tornavida; pabucun içine bastırarak teli yerinde sabitlemek ve ucu kapatmak gerekir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kılavuzun alet listesi bu iş için sıkma pensesi ister ve alternatif olarak mengeneyi adıyla verir. Diğer üç şık işi yapıyor gibi görünür ama sıkıştırmayı lug'un tasarlandığı biçimde yapmaz: pense teması noktasal bırakır, kablo soyucunun çenesi yalıtım soymak için biçimlendirilmiştir, tornavida ise hiç sıkıştırma yapmaz. 6 AWG hat robotun toplam akımını taşır; bu hatta gevşek bir pabuç ısınır.",
+      "hint": "Listede bu iş için iki seçenek yan yana verilmiştir. İkincisi bir el aleti değildir.",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html"
+    },
+    {
+      "id": "electrical-00-d2",
+      "type": "multiple_choice",
+      "prompt": "PDH'in Weidmuller terminaline çok telli bir kabloyu yeniden takmanız gerekiyor ve teller dağılıyor. Hangi alet bu işi kolaylaştırır?",
+      "options": [
+        "WAGO aleti; açısı sayesinde çok telli kabloyu Weidmuller bağlantısına takmayı kolaylaştırır.",
+        "Kablo soyucu; kabloyu bir kez daha soymak dağılan telleri kendiliğinden toplar, ayrı bir alet gerekmez.",
+        "Sıkma pensesi; çok telli kablo Weidmuller terminaline ancak ucuna pabuç sıkıştırıldıktan sonra girebilir.",
+        "Gözlükçü boyu düz tornavida; terminalin yayını bununla açık tutup teli aynı anda içeri sokmak gerekir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon bu işi adıyla anlatır: WAGO aleti, çok telli kablolarla Weidmuller bağlantılarını yeniden yapmak için elverişlidir ve aletin açısı bunu özellikle kolaylaştırır. İkinci şık sorunu çözmez, yalnızca erteler. Üçüncü şık yanlıştır çünkü Weidmuller terminali çıplak çok telli kabloyu kabul eder; pabuç gerekmez. Dördüncü şık işi tornavidaya yıkar; küçük düz tornavida listede başka terminaller için vardır.",
+      "hint": "Aletin adı, birlikte kullanıldığı terminal ailesinin adından gelir.",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/preemptive-troubleshooting.html"
+    },
+    {
+      "id": "electrical-00-d3",
+      "type": "find_the_fault",
+      "scenario": "Bir rookie takım kablolamaya başlamış. Yaptıkları işler ve kullandıkları aletler aşağıdadır.",
+      "prompt": "Aşağıdaki alet seçimlerinden yanlış olan tek öğeyi seçiniz.",
+      "elements": [
+        "18 AWG besleme kablosunu kablo soyucunun 18 AWG çenesinden soydular.",
+        "Battery pabucunun somununu 7/16 inç yıldız anahtarla sıkarken diğer tarafı ikinci bir anahtarla tuttular.",
+        "6 AWG güç kablosunu makasla kestiler.",
+        "roboRIO'nun küçük besleme terminalini gözlükçü boyu düz tornavida ile sıktılar.",
+        "Zip tie'ların fazla uçlarını makasla kestiler."
+      ],
+      "faultIndex": 2,
+      "explanation": "Makas kılavuzun listesinde vardır ancak güç kablosu kesmek için değildir; kesme işi yan keskinin işidir. 6 AWG kabloyu makasla kesmek teli ezer, kesiti bozar ve pabuç içinde düzgün oturmayan bir uç bırakır. Diğer dört öğe listeye uygundur: kablo soyucu doğru AWG çenesinden kullanılmış, vidalı bağlantıda somun karşıdan tutulmuş, küçük terminal için doğru boy tornavida seçilmiş ve makas kendi işinde kullanılmıştır.",
+      "hint": "Listedeki her alet bir iş için vardır. Hangisi kendi işinin dışında kullanılmış?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html"
+    },
+    {
+      "id": "electrical-00-d4",
+      "type": "multiple_choice",
+      "prompt": "İki battery arasında seçim yapacaksınız. Biri multimetrede 12.9V, diğeri 12.7V gösteriyor. Maç performansı bakımından hangi ölçüm daha anlamlıdır?",
+      "options": [
+        "Multimetrede okunan yüksüz gerilim; iki battery arasındaki 0.2V fark maç boyunca doğrudan performansa yansır.",
+        "Yük test cihazı ile yapılan ölçüm; iç direnç hakkında bilgi verir ve maç performansı bakımından yüksüz gerilimden daha anlamlıdır.",
+        "İkisi de aynı bilgiyi verir; yük test cihazı yalnızca aynı gerilim ölçümünü daha hızlı ve daha az hatayla yapar.",
+        "Battery'nin üzerindeki üretim tarihi; iki gerilim ölçümü de yük altındaki davranış için yanıltıcı olduğundan tarih daha güvenilirdir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon yük testini şöyle tarif eder: iç direnci ölçerek battery sağlığı hakkında bir gösterge verir ve bu ölçüm, multimetrenin verdiği yüksüz gerilim değerine göre maç performansı bakımından çok daha anlamlıdır. Yüksüz gerilim battery akım verirken ne olacağını söylemez; zayıf bir battery boşta iyi görünüp yük altında çökebilir. Dördüncü şık gerilim ölçümünü tamamen çöpe atar; ölçümler yanıltıcı değil, yetersizdir.",
+      "hint": "Maçta battery yüksüz durmuyor. Hangi ölçüm yük altındaki davranışa yaklaşıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    },
+    {
+      "id": "electrical-00-d5",
+      "type": "numeric",
+      "prompt": "Kablolama kılavuzu robotu monte etmek için matkaba 1/4 inçlik bir uç takılmasını ister. Bu uç milimetre cinsinden kaçtır? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 6,
+      "tolerance": 0,
+      "unit": "mm",
+      "explanation": "Kılavuzun alet listesi ölçüyü iki birimde birden verir: 1/4 inç (6 mm). Cevap 6 mm'dir. Bu çevrimi bilmek pratikte gereklidir, çünkü FRC dokümantasyonu ölçüleri kesirli inç ile yazarken Türkiye'de satılan matkap uçları milimetre ile etiketlenir. Listede 1/4 inç yazan bir uç, mağazada 6 mm kutusundan alınır. Aradaki fark küçüktür ama montaj deliği söz konusu olduğunda yanlış kutuyu almak zaman kaybıdır.",
+      "hint": "Kılavuz ölçüyü parantez içinde ikinci bir birimde de vermiştir.",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html"
+    },
+    {
+      "id": "electrical-00-d6",
+      "type": "diagnose",
+      "symptom": "Robot bazen hiç açılmıyor, bazen normal çalışıyor. Battery ve main breaker bağlantıları gözle bakıldığında sıkı görünüyor ve üzerleri yalıtım bandı ile sarılmış. Bant sertleşmiş durumda ve bağlantıları yerinde tutuyor gibi duruyor.",
+      "prompt": "Bu bağlantıların gerçekten sıkı olup olmadığını hangi yolla anlarsınız?",
+      "options": [
+        "Bandı açmadan gözle kontrol etmek yeterlidir; bant sertleştiği için bağlantıyı yerinde tutar ve gevşemesini engeller.",
+        "Multimetre veya Battery Beak ile ölçmek; bandın sertliği yüzünden sıkı görünen gevşek bağlantı bu şekilde ortaya çıkar.",
+        "Robotu iki yana sallamak; bağlantı gerçekten gevşekse kablo kendiliğinden yerinden çıkar ve arıza görünür hâle gelir.",
+        "Main breaker'ı birkaç kez açıp kapatmak; temas sağlamsa robot her denemede açılır, gevşekse hiç açılmaz."
+      ],
+      "correctIndex": 1,
+      "explanation": "Dokümantasyon tam bu tuzağı anlatır: yalıtım bandının sertleşmesi bağlantıları sıkı gibi gösterir, oysa gevşek olabilirler; bu durum multimetre veya Battery Beak ile kontrol edilerek ortaya çıkarılır. Birinci şık belirtiyi yok sayar. Üçüncü şık güvenilmez bir sınamadır ve gevşek bir güç bağlantısını kıvılcım riski ile test etmek anlamına gelir. Dördüncü şık aralıklı arızayı tesadüfe bırakır; aralıklı temas zaten bazen çalışır.",
+      "hint": "Belirti aralıklı. Gözün göremediği şeyi hangi alet gösterir?",
+      "difficulty": "stretch",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/preemptive-troubleshooting.html"
+    },
+    {
+      "id": "electrical-00-d7",
+      "type": "order_steps",
+      "prompt": "Karanlık bir pit'te robotun güç bağlantılarını kontrol edeceksiniz. Aşağıdaki adımları uygun sıraya göre diziniz.",
+      "steps": [
+        "El fenerini alıp bağlantı noktalarını aydınlatın.",
+        "Vida tipi bağlantılarda kablonun veya terminalin elle döndürülemediğini doğrulayın.",
+        "Blade fuse'ların tam oturduğunu, elle çıkmadığını sınayın.",
+        "Şüpheli bulduğunuz bağlantıyı multimetre veya Battery Beak ile ölçün."
+      ],
+      "correctOrder": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "explanation": "Sıra ucuzdan pahalıya doğru ilerler. Işık olmadan hiçbir bağlantı düzgün incelenemez, bu yüzden el feneri ilk adımdır; dokümantasyon robot içinin yeterince aydınlık olmadığını ve el feneri kullanılmasını önerir. Ardından alet gerektirmeyen fiziksel kontroller gelir: vidalı bağlantıda kablo elle dönmemeli, blade fuse elle çıkmamalı. Ölçüm en sona kalır çünkü zaman alır ve yalnızca şüphe duyulan noktada anlamlıdır. Ters sırada çalışmak, gözle bir saniyede görülecek gevşekliği ölçerek aramaya dönüşür.",
+      "hint": "Hangi adım diğerlerini mümkün kılıyor? Hangisi en çok zaman alıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/preemptive-troubleshooting.html"
+    },
+    {
+      "id": "electrical-00-d8",
+      "type": "diagnose",
+      "symptom": "Bir motor controller'ın beslendiği PDH kanalı ölü. Kanaldaki fuse gözle bakıldığında yerinde duruyor ve yanmış görünmüyor. Fuse parmakla tutulup hafifçe çekildiğinde kolayca çıkıyor.",
+      "prompt": "Bu bulgu size ne söyler?",
+      "options": [
+        "Fuse tam oturmamıştır; doğru oturmuş bir fuse'u pense kullanmadan çıkarmak neredeyse imkânsız olmalıdır.",
+        "Fuse sağlamdır; kolay çıkması yuvanın yeni olduğunu ve yayının henüz sertleşmediğini gösterir, temasa engel değildir.",
+        "Fuse atmıştır; atan bir fuse'un içindeki iletken eridiği için gövdesi yuvada gevşer ve elle kolayca çıkar.",
+        "Kanal arızalıdır; fuse'un yuvada ne kadar sıkı durduğu kanalın çalışıp çalışmadığı ile doğrudan ilgisizdir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dokümantasyon ölçütü açıkça verir: fuse'ların tam oturduğundan emin olunmalıdır ve bunun için beklenenden fazla kuvvet uygulamak gerekebilir; doğru oturmuş bir fuse'u pense kullanmadan, çıplak elle çıkarmak neredeyse imkânsız olmalıdır. Elle kolayca çıkan fuse temas etmiyordur. İkinci ve üçüncü şık kolay çıkmayı normalleştirir. Dördüncü şık bulguyu ilgisiz sayar, oysa bulgu tam olarak nedeni gösterir. Bu hata sinsidir çünkü fuse hem yerinde hem sağlam görünür.",
+      "hint": "Kılavuzun verdiği ölçüt bir kuvvet ölçütüdür. Elle çıkabiliyor olması ne anlama gelir?",
+      "difficulty": "pit",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html"
+    }
+  ]
+}

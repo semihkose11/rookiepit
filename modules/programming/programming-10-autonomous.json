@@ -1,0 +1,294 @@
+{
+  "id": "programming-10-autonomous",
+  "department": "programming",
+  "language": "tr",
+  "moduleNumber": 10,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Autonomous Rutinleri ve SendableChooser",
+  "summary": "RobotContainer'ın sorumluluğunu, autonomous rutininin dashboard'dan nasıl seçildiğini ve autonomous ile teleop arasındaki devir teslimin nerede bozulduğunu öğretir.",
+  "prerequisites": [
+    "programming-09-telemetry"
+  ],
+  "estimatedMinutes": 35,
+  "concept": {
+    "body": "Command-based bir projede kurulumun büyük bölümü RobotContainer sınıfında yapılır. Kaynak bu sınıfın işini sayar: robotun subsystem'lerini ve command'lerini tanımlamak, command'leri tuş gibi tetikleyici olaylara bağlamak ve autonomous rutininde hangi command'in çalışacağını belirtmek. Subsystem'ler burada private alan olarak tanımlanır. Global değişken yapılırlarsa koda her yerden erişilebilir hâle gelirler, kontrol akışını izlemek zorlaşır ve resource-management sisteminin işini yapması engellenir; erişimin kolay olması, requirement yönetimli command'lerin dışından subsystem metotlarına çakışan çağrılar yapılmasını kolaylaştırır.\n\nRobotContainer constructor'ı declarative kurulumun çoğunun yapıldığı yerdir; tuş bağlamaları ve autonomous seçicilerinin yapılandırılması buraya girer. getAutonomousCommand metodu seçilen autonomous command'i ana Robot sınıfına ulaştırır, çünkü autonomous başladığında onu schedule edecek olan Robot sınıfıdır. Kaynak bir noktada kesindir: CommandScheduler.getInstance().run() çağrısı robotPeriodic metodundan yapılmalıdır. Bu çağrı olmadan scheduler hiçbir command'i yürütmez ve yeni başlayanların bu metodu başka bir yerden çağırması önerilmez.\n\nSeçim için SendableChooser kullanılır; bu sınıf tanımlanmış öğelerden birini seçmeyi sağlar. Seçenekler setDefaultOption ve addOption ile eklenir ve setDefaultOption ile eklenen, dashboard açıldığında varsayılan olarak seçili olandır. Chooser dashboard'a putData ile gönderilir, seçilen command getSelected ile alınır. Teleop başladığında hâlâ çalışan autonomous command'lerin iptal edilmesi de şablonun bir parçasıdır.\n\nConstants sınıfı hız değerleri, birim dönüşüm katsayıları, PID gain'leri ve sensor ile motor portları gibi genel erişimli robot sabitlerinin yeridir. Java'da bu sabitlerin tamamı public static final olarak tanımlanır.",
+    "keyTerms": [
+      {
+        "term": "RobotContainer",
+        "glossTr": "subsystem, command ve bağlamaların tanımlandığı kurulum sınıfı"
+      },
+      {
+        "term": "getAutonomousCommand",
+        "glossTr": "seçilen autonomous command'i Robot sınıfına ulaştıran metot"
+      },
+      {
+        "term": "SendableChooser",
+        "glossTr": "dashboard'dan seçenek seçtiren sınıf"
+      },
+      {
+        "term": "setDefaultOption",
+        "glossTr": "dashboard açıldığında seçili gelen seçeneği ekleyen metot"
+      },
+      {
+        "term": "addOption",
+        "glossTr": "chooser'a ek seçenek ekleyen metot"
+      },
+      {
+        "term": "getSelected",
+        "glossTr": "chooser'da o an seçili olan öğeyi döndüren metot"
+      },
+      {
+        "term": "Constants",
+        "glossTr": "genel erişimli robot sabitlerinin tutulduğu sınıf"
+      },
+      {
+        "term": "autonomousPeriodic",
+        "glossTr": "yalnızca autonomous modunda düzenli çalışan Robot metodu"
+      },
+      {
+        "term": "command factory",
+        "glossTr": "her çağrıldığında yeni bir command nesnesi üreten metot"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "programming-10-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "AUTONOMOUS",
+      "front": "RobotContainer'ın işi sayılabilir üç maddedir.",
+      "back": "Robotun subsystem'lerini ve command'lerini tanımlamak, command'leri tuş gibi tetikleyici olaylara bağlamak ve autonomous rutininde hangi command'in çalışacağını belirtmek. Subsystem'ler burada private alan olarak tanımlanır. Global değişken yapılırlarsa koda her yerden erişilebilir hâle gelirler, kontrol akışını izlemek zorlaşır ve resource-management sisteminin işini yapması engellenir; erişimin kolay olması, requirement yönetimli command'lerin dışından subsystem metotlarına çakışan çağrılar yapılmasını kolaylaştırır. Sabitler ise Constants sınıfında toplanır: hız değerleri, birim dönüşüm katsayıları, PID gain'leri ve sensor ile motor portları, Java'da public static final olarak tanımlanır.",
+      "takeaway": "Her parçanın bir sahibi var; sahibi belli olmayan değer iki yerde farklı yazılır",
+      "tags": [
+        "RobotContainer",
+        "private",
+        "Constants"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "programming-10-d1",
+        "programming-10-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-10-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "AUTONOMOUS",
+      "front": "Dashboard'daki seçim, robota dört adımda ulaşır.",
+      "back": "Seçim için SendableChooser kullanılır ve seçenekler setDefaultOption ile addOption ile eklenir; setDefaultOption ile eklenen, dashboard açıldığında varsayılan olarak seçili olandır. Chooser dashboard'a putData ile gönderilir ve seçilen command getSelected ile alınır. Son halka getAutonomousCommand metodudur: seçilen command'i ana Robot sınıfına ulaştırır, çünkü autonomous başladığında onu schedule edecek olan Robot sınıfıdır. Zincirin bir halkası eksik kalırsa belirti sessizdir. putData çağrısı yoksa dashboard'da hiçbir seçim kutusu görünmez ve robot her maçta varsayılan rutini çalıştırır; kod hatasız derlenir ve hiçbir uyarı çıkmaz.",
+      "takeaway": "Eksik bir halka hata vermez, yalnızca hep aynı rutini çalıştırır",
+      "tags": [
+        "SendableChooser",
+        "putData",
+        "getSelected"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-10-d2",
+        "programming-10-d4"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    },
+    {
+      "id": "programming-10-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "AUTONOMOUS",
+      "front": "Teleop başladı, robot kendi başına sürmeye devam etti. Kol ve intake normal.",
+      "back": "Autonomous command'in isFinished metodu yazılmadığı için command hiç bitmez ve drive subsystem'ini bırakmaz; teleop başlarken iptal edilmediği için de subsystem serbest kalmaz ve drivetrain'in default command'i geri dönemez. Kol ve intake tuşlarının çalışması bu teşhisi doğrular: sorun scheduler'da olsaydı hiçbir tuş çalışmazdı, yalnızca bir subsystem tutulu olduğu için diğerleri normal davranır. Doğru düzeltme teleop başlarken çalışan autonomous command'i iptal etmektir; teleop başladığında hâlâ çalışan autonomous command'lerin iptal edilmesi şablonun bir parçasıdır. İlgili bir başka yer değiştirme de aynı sonucu başka yoldan üretir: CommandScheduler.run çağrısını robotPeriodic'ten alıp autonomousPeriodic'e taşımak, teleop'ta scheduler'ı tamamen durdurur.",
+      "takeaway": "Neyin çalıştığı, neyin çalışmadığı kadar bilgi verir",
+      "tags": [
+        "devir teslim",
+        "isFinished",
+        "pit"
+      ],
+      "estMinutes": 3,
+      "derivedFrom": [
+        "programming-10-d8",
+        "programming-10-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": []
+    }
+  ],
+  "drills": [
+    {
+      "id": "programming-10-d1",
+      "type": "multiple_choice",
+      "prompt": "Bir takım kodunu düzenlerken drivetrain subsystem'ini public static bir alan yaparak her sınıftan erişilebilir hâle getirmeyi öneriyor. Kaynak bu düzen hakkında ne diyor?",
+      "options": [
+        "Subsystem'ler RobotContainer içinde private alan olarak tanımlanır; global yapılırlarsa kontrol akışını izlemek zorlaşır.",
+        "Subsystem'ler public static olmak zorundadır, çünkü scheduler onlara ancak global erişimle ulaşabilir ve aksi hâlde periodic metotları çağrılmaz.",
+        "Fark etmez; erişim belirleyicisi yalnızca derleme aşamasını ilgilendirir, kaynak da bu konuda bir tercih bildirmez.",
+        "Subsystem'ler Constants sınıfında tanımlanmalıdır, çünkü orası genel erişimli nesnelerin tutulduğu yerdir ve sabitlerle aynı ömre sahiptirler."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaynak hem kuralı hem gerekçesini verir. Subsystem'ler RobotContainer içinde private alan olarak tanımlanır; global değişken yapıldıklarında kullanıcının koda her yerden erişmesine izin verirler ve bu, programın kontrol akışını izlemeyi çok zorlaştırır, çünkü kodun hangi parçasının neyi değiştirebildiği hemen görünmez olur. Kaynak ikinci bir sonuç daha sayar: bu düzen resource-management sisteminin işini yapmasını engeller, çünkü erişimin kolay olması requirement yönetimli command'lerin dışından subsystem metotlarına çakışan çağrılar yapılmasını kolaylaştırır. İkinci şık yanlıştır; scheduler subsystem'leri register çağrısı üzerinden tanır, global erişimle değil. Üçüncü şık kaynağın açık tercihini yok sayar. Dördüncü şık Constants sınıfının işini yanlış tarif eder; orası sabit değerler içindir, nesneler için değil.",
+      "hint": "Kaynak bu tercihi bir okunabilirlik meselesi olarak mı, yoksa bir izlenebilirlik meselesi olarak mı ele alıyor?",
+      "difficulty": "core",
+      "seasonSensitive": false,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    },
+    {
+      "id": "programming-10-d2",
+      "type": "diagnose",
+      "symptom": "Bir takım SendableChooser oluşturdu, setDefaultOption ve addOption ile üç seçenek ekledi ve getAutonomousCommand metodunda getSelected çağrısını doğru yazdı. Dashboard'da hiçbir seçim kutusu görünmüyor. Robot her maçta setDefaultOption ile eklenen rutini çalıştırıyor.",
+      "prompt": "Eksik olan nedir?",
+      "options": [
+        "Seçenekler addOption yerine setDefaultOption ile eklenmelidir, aksi hâlde dashboard onları listelemez.",
+        "Chooser dashboard'a hiç gönderilmemiştir; putData çağrısı eksiktir.",
+        "getSelected metodu yalnızca dashboard bağlantısı kurulduktan sonra çalışır; çağrının geciktirilmesi gerekir.",
+        "SendableChooser yalnızca command tipi dışındaki öğelerle çalışır; command seçimi için ayrı bir sınıf gerekir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Belirti iki parçadan oluşuyor ve ikisi aynı eksiği gösteriyor. Dashboard'da widget'ın hiç görünmemesi, chooser nesnesinin dashboard'a hiç ulaşmadığı anlamına gelir; kaynak bu işi putData çağrısına verir ve putData chooser'ı sürücü bilgisayarındaki dashboard'a gönderir. İkinci parça da tutarlıdır. Kaynak getSelected'in hiç seçim yapılmamışken ne döndüreceğini ayrıca yazmaz, ancak davranış kaynağın iki ifadesinden çıkar: setDefaultOption ile eklenen öğe başlangıçta seçili olandır, dolayısıyla kimse bir seçim yapamadığında getSelected o öğeyi döndürmeye devam eder ve robot her maçta aynı rutini çalışır. Yani kod yanlış çalışmıyor, yalnızca eksik. Birinci şık iki metodun işini karıştırır; setDefaultOption yalnızca dashboard açıldığında seçili gelecek olanı belirler. Üçüncü ve dördüncü şıklar kaynakta karşılığı olmayan sınırlamalar uydurur.",
+      "hint": "Widget'ın görünmemesi ile hep varsayılanın çalışması aynı eksiğin iki yüzü olabilir mi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html"
+    },
+    {
+      "id": "programming-10-d3",
+      "type": "debug_code",
+      "language": "java",
+      "prompt": "Bu RobotContainer sınıfında chooser kurulumu ve dashboard'a gönderme kodu doğru yazılmıştır, ancak sınıf derlenmiyor. getAutonomousCommand metodunun imzası değiştirilemez. Tek satırlık hatayı bulup düzeltilmiş satırı yazınız.",
+      "code": "public class RobotContainer {\n  private final SendableChooser<Command> m_chooser = new SendableChooser<>();\n  private final Drivetrain m_drive = new Drivetrain();\n\n  public RobotContainer() {\n    m_chooser.setDefaultOption(\"Hiçbir şey yapma\", Commands.none());\n    m_chooser.addOption(\"Düz sürüş\", new DriveForwardCommand(m_drive));\n    SmartDashboard.putData(\"Auto seçimi\", m_chooser);\n  }\n\n  public Command getAutonomousCommand() {\n    return m_chooser;\n  }\n}",
+      "buggyLine": 12,
+      "correctAnswer": "return m_chooser.getSelected();",
+      "acceptableAnswers": [
+        "return m_chooser.getSelected();",
+        "return m_chooser.getSelected()"
+      ],
+      "explanation": "Metodun dönüş tipi Command'dir, ancak döndürülen şey bir SendableChooser nesnesidir; chooser bir command değil, command seçen bir araçtır. Kaynak ayrımı net koyar: seçilen command getSelected ile alınır. Bu yüzden metot chooser'ın kendisini değil, chooser'da o an seçili olan command'i döndürmelidir. Sınıfın geri kalanı doğrudur ve bilerek eksiksiz yazılmıştır: seçenekler biri setDefaultOption diğeri addOption ile ekleniyor, chooser putData ile dashboard'a gönderiliyor ve bütün bu kurulum RobotContainer constructor'ı içinde yapılıyor, ki kaynak declarative kurulumun ve autonomous seçicilerinin yapılandırılmasının orada olmasını söyler. Hatanın tek satırda kalmasının sebebi budur.",
+      "hint": "Robot sınıfı bu metottan schedule edebileceği bir Command bekliyor. Chooser bir Command mi, yoksa Command seçen bir araç mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html",
+      "sourceNote": "RobotContainer constructor'ının sorumluluğu: https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    },
+    {
+      "id": "programming-10-d4",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki beş ifadeden dördü doğrudur. Yanlış olanı seçiniz.",
+      "scenario": "Bir yazılım ekibi proje yapısını anlatan bir başvuru sayfası hazırlıyor.",
+      "elements": [
+        "RobotContainer, subsystem'lerin ve command'lerin tanımlandığı, command'lerin tetikleyici olaylara bağlandığı sınıftır.",
+        "getAutonomousCommand metodu, seçilen autonomous command'i ana Robot sınıfına ulaştırır.",
+        "setDefaultOption ile eklenen seçenek, dashboard açıldığında varsayılan olarak seçili gelendir.",
+        "Constants sınıfında tutulan sabitler Java'da public static final olarak tanımlanır.",
+        "Scheduler'ın run metodu autonomous modunda yalnızca autonomousPeriodic içinden çağrılabilir."
+      ],
+      "faultIndex": 4,
+      "explanation": "Element dört iki ayrı nedenle yanlıştır. Birincisi, autonomous seçimi sayfasındaki not bunun tersini söyler: scheduler'ın çalıştırılması autonomousPeriodic veya robotPeriodic içinde olabilir ve autonomous modunda ikisi de benzer biçimde işler, dolayısıyla yalnızca autonomousPeriodic içinden çağrılabileceği doğru değildir. İkincisi ve daha önemlisi, o not bir serbestlik değildir. Command-based sayfaları bunu kesin bir kural olarak yazar: kullanıcılar CommandScheduler.getInstance().run() çağrısını Robot sınıfının robotPeriodic metodundan yapmalıdır, bu yapılmazsa scheduler hiç çalışmaz ve command framework işlemez; proje yapısı sayfası da bu çağrının robotPeriodic içinde olmasının şart olduğunu ve yeni başlayanların metodu başka bir yerden çağırmasının önerilmediğini söyler. Yani nottaki denklik yalnızca autonomous modu boyunca ne olacağına dair bir gözlemdir; çağrının yerini seçme özgürlüğü değildir. Diğer dört ifade kaynağın yazdığı gibidir.",
+      "hint": "Dört ifade bir şeyin ne olduğunu söylüyor. Biri bir zorunluluk iddia ediyor. Kaynak orada zorunluluk mu, seçenek mi tarif ediyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html",
+      "sourceNote": "run çağrısının zorunlu yeri: https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html | Not ve setDefaultOption: https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html"
+    },
+    {
+      "id": "programming-10-d5",
+      "type": "multiple_choice",
+      "prompt": "Bir takım drivetrain hızını, tekerlek çevresini ve motor port numaralarını her biri kendi sınıfının içine dağıtmış durumda. Aynı port numarası iki ayrı dosyada farklı yazılmış ve bunu kimse fark etmemiş. Kaynak bu tür değerler için ne öneriyor?",
+      "options": [
+        "Sabitlerin dashboard üzerinden girilmesini; böylece deploy gerektirmeden değiştirilebilir ve maç arasında ayarlanabilir hâle gelirler.",
+        "Her sınıfın kendi sabitlerini tutmasını; merkezî bir dosya gereksiz bağımlılık yaratır ve kaynak bunu önermez.",
+        "Constants sınıfında toplanmalarını; orası genel erişimli robot sabitlerinin yeridir ve Java'da hepsi public static final tanımlanır.",
+        "Sabitlerin RobotContainer içinde private alan olarak tutulmasını; orası zaten kurulumun yapıldığı yerdir ve erişim tek noktadan sağlanır."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kaynak Constants sınıfını tam olarak bunun için tarif eder: hız değerleri, birim dönüşüm katsayıları, PID gain'leri ve sensor ile motor portları gibi genel erişimli robot sabitlerinin tutulabileceği yer. Java'da bunların tamamı public static final olarak tanımlanır, böylece her yerden erişilebilirler ve değiştirilemezler. Belirtideki hatanın türü bu düzenin neden önemli olduğunu gösteriyor: aynı değerin iki yerde tutulması, ikisinin ayrışmasını yalnızca zaman meselesi hâline getirir ve ayrışma derleme hatası vermediği için ancak robot yanlış davrandığında fark edilir. Dördüncü şık makul görünür ancak sabitleri private yapmak, onları kullanan subsystem ve command sınıflarından erişilemez kılar. Birinci ve i̇kinci şıklar kaynakta karşılığı olmayan gerekçelerdir.",
+      "hint": "Aynı sayının iki yerde durması, hangi hata türünü derleme aşamasında görünmez kılar?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    },
+    {
+      "id": "programming-10-d6",
+      "type": "diagnose",
+      "symptom": "Takım iki farklı autonomous rutini için aynı DriveForwardCommand nesnesini kullandı. Nesne bir kez oluşturuldu, hem chooser'a bir seçenek olarak eklendi hem de ikinci rutinin SequentialCommandGroup'una konuldu. Robot kodu, ikinci rutin kurulurken exception fırlatıp çöküyor.",
+      "prompt": "Neden oluyor ve nasıl düzeltilir?",
+      "options": [
+        "İki rutin aynı subsystem'i gerektirdiği için requirement çakışması oluşmuştur; rutinlerden birinin requirement bildirimi kaldırılmalıdır.",
+        "SendableChooser aynı command tipinden birden fazla seçenek kabul etmez; kaynak bu sınırı açıkça belirtir.",
+        "Chooser'a eklenen command'ler putData çağrısından önce oluşturulmalıdır; nesnelerin oluşturulma sırası düzeltilirse exception ortadan kalkar.",
+        "Bir composition'a verilmiş command nesnesi bağımsız olarak schedule edilemez ve ikinci bir composition'a verilemez."
+      ],
+      "correctIndex": 3,
+      "explanation": "Kural doğrudan yazılıdır: bir command composition'ına verilmiş command nesneleri bağımsız olarak schedule edilemez veya ikinci bir composition'a verilemez, bunu denemek exception fırlatır ve kullanıcı programını çökertir. Buradaki nesne iki yerde birden kullanılıyor; biri chooser'daki bağımsız seçenek, diğeri ikinci rutinin composition'ı. Kaynak sebebini de söyler: bir command bir command group'a eklendiğinde artık o group tarafından sahiplenilmiş olur ve başka hiçbir bağlamda kullanılamaz. Çözüm nesneyi paylaşmayı bırakmaktır. Kaynağın saydığı yollardan biri factory metodu desenidir; her çağrıldığında yeni bir nesne döndüren bir metot yazılır ve iki kullanım da kendi nesnesini alır. Kaynak alternatif olarak command'i temsil eden ayrı bir sınıf yazmayı da anar, yani factory tek yol değil, önerilen yollardan biridir. Birinci şık yanlıştır ve önemli bir ayrımı kaçırır; requirement çakışması programı çökertmez, scheduler tarafından çözülür. İkinci ve üçüncü şıklar kaynakta bulunmayan kısıtlar uydurur.",
+      "hint": "Aynı nesne kaç ayrı yerde kullanılıyor? Bu, modül 3'te geçen hangi kuralı ihlal ediyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html",
+      "sourceNote": "Factory metotlarının gerekçesi: https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html"
+    },
+    {
+      "id": "programming-10-d7",
+      "type": "diagnose",
+      "symptom": "Bir takım CommandScheduler.run çağrısını robotPeriodic'ten alıp autonomousPeriodic içine taşıdı. Autonomous rutini eskisi gibi düzgün çalışıyor. Ancak teleop'a geçildiğinde hiçbir tuş bağlaması tepki vermiyor, hiçbir default command çalışmıyor ve subsystem'lerin dashboard'a gönderdiği telemetry değerleri de donuyor.",
+      "prompt": "Autonomous çalışırken teleop neden hiç çalışmıyor?",
+      "options": [
+        "autonomousPeriodic teleop'ta hiç çağrılmaz, dolayısıyla scheduler teleop boyunca hiç dönmez ve yaptığı her iş durur.",
+        "Tuş bağlamaları yalnızca teleopInit metodu içinde kurulduklarında çalışırlar; bağlamaların oraya taşınması gerekir.",
+        "Teleop modunda scheduler'ı Driver Station çalıştırır ve robot kodu bunu devralamaz; sorun driver station sürümündedir ve güncelleme gerekir.",
+        "Autonomous command teleop'a geçildiğinde de çalışmaya devam ettiği için bütün subsystem'leri tutuyordur ve hiçbir yeni command schedule edilemiyordur."
+      ],
+      "correctIndex": 0,
+      "explanation": "Takımın dayandığı not gerçektir ama kapsamı dardır: scheduler'ın autonomousPeriodic veya robotPeriodic içinden çağrılması autonomous modunda benzer işler. Bu denklik yalnızca autonomous modu için geçerlidir. autonomousPeriodic teleop'ta hiç çağrılmaz, dolayısıyla scheduler teleop boyunca hiç dönmez ve scheduler'ın yaptığı her iş durur: trigger'lar yoklanmaz, command'ler yürütülmez, default command'ler schedule edilmez ve register edilmiş subsystem'lerin periodic metotları çalışmaz. Belirtideki telemetry donması bu son maddeden gelir ve dördüncü şıkkı eleyen ayrıntıdır: autonomous command yalnızca gerektirdiği subsystem'leri tutabilirdi, oysa burada ilgisiz subsystem'lerin periodic metotları da durmuş. Asıl ders, bu taşımanın en baştan yapılmaması gerektiğidir; kaynak run çağrısının robotPeriodic metodundan yapılmasını zorunlu tutar ve yeni başlayanların metodu başka bir yerden çağırmasını önermez. İkinci şık yanlıştır; bağlamalar robot başlatılırken bir kez bildirilir. Üçüncü şık da yanlıştır; scheduler'ı robot kodu çalıştırır.",
+      "hint": "Belirtide telemetry de donuyor. Subsystem'lerin periodic metodunu kim çağırıyordu?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/dashboards/smartdashboard/choosing-an-autonomous-program-from-smartdashboard.html",
+      "sourceNote": "run çağrısının zorunlu yeri ve scheduler adım sırası: https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html | Proje yapısı: https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html"
+    },
+    {
+      "id": "programming-10-d8",
+      "type": "diagnose",
+      "symptom": "Etkinlikte teleop başladığında robot kendi başına sürmeye devam ediyor ve sürücü drivetrain'i teleop boyunca hiç kontrol edemiyor. Aynı anda kol ve intake tuşları normal çalışıyor. İncelemede autonomous command'in isFinished metodunun hiç yazılmadığı görülüyor.",
+      "prompt": "Ne oluyor ve doğru düzeltme nedir?",
+      "options": [
+        "Scheduler teleop'ta hiç dönmüyordur; CommandScheduler.run çağrısının autonomousPeriodic'ten robotPeriodic'e taşınması sorunu çözecektir.",
+        "Autonomous command hiç bitmediği için drive subsystem'ini bırakmıyor ve default command geri dönemiyor; teleop başlarken iptal edilmelidir.",
+        "Drive subsystem'ine hiç default command atanmamıştır; RobotContainer içinde setDefaultCommand çağrısının eklenmesi gerekir.",
+        "Joystick teleop'a geçişte yeniden tanınmıyordur; Driver Station'ın Setup sekmesinden joystick sırasının düzeltilmesi gerekir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Autonomous command drive subsystem'ini requirement olarak bildirmiştir ve isFinished yazılmadığı için varsayılan olarak false döner, yani command kendiliğinden hiç bitmez ve kesilene kadar çalışır. Bitmeyen bir command subsystem'i serbest bırakmaz; scheduler bir subsystem'in default command'ini ancak o subsystem boşta kaldığında schedule eder. Sürücünün drivetrain'i kontrol edememesi tam olarak budur. Belirtideki ayırt edici ayrıntı kol ve intake tuşlarının çalışmasıdır ve üç şıkkı birden eler: scheduler dönmeseydi hiçbir tuş çalışmazdı, joystick tanınmasaydı yine hiçbir tuş çalışmazdı ve default command hiç atanmamış olsaydı drivetrain hiçbir maçta çalışmazdı. Sorun tek bir subsystem'de yoğunlaşıyorsa, o subsystem'i tutan bir şey aranır. Doğru düzeltme kaynakta yazılıdır: teleopInit metodu hâlâ çalışan autonomous command'leri iptal eder ve kaynak bunun autonomous teleop başlayınca durmasını sağladığını söyler. İkinci ve tamamlayıcı düzeltme, autonomous command'e gerçek bir bitiş koşulu yazmaktır; bir command'in doğru davranması iptal edilmesine bağlı olmamalıdır.",
+      "hint": "Sorun bütün robotta mı, yoksa tek bir subsystem'de mi? Bu fark hangi şıkları eliyor?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [],
+      "source": "https://docs.wpilib.org/en/stable/docs/software/commandbased/command-scheduler.html",
+      "sourceNote": "Teleop'ta autonomous command'in iptali: https://docs.wpilib.org/en/stable/docs/software/commandbased/structuring-command-based-project.html | isFinished varsayılanı: https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html | Default command tanımı: https://docs.wpilib.org/en/stable/docs/software/commandbased/subsystems.html"
+    }
+  ]
+}

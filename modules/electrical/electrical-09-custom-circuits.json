@@ -1,0 +1,397 @@
+{
+  "id": "electrical-09-custom-circuits",
+  "department": "electrical",
+  "language": "tr",
+  "moduleNumber": 9,
+  "schemaVersion": 2,
+  "season": "2026",
+  "verifiedOn": "2026-09-02",
+  "imageRef": null,
+  "title": "Custom Circuit'ler ve Legal Wiring",
+  "summary": "Bir devrenin ne zaman custom circuit sayıldığını, nereden besleneceğini, kablo renklerinin neden kural olduğunu ve hangi ara elemanların hatta konabileceğini öğretir.",
+  "prerequisites": [
+    "electrical-02-circuit-protection",
+    "electrical-08-motors"
+  ],
+  "estimatedMinutes": 15,
+  "concept": {
+    "body": "Kural, robottaki aktif elektrikli birimleri üçe ayırır: aktüatörler, core control system birimleri ve geri kalan her şey. Bu geri kalan her şey custom circuit'tir. Yani takımın kendi yaptığı bir LED sürücü kartı da, piyasadan alınmış bir sensor arayüzü de custom circuit sayılır ve aynı kurallara tabidir. Custom circuit'lerin bir üst sınırı daha vardır: ölçülebilir biçimde 24V'u aşan gerilim üretemezler.\n\nBir custom circuit'in gücü, PD üzerindeki tek bir korumalı terminal çiftinden gelmelidir; koruma değeri en fazla 40A olabilir. PD'nin ana güç girişine bağlanmak veya battery ile PD arasındaki hatta dokunmak yasaktır. Ayrıca PD üzerindeki her terminale yalnızca tek bir kablo bağlanır; birden fazla devreyi aynı kanaldan beslemek gerekiyorsa kablolar terminalin dışında yalıtımlı terminal bloğu veya splice ile birleştirilir ve terminale tek bir ana kablo girer.\n\nHat üzerine ara eleman koymak yasak değildir. Kural COTS connector'lara, splice'lara, esnek veya dönen kontaklara ve COTS slip ring'lere izin verir; tek şart, yolun tamamının uygun kalınlıkta ve uygun değerde elemanlardan oluşmasıdır. Zincirin en zayıf halkası hattın gerçek sınırıdır.\n\nKablo renkleri de kuraldır. Sabit polariteye sahip, signal level olmayan tüm kablolar boyunca renk kodlu olmalıdır: pozitif taraf kırmızı, sarı, beyaz, kahverengi veya şeritli siyah; ortak veya negatif taraf ise siyah ya da mavi. Kuralın istisnası vardır: legal bir cihaza fabrikada bağlanmış orijinal kablolar, renkleri listeye uymasa bile kapsam dışıdır.\n\nSon olarak custom circuit'ler güç yollarını doğrudan değiştiremez. Tek istisna ölçüm devreleridir: yüksek empedanslı gerilim ölçümü veya düşük empedanslı akım ölçümü, robotun çıkışlarına etkisi önemsiz kaldığı sürece kabul edilir.",
+    "keyTerms": [
+      {
+        "term": "custom circuit",
+        "glossTr": "aktüatör veya core control system dışındaki her aktif elektrikli birim"
+      },
+      {
+        "term": "core control system",
+        "glossTr": "roboRIO, PD, radio gibi zorunlu kontrol birimleri"
+      },
+      {
+        "term": "signal level",
+        "glossTr": "sinyal seviyesi; düşük akımlı veri veya ölçüm hattı"
+      },
+      {
+        "term": "splice",
+        "glossTr": "iki kablonun eklendiği bağlantı"
+      },
+      {
+        "term": "slip ring",
+        "glossTr": "dönen bir eksende elektrik geçişi sağlayan bilezik"
+      },
+      {
+        "term": "polarity",
+        "glossTr": "kutup yönü"
+      },
+      {
+        "term": "impedance",
+        "glossTr": "empedans; alternatif akıma karşı gösterilen direnç"
+      },
+      {
+        "term": "shunt",
+        "glossTr": "akım ölçmek için hatta seri konan çok düşük değerli direnç"
+      }
+    ]
+  },
+  "cards": [
+    {
+      "id": "electrical-09-c1",
+      "rung": "behaviour",
+      "index": 1,
+      "of": 3,
+      "label": "CUSTOM CIRCUIT",
+      "front": "Aktüatör ve core control system dışındaki her aktif elektrikli öğe custom circuit'tir.",
+      "back": "Tanım geniştir ve bu bilerek böyledir: takımın kendi yaptığı bir LED sürücü kartı da, piyasadan hazır alınmış bir sensor arayüz kartı da custom circuit sayılır ve aynı yükümlülüklere tabidir. Custom circuit'ler ölçülebilir biçimde 24V'u aşan gerilim üretemez, gücünü PD üzerindeki tek bir korumalı terminal çiftinden alır ve o korumanın değeri en fazla 40A olur. Kendi yaptığımız kart kural kapsamı dışındadır diye bir şık yoktur.",
+      "takeaway": "Kartı kimin yaptığı değil, ne olmadığı belirler: aktüatör değilse ve kontrol birimi değilse custom circuit'tir",
+      "tags": [
+        "custom circuit",
+        "24V",
+        "40A"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-09-d1",
+        "electrical-09-d7"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R614",
+          "season": "2026",
+          "topic": "aktüatör veya core control system birimi olmayan her aktif elektrikli öğe custom circuit'tir; 24V üstü gerilim üretemez"
+        },
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "her devre gücünü PD'nin tek korumalı terminal çiftinden alır; ana güç girişine bağlanamaz"
+        }
+      ]
+    },
+    {
+      "id": "electrical-09-c2",
+      "rung": "mechanism",
+      "index": 2,
+      "of": 3,
+      "label": "CUSTOM CIRCUIT",
+      "front": "Hatta ara eleman koymak serbestse, neden yanıyor?",
+      "back": "Kural COTS connector'lara, splice'lara, esnek veya dönen kontaklara ve COTS slip ring'lere izin verir. Tek şartı vardır ve asıl mesele odur: yolun tamamı uygun kalınlıkta ve uygun değerde elemanlardan oluşmalıdır. 40A korumalı bir hatta 12 AWG kablo çekip araya kanal başına 2A için üretilmiş bir slip ring koymak, o hattı 2A'lik bir hat yapar. Breaker kabloyu korur, zayıf halkayı değil; koruma atmadan önce o eleman ısınır. Zincirin en zayıf halkası hattın gerçek sınırıdır.",
+      "takeaway": "Bir hattın taşıma kapasitesi en zayıf elemanının değeridir, kablosunun değil",
+      "tags": [
+        "slip ring",
+        "splice",
+        "değer"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-09-d5"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R623",
+          "season": "2026",
+          "topic": "ara elemanlara izin verilir; yolun tamamı uygun kalınlıkta ve değerde olmalıdır"
+        }
+      ]
+    },
+    {
+      "id": "electrical-09-c3",
+      "rung": "pit",
+      "index": 3,
+      "of": 3,
+      "label": "CUSTOM CIRCUIT",
+      "front": "Denetimde bir devreye takıldınız ve iki doğru cümleyle savunuyorsunuz. Yine de geçmiyor.",
+      "back": "Splice kullanmak gerçekten yasak değildir ve çekilen akım gerçekten düşük olabilir. İkisi de doğrudur; ikisi de sorulan soruya cevap değildir. İhlal edilen kural beslemenin nereden alındığıdır: her devre gücünü PD'nin tek bir korumalı terminal çiftinden almalıdır ve hiçbir devre PD'nin ana güç girişine ya da battery ile PD arasındaki hatta bağlanamaz. Denetimde doğru olguları yanlış soruya cevap olarak sıralamak, sorunu bulmayı geciktirmekten başka işe yaramaz. Önce hangi kuralın çiğnendiğini sorun.",
+      "takeaway": "Doğru bir cümle, sorulan soruya cevap değilse savunma değildir",
+      "tags": [
+        "denetim",
+        "besleme yeri",
+        "splice"
+      ],
+      "estMinutes": 2,
+      "derivedFrom": [
+        "electrical-09-d8"
+      ],
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "devreler PD'nin ana güç girişine bağlanamaz"
+        }
+      ]
+    }
+  ],
+  "drills": [
+    {
+      "id": "electrical-09-d1",
+      "type": "multiple_choice",
+      "prompt": "Takım, mekanizmanın konumunu göstermek için kendi tasarladığı küçük bir LED sürücü kartı yaptı. Kart bir motor sürmüyor ve kontrol sisteminin parçası değil. Bu kart kurallar açısından nasıl değerlendirilir?",
+      "options": [
+        "Custom circuit sayılır ve custom circuit kurallarına tabidir.",
+        "Hiçbir kategoriye girmez; takımın kendi yaptığı kartlar kural kapsamı dışındadır.",
+        "Core control system parçası sayılır, çünkü roboRIO'dan sinyal alır.",
+        "Aktüatör sayılır, çünkü elektrik enerjisini ışığa çevirir."
+      ],
+      "correctIndex": 0,
+      "explanation": "Tanım oldukça geniştir: aktüatör olmayan ve core control system birimi olmayan her aktif elektrikli öğe custom circuit'tir. Bu tanım takımın kendi yaptığı kartları da, piyasadan hazır alınmış arayüz kartlarını da kapsar. Sonuç önemlidir, çünkü custom circuit olmak beraberinde somut yükümlülükler getirir: gücün PD üzerindeki tek bir korumalı terminal çiftinden gelmesi, uygun değerde koruma, uygun kablo kalınlığı ve renk kodu. Ayrıca custom circuit'ler ölçülebilir biçimde 24V'u aşan gerilim üretemez; bu madde denetim listesinde ayrıca kontrol edilir. İkinci şık en tehlikeli yanılgıdır: kural kapsamı dışında bir kategori yoktur. Üçüncü şık roboRIO'dan sinyal almayı kontrol sisteminin parçası olmakla karıştırır; core control system kuralda tek tek sayılan birimlerdir. Dördüncü şık da yanlıştır, çünkü aktüatörler ayrı bir maddede listelenmiştir ve LED bu listede değildir.",
+      "hint": "Kural üç kategori tanımlıyor. Kartınız ilk ikisine girmiyorsa geriye ne kalıyor?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R614",
+          "season": "2026",
+          "topic": "aktüatör veya core control system birimi olmayan her aktif elektrikli öğe custom circuit'tir"
+        },
+        {
+          "rule": "R614",
+          "season": "2026",
+          "topic": "custom circuit'ler 24V'u aşan gerilim üretemez"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural numarası ve konusu resmi 2026 FRC Inspection Checklist ile doğrulandı (https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf); tam kural metni aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-09-d2",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki kablolamada kurallara aykırı olan tek öğeyi seçiniz.",
+      "scenario": "Bir takım custom circuit'lerinin kablolamasını anlatıyor.",
+      "elements": [
+        "Bir custom circuit'in pozitif hattı boyunca kahverengi kablo kullanılmış.",
+        "Bir başka custom circuit'in negatif hattı boyunca mavi kablo kullanılmış.",
+        "Bir mekanizmanın besleme hattında pozitif taraf için yeşil kablo kullanılmış.",
+        "Bir custom circuit, PD üzerindeki tek bir korumalı terminal çiftinden besleniyor.",
+        "PD üzerindeki her terminale yalnızca tek bir kablo bağlanmış."
+      ],
+      "faultIndex": 2,
+      "explanation": "Kural, sabit polariteye sahip ve signal level olmayan kabloların boyunca renk kodlu olmasını ister ve izin verilen renkleri sayar: pozitif taraf için kırmızı, sarı, beyaz, kahverengi veya şeritli siyah; ortak veya negatif taraf için siyah ya da mavi. Yeşil bu listelerin hiçbirinde yoktur ve pozitif hat için kullanılamaz. Kuralın gerekçesi denetim ve güvenliktir: bir arıza sırasında hangi kablonun hangi kutup olduğunu renginden anlamak gerekir. Diğer dört öğe uygundur; kahverengi pozitif ve mavi negatif için izinli renklerdir, besleme tek korumalı terminal çiftinden gelmektedir ve her terminale tek kablo bağlanmıştır.",
+      "hint": "Kural izin verilen renkleri tek tek sayıyor. Öğelerdeki renkleri o listelerle karşılaştırın.",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R624",
+          "season": "2026",
+          "topic": "signal level olmayan sabit polariteli kablolar renk kodlu olmalı; pozitif kırmızı, sarı, beyaz, kahverengi veya şeritli siyah, negatif siyah veya mavi"
+        },
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "çeldirici: devreler gücünü tek bir korumalı terminal çiftinden alır"
+        },
+        {
+          "rule": "R618",
+          "season": "2026",
+          "topic": "çeldirici: PD üzerindeki her terminale yalnızca tek kablo"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural numarası ve konusu resmi 2026 FRC Inspection Checklist ile doğrulandı (https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf); tam kural metni aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-09-d3",
+      "type": "numeric",
+      "prompt": "Takım, iki ayrı custom circuit'i beslemek için ikisinin de pozitif kablosunu PD'deki aynı terminale sıkıştırmayı düşünüyor. Kurala göre PD üzerindeki bir terminale en fazla kaç kablo bağlanabilir? Cevabınızı yalnızca sayı olarak yazınız.",
+      "answer": 1,
+      "tolerance": 0,
+      "unit": "kablo",
+      "explanation": "Kural nettir: PD üzerindeki her terminale yalnızca tek bir kablo bağlanır. Terminaller tek iletken için tasarlanmıştır; iki kablo sıkıştırıldığında ikisinin de teması güvenilmez hâle gelir, biri zamanla gevşer ve titreşim altında kopar. Ancak kuralın yasakladığı şey terminale iki kablo sokmaktır, aynı kanaldan iki devre beslemek değildir. Kural bunun için açık bir yol gösterir: gelen kablolar terminalin dışında uygun biçimde birleştirilir, yalıtımlı bir terminal bloğu veya splice kullanılır ve terminale yalnızca tek bir ana kablo girer. Custom circuit'ler için bir breaker'a bağlanabilecek devre sayısında da sınır yoktur. Yani iki custom circuit'i aynı korumalı kanaldan beslemek kural gereği mümkündür; şart, toplam yükün o korumaya ve hattaki en ince kabloya uygun olmasıdır.",
+      "hint": "Terminale kaç iletken girebilir? Peki iki devreyi aynı korumalı kanaldan beslemenin kurala uygun bir yolu var mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R618",
+          "season": "2026",
+          "topic": "PD üzerindeki her terminale yalnızca tek kablo; birden fazla devre için kablolar terminal dışında splice veya terminal bloğu ile birleştirilir"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "her kol devresi tek bir breaker veya fuse ile korunur; custom circuit'ler için breaker başına sayı sınırı yoktur"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural numarası ve konusu resmi 2026 FRC Inspection Checklist ile doğrulandı (https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf); tam kural metni aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-09-d4",
+      "type": "multiple_choice",
+      "prompt": "Takım, mekanizmanın çektiği akımı kaydetmek için besleme hattına çok düşük değerli bir shunt direnç koyup üzerindeki gerilimi ölçen küçük bir kart eklemek istiyor. Kartın hat üzerindeki etkisi ihmal edilebilir düzeyde. Bu uygun mudur?",
+      "options": [
+        "Uygun değildir; custom circuit'ler güç yollarına hiçbir şekilde dokunamaz.",
+        "Uygundur. Kural, robotun çıkışlarına etkisi önemsiz kalmak koşuluyla düşük empedanslı akım ölçümüne ve yüksek empedanslı gerilim ölçümüne izin verir.",
+        "Uygundur; ölçüm devreleri custom circuit sayılmadığı için hiçbir kısıta tabi değildir.",
+        "Uygun değildir; akım ölçümü yalnızca PD'nin kendi telemetry'si üzerinden yapılabilir."
+      ],
+      "correctIndex": 1,
+      "explanation": "Kural custom circuit'lerin güç yollarını doğrudan değiştirmesini yasaklar, ancak bu yasağa açık bir istisna tanır: yüksek empedanslı gerilim ölçümü ve düşük empedanslı akım ölçümü, robotun çıkışlarına etkisi önemsiz kaldığı sürece kabul edilir. Sorudaki shunt tam olarak bu tanıma girer, çünkü çok düşük değerli bir direnç hattı anlamlı biçimde etkilemez. Birinci şık kuralı istisnasız okur ve bu nedenle yanlıştır. Üçüncü şık ise ters yönde hata yapar: ölçüm kartı da bir custom circuit'tir ve besleme, koruma, kablo kalınlığı ve renk kuralları ona da uygulanır; istisna yalnızca güç yolunu değiştirme yasağıyla ilgilidir. Dördüncü şıkta anlatılan kısıt yoktur.",
+      "hint": "Kural güç yolunu değiştirmeyi yasaklıyor. Ölçmek değiştirmek midir? Kuralın bu konuda açık bir cümlesi var mı?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R625",
+          "season": "2026",
+          "topic": "custom circuit'ler güç yollarını değiştiremez; etkisi önemsiz kalan gerilim ve akım ölçümü kabul edilir"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural numarası ve konusu resmi 2026 FRC Inspection Checklist ile doğrulandı (https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf); tam kural metni aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-09-d5",
+      "type": "diagnose",
+      "symptom": "Dönebilen bir turret'in üzerindeki mekanizma, turret dönerken zaman zaman güç kaybediyor ve duruyor. Turret durduğunda sorun tekrarlanmıyor. Güç, turret ekseninden bir COTS slip ring üzerinden geçiriliyor. Slip ring'in üretici değeri kanal başına 2A, mekanizmanın motoru ise tepe akımda 30A çekiyor. Breaker atmıyor.",
+      "prompt": "Sorunun kaynağı nedir?",
+      "options": [
+        "Slip ring kullanmak kurallara aykırıdır; güç dönen bir eksenden geçirilemez.",
+        "Breaker değeri çok yüksektir; düşürülürse sorun çözülür.",
+        "Slip ring hattın taşıması gereken akım için yetersiz değerdedir; kural ara elemanlara izin verir ancak yolun tamamının uygun değerde olmasını şart koşar.",
+        "Motor controller arızalıdır ve dönme sırasında sinyal kaybediyordur."
+      ],
+      "correctIndex": 2,
+      "explanation": "Kural, hat üzerinde COTS connector, splice, esnek veya dönen kontak ve COTS slip ring gibi ara elemanlar bulunmasına izin verir; tek şartı yolun tamamının uygun kalınlıkta ve uygun değerde elemanlardan oluşmasıdır. Buradaki slip ring kanal başına 2A için üretilmişken hattan tepe akımda 30A geçmektedir, yani zincirin en zayıf halkası hattın gerçek sınırını belirlemektedir. Belirti de bunu doğrular: sorun yalnızca turret dönerken, yani slip ring kontakları hareket hâlindeyken ortaya çıkmaktadır. Breaker'ın atmaması bir kanıt değildir; breaker kabloyu ve o kanalı korur, hattaki en zayıf ara elemanı değil. Birinci şık fazla ileri gider, slip ring açıkça izinli bir ara elemandır. İkinci şık ise motoru zayıflatmaktan başka bir işe yaramaz ve slip ring'in yetersizliğini gidermez.",
+      "hint": "Hattın taşıması gereken akımı, hat üzerindeki her elemanın değeriyle tek tek karşılaştırın. En düşük değer hangisi?",
+      "difficulty": "core",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R623",
+          "season": "2026",
+          "topic": "ara elemanlara izin verilir; yolun tamamı uygun kalınlıkta ve değerde olmalıdır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural metni aynadan doğrulandı; resmi PDF 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-09-d6",
+      "type": "multiple_choice",
+      "prompt": "Bir takım arkadaşınız 'kurallara göre robottaki bütün kablolar kırmızı ve siyah olmalı, bizim encoder kablomuz gri ve CAN kablomuz sarı yeşil, bunları değiştirmemiz gerek' diyor. Bu değerlendirmeyi ele alınız.",
+      "options": [
+        "Doğrudur; robottaki tüm kablolar kırmızı ve siyah olmalıdır.",
+        "Doğrudur, ancak yalnızca 12V hatlar için; sensor kabloları serbesttir ve CAN kabloları da değiştirilmelidir.",
+        "Yanlıştır; renk kuralı yalnızca bir öneridir, zorunluluk değildir.",
+        "Yanlıştır. Renk kuralı signal level olmayan ve sabit polariteye sahip kablolar içindir; ayrıca pozitif taraf için izin verilen renkler kırmızıdan ibaret değildir."
+      ],
+      "correctIndex": 3,
+      "explanation": "Renk kuralının iki sınırlayıcısı vardır ve ikisi de gözden kaçar. Birincisi kapsamdır: kural signal level olmayan ve sabit polariteye sahip kablolar için geçerlidir, dolayısıyla encoder ve CAN gibi sinyal hatları bu kapsamda değildir. CAN zaten sarı ve yeşil ile kablolanır. Kuralın ikinci bir kaçış yolu daha vardır: legal bir cihaza fabrikada bağlanmış orijinal kablolar, renkleri listeye uymasa bile kapsam dışıdır; yani hazır alınmış bir cihazın kendi kablosunu yalnızca rengi yüzünden kesip değiştirmek gerekmez. İkincisi izin verilen renk kümesidir: pozitif taraf için kırmızı, sarı, beyaz, kahverengi veya şeritli siyah; negatif veya ortak taraf için siyah ya da mavi. Yani kural kırmızı ve siyahtan çok daha geniştir. Üçüncü şık yanlıştır, renk kuralı bir zorunluluktur. İkinci şık kapsamı doğru daraltmaya başlar ancak CAN kablolarının değiştirilmesi gerektiğini söyleyerek yanlış sonuca varır.",
+      "hint": "Kural hangi kabloları kapsıyor? Kapsadıklarında kaç renk seçeneği var?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R624",
+          "season": "2026",
+          "topic": "renk kuralı yalnızca signal level olmayan, sabit polariteli kablolar için geçerlidir"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "CAN kablo renkleri için: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"
+    },
+    {
+      "id": "electrical-09-d7",
+      "type": "find_the_fault",
+      "prompt": "Aşağıdaki dört custom circuit beslemesinden üçü uygundur. Uygun olmayanı seçiniz.",
+      "scenario": "Bir takım dört ayrı custom circuit'i farklı şekillerde beslemiş.",
+      "elements": [
+        "Bir LED şeridi, PDH üzerindeki switchable channel'dan besleniyor.",
+        "Bir sensor arayüz kartı, PD üzerinde 10A korumalı bir kanaldan besleniyor.",
+        "Bir soğutma fanı, PD üzerinde 20A korumalı bir kanaldan besleniyor.",
+        "Bir custom circuit, main breaker ile PD arasındaki hatta paralel bağlanarak besleniyor."
+      ],
+      "faultIndex": 3,
+      "explanation": "Main breaker ile PD arasındaki hat, PD'nin ana güç girişidir. Kural her devrenin gücünü yalnızca PD'nin tek bir korumalı terminal çiftinden almasını ister ve devrelerin PD'nin ana güç girişine bağlanmasını açıkça yasaklar. Ayrıca custom circuit'ler battery, PD ve motor controller'lar arasındaki güç yollarını değiştiremez; bu bağlantı tam olarak bunu yapmaktadır ve üstelik hiçbir kol devresi koruması arkasında değildir. Diğer üç öğe uygundur: switchable channel LED gibi göstergeler için tasarlanmıştır, sensor kartı korumalı bir kanaldan beslenmektedir ve fan için izin verilen üst sınır 20A'dır.",
+      "hint": "Öğelerden üçü PD'nin bir çıkışından besleniyor. Dördüncüsü nereden besleniyor?",
+      "difficulty": "stretch",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "her devre gücünü yalnızca PD'nin tek korumalı terminal çiftinden alır; PD'nin ana güç girişine bağlanamaz"
+        },
+        {
+          "rule": "R625",
+          "season": "2026",
+          "topic": "custom circuit'ler güç yollarını değiştiremez"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "çeldirici: fan'lar için en fazla 20A koruma"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural numarası ve konusu resmi 2026 FRC Inspection Checklist ile doğrulandı (https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf); tam kural metni aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    },
+    {
+      "id": "electrical-09-d8",
+      "type": "diagnose",
+      "symptom": "Denetimde inspector, robotun arkasındaki LED şeridinin kablosunu izliyor ve kablonun PD'ye değil, main breaker'ın çıkış vidasına eklenmiş bir splice'a gittiğini görüyor. Takım, LED'in çok az akım çektiğini ve splice'ın uygun kalınlıkta olduğunu söylüyor. Robot denetimden geçemiyor.",
+      "prompt": "Takımın savunmasındaki temel hata nedir?",
+      "options": [
+        "Sorun akım miktarı veya splice kalitesi değil, beslemenin nereden alındığıdır; devre PD'nin bir korumalı çıkışından beslenmelidir.",
+        "Splice kullanmak kurallara aykırıdır; hat üzerinde hiçbir ara eleman bulunamaz.",
+        "LED şeridi custom circuit sayılmaz, bu yüzden inspector yanılıyor.",
+        "Splice'ın kalınlığı yeterli değildir; daha kalın bir splice sorunu çözer."
+      ],
+      "correctIndex": 0,
+      "explanation": "Takımın iki savunması da doğru olguları yanlış soruya cevap veriyor. Splice kullanmak gerçekten yasak değildir; kural COTS connector'lara, splice'lara ve slip ring'lere yolun tamamı uygun değerde olduğu sürece izin verir. Akımın düşük olması da doğru olabilir. Ancak ihlal edilen kural bunların hiçbiriyle ilgili değildir: her devre gücünü PD'nin tek bir korumalı terminal çiftinden almalıdır ve PD'nin ana güç girişine bağlanamaz. Main breaker'ın çıkışı tam olarak o ana güç girişidir. Bu bağlantının pratik sonucu da ciddidir: LED devresi hiçbir kol devresi koruması arkasında değildir, yani bir kısa devre doğrudan 120A main breaker'a dayanır ve o noktaya kadar kablo yanabilir. Doğru çözüm LED şeridini PD üzerindeki uygun bir kanala, tercihen switchable channel'a almaktır.",
+      "hint": "Takımın söylediği iki şey de doğru olabilir. Peki inspector'ün baktığı kural bunlardan hangisiyle ilgili?",
+      "difficulty": "pit",
+      "seasonSensitive": true,
+      "imageRef": null,
+      "ruleRefs": [
+        {
+          "rule": "R610",
+          "season": "2026",
+          "topic": "devreler PD'nin ana güç girişine bağlanamaz"
+        },
+        {
+          "rule": "R623",
+          "season": "2026",
+          "topic": "çeldirici: splice'lar uygun değerde olmak koşuluyla izinlidir"
+        },
+        {
+          "rule": "R621",
+          "season": "2026",
+          "topic": "her kol devresi uygun bir koruma arkasında olmalıdır"
+        }
+      ],
+      "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)",
+      "sourceNote": "Kural numarası ve konusu resmi 2026 FRC Inspection Checklist ile doğrulandı (https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf); tam kural metni aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."
+    }
+  ]
+}
