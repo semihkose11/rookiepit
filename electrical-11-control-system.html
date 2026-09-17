@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FRC Electrical Modul 11 - Kontrol sistemi butunlugu: core control system, sinyal yolu, co-processor ve MXP sinirlari. Kavram, uc kart, sema, kurulum tuvali ve sekiz soruluk test.">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>window.__EMBED__=true;</script>
+<meta property="og:title" content="Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor">
+<meta property="og:description" content="FRC Electrical Modul 11 - kavram, kartlar, sema ve test.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}
+[hidden]:not([hidden=until-found]){display:none!important}</style>
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<title>Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor · FRC Electrical Modül 11</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
+:root, :root[data-theme="dark"], :root[data-theme="light"]{
+  color-scheme:light;
+  --ground:#EFE9FB; --surface:#FFFFFF; --sunk:#E4DBF7;
+  --ink:#000000; --body:#141019; --mute:#463E58; --hair:#CFC2EC;
+  --acc:#5B21B6; --acc-soft:#EDE5FE;
+  --ok:#116336; --ok-soft:#E4F3EA; --no:#A5124A; --no-soft:#FBE6EE;
+  --rung-b:#7C3AED; --rung-m:#4C1D95; --rung-p:#000000; --rung-p-fg:#EFE9FB;
+  --w-pos:#6D28D9; --w-neg:#000000; --dia-fill:#FFFFFF; --dia-edge:#BFB0E0;
+  --dia-ink:#000000; --dia-mute:#463E58; --dia-pd:#5B21B6; --dia-band:#E7DDFC;
+  --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+  font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:40px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font:700 clamp(34px,8vw,52px)/1.02 var(--disp);letter-spacing:-.01em;margin:10px 0 0}
+.sub{margin:14px 0 0;max-width:60ch;font-size:15.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+section{padding:38px 0;border-bottom:1px solid var(--hair)}
+section:last-of-type{border-bottom:0}
+h2{font:600 clamp(23px,5vw,29px)/1.15 var(--disp);letter-spacing:.005em;margin:8px 0 6px}
+.lede{margin:0 0 22px;font-size:15px;color:var(--mute);max-width:62ch}
+.concept p{margin:0 0 14px;font-size:15.5px;line-height:1.72;max-width:66ch}
+.vids{margin-top:22px}
+.vid{border:1px solid var(--hair);border-radius:12px;background:var(--surface);overflow:hidden}
+.vid+.vid{margin-top:14px}
+.vtop{padding:12px 16px;border-bottom:1px solid var(--hair)}
+.vtop b{display:block;color:var(--ink);font:600 14.5px/1.35 var(--sans)}
+.vtop span{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.vframe{position:relative;width:100%;aspect-ratio:16/9;background:#1b1620}
+.vface{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
+  background-color:#1b1620;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;text-decoration:none}
+.vface:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+.vptri{width:74px;height:52px;border-radius:12px;background:rgba(20,16,24,.78);
+  display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.vface:hover .vptri{background:var(--acc)}
+.vptri svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.vlink{display:inline-block;margin:14px 16px 0;padding:9px 14px;border-radius:8px;
+  background:var(--acc);color:#fff;text-decoration:none;font:600 13px/1 var(--sans)}
+.vnote{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot a{color:var(--acc);font-weight:600}
+.vsrc{margin:8px 16px 14px;font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.terms{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.term{font:500 12.5px/1 var(--mono);color:var(--ink);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:5px;padding:7px 9px}
+.rail{display:flex;flex-direction:column;gap:14px}
+.flip{perspective:1400px;background:none;border:0;padding:0;width:100%;
+  text-align:left;font:inherit;cursor:pointer;border-radius:14px}
+.flip:focus-visible{outline:2.5px solid var(--acc);outline-offset:3px}
+.inner{position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1)}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+.face{border-radius:14px;border:1px solid var(--hair);background:var(--surface);
+  box-shadow:var(--shadow);padding:20px;backface-visibility:hidden}
+.face.back{position:absolute;inset:0;transform:rotateY(180deg);overflow:auto}
+.face.front{min-height:150px;display:flex;flex-direction:column}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.rung{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 9px;border-radius:5px;color:#fff}
+.r-behaviour{background:var(--rung-b)} .r-mechanism{background:var(--rung-m)}
+.r-pit{background:var(--rung-p);color:var(--rung-p-fg)}
+.count{font:500 12px/1 var(--mono);color:var(--mute)}
+.cfront{font:600 clamp(19px,4.2vw,23px)/1.3 var(--disp);color:var(--ink)}
+.ctags{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:400 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);padding:5px 8px;border-radius:4px}
+.hintline{margin-top:12px;font:500 12px/1.5 var(--mono);color:var(--acc)}
+.face.front .hintline{margin-top:auto;padding-top:18px}
+.cardfig svg{max-height:150px}
+@media(max-width:520px){
+  .cback{font-size:13.6px;line-height:1.56}
+  .cardfig{margin-top:12px}
+  .cardfig svg{max-height:116px}
+  .take{font-size:12.8px;padding:9px 11px;margin-top:12px}
+}
+.cback{font-size:14.5px;line-height:1.62;margin:0}
+.take{margin-top:14px;padding:11px 13px;border-radius:9px;background:var(--acc-soft);
+  color:var(--ink);font:600 13.5px/1.45 var(--sans)}
+.gauges{padding:16px 18px;background:var(--sunk);border:1px solid var(--hair);
+  border-radius:12px;display:grid;gap:11px}
+.grow{display:grid;grid-template-columns:88px 1fr auto;align-items:center;gap:12px}
+.glabel{font:500 13px/1 var(--mono);color:var(--ink)}
+.gbar{height:14px;display:flex;align-items:center}
+.gbar i{display:block;width:100%;border-radius:2px;background:var(--acc)}
+.guse{font:400 12px/1.3 var(--sans);color:var(--mute);text-align:right;max-width:20ch}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.ptop{padding:18px 20px;border-bottom:1px solid var(--hair)}
+.ptop h3{font:600 19px/1.25 var(--disp)}
+.ptop p{margin:7px 0 0;font-size:14.5px}
+.must{list-style:none;margin:0;padding:2px 0}
+.must li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.must li:last-child{border-bottom:0}
+.must .n{font:600 12px/22px var(--mono);color:#fff;background:var(--acc);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.must b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.must span{font-size:13px;color:var(--mute)}
+.pfoot{padding:14px 20px;background:var(--sunk);font-size:13.5px;color:var(--mute)}
+.pfoot code{font:500 12.5px var(--mono);color:var(--ink)}
+.howgrid{display:grid;gap:16px;padding:18px 20px}
+@media(min-width:640px){.howgrid{grid-template-columns:1fr 1fr;gap:24px}}
+.howgrid h4{margin:0 0 9px;font:600 11.5px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--acc)}
+.howgrid ol{margin:0;padding-left:19px;font-size:13.8px;line-height:1.62}
+.howgrid ol li{margin-bottom:6px}
+.howgrid p{margin:0 0 9px;font-size:13.8px;line-height:1.62}
+.swipe{display:none;font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--mute);margin:0 0 8px}
+@media(max-width:860px){.swipe{display:block}}
+.fig{margin:16px 0 6px;border:1px solid var(--hair);border-radius:11px;
+  background:var(--surface);padding:13px 14px 9px}
+.fig .sc{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig .sc svg{display:block;width:100%;height:auto;min-width:520px}
+.fig .cap{margin:9px 0 0;font:500 11.5px/1.45 var(--mono);color:var(--mute)}
+.fig .cap b{display:none;color:var(--acc);font-weight:600}
+@media(max-width:620px){.fig .cap b{display:inline}}
+.ans .fig,.cfront .fig{background:var(--surface)}
+.cardfig{margin:14px 0 0;border-radius:9px;overflow:hidden}
+.cardfig svg{display:block;width:100%;height:auto}
+.conceptfig{margin:6px 0 22px}
+.match[hidden],.mbar[hidden]{display:none!important}
+.bwarn{margin:0;padding:12px 20px;font:500 13px/1.5 var(--sans);color:var(--no);
+  background:var(--no-soft);border-bottom:1px solid var(--hair)}
+#bpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#bpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#bpanel.locked #bwrap,#bpanel.locked .mbar,#bpanel.locked #bres{width:100%;max-width:1120px;
+  margin-left:auto;margin-right:auto}
+#bpanel.locked .mbar{position:sticky;bottom:0;background:var(--ground);
+  border-top:1px solid var(--hair);padding:12px 20px}
+#bpanel.locked .canvas{height:min(64vh,560px)}
+.blines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.blbl{position:absolute;inset:0;pointer-events:none;z-index:6}
+.placed{z-index:2}
+.placed.bad{outline:2.5px solid var(--no);outline-offset:3px;border-radius:10px}
+.placed.fine{outline:2px solid var(--ok);outline-offset:3px;border-radius:10px}
+.pin{position:absolute;width:15px;height:15px;border-radius:50%;padding:0;transform:translate(-50%,-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;z-index:4;touch-action:none}
+.pin:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.pin:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.pin.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.pinlb.lft{transform:translate(-100%,-50%)}
+.pinlb.rgt{transform:translate(0,-50%)}
+.pinlb{position:absolute;transform:translate(-50%,-190%);font:600 9px/1 var(--mono);
+  color:var(--acc);background:var(--surface);border:1px solid var(--hair);border-radius:4px;
+  padding:2px 3px;pointer-events:none;z-index:5;white-space:nowrap}
+.wchip[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);
+  box-shadow:0 0 0 2px var(--acc-soft)}
+.mres .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.mres .pen{margin:10px 0 0;font:500 13px/1.55 var(--sans);color:var(--no)}
+.mres .miss{margin:12px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:var(--body)}
+.mres .miss b{color:var(--no);font-family:var(--mono);font-size:12px}
+.mgate{padding:20px}
+.mgate p{margin:0 0 14px;font-size:14.5px;line-height:1.62;max-width:62ch}
+body.mlock{overflow:hidden}
+#matchpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#matchpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#matchpanel.locked .match,#matchpanel.locked .mres{width:100%;max-width:880px;margin-left:auto;margin-right:auto}
+#matchpanel.locked .mbar{width:100%;max-width:880px;margin:0 auto;position:sticky;bottom:0;
+  background:var(--ground);border-top:1px solid var(--hair);padding:12px 20px}
+#matchpanel.locked .mres{margin-bottom:24px}
+.match{position:relative;display:grid;grid-template-columns:1fr 92px 1fr;padding:18px 20px 6px}
+@media(max-width:620px){.match{grid-template-columns:1fr 46px 1fr;padding:14px 12px 4px}}
+.mcol{display:flex;flex-direction:column;gap:13px}
+.mitem{position:relative;display:flex;align-items:center;gap:11px;background:var(--surface);
+  border:1.6px solid var(--hair);border-radius:12px;padding:11px 13px;min-height:60px}
+.mcol.left .mitem{padding-right:24px}
+.mcol.right .mitem{padding-left:24px}
+.mitem .lbl{font:500 14px/1.35 var(--sans);color:var(--ink)}
+@media(max-width:620px){.mitem{min-height:54px;padding:9px 10px;gap:8px}
+  .mcol.left .mitem{padding-right:20px}.mcol.right .mitem{padding-left:20px}
+  .mitem .lbl{font-size:12.8px}}
+.mitem .art{flex:none;width:66px}
+.mitem .art svg{display:block;width:100%;height:auto}
+@media(max-width:620px){.mitem .art{width:50px}}
+.mdot{position:absolute;top:50%;width:19px;height:19px;border-radius:50%;transform:translateY(-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;padding:0;z-index:3}
+.mcol.left .mdot{right:-10px}
+.mcol.right .mdot{left:-10px}
+.mdot:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.mdot:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.mdot.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.mdot.ok{border-color:var(--ok);background:var(--ok)}
+.mdot.no{border-color:var(--no);background:var(--no)}
+.mitem.ok{border-color:var(--ok);background:var(--ok-soft)}
+.mitem.no{border-color:var(--no);background:var(--no-soft)}
+.mlines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.mfix{display:block;margin-top:5px;font:500 12px/1.4 var(--mono);color:var(--no)}
+.mbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 20px 16px}
+.mbar .btn:disabled{opacity:.45;cursor:default}
+.mres{margin:0 20px 16px;padding:16px 18px;border-radius:12px;background:var(--sunk);
+  border-left:3px solid var(--acc)}
+.mres .big{font:700 30px/1 var(--disp);color:var(--ink)}
+.mres .cap{font:500 12px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:9px}
+.mres p{margin:9px 0 0;font-size:14px;line-height:1.6}
+.diawrap{overflow-x:auto;padding:6px 0 2px;-webkit-overflow-scrolling:touch}
+.tray{padding:16px 20px 4px}
+.tlabel{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin:0 0 11px}
+.tgrid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:9px;margin-bottom:16px}
+.part{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font:inherit;color:var(--body)}
+.part:hover{border-color:var(--acc);background:var(--acc-soft)}
+.part:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.part span{font:500 10.5px/1 var(--mono);color:var(--mute);white-space:nowrap}
+.bleed{width:100%}
+@media(min-width:880px){
+  .bleed{width:min(1160px,calc(100vw - 40px));margin-left:50%;transform:translateX(-50%)}
+  .bleed .canvas{height:min(74vh,620px)}
+}
+.canvas{position:relative;height:min(72vh,520px);margin:0 14px 14px;border-radius:12px;
+  border:1.5px dashed var(--hair);background:var(--sunk);overflow:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.board{position:relative;width:1080px;height:680px}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--acc-soft) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--acc-soft) 1px,transparent 1px);
+  background-size:26px 26px;opacity:.75}
+.pan{margin:0 14px 12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+@media(max-width:700px){
+  .tgrid{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;font-size:13.5px;color:var(--mute);pointer-events:none}
+.empty.gone{display:none}
+.placed{position:absolute;cursor:grab;touch-action:none;user-select:none}
+.placed:active{cursor:grabbing}
+.placed .x{position:absolute;top:-9px;right:-9px;width:19px;height:19px;border-radius:50%;
+  background:var(--no);color:#fff;border:0;font:600 11px/19px var(--sans);cursor:pointer;padding:0}
+.placed .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.wireel{position:absolute;inset:0;pointer-events:none}
+.wireel .seg{position:absolute;height:20px;transform-origin:0 50%;pointer-events:auto;
+  cursor:grab;touch-action:none}
+.wireel .seg:active{cursor:grabbing}
+.wireel .seg i{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);border-radius:99px}
+.wireel .h{position:absolute;width:20px;height:20px;border-radius:50%;padding:0;
+  background:var(--surface);border:2.5px solid var(--acc);transform:translate(-50%,-50%);
+  cursor:crosshair;touch-action:none;pointer-events:auto;z-index:2;
+  opacity:0;transition:opacity .14s ease}
+.wireel .h:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.wireel .h.m{width:17px;height:17px;background:var(--acc);border-color:var(--surface);
+  box-shadow:0 0 0 2px var(--acc)}
+.wireel:hover .h,.wireel.sel .h,.wireel:focus-within .h{opacity:1}
+@media (prefers-reduced-motion:reduce){.wireel .h{transition:none}}
+.wireel .wtag{position:absolute;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:5px;pointer-events:auto;z-index:3;
+  font:600 10.5px/1 var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:4px 5px 4px 7px;white-space:nowrap}
+.wireel .x{position:static;width:16px;height:16px;flex:none;
+  border-radius:50%;background:var(--no);color:#fff;border:0;font:600 10px/16px var(--sans);
+  cursor:pointer;padding:0}
+.wireel .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:0 20px 16px}
+.mini{font:600 12px/1 var(--mono);background:var(--surface);color:var(--body);
+  border:1px solid var(--hair);padding:9px 13px;border-radius:999px;cursor:pointer}
+.mini:hover{border-color:var(--acc)} .mini:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cnote{font-size:12.5px;color:var(--mute);margin-left:auto;font-family:var(--mono)}
+.diawrap svg{display:block;min-width:790px;width:100%;height:auto}
+.diacap{padding:0 20px 16px;font-size:13px;color:var(--mute)}
+.calls{list-style:none;margin:0;padding:2px 0}
+.calls li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.calls li:last-child{border-bottom:0}
+.calls .n{font:600 12px/22px var(--mono);color:#fff;background:var(--dia-pd);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.calls b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.calls span{font-size:13px;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+.filt{font:600 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  background:var(--surface);color:var(--body);border:1px solid var(--hair);
+  padding:9px 13px;border-radius:999px;cursor:pointer}
+.filt[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.filt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.score{margin-left:auto;font:600 13px/1 var(--mono);color:var(--mute)}
+.q{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:13px}
+.pill{font:600 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 8px;border-radius:4px;border:1px solid var(--hair);color:var(--mute)}
+.pill.core{color:var(--rung-b);border-color:currentColor}
+.pill.stretch{color:var(--acc);border-color:currentColor}
+.pill.pit{color:var(--no);border-color:currentColor}
+.sym{margin:0 0 12px;padding:12px 14px;background:var(--sunk);border-radius:9px;font-size:14px;line-height:1.6}
+.qtext{margin:0 0 15px;color:var(--ink);font:500 16.5px/1.42 var(--sans)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;text-align:left;
+  font:400 14.5px/1.5 var(--sans);color:var(--body);background:var(--surface);
+  border:1px solid var(--hair);border-radius:10px;padding:12px 13px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--acc);background:var(--acc-soft)}
+.opt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.opt:disabled{cursor:default}
+.opt .k{font:600 12px/1.45 var(--mono);color:var(--mute)}
+.opt.pick-ok{background:var(--ok-soft);border-color:var(--ok)} .opt.pick-ok .k{color:var(--ok)}
+.opt.pick-no{background:var(--no-soft);border-color:var(--no)} .opt.pick-no .k{color:var(--no)}
+.opt.reveal{border-color:var(--ok);border-style:dashed}
+.opt.taken{opacity:.55}
+.num{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.num input{font:500 16px var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:9px;padding:11px 13px;width:130px}
+.num input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.btn{font:600 13px/1 var(--sans);background:var(--ink);color:var(--ground);border:0;
+  border-radius:9px;padding:12px 17px;cursor:pointer}
+.btn:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.unit{font:500 13px var(--mono);color:var(--mute)}
+/* debug_code: satır numaralı kod bloğu, hatalı satır seçilir ve doğrusu yazılır */
+.code{margin:0 0 12px;border:1px solid var(--hair);border-radius:10px;background:var(--surface);
+  overflow:auto}
+.code .ln{display:grid;grid-template-columns:38px 1fr;align-items:stretch;width:100%;
+  border:0;border-left:3px solid transparent;background:none;text-align:left;cursor:pointer;
+  font:400 13.5px/1.62 var(--mono);color:var(--body);padding:0}
+.code .ln:hover:not(:disabled){background:var(--acc-soft)}
+.code .ln:focus-visible{outline:2.5px solid var(--acc);outline-offset:-2px}
+.code .ln:disabled{cursor:default}
+.code .ln .no{color:var(--mute);text-align:right;padding:0 9px 0 0;user-select:none;
+  background:var(--sunk);font-size:12px}
+.code .ln .src{padding:0 12px;white-space:pre}
+.code .ln.pick{border-left-color:var(--acc);background:var(--acc-soft)}
+.code .ln.pick-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.code .ln.pick-no{border-left-color:var(--no);background:var(--no-soft)}
+.code .ln.reveal{border-left-color:var(--ok);border-left-style:dashed}
+.fixrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fixrow input{flex:1 1 320px;min-width:0;font:500 13.5px var(--mono);color:var(--ink);
+  background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:11px 13px}
+.fixrow input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.steplab{margin:0 0 9px;font:500 12px/1.5 var(--mono);color:var(--mute)}
+.ans{margin-top:14px;padding:14px 15px;border-radius:10px;font-size:14.5px;line-height:1.62;
+  background:var(--sunk);border-left:3px solid var(--acc)}
+.ans .verdict{display:block;font:600 13px/1 var(--mono);letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:9px}
+.ans.good .verdict{color:var(--ok)} .ans.bad .verdict{color:var(--no)}
+.srcs{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.rule{font:500 11px/1 var(--mono);color:var(--mute);border:1px solid var(--hair);
+  border-radius:4px;padding:4px 7px}
+details.ref{margin-top:11px}
+details.ref summary{font:500 12.5px var(--mono);color:var(--mute);cursor:pointer}
+details.ref summary:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+details.ref p{margin:9px 0 0;font-size:13.5px;color:var(--mute);word-break:break-word}
+.finish{background:var(--surface);border:1.5px solid var(--acc);border-radius:14px;
+  box-shadow:var(--shadow);padding:24px 20px;text-align:center}
+.finish .big{font:700 46px/1 var(--disp);color:var(--ink);letter-spacing:-.01em}
+.finish .cap{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:12px}
+.finish .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.finish .sm{font:400 14px/1.5 var(--sans);color:var(--body);margin:10px auto 0;max-width:44ch}
+.finish .bd{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:16px 0 20px}
+.finish .bd span{font:500 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 10px}
+.retry{margin-top:18px;font:600 14px/1 var(--sans);background:var(--acc);color:var(--ground);border:0;
+  border-radius:10px;padding:14px 24px;cursor:pointer}
+.retry:hover{filter:brightness(1.08)}
+.retry:focus-visible{outline:2.5px solid var(--ink);outline-offset:3px}
+footer{padding:28px 0 0;font-size:13px;color:var(--mute)}
+.cright{margin:0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap" lang="tr">
+<header>
+  <div class="eyebrow" lang="en">electrical · modül 11</div>
+  <h1 id="mt"></h1>
+  <p class="sub" id="ms"></p>
+  <div class="meta" id="mm"></div>
+</header>
+
+<section class="concept">
+  <div class="eyebrow">kavram</div>
+  <h2>Kontrol sistemine ne yapılabilir</h2>
+  <div id="body"></div>
+  <div class="vids" id="vids"></div>
+  <div class="terms" id="terms"></div>
+</section>
+
+<section>
+  <div class="eyebrow">basamak</div>
+  <h2>Davranıştan bedele</h2>
+  <p class="lede">Aynı konu üç basamakta: önce ne olduğu, sonra neden olduğu, en sonda sahada neye mal olduğu. Çevirmek için karta dokunun.</p>
+  <div class="rail" id="cards"></div>
+</section>
+
+<section>
+  <div class="eyebrow">referans</div>
+  <h2>Sabit olan şeyler</h2>
+  <p class="lede">Kuralın değişmez bıraktığı sayılar ve yollar.</p>
+  <div class="gauges" id="gauges"></div>
+</section>
+
+<section>
+  <div class="eyebrow" lang="en">mechanism map</div>
+  <h2>Kur: sinyal yolu ve MXP</h2>
+  <p class="lede">Önce kurulmuş bir örnek okuyun. Sonra aynısını, örneğe bakmadan kendiniz kurun.</p>
+  <div class="panel bleed">
+    <div class="ptop"><h3>Örnek: komutun kaynağından motora giden yol</h3>
+      <p>Üstte sinyalin yolu, ortada aynı cihazda serbest olan ve olmayan, altta MXP'nin üç yolu.</p></div>
+    <p class="swipe">→ şemayı yana kaydırarak tamamını görün</p>
+    <div class="diawrap" id="dia"></div>
+    <ol class="calls" id="calls"></ol>
+  </div>
+
+  <div class="panel bleed" id="matchpanel">
+    <div class="ptop"><h3 id="mth"></h3><p id="mtp"></p></div>
+    <div class="mgate" id="mgate">
+      <p id="mgtext"></p>
+      <button class="btn" id="mstart"></button>
+    </div>
+    <div class="match" id="match" hidden></div>
+    <div class="mbar" id="mbar" hidden>
+      <button class="btn" id="mdone"></button>
+      <button class="mini" id="mreset"></button>
+      <button class="mini" id="mclose" hidden></button>
+      <span class="cnote" id="mnote"></span>
+    </div>
+    <div id="mres"></div>
+  </div>
+
+  <div class="panel bleed" id="bpanel">
+    <div class="ptop"><h3 id="bh"></h3><p id="bp"></p></div>
+    <div class="mgate" id="bgate">
+      <p id="bgtext"></p>
+      <button class="btn" id="bstart"></button>
+    </div>
+    <div id="bwrap" hidden>
+      <p class="bwarn" id="bwarn"></p>
+      <div class="tray" id="btray"></div>
+      <div class="canvas" id="bcanvas"><div class="board" id="bboard"></div>
+        <div class="empty" id="bempty"></div></div>
+      <p class="pan" id="bpan"></p>
+    </div>
+    <div class="mbar" id="bbar" hidden>
+      <button class="btn" id="bdone"></button>
+      <button class="mini" id="breset"></button>
+      <button class="mini" id="bclose" hidden></button>
+      <span class="cnote" id="bnote"></span>
+    </div>
+    <div id="bres"></div>
+    <ol class="must" id="must"></ol>
+    <div class="ptop" style="border-top:1px solid var(--hair);border-bottom:0">
+      <h3 id="c2h"></h3><p id="c2p"></p>
+    </div>
+  </div>
+
+<section>
+  <div class="eyebrow">alıştırma</div>
+  <h2>Sorular</h2>
+  <p class="lede">Bir şık seçin; gerekçe hemen açılır. Puanınız cihazınızda saklanır.</p>
+  <div class="bar" id="bar"></div>
+  <div id="qs"></div>
+</section>
+
+<footer id="foot"><p class="cright">© 2026 Semih Tuna Köse</p></footer>
+</div>
+
+<script>
+const D = {"id": "electrical-11-control-system", "title": "Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor", "summary": "Core control system birimlerine neden dokunulamayacağını, hangi değişikliklerin buna rağmen serbest olduğunu, komutların nereden doğmak zorunda olduğunu ve MXP ile co-processor kullanımının sınırlarını öğretir.", "season": "2026", "verifiedOn": "2026-09-02", "estimatedMinutes": 15, "body": "Robotun beyni tek bir programlanabilir roboRIO'dur ve üzerindeki imaj sürümü o sezon için belirtilen sürüm veya daha yenisi olmalıdır. Bunun etrafındaki birimler core control system olarak adlandırılır: driver station yazılımı, roboRIO, PD, PCM ve PH'ler, VRM ve RPM'ler, RSL, 120A main breaker, motor controller'lar, aktüatör kontrolünde kullanılan MXP cihazları, ilgili maddede tanımlanan relay module'ler, wireless bridge, PD üzerindeki breaker ve fuse'lar, Servo Power Module, Servo Hub, motor power adapter board'lar ve battery'ler.\n\nKural bu birimlerin hiçbir şekilde kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar. Ancak yasak mutlak değildir: kural harflendirilmiş uzun bir istisna listesi sayar ve bunların arasında kullanıcı kodu yazmak, motor controller kalibrasyonu, kablolama, bağlantı elemanları, firmware güncellemeleri ve cihazın performansı ile teknik özellikleri değişmemek şartıyla onarımlar vardır. Yani bir motor controller'ın firmware'ini güncellemek serbesttir, kapağını açıp içindeki bir parçayı değiştirmek değildir.\n\nKomutların kaynağı da sabittir. Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır. Robot üzerinde co-processor bulundurmak yasak değildir; şart, tüm power regulating device'ları enable ve disable eden komutların roboRIO'dan çıkmasıdır.\n\nMXP üzerinden bir motor sürülüyorsa, o motorun power regulating device'ı ya doğrudan PWM pinlerine, ya pasif iletkenlerden oluşan bir ağ ile, ya da kuralda tek tek sayılan onaylı aktif cihazlardan biri üzerinden bağlanmalıdır.", "keyTerms": [{"term": "control system devices", "glossTr": "kuralda tek tek sayılan, kurcalanması yasak kontrol birimleri; manual bu birimleri madde içinde listeler"}, {"term": "image version", "glossTr": "roboRIO'ya yüklenen yazılım imajının sürümü"}, {"term": "firmware", "glossTr": "cihazın içindeki gömülü yazılım"}, {"term": "co-processor", "glossTr": "roboRIO'ya yardımcı olan ek işlemci kartı"}, {"term": "operator console", "glossTr": "sürücülerin robotu kontrol ettiği istasyon"}, {"term": "MXP", "glossTr": "roboRIO üzerindeki genişleme portu"}, {"term": "passive conductor", "glossTr": "sinyali işlemeden yalnızca ileten iletken"}, {"term": "active device", "glossTr": "sinyali işleyen veya üreten kart"}, {"term": "bandwidth", "glossTr": "birim zamanda taşınabilen veri miktarı"}], "cards": [{"id": "electrical-11-c1", "rung": "behaviour", "index": 1, "of": 3, "label": "CONTROL SYSTEM", "front": "Core control system birimlerine dokunulmaz — ama yasak mutlak değil.", "back": "Kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar ve ardından uzun bir istisna listesi sayar. İstisnalar arasında kullanıcı kodu yazmak, motor controller kalibrasyonu, kablolama, bağlantı elemanları, firmware güncellemeleri ve cihazın performansı ile teknik özellikleri değişmemek şartıyla yapılan onarımlar vardır. Ayrım nettir: bir motor controller'ın firmware'ini güncellemek serbesttir, kapağını açıp içindeki bir bileşeni değiştirmek değildir.", "takeaway": "Cihazın yazılımına ve bağlantısına dokunmak serbest, içine dokunmak yasak", "tags": ["core control system", "firmware", "istisna listesi"], "estMinutes": 2, "derivedFrom": ["electrical-11-d1", "electrical-11-d2"], "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R710", "season": "2026", "topic": "control system birimleri kurcalanamaz, değiştirilemez, ayarlanamaz; harflendirilmiş istisna listesi"}]}, {"id": "electrical-11-c2", "rung": "mechanism", "index": 2, "of": 3, "label": "CONTROL SYSTEM", "front": "Co-processor serbestse, neden motora doğrudan komut veremiyor?", "back": "Kural iki şeyi birden sabitler: sinyalin kaynağını ve yolunu. Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır; robotun kendi kablosuz ağına bağlanan bir telefon bu tanımın dışındadır. Robot üzerinde co-processor bulundurmak yasak değildir, hatta kural bunu açıkça mümkün kılar. Şart şudur: tüm power regulating device'ları enable ve disable eden komutlar roboRIO'dan çıkmalıdır. Co-processor hedefi görebilir, hesaplayabilir ve sonucu roboRIO'ya verebilir; motoru enable etme yetkisi roboRIO'da kalır.", "takeaway": "Co-processor hesaplar, roboRIO karar verir; enable yetkisi devredilemez", "tags": ["co-processor", "operator console", "enable"], "estMinutes": 2, "derivedFrom": ["electrical-11-d4", "electrical-11-d6"], "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R701", "season": "2026", "topic": "tüm power regulating device'ları enable ve disable eden komutlar roboRIO'dan çıkmalı"}, {"rule": "R706", "season": "2026", "topic": "tüm sinyaller operator console'dan doğar ve robota arena Ethernet ağı üzerinden ulaşır"}]}, {"id": "electrical-11-c3", "rung": "pit", "index": 3, "of": 3, "label": "CONTROL SYSTEM", "front": "RSL'in plastik muhafazasını daha ince bir muadiliyle değiştirdiniz. Elektriksel hiçbir şey değişmedi.", "back": "RSL, core control system listesinde açıkça sayılan birimlerden biridir ve kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar. Yasak elektriksel değişikliklerle sınırlı değildir; cihazın fiziksel olarak değiştirilmesi de kapsam içindedir. Muhafazanın daha ince olması görünürlüğü artırsa bile sonucu değiştirmez, çünkü tartışılan şey performans değil, cihaza dokunulmuş olmasıdır. Pit'te böyle bir değişiklik yapmadan önce sorulacak soru tek: bu cihaz listede mi?", "takeaway": "Listede olan bir cihazda değişiklik, iyi niyetle ve zararsız da olsa değişikliktir", "tags": ["RSL", "muhafaza", "denetim"], "estMinutes": 2, "derivedFrom": ["electrical-11-d8"], "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R710", "season": "2026", "topic": "control system birimleri fiziksel olarak değiştirilemez"}]}], "drills": [{"id": "electrical-11-d1", "type": "multiple_choice", "prompt": "Takım, bir motor controller'da bilinen bir hatayı gidermek için üreticinin yayınladığı yeni firmware'i yüklemek istiyor. Bir takım arkadaşı 'motor controller core control system parçası, ona dokunamayız' diyor. Kim haklı?", "options": ["Firmware güncellemesi kuralın saydığı istisnalar arasındadır ve serbesttir; yasak olan cihazın kendisini fiziksel olarak değiştirmektir.", "Takım arkadaşı haklı; core control system birimlerine hiçbir şekilde müdahale edilemez.", "Firmware güncellemesi yalnızca etkinlik dışında yapılabilir; etkinlikte yasaktır.", "Motor controller core control system parçası değildir, bu yüzden tartışma konusuz kalır."], "correctIndex": 0, "explanation": "Kural core control system birimlerinin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar, ancak bu yasağa harflendirilmiş uzun bir istisna listesi tanır ve firmware güncellemeleri bunların arasındadır. Aynı istisna listesinde kullanıcı kodu yazmak, motor controller kalibrasyonu, kablolama, bağlantı elemanları ve performans ile teknik özellikleri değiştirmeyen onarımlar da yer alır. Yani ayrım şuradadır: cihazı üreticinin öngördüğü şekilde güncellemek, kalibre etmek ve kablolamak serbesttir; kapağını açıp içindeki bir bileşeni değiştirmek veya cihazı fiziksel olarak dönüştürmek yasaktır. Dördüncü şık da yanlıştır, motor controller'lar core control system listesinde açıkça sayılır. Bu ayrımı bilmemek takımların gereksiz yere bilinen bir hatayla maça çıkmasına yol açar.", "hint": "Yasak mutlak mı? Kuralın istisna listesinde ne var, ne yok?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R710", "season": "2026", "topic": "control system birimleri kurcalanamaz; kural harflendirilmiş bir istisna listesi sayar ve firmware güncellemeleri bunlardandır"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "Kuralın kapsamı resmi denetim listesiyle doğrulandı (\"Components - Must not be modified, except for modifications/repairs/maintenance/calibrations specified\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf — tam istisna listesi aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."}, {"id": "electrical-11-d2", "type": "find_the_fault", "prompt": "Aşağıdaki uygulamalardan dördü kurallara uygundur. Uygun olmayanı seçiniz.", "scenario": "Bir takım kontrol sistemi üzerinde yaptığı çalışmaları anlatıyor.", "elements": ["roboRIO'ya yeni kullanıcı kodu yazılmış ve deploy edilmiş.", "Motor controller'ların firmware'i üreticinin son sürümüne güncellenmiş.", "PD'nin kapağı açılıp içindeki bir bileşen daha yüksek değerli bir muadili ile değiştirilmiş.", "Kırılan bir motor controller, onarım sonrası performansı ve teknik özellikleri onarım öncesiyle aynı olacak şekilde onarılmış.", "Bir motor controller, üreticinin talimatlarında tarif edildiği şekilde kalibre edilmiş."], "faultIndex": 2, "explanation": "PD, core control system listesinde yer alan bir birimdir ve kapağını açıp içindeki bir bileşeni değiştirmek tam olarak kuralın yasakladığı şeydir. Kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar ve bileşen değişimi hiçbir istisnaya girmez. Üstelik değiştirilen bileşenin daha yüksek değerli olması durumu ağırlaştırır, çünkü cihazın koruma davranışı üreticinin öngördüğünden farklı hâle gelir. Diğer dört öğe kuralın açıkça saydığı istisnalar arasındadır: kullanıcı kodu yazmak, firmware güncellemek, performans ve teknik özellikleri değiştirmeyen bir onarım yapmak ve motor controller kalibrasyonu.", "hint": "Dört öğe cihazı üreticinin öngördüğü şekilde kullanıyor. Biri cihazın içine giriyor.", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R710", "season": "2026", "topic": "core control system birimleri kurcalanamaz, değiştirilemez veya ayarlanamaz; istisnalar arasında kod, kalibrasyon, kablolama, firmware ve onarım vardır"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "Kuralın kapsamı resmi denetim listesiyle doğrulandı (\"Components - Must not be modified, except for modifications/repairs/maintenance/calibrations specified\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf — tam istisna listesi aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."}, {"id": "electrical-11-d3", "type": "numeric", "prompt": "VH-109 radio kullanan bir robotta, robota ve robottan yapılan haberleşme en fazla kaç Mbit/saniye olabilir? Cevabınızı yalnızca sayı olarak yazınız.", "answer": 7, "tolerance": 0.05, "unit": "Mbit/s", "explanation": "Kural haberleşme bant genişliğine bir üst sınır koyar ve bu sınır radio modeline göre değişir: VH-109 için 7.0 Mbit/saniye, eski OpenMesh radio'lar için 4.0 Mbit/saniyedir. Sınırın varlığı sahadaki tüm takımların aynı kablosuz ortamı paylaşmasından kaynaklanır; bir takımın aşırı veri göndermesi diğerlerinin bağlantısını bozar. Pratikte bu sınırı zorlayan şey neredeyse her zaman kamera görüntüsüdür. Bu nedenle vision kullanan takımlar çözünürlüğü, kare hızını ve sıkıştırmayı bu bütçeye göre seçmek zorundadır; görüntüyü robot üzerindeki bir co-processor'da işleyip yalnızca sonucu göndermek de bu sınırı aşmamanın yaygın bir yoludur.", "hint": "Sınır radio modeline göre değişiyor. Soruda hangi model belirtilmiş?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R704", "season": "2026", "topic": "VH-109 için en fazla 7.0 Mbit/s, OpenMesh için 4.0 Mbit/s haberleşme"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "Kural metni aynadan doğrulandı; resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."}, {"id": "electrical-11-d4", "type": "multiple_choice", "prompt": "Takım, görüntü işlemek için robota bir co-processor eklemek istiyor. Planları, co-processor'ın hedefi gördüğünde turret motor controller'ına doğrudan CAN üzerinden komut göndermesi. Bu plan uygun mudur?", "options": ["Uygundur; co-processor kullanmak serbesttir ve nasıl kullanılacağına takım karar verir.", "Uygun değildir. Co-processor bulundurmak serbesttir, ancak tüm power regulating device'ları enable ve disable eden komutların roboRIO'dan çıkması şarttır.", "Uygun değildir; robot üzerinde co-processor bulundurmak yasaktır.", "Uygundur, co-processor da CAN zincirine bağlı olduğu sürece."], "correctIndex": 1, "explanation": "Kural co-processor kullanımını yasaklamaz; aksine bunu açıkça mümkün kılar. Ancak bir şartı vardır: tüm power regulating device'ları enable ve disable eden komutlar roboRIO'dan doğmalıdır. Sorudaki plan bu şartı ihlal eder, çünkü co-processor motor controller'a doğrudan komut vermektedir. Doğru mimari şudur: co-processor görüntüyü işler ve sonucu roboRIO'ya bildirir, roboRIO da bu bilgiye dayanarak motor controller'ı sürer. Bu düzen yalnızca kural gereği değildir, güvenlik gereğidir de: robot disable edildiğinde tüm aktüatörlerin durduğundan emin olmanın tek yolu, komut zincirinin tek bir noktadan geçmesidir. Dördüncü şık bu nedenle yanlıştır; CAN zincirine bağlı olmak komutun kaynağını değiştirmez.", "hint": "Kural co-processor'ı yasaklamıyor. Peki komutun nereden çıkması gerektiği konusunda ne diyor?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R701", "season": "2026", "topic": "co-processor'lar serbesttir; power regulating device'ları enable ve disable eden komutlar roboRIO'dan çıkmalıdır"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "Kural metni aynadan doğrulandı; resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."}, {"id": "electrical-11-d5", "type": "find_the_fault", "prompt": "Aşağıdaki MXP kullanımlarından üçü kurallara uygundur. Uygun olmayanı seçiniz.", "scenario": "Bir takım roboRIO'nun MXP portunu farklı amaçlarla kullanmış.", "elements": ["MXP üzerinden sürülen bir motorun power regulating device'ı doğrudan MXP'nin PWM pinlerine bağlanmış.", "MXP üzerinden sürülen bir motorun power regulating device'ı, PWM pinlerini uzatan yalnızca pasif iletkenlerden oluşan bir ağ üzerinden bağlanmış.", "MXP üzerinden sürülen bir motorun power regulating device'ı, takımın kendi tasarlayıp ürettiği bir sinyal işleme kartı üzerinden bağlanmış.", "MXP portuna, kuralda adı geçen onaylı aktif cihazlardan biri takılmış ve bir motorun power regulating device'ı bu cihaz üzerinden sürülüyor."], "faultIndex": 2, "explanation": "Kural MXP üzerinden bir motor sürülüyorsa power regulating device'ın üç yoldan biriyle bağlanmasını şart koşar: doğrudan PWM pinlerine, PWM pinlerini uzatan pasif iletkenlerden oluşan bir ağ ile, veya kuralda tek tek sayılan onaylı aktif cihazlardan biri üzerinden. Takımın kendi tasarladığı bir sinyal işleme kartı bu üç yolun hiçbirine girmez; aktif bir cihazdır ancak onaylı listede yer almaz. Ayrımın gerekçesi öngörülebilirliktir: motor komutunun geçtiği yolda ne olduğunu sahadaki görevlilerin bilmesi gerekir. Diğer üç öğe kuralın saydığı yollardır.", "hint": "Kural üç yol sayıyor. Dördüncü öğe bunlardan hangisine giriyor, üçüncü öğe hangisine?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R713", "season": "2026", "topic": "MXP üzerinden motor sürülüyorsa power regulating device doğrudan PWM pinlerine, pasif iletken ağı ile veya onaylı bir aktif cihaz üzerinden bağlanır"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "Kural metni aynadan doğrulandı; resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."}, {"id": "electrical-11-d6", "type": "multiple_choice", "prompt": "Takım, sürücünün maç sırasında telefonundan doğrudan robota bağlanıp bazı mekanizmaları kontrol edebileceği bir uygulama yazmak istiyor. Telefon robotun kendi kablosuz ağına bağlanacak. Bu plan uygun mudur?", "options": ["Uygundur; telefon da bir kontrol cihazıdır ve robota bağlandığı sürece sorun yoktur.", "Uygundur, telefon operator console'un yanında durduğu sürece.", "Uygun değildir. Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır.", "Uygundur, ancak yalnızca autonomous döneminde kullanılabilir."], "correctIndex": 2, "explanation": "Kural sinyalin hem kaynağını hem yolunu sabitler: tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır. Telefonun robotun kendi ağına bağlanması bu yolun dışına çıkmaktır. Ayrıca maç sırasında robota veri gönderip almanın izin verilen tek cihazı robotun wireless bridge'idir. İkinci şık fiziksel yakınlığı kuralın yerine koyar; belirleyici olan cihazın nerede durduğu değil, sinyalin hangi yoldan gittiğidir. Dördüncü şık da durumu kurtarmaz: bu kurallar maçın hangi döneminde olunduğuna bakmaksızın geçerlidir, dolayısıyla autonomous ile teleop arasında bir ayrım yoktur. İstenen işlev operator console'a bağlı bir kontrol cihazı ile yapılabilir.", "hint": "Kural iki şeyi birden belirliyor: sinyal nereden doğacak ve hangi yoldan gidecek. Telefon bunların hangisini bozuyor?", "difficulty": "stretch", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R706", "season": "2026", "topic": "tüm sinyaller operator console'dan doğar ve arena Ethernet ağı üzerinden robota ulaşır"}, {"rule": "R702", "season": "2026", "topic": "maç sırasında haberleşme için izin verilen tek cihaz wireless bridge'tir"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "R702 resmi denetim listesiyle de doğrulandı: https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"}, {"id": "electrical-11-d7", "type": "diagnose", "symptom": "Etkinliğe geldiniz. Robot pit'te çalışıyor, kod deploy ediliyor ve mekanizmalar yanıt veriyor. Ancak denetimde inspector roboRIO'nun imaj sürümünü kontrol ediyor ve sürümün bu sezon için istenenden eski olduğunu görüyor. Takım, robot çalıştığı için sorun olmadığını düşünüyor.", "prompt": "Bu durumu nasıl değerlendirirsiniz?", "options": ["Robot çalıştığına göre sorun yoktur; imaj sürümü yalnızca bir öneridir.", "Sorun kodun kendisindedir; kod yeniden deploy edilirse imaj da güncellenir.", "İmaj sürümü yalnızca yazılım ekibini ilgilendirir; denetim kapsamı dışındadır.", "Kural roboRIO'nun o sezon için belirtilen imaj sürümünde veya daha yenisinde olmasını şart koşar; robotun çalışıyor olması bu şartı karşılamaz ve imaj güncellenmelidir."], "correctIndex": 3, "explanation": "Kural robotun tek bir programlanabilir roboRIO ile kontrol edilmesini ve o roboRIO'nun sezon için belirtilen imaj sürümünde ya da daha yenisinde olmasını ister. Robotun çalışıyor olması bu şartı karşılamaz; kural bir işlev testi değil, bir sürüm şartıdır. Gerekçesi de somuttur: imaj sürümü roboRIO'nun saha sistemleriyle nasıl haberleştiğini belirler ve eski bir imaj pit'te sorunsuz görünürken sahada bağlantı sorunu çıkarabilir. İkinci şık yaygın bir karışıklıktır: kod deploy etmek ile imaj yüklemek farklı işlemlerdir ve kod deploy etmek imaj sürümünü değiştirmez. İmaj, üreticinin aracıyla ayrıca yüklenir.", "hint": "Kural bir işlev mi yoksa bir sürüm mü şart koşuyor? Kod deploy etmek ile imaj yüklemek aynı işlem mi?", "difficulty": "stretch", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R701", "season": "2026", "topic": "tek bir programlanabilir roboRIO ve sezon için belirtilen imaj sürümü veya daha yenisi"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "İmaj sürümü resmi denetim listesiyle doğrulandı (\"The roboRIO image (2026_v1.2 or later) and DS (26.0 or later) must be loaded\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"}, {"id": "electrical-11-d8", "type": "diagnose", "symptom": "Denetimde inspector, robotun RSL'ini inceliyor ve lambanın orijinal muhafazasının çıkarılıp yerine takımın 3D yazıcıyla ürettiği daha ince bir muhafazanın takıldığını fark ediyor. Takım, lambanın elektriksel olarak hiç değiştirilmediğini, yalnızca daha dar bir alana sığması için muhafazanın yenilendiğini söylüyor.", "prompt": "Bu durum nasıl değerlendirilir?", "options": ["RSL core control system listesinde yer alır ve bu birimlerin fiziksel olarak değiştirilmesi yasaktır; elektriksel bir değişiklik olmaması sonucu değiştirmez.", "Sorun yoktur; elektriksel bir değişiklik yapılmadığı için kural ihlali sayılmaz.", "Sorun yoktur; RSL core control system parçası değildir.", "Sorun yalnızca lambanın görünürlüğü etkilendiyse vardır; muhafaza daha ince olduğu için görünürlük artmıştır."], "correctIndex": 0, "explanation": "RSL, core control system listesinde açıkça sayılan birimlerden biridir ve kural bu birimlerin kurcalanmasını, değiştirilmesini veya ayarlanmasını yasaklar. Yasak elektriksel değişikliklerle sınırlı değildir; cihazın fiziksel olarak dönüştürülmesi de kapsamdadır. Takımın gerekçesi ihtiyacı açıklar ancak kuralı karşılamaz. Doğru çözüm lambayı orijinal hâliyle kullanmak ve montaj sorununu robot tarafında çözmektir; unutulmamalıdır ki RSL'in ayrıca robotun en az bir yanından belirli bir uzaklıkta görülebilir olması da gerekir, yani konum kararı zaten tasarımın erken aşamasında verilmelidir. Dördüncü şık ilginç bir yan yol açar ancak kuralı yanlış okur: görünürlüğün artması, izin verilmeyen bir değişikliği izin verilir hâle getirmez.", "hint": "Yasak yalnızca elektriksel değişiklikleri mi kapsıyor? Ve RSL o listede var mı?", "difficulty": "pit", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R710", "season": "2026", "topic": "RSL dahil core control system birimleri kurcalanamaz, değiştirilemez veya ayarlanamaz"}, {"rule": "R709", "season": "2026", "topic": "RSL robotun en az bir yanından 36in uzaklıktan görülebilmeli"}], "source": "https://www.frcmanual.com/2026/robot-construction-rules-(r)", "sourceNote": "Kuralın kapsamı resmi denetim listesiyle doğrulandı (\"Components - Must not be modified, except for modifications/repairs/maintenance/calibrations specified\"): https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf — tam istisna listesi aynadan alındı, çünkü resmi Game Manual PDF'i 8. bölüme ulaşmadan kesiliyor."}], "videoRefs": []};
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+const T={flip:"dokun ve çevir"};
+
+/* ---- shared component art: schematic, not photoreal ---- */
+const WP="var(--w-pos)", WN="var(--w-neg)", BX="var(--dia-fill)", ED="var(--dia-edge)",
+      IK="var(--dia-ink)", MU="var(--dia-mute)", PDC="var(--dia-pd)", BAND="var(--dia-band)";
+const t=(x,y,s,sz,c,an,w)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Sans,sans-serif" font-weight="${w||600}">${s}</text>`;
+const m=(x,y,s,sz,c,an)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Mono,monospace" font-weight="500">${s}</text>`;
+const wire=(d,c,w)=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+/* each part is drawn once and reused by both the example and the tray */
+const ART={
+ battery:(x,y)=>`<g>
+   <rect x="${x+14}" y="${y}" width="20" height="13" rx="3" fill="${WP}"/>
+   <rect x="${x+126}" y="${y}" width="20" height="13" rx="3" fill="${WN}"/>
+   <rect x="${x}" y="${y+11}" width="160" height="86" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+12}" y="${y+24}" width="136" height="3" rx="1.5" fill="${ED}"/>
+   ${t(x+80,y+56,"battery",14,IK)}${m(x+80,y+76,"12V · 18Ah",11,MU)}
+   ${m(x+24,y+9,"+",12,BX)}${m(x+136,y+9,"−",12,BX)}</g>`,
+ breaker:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="118" height="92" rx="10" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+38}" y="${y+22}" width="42" height="30" rx="6" fill="${WP}"/>
+   <circle cx="${x+59}" cy="${y+37}" r="5" fill="${BX}"/>
+   ${m(x+59,y+72,"120A",11.5,IK)}
+   <rect x="${x-7}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/>
+   <rect x="${x+116}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/></g>`,
+ pd:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="168" height="340" rx="11" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   ${t(x+84,y+30,"PD",16,IK)}${m(x+84,y+48,"güç dağıtımı",10.5,MU)}
+   <rect x="${x-8}" y="${y+52}" width="11" height="16" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+234}" width="11" height="16" rx="2" fill="${WN}"/>
+   ${m(x+15,y+65,"+",12,IK,"start")}${m(x+15,y+247,"−",12,IK,"start")}
+   <g>
+     <rect x="${x+96}" y="${y+55}"  width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+134}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+217}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+295}" width="60" height="24" rx="5" fill="${PDC}"/>
+   </g>
+   ${m(x+126,y+71,"10A",10.5,BX)}${m(x+126,y+150,"10A",10.5,BX)}
+   ${m(x+126,y+233,"40A",10.5,BX)}${m(x+126,y+311,"40A",10.5,BX)}
+   ${m(x+42,y+327,"kanallar",9.5,MU)}</g>`,
+ rio:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <g fill="${ED}"><rect x="${x+12}" y="${y+44}" width="14" height="6" rx="2"/>
+   <rect x="${x+32}" y="${y+44}" width="14" height="6" rx="2"/><rect x="${x+52}" y="${y+44}" width="14" height="6" rx="2"/></g>
+   <circle cx="${x+130}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+28,"roboRIO",13,IK)}${m(x+73,y+41,"beyin",9.5,MU)}</g>`,
+ radio:(x,y)=>`<g>
+   <rect x="${x+22}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x+118}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x}" y="${y}" width="146" height="48" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+24,"radio",13,IK)}${m(x+73,y+38,"kablosuz bağlantı",9.5,MU)}</g>`,
+ vrm:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="52" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   <rect x="${x+30}" y="${y-7}" width="10" height="8" rx="2" fill="${WP}"/>
+   <rect x="${x+46}" y="${y-7}" width="10" height="8" rx="2" fill="${WN}"/>
+   <rect x="${x+104}" y="${y+13}" width="30" height="9" rx="3" fill="${PDC}"/>
+   <rect x="${x+104}" y="${y+30}" width="30" height="9" rx="3" fill="${PDC}"/>
+   ${t(x+58,y+26,"VRM",13,IK)}${m(x+58,y+41,"12V regülatör",9,MU)}</g>`,
+ talon:(x,y,sub)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="62" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+24}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+34}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+30,"V+",8.5,MU,"start")}${m(x+13,y+41,"V−",8.5,MU,"start")}
+   ${t(x+84,y+28,"Talon FX",12.5,IK)}${m(x+84,y+43,sub,9,MU)}
+   ${m(x+84,y+56,"motor controller",8.5,MU)}</g>`,
+ mc:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+27,"V+",8.5,MU,"start")}${m(x+13,y+40,"V−",8.5,MU,"start")}
+   ${t(x+82,y+30,"motor controller",11.5,IK)}${m(x+82,y+45,"motoru sürer",9,MU)}</g>`
+};
+/* ---- modül 11 ek parçaları: kontrol sistemi bütünlüğü ---- */
+const NET="#1D4ED8", CMD="#6D28D9", DAT="#0E7490", MXPC="#C2740A";
+
+const box11=(x,y,w,h,lab,sub,col,fill,dash)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+    fill="${fill||BX}" stroke="${col||ED}" stroke-width="2"${dash?' stroke-dasharray="7 5"':''}/>
+  ${t(x+w/2,y+(sub?h/2-2:h/2+5),lab,11.5,col===NO?NO:IK)}
+  ${sub?m(x+w/2,y+h/2+16,sub,8.5,MU):""}`;
+
+ART.opc=(x,y)=>`<g>
+  <rect x="${x}" y="${y}" width="150" height="74" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+  <rect x="${x+30}" y="${y+14}" width="90" height="34" rx="4" fill="${BAND}" stroke="${PDC}" stroke-width="1.6"/>
+  <rect x="${x+56}" y="${y+48}" width="38" height="6" rx="2" fill="${ED}"/>
+  <rect x="${x+149}" y="${y+30}" width="10" height="12" rx="2" fill="${NET}"/>
+  ${m(x+75,y+68,"operator console",10.5,IK)}</g>`;
+
+ART.arena=(x,y)=>`<g>
+  ${box11(x,y,168,70,"arena Ethernet ağı","tek izinli yol",PDC,BAND)}
+  <rect x="${x-9}" y="${y+29}" width="10" height="12" rx="2" fill="${NET}"/>
+  <rect x="${x+167}" y="${y+29}" width="10" height="12" rx="2" fill="${NET}"/></g>`;
+
+ART.radio11=(x,y)=>`<g>
+  ${box11(x,y,146,70,"radio","kablosuz köprü")}
+  <rect x="${x+22}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+  <rect x="${x+120}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+  <rect x="${x-9}" y="${y+29}" width="10" height="12" rx="2" fill="${NET}"/>
+  <rect x="${x+145}" y="${y+29}" width="10" height="12" rx="2" fill="${NET}"/></g>`;
+
+ART.rio11=(x,y)=>`<g>
+  <rect x="${x}" y="${y}" width="180" height="104" rx="10" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+  ${t(x+90,y+30,"roboRIO",13,IK)}${m(x+90,y+46,"tek programlanabilir beyin",8.5,MU)}
+  ${m(x+90,y+62,"sezonun imaj sürümü",8.5,PDC)}
+  <rect x="${x-9}" y="${y+22}" width="10" height="12" rx="2" fill="${NET}"/>
+  <rect x="${x+179}" y="${y+22}" width="10" height="12" rx="2" fill="${CMD}"/>
+  <rect x="${x+80}" y="${y+95}" width="20" height="14" rx="3" fill="${BX}" stroke="${MXPC}" stroke-width="1.8"/>
+  ${m(x+90,y+90,"MXP",8,MXPC)}</g>`;
+
+ART.mc11=(x,y)=>`<g>
+  ${box11(x,y,158,70,"motor controller","power regulating device")}
+  <rect x="${x-9}" y="${y+29}" width="10" height="12" rx="2" fill="${CMD}"/></g>`;
+
+ART.copro=(x,y)=>`<g>
+  ${box11(x,y,158,74,"co-processor","bulundurmak serbest")}
+  <rect x="${x-9}" y="${y+18}" width="10" height="12" rx="2" fill="${DAT}"/>
+  <rect x="${x+157}" y="${y+44}" width="10" height="12" rx="2" fill="${NO}"/>
+  ${m(x+79,y+68,"komut roboRIO'dan çıkar",8,NO)}</g>`;
+
+ART.mxpDev=(x,y)=>`<g>
+  ${box11(x,y,166,70,"onaylı aktif cihaz","kuralda tek tek sayılır",MXPC)}
+  <rect x="${x-9}" y="${y+29}" width="10" height="12" rx="2" fill="${MXPC}"/>
+  <rect x="${x+165}" y="${y+29}" width="10" height="12" rx="2" fill="${MXPC}"/></g>`;
+
+ART.mxpMotor=(x,y)=>`<g>
+  ${box11(x,y,166,70,"MXP'den sürülen","motorun controller'ı")}
+  <rect x="${x-9}" y="${y+29}" width="10" height="12" rx="2" fill="${MXPC}"/></g>`;
+
+ART.ownCard=(x,y)=>`<g>
+  ${box11(x,y,170,74,"kendi sinyal işleme","kartımız",NO,"var(--no-soft)",1)}
+  <rect x="${x-9}" y="${y+31}" width="10" height="12" rx="2" fill="${NO}"/></g>`;
+
+ART.phone=(x,y)=>`<g>
+  <rect x="${x+38}" y="${y}" width="52" height="86" rx="8" fill="var(--no-soft)" stroke="${NO}"
+    stroke-width="2" stroke-dasharray="7 5"/>
+  <rect x="${x+46}" y="${y+10}" width="36" height="56" rx="3" fill="${BX}" stroke="${NO}" stroke-width="1.4"/>
+  <rect x="${x-9}" y="${y+38}" width="10" height="12" rx="2" fill="${NO}"/>
+  ${m(x+64,y+100,"telefon · robotun kendi ağı",9,NO)}</g>`;
+
+const hint=(x,y,s,anchor)=>`<g><circle cx="${x-9}" cy="${y-4}" r="2.6" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y}" font-size="11" fill="${MU}" text-anchor="${anchor||"start"}" font-family="IBM Plex Sans,sans-serif">${s}</text></g>`;
+const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y+4.5}" font-size="12.5" fill="#fff" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600">${n}</text>`;
+/* ---- figure library: her biri tek bir fikri hatırlatmak için ---- */
+const NO="var(--no)", OKC="var(--ok)";
+const nb=(x,y,w,h,title,sub,fill)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+  fill="${fill||BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(x+w/2,y+(sub?h/2-1:h/2+5),title,13,IK)+(sub?m(x+w/2,y+h/2+15,sub,10,MU):"");
+const chip=(x,y,w,s,col)=>`<rect x="${x}" y="${y}" width="${w}" height="22" rx="5" fill="${col||PDC}"/>`+
+  m(x+w/2,y+15,s,10.5,BX);
+const cross=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${NO}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.5} ${y-r*0.5} L${x+r*0.5} ${y+r*0.5} M${x+r*0.5} ${y-r*0.5} L${x-r*0.5} ${y+r*0.5}"
+   stroke="${NO}" stroke-width="2.6" stroke-linecap="round"/>`;
+const tick=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${OKC}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.45} ${y} L${x-r*0.08} ${y+r*0.4} L${x+r*0.5} ${y-r*0.42}"
+   fill="none" stroke="${OKC}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+const svg=(w,h,inner,label)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
+
+const FIG={};
+
+/* ---- modül 11 görselleri ---- */
+const mb=(x,y,w,h,title,col)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"
+  fill="${BX}" stroke="${col||ED}" stroke-width="2"/>`+t(x+w/2,y+h/2+5,title,14,IK);
+
+FIG.signalPath=()=>svg(640,262,
+  m(20,26,"SİNYALİN KAYNAĞI VE YOLU SABİTTİR",11.5,PDC,"start")+
+  `<rect x="20" y="42" width="600" height="96" rx="10" fill="${BX}" stroke="${ED}" stroke-width="1.6"/>`+
+  m(84,84,"operator console",11,IK)+m(84,104,"kaynak",9.5,MU)+
+  `<path d="M156 92 H216" stroke="${NET}" stroke-width="4"/>`+
+  m(280,84,"arena Ethernet ağı",11,IK)+m(280,104,"tek izinli yol",9.5,MU)+
+  `<path d="M368 92 H428" stroke="${NET}" stroke-width="4"/>`+
+  m(500,84,"robot",11,IK)+m(500,104,"radio üzerinden",9.5,MU)+
+  `<rect x="20" y="154" width="600" height="56" rx="9" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.6"/>`+
+  m(320,180,"robotun kendi kablosuz ağına bağlanan bir telefon bu yolun dışındadır",11,NO)+
+  m(320,200,"kaynak da yol da kural tarafından sabitlenmiştir",9.5,MU)+
+  m(320,240,"Co-processor bulundurmak serbesttir; şart, enable ve disable komutlarının",11,IK)+
+  m(320,258,"roboRIO'dan çıkmasıdır.",11,IK),
+  "Sinyal yolu");
+
+FIG.allowed=()=>svg(640,262,
+  m(20,26,"AYNI CİHAZDA SERBEST OLAN VE OLMAYAN",11.5,PDC,"start")+
+  `<rect x="20" y="42" width="292" height="176" rx="10" fill="${BX}" stroke="${OKC}" stroke-width="1.6"/>`+
+  m(166,64,"SERBEST",9.5,OKC)+
+  ["kullanıcı kodu","kalibrasyon","kablolama","firmware","özdeş onarım"]
+    .map((s,i)=>tick(44,86+i*26,7)+m(64,90+i*26,s,10.5,IK,"start")).join("")+
+  `<rect x="328" y="42" width="292" height="176" rx="10" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.6"/>`+
+  m(474,64,"YASAK",9.5,NO)+
+  ["kurcalamak","bileşen değiştirmek","fiziksel ayar","muhafaza değişimi","elektriksel olmayan değişiklik"]
+    .map((s,i)=>cross(352,86+i*26,7)+m(372,90+i*26,s,10.5,NO,"start")).join("")+
+  m(320,244,"Firmware yüklemek serbesttir; kapağı açıp içindeki parçayı değiştirmek değildir.",11,IK),
+  "Serbest ve yasak");
+
+FIG.mxp=()=>svg(640,238,
+  m(20,26,"MXP ÜZERİNDEN MOTOR SÜRMENİN ÜÇ YOLU",11.5,PDC,"start")+
+  [["doğrudan MXP'nin PWM pinlerine",1],
+   ["yalnızca pasif iletkenlerden oluşan ağ ile",1],
+   ["kuralda sayılan onaylı aktif cihaz üzerinden",1],
+   ["takımın kendi sinyal işleme kartı üzerinden",0]]
+  .map(([s,ok],i)=>
+    `<rect x="20" y="${44+i*44}" width="600" height="36" rx="8"
+      fill="${ok?BX:"var(--no-soft)"}" stroke="${ok?ED:NO}" stroke-width="1.4"/>`+
+    m(48,67+i*44,s,11.5,ok?IK:NO,"start")+
+    (ok?tick(590,62+i*44,10):cross(590,62+i*44,10))).join("")+
+  m(320,232,"Kural yolu sayar; sayılmayan bir yol serbest değildir.",11,IK),
+  "MXP yolları");
+
+FIG.imageVer=()=>svg(640,206,
+  m(20,26,"İMAJ SÜRÜMÜ VE BANT GENİŞLİĞİ",11.5,PDC,"start")+
+  `<rect x="20" y="42" width="600" height="52" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.4"/>`+
+  m(44,72,"roboRIO imajı",12,IK,"start")+
+  m(600,72,"sezon için belirtilen sürüm ya da daha yenisi",11.5,PDC,"end")+
+  `<rect x="20" y="106" width="600" height="52" rx="9" fill="${BX}" stroke="${ED}" stroke-width="1.4"/>`+
+  m(44,136,"haberleşme bant genişliği",12,IK,"start")+
+  m(600,136,"VH-109: 7.0 Mbit/s · OpenMesh: 4.0 Mbit/s",11.5,PDC,"end")+
+  m(320,190,"Robotun çalışıyor olması imaj şartını karşılamaz; denetimde ayrıca bakılır.",11,IK),
+  "İmaj ve bant genişliği");
+
+/* kart yüzleri için sade sürümler */
+FIG.allowedMini=()=>svg(400,150,
+  `<rect x="16" y="16" width="176" height="106" rx="8" fill="${BX}" stroke="${OKC}" stroke-width="2"/>`+
+  m(104,38,"SERBEST",9.5,OKC)+
+  ["kod","kalibrasyon","firmware"].map((s,i)=>m(104,60+i*20,s,11,IK)).join("")+
+  `<rect x="208" y="16" width="176" height="106" rx="8" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>`+
+  m(296,38,"YASAK",9.5,NO)+
+  ["kurcalama","bileşen","muhafaza"].map((s,i)=>m(296,60+i*20,s,11,NO)).join("")+
+  m(200,144,"aynı cihaz, iki ayrı liste",11,IK),
+  "Serbest ve yasak");
+FIG.signalMini=()=>svg(400,150,
+  mb(16,20,110,44,"console")+
+  `<path d="M126 42 H166" stroke="${NET}" stroke-width="4"/>`+
+  mb(166,20,110,44,"arena ağı")+
+  `<path d="M276 42 H316" stroke="${NET}" stroke-width="4"/>`+
+  mb(316,20,68,44,"robot")+
+  m(200,92,"komut roboRIO'dan çıkar",11.5,IK)+
+  m(200,118,"co-processor doğrudan",10.5,NO)+m(200,136,"controller'a komut veremez",10.5,NO),
+  "Sinyal yolu");
+FIG.rslSwapMini=()=>svg(400,150,
+  mb(30,20,150,50,"RSL muhafazası")+
+  `<path d="M186 45 H236" stroke="${NO}" stroke-width="4"/>`+
+  `<rect x="240" y="20" width="130" height="50" rx="8" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>`+
+  m(305,50,"başka muhafaza",11,NO)+cross(210,45,10)+
+  m(200,100,"core control system listesinde",11.5,IK)+
+  m(200,126,"elektriksel değişiklik olmaması",10.5,MU)+m(200,144,"sonucu değiştirmez",10.5,MU),
+  "RSL muhafazası");
+
+
+
+
+
+$("#mt").textContent=D.title; $("#ms").textContent=D.summary;
+[["Sezon",D.season],["Drill",D.drills.length],["Kart",D.cards.length],
+ ["Süre",D.estimatedMinutes+" dk"],["Doğrulama",D.verifiedOn]]
+ .forEach(([k,v])=>{const c=el("span","chip");c.append(k+" ",Object.assign(el("b"),{textContent:v}));$("#mm").append(c);});
+const figure=(html,cap,cls)=>{const d=el("div","fig"+(cls?" "+cls:""));
+  const sc=el("div","sc"); sc.innerHTML=html; d.append(sc);
+  if(cap){const c=el("p","cap");
+    c.append(Object.assign(el("b"),{textContent:"→ yana kaydırın · "}),document.createTextNode(cap));
+    d.append(c);}
+  return d;};
+D.body.split("\n\n").forEach((p,i)=>{
+  $("#body").append(el("p",null,p));
+  if(i===0) $("#body").append(figure(FIG.imageVer(),
+    "Tek programlanabilir roboRIO ve sezonun imaj sürümü.","conceptfig"));
+  if(i===1) $("#body").append(figure(FIG.allowed(),
+    "Aynı cihazda serbest olan ve olmayan ayrı ayrı sayılmıştır.","conceptfig"));
+  if(i===2) $("#body").append(figure(FIG.signalPath(),
+    "Sinyalin kaynağı da yolu da kural tarafından sabitlenmiştir.","conceptfig"));
+  if(i===3) $("#body").append(figure(FIG.mxp(),
+    "MXP üzerinden motor sürmenin üç yolu vardır.","conceptfig"));
+});
+D.keyTerms.forEach(t=>$("#terms").append(el("span","term",t.term)));
+
+const RUNG={behaviour:"davranış",mechanism:"mekanizma",pit:"sahadaki bedeli"};
+D.cards.forEach(c=>{
+  const b=el("button","flip"); b.setAttribute("aria-pressed","false");
+  const inner=el("div","inner"),f=el("div","face front"),bk=el("div","face back");
+  const mk=()=>{const h=el("div","chead");
+    h.append(el("span","rung r-"+c.rung,RUNG[c.rung]),el("span","count",c.index+" / "+c.of));return h;};
+  f.append(mk(),el("p","cfront",c.front));
+  const tg=el("div","ctags"); c.tags.forEach(t=>tg.append(el("span","tag",t)));
+  f.append(tg,el("div","hintline",T.flip+" · "+c.estMinutes+" dk"));
+  bk.append(mk(),el("p","cback",c.back));
+  const CF={"electrical-11-c1":"allowedMini","electrical-11-c2":"signalMini","electrical-11-c3":"rslSwapMini"};
+  if(CF[c.id]&&FIG[CF[c.id]]){const cf=el("div","cardfig"); cf.innerHTML=FIG[CF[c.id]](); bk.append(cf);}
+  bk.append(el("div","take",c.takeaway));
+  inner.append(f,bk); b.append(inner);
+  b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+  $("#cards").append(b);
+});
+requestAnimationFrame(()=>document.querySelectorAll(".flip").forEach(b=>{
+  const f=$(".front",b),bk=$(".back",b);
+  const h=Math.max(f.offsetHeight,Math.min(bk.scrollHeight+38,660))+"px";
+  b.style.minHeight=h; $(".inner",b).style.minHeight=h; f.style.minHeight=h;
+}));
+
+[["tek roboRIO","#6D28D9","sezon için belirtilen imaj sürümü ya da daha yenisi"],
+ ["7.0 Mbit/s","#0E7490","VH-109 ile haberleşme üst sınırı; OpenMesh için 4.0"],
+ ["serbest","#116336","kod · kalibrasyon · kablolama · firmware · özdeş onarım"],
+ ["yasak","#A5124A","kurcalamak · bileşen değiştirmek · muhafaza değiştirmek"],
+ ["MXP","#C2740A","doğrudan PWM · pasif ağ · onaylı aktif cihaz"]]
+.forEach(([g,col,use])=>{const r=el("div","grow"),bar=el("div","gbar"),i=el("i");
+  i.style.height="10px"; i.style.background=col; bar.append(i);
+  r.append(el("span","glabel",g),bar,el("span","guse",use)); $("#gauges").append(r);});
+
+const DIA = `<svg viewBox="0 0 960 890" role="img" aria-label="Kontrol sistemi bütünlüğü ve sinyal yolu">
+
+  ${m(24,140,"SİNYAL NEREDEN DOĞAR, NEREDEN GEÇER",10,PDC,"start")}
+  ${wire("M183 205 H222",NET,4)}
+  ${wire("M399 205 H438",NET,4)}
+  ${wire("M593 205 H632",NET,4)}
+  ${wire("M830 181 H880 V329 H691",CMD,4)}
+  ${wire("M433 324 H420 V282 H616 V181 H632",DAT,3)}
+  ${ART.opc(33,168)}
+  ${ART.arena(231,170)}
+  ${ART.radio11(447,170)}
+  ${ART.rio11(641,153)}
+  ${ART.mc11(700,300)}
+  ${ART.copro(442,300)}
+  ${m(300,158,"tüm sinyaller buradan doğar ve arena ağı üzerinden ulaşır",9.5,MU)}
+  ${m(690,268,"enable ve disable komutları",9.5,CMD,"end")}
+  ${m(690,282,"roboRIO'dan çıkar",9.5,CMD,"end")}
+  ${wire("M609 350 H648",NO,3)}
+  ${cross(632,350,12)}
+  ${m(442,392,"co-processor doğrudan komut veremez; verisini roboRIO'ya verir",9.5,NO,"start")}
+
+  <line x1="24" y1="414" x2="936" y2="414" stroke="${ED}" stroke-width="1"/>
+  ${m(24,440,"CORE CONTROL SYSTEM: DOKUNULMAZ, AMA MUTLAK DEĞİL",10,PDC,"start")}
+
+  <rect x="24" y="456" width="446" height="190" rx="10" fill="${BX}" stroke="${OKC}" stroke-width="1.6"/>
+  ${m(247,478,"SERBEST",9.5,OKC)}
+  ${["kullanıcı kodu yazmak ve yüklemek","motor controller kalibrasyonu",
+     "kablolama ve bağlantı elemanları","firmware güncellemeleri",
+     "özellikleri değiştirmeyen onarım"]
+    .map((s,i)=>tick(48,500+i*28,8)+m(70,504+i*28,s,10.5,IK,"start")).join("")}
+
+  <rect x="490" y="456" width="446" height="190" rx="10" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.6"/>
+  ${m(713,478,"YASAK",9.5,NO)}
+  ${["cihazı kurcalamak","içindeki bir bileşeni değiştirmek",
+     "ayarlarını fiziksel olarak değiştirmek","muhafazasını başkasıyla değiştirmek",
+     "elektriksel olmayan değişiklikler de dahil"]
+    .map((s,i)=>cross(514,500+i*28,8)+m(536,504+i*28,s,10.5,NO,"start")).join("")}
+
+  ${m(24,678,"MXP ÜZERİNDEN MOTOR SÜRÜLÜYORSA ÜÇ YOL VARDIR",10,PDC,"start")}
+  ${[["doğrudan MXP'nin PWM pinlerine","serbest"],
+     ["yalnızca pasif iletkenlerden oluşan ağ ile","serbest"],
+     ["kuralda sayılan onaylı aktif cihaz üzerinden","serbest"],
+     ["takımın kendi tasarladığı sinyal işleme kartı","serbest değil"]]
+    .map(([a,b],i)=>
+      `<rect x="24" y="${692+i*38}" width="912" height="30" rx="8"
+        fill="${i===3?"var(--no-soft)":BX}" stroke="${i===3?NO:ED}" stroke-width="1.3"/>`+
+      m(44,712+i*38,a,10.5,i===3?NO:IK,"start")+
+      m(916,712+i*38,b,10,i===3?NO:OKC,"end")).join("")}
+
+  ${badge(315,262,1)}
+  ${badge(480,662,2)}
+  ${badge(890,436,3)}
+
+  ${hint(24,864,"Robot tek bir programlanabilir roboRIO ile kontrol edilir; imajı sezon için belirtilen sürüm ya da daha yenisi olmalıdır.")}
+  ${hint(24,886,"Haberleşme bant genişliği VH-109 için en fazla 7.0 Mbit/saniye, eski OpenMesh radio'lar için 4.0 Mbit/saniyedir.")}
+</svg>`;
+
+$("#dia").innerHTML = DIA;
+
+/* ---- kurulum içeriği ---- */
+const BUILD={
+  h:"Kur: sinyal yolu ve MXP",
+  p:"Komutun doğduğu yerden motora kadar olan yolu kurun. Operator console'dan arena Ethernet ağına, oradan radio üzerinden roboRIO'ya; enable ve disable komutu roboRIO'dan motor controller'a. Co-processor'ın verisini roboRIO'ya verin, komutu değil. MXP tarafında motoru yalnızca onaylı aktif cihaz üzerinden sürün.",
+  gate:"Başlayınca sayfa bu bölüme kilitlenir ve yukarıdaki örnek şemayı göremezsiniz. Bitirdiğinizde hangi bağlantıyı doğru, hangisini yanlış yaptığınızı ve 100 üzerinden puanınızı görürsünüz.",
+  start:"Kurmaya başla", done:"Tamamladım", reset:"Baştan dene", close:"Kapat",
+  after:"kontrol edildi",
+  warn:"Tuvalde fazla parça bırakmayın. Kuralın tanımadığı her cihaz puandan düşer.",
+  emptyText:"Tuval boş. Yukarıdaki bir parçaya dokunarak başlayın. Co-processor'ın sağındaki kırmızı nokta doğrudan komut çıkışıdır; oraya bağlanmaz.",
+  partsLabel:"Parçalar",
+  wiresLabel:"Bağlantı tipi — önce tipi seçin, sonra iki noktaya dokunun",
+  perfect:"Sinyal doğru kaynaktan doğdu, doğru yoldan geçti, komut roboRIO'dan çıktı ve MXP yolu kurala uygun.",
+  again:"Eksik bağlantılar yukarıda listelendi. Tüm sinyaller operator console'dan doğar ve robota arena Ethernet ağı üzerinden ulaşır.",
+  parts:[
+    {key:"opc", label:"operator console", art:"opc", w:172,h:94, ax:10,ay:10,
+     pins:[["sinyal",164,46]]},
+    {key:"arena", label:"arena Ethernet ağı", art:"arena", w:190,h:90, ax:10,ay:10,
+     pins:[["giriş",6,45],["çıkış",182,45]]},
+    {key:"radio", label:"radio", art:"radio11", w:168,h:90, ax:10,ay:12,
+     pins:[["saha",6,47],["roboRIO",160,47]]},
+    {key:"rio", label:"roboRIO", art:"rio11", w:202,h:132, ax:10,ay:10,
+     pins:[["ethernet",6,38],["enable/disable",195,38],["MXP",100,112]]},
+    {key:"mc", label:"motor controller", art:"mc11", w:180,h:90, ax:12,ay:10,
+     pins:[["komut",8,45]]},
+    {key:"copro", label:"co-processor", art:"copro", w:180,h:96, ax:12,ay:10,
+     pins:[["veri",8,34],["komut",181,60]]},
+    {key:"mxpDev", label:"onaylı aktif cihaz", art:"mxpDev", w:188,h:90, ax:12,ay:10,
+     pins:[["MXP",8,45],["PWM",189,45]]},
+    {key:"mxpMotor", label:"MXP'den sürülen controller", art:"mxpMotor", w:188,h:90, ax:12,ay:10,
+     pins:[["sinyal",8,45]]},
+    {key:"ownCard", label:"kendi sinyal işleme kartımız", art:"ownCard", w:192,h:96, ax:12,ay:10,
+     pins:[["MXP",8,47]]},
+    {key:"phone", label:"telefon · robotun kendi ağı", art:"phone", w:140,h:120, ax:12,ay:10,
+     pins:[["bağlantı",8,58]]}
+  ],
+  wires:[
+    {key:"net", label:"arena ağı · ethernet", col:"#1D4ED8", th:4},
+    {key:"cmd", label:"enable / disable komutu", col:"#6D28D9", th:4},
+    {key:"dat", label:"veri", col:"#0E7490", th:3},
+    {key:"mxp", label:"MXP / PWM", col:"#C2740A", th:3}
+  ],
+  need:[
+    {a:"opc.sinyal", b:"arena.giriş", type:"net"},
+    {a:"arena.çıkış", b:"radio.saha", type:"net"},
+    {a:"radio.roboRIO", b:"rio.ethernet", type:"net"},
+    {a:"rio.enable/disable", b:"mc.komut", type:"cmd"},
+    {a:"copro.veri", b:"rio.ethernet", type:"dat"},
+    {a:"rio.MXP", b:"mxpDev.MXP", type:"mxp"},
+    {a:"mxpDev.PWM", b:"mxpMotor.sinyal", type:"mxp"}
+  ]
+};
+
+
+
+[["Sinyalin hem kaynağı hem yolu sabit",
+  "Tüm sinyaller operator console'dan doğmalı ve robota arena Ethernet ağı üzerinden ulaşmalıdır. Robotun kendi kablosuz ağına bağlanan bir cihaz bu tanımın dışındadır; kaynağın doğru olması yolun da doğru olduğu anlamına gelmez."],
+ ["Co-processor serbest, enable yetkisi değil",
+  "Robot üzerinde co-processor bulundurmak yasak değildir. Şart, tüm power regulating device'ları enable ve disable eden komutların roboRIO'dan çıkmasıdır. Co-processor hesabını yapar ve sonucu roboRIO'ya verir; motoru enable etme kararı roboRIO'da kalır."],
+ ["Yasak listesi elektrikle sınırlı değil",
+  "Core control system birimlerinin kurcalanması, değiştirilmesi veya ayarlanması yasaktır. Bir RSL'in muhafazasını değiştirmek elektriksel hiçbir şeyi değiştirmese bile bu yasağın kapsamındadır. Serbest olanlar ayrı ayrı sayılmıştır: kod, kalibrasyon, kablolama, firmware ve özdeş onarım."]]
+.forEach(([h,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:h}),el("span",null,d));
+  li.append(w); $("#calls").append(li);});
+
+/* ---- kurulum tuvali: pinli bağlantı, kontrol ve skor ---- */
+if($("#bpanel") && typeof BUILD!=="undefined"){(()=>{
+  const B=BUILD, cvw=$("#bcanvas"), cv=$("#bboard"),
+    lay=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  lay.setAttribute("class","blines"); cv.append(lay);
+  const lblLayer=el("div","blbl"); cv.append(lblLayer);
+  $("#bpan").textContent=B.pan||"Tuval geniştir; sağa ve aşağı kaydırarak tamamını kullanabilirsiniz.";
+  const PK={}; B.parts.forEach(p=>PK[p.key]=p);
+  const WK={}; B.wires.forEach(w=>WK[w.key]=w);
+  let inst=[], links=[], seq=0, pick=null, wsel=B.wires[0].key, checked=false, zTop=1;
+
+  $("#bh").textContent=B.h; $("#bp").textContent=B.p;
+  $("#bgtext").textContent=B.gate; $("#bstart").textContent=B.start;
+  $("#bdone").textContent=B.done; $("#breset").textContent=B.reset; $("#bclose").textContent=B.close;
+  $("#bwarn").textContent=B.warn;
+
+  /* ---- raf ---- */
+  const tray=$("#btray");
+  const grp=(label,items,render)=>{
+    tray.append(el("p","tlabel",label));
+    const g=el("div","tgrid"); items.forEach(it=>g.append(render(it))); tray.append(g);
+  };
+  grp(B.partsLabel, B.parts, p=>{
+    const b=el("button","part");
+    const sc=Math.min(1, 112/p.h, 168/p.w);
+    b.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${Math.round(p.w*sc)}"
+      height="${Math.round(p.h*sc)}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    b.append(el("span",null,p.label));
+    b.onclick=()=>{ if(!checked) place(p.key); };
+    return b;
+  });
+  grp(B.wiresLabel, B.wires, w=>{
+    const b=el("button","part wchip"); b.dataset.k=w.key;
+    b.innerHTML=`<svg viewBox="0 0 110 14" width="110" height="14" aria-hidden="true">
+      <rect x="0" y="${7-w.th/2}" width="110" height="${w.th}" rx="${w.th/2}" fill="${w.col}"/>`+
+      (w.col2?`<path d="M0 7 H110" stroke="${w.col2}" stroke-width="${w.th}"
+        stroke-dasharray="8 8"/>`:"")+`</svg>`;
+    b.append(el("span",null,w.label));
+    b.onclick=()=>{ wsel=w.key; markWire(); };
+    return b;
+  });
+  const markWire=()=>tray.querySelectorAll(".wchip").forEach(c=>
+    c.setAttribute("aria-pressed", c.dataset.k===wsel));
+  markWire();
+
+  /* ---- parça yerleştirme ---- */
+  function slot(w,h,cw,ch){
+    const pad=18, padL=104, gx=96, gy=30;
+    const boxes=inst.map(i=>({x:parseFloat(i.node.style.left)||0, y:parseFloat(i.node.style.top)||0,
+      w:i.node.offsetWidth, h:i.node.offsetHeight}));
+    const hit=(x,y)=>boxes.some(b=>x<b.x+b.w+gx && x+w+gx>b.x && y<b.y+b.h+gy && y+h+gy>b.y);
+    const maxX=Math.max(padL, cw-w-pad), maxY=Math.max(pad, ch-h-pad);
+    for(let y=pad; y<=maxY; y+=22)
+      for(let x=padL; x<=maxX; x+=22)
+        if(!hit(x,y)) return [Math.round(x),Math.round(y)];
+    const k=inst.length%6;
+    return [Math.round(Math.min(maxX, padL+k*26)), Math.round(Math.min(maxY, pad+k*26))];
+  }
+  function place(key){
+    const p=PK[key], id=++seq, labs=[];
+    const n=el("div","placed"); n.dataset.id=id; n.dataset.key=key;
+    n.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w}" height="${p.h}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    const x=el("button","x","×"); x.setAttribute("aria-label",p.label+" kaldır");
+    x.onclick=e=>{e.stopPropagation(); if(checked) return;
+      links=links.filter(l=>l.a.id!==id&&l.b.id!==id);
+      inst=inst.filter(i=>i.id!==id); labs.forEach(o=>o.lb.remove());
+      n.remove(); paint(); sync();};
+    n.append(x);
+    p.pins.forEach(([nm,px,py])=>{
+      const d=el("button","pin"); d.style.left=px+"px"; d.style.top=py+"px";
+      d.dataset.pin=nm; d.setAttribute("aria-label",p.label+" "+nm);
+      d.onclick=e=>{e.stopPropagation(); tapPin(id,nm);};
+      const lb=el("span","pinlb",nm);
+      if(py<=p.h*0.2) lb.dataset.mode="top";
+      else if(px<=p.w*0.35) lb.classList.add("lft");
+      else if(px>=p.w*0.65) lb.classList.add("rgt");
+      else lb.dataset.mode="top";
+      lblLayer.append(lb); labs.push({lb,d});
+      n.append(d);
+    });
+    const r=cv.getBoundingClientRect();
+    const pos=slot(p.w,p.h,r.width,r.height);
+    n.style.left=pos[0]+"px"; n.style.top=pos[1]+"px"; n.style.zIndex=++zTop;
+    cv.append(n); inst.push({id,key,node:n,labs}); drag(n,id); paint(); sync();
+  }
+
+  function drag(n,id){
+    n.addEventListener("pointerdown",e=>{
+      if(checked||e.target.classList.contains("x")||e.target.classList.contains("pin")) return;
+      const r=cv.getBoundingClientRect(), bb=n.getBoundingClientRect();
+      const ox=e.clientX-bb.left, oy=e.clientY-bb.top;
+      try{n.setPointerCapture(e.pointerId);}catch(err){}
+      n.style.zIndex=++zTop;
+      const mv=ev=>{
+        n.style.left=Math.max(0,Math.min(r.width-bb.width, ev.clientX-r.left-ox))+"px";
+        n.style.top =Math.max(0,Math.min(r.height-bb.height, ev.clientY-r.top -oy))+"px";
+        paint();
+      };
+      const up=()=>{n.removeEventListener("pointermove",mv);n.removeEventListener("pointerup",up);};
+      n.addEventListener("pointermove",mv); n.addEventListener("pointerup",up);
+    });
+  }
+
+  /* ---- pin bağlama ---- */
+  const pinEl=(id,nm)=>{const i=inst.find(x=>x.id===id); return i&&i.node.querySelector(`.pin[data-pin="${CSS.escape(nm)}"]`);};
+  function tapPin(id,nm){
+    if(checked) return;
+    if(!pick){ pick={id,nm}; markPins(); return; }
+    if(pick.id===id && pick.nm===nm){ pick=null; markPins(); return; }
+    const a=pick, b={id,nm};
+    const same=l=>(l.a.id===a.id&&l.a.nm===a.nm&&l.b.id===b.id&&l.b.nm===b.nm)||
+                  (l.a.id===b.id&&l.a.nm===b.nm&&l.b.id===a.id&&l.b.nm===a.nm);
+    const ex=links.findIndex(same);
+    if(ex>=0) links.splice(ex,1); else links.push({a,b,type:wsel});
+    pick=null; markPins(); paint(); sync();
+  }
+  const markPins=()=>cv.querySelectorAll(".pin").forEach(d=>{
+    const i=+d.closest(".placed").dataset.id;
+    d.classList.toggle("on", !!pick && pick.id===i && pick.nm===d.dataset.pin);
+  });
+
+  /* ---- çizim ---- */
+  function paint(){
+    const r=cv.getBoundingClientRect();
+    lay.setAttribute("viewBox",`0 0 ${r.width} ${r.height}`);
+    lay.setAttribute("width",r.width); lay.setAttribute("height",r.height);
+    let g="";
+    links.forEach(l=>{
+      const ea=pinEl(l.a.id,l.a.nm), eb=pinEl(l.b.id,l.b.nm);
+      if(!ea||!eb) return;
+      const ra=ea.getBoundingClientRect(), rb=eb.getBoundingClientRect();
+      const x1=ra.left-r.left+ra.width/2, y1=ra.top-r.top+ra.height/2;
+      const x2=rb.left-r.left+rb.width/2, y2=rb.top-r.top+rb.height/2;
+      const w=WK[l.type]||B.wires[0];
+      const col = !checked ? w.col : (l.ok ? "var(--ok)" : "var(--no)");
+      const mx=(x1+x2)/2;
+      const d=`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      g+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w.th}"
+        stroke-linecap="round" opacity="${checked?1:0.95}"/>`;
+      if(w.col2 && !checked)
+        g+=`<path d="${d}" fill="none" stroke="${w.col2}" stroke-width="${w.th}"
+          stroke-linecap="butt" stroke-dasharray="8 8" opacity="0.95"/>`;
+    });
+    lay.innerHTML=g;
+    inst.forEach(i=>(i.labs||[]).forEach(({lb,d})=>{
+      const rd=d.getBoundingClientRect();
+      const cx=rd.left-r.left+rd.width/2, cy=rd.top-r.top+rd.height/2;
+      if(lb.classList.contains("lft")){ lb.style.left=(cx-11)+"px"; lb.style.top=cy+"px"; }
+      else if(lb.classList.contains("rgt")){ lb.style.left=(cx+11)+"px"; lb.style.top=cy+"px"; }
+      else { lb.style.left=cx+"px"; lb.style.top=(cy-3)+"px"; }
+    }));
+  }
+
+  const sync=()=>{
+    const need=B.need.length;
+    $("#bempty").classList.toggle("gone", inst.length>0);
+    $("#bnote").textContent = checked ? B.after
+      : inst.length+" parça · "+links.length+" / "+need+" bağlantı";
+    $("#bdone").disabled = checked || links.length===0;
+  };
+
+  /* ---- kontrol ---- */
+  const key=l=>[l.a,l.b].map(e=>{const i=inst.find(x=>x.id===e.id); return (i?i.key:"?")+"."+e.nm;}).sort().join(" ↔ ");
+  $("#bdone").onclick=()=>{
+    checked=true; pick=null; markPins();
+    const want=B.need.map(n=>({...n, k:[n.a,n.b].slice().sort().join(" ↔ ")}));
+    const used=new Set(); let got=0; const missing=[];
+    links.forEach(l=>{
+      const k=key(l);
+      const idx=want.findIndex((w,i)=>w.k===k && w.type===l.type && !used.has(i));
+      if(idx>=0){ used.add(idx); l.ok=true; got++; } else l.ok=false;
+    });
+    want.forEach((w,i)=>{ if(!used.has(i)) missing.push(w); });
+    const wrong=links.filter(l=>!l.ok).length;
+    const needKeys=new Set();
+    B.need.forEach(n=>{ needKeys.add(n.a.split(".")[0]); needKeys.add(n.b.split(".")[0]); });
+    const counts={}; inst.forEach(i=>counts[i.key]=(counts[i.key]||0)+1);
+    let extra=0; const extraList=[];
+    Object.keys(counts).forEach(k=>{
+      const allowed = needKeys.has(k) ? 1 : 0;
+      if(counts[k]>allowed){ extra+=counts[k]-allowed;
+        extraList.push(PK[k].label+" ×"+(counts[k]-allowed)); }
+    });
+    inst.forEach(i=>{ const dup=counts[i.key]>(needKeys.has(i.key)?1:0);
+      i.node.classList.add(dup?"bad":"fine"); });
+    paint();
+    const base=Math.round(got/B.need.length*100);
+    const pen=Math.min(base, wrong*6+extra*6);
+    const score=Math.max(0, base-pen);
+    /* İlk kurulum puanı kalıcıdır: tekrar denemek puanı değiştirmez. */
+    try{ if(state && state.__b==null){ state.__b={s:score, n:B.need.length}; save();
+      sunucuyaYaz("tuval",score); } }catch(e){}
+    const r=$("#bres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","kurulum kontrol edildi"));
+    r.append(el("div","big",score+" / 100"));
+    r.append(el("div","outof",got+" / "+B.need.length+" doğru bağlantı"+
+      (wrong?" · "+wrong+" hatalı":"")+(extra?" · "+extra+" fazla parça":"")));
+    if(pen) r.append(el("p","pen","Ceza: hatalı bağlantı ve fazla parça için toplam −"+pen+" puan."));
+    if(missing.length){
+      const ul=el("ul","miss");
+      const nice=e=>{const i=e.indexOf("."), k=e.slice(0,i), pn=e.slice(i+1);
+        return (PK[k]?PK[k].label:k)+" · "+pn;};
+      missing.forEach(w=>{const li=el("li");
+        li.append(Object.assign(el("b"),{textContent:"eksik: "}),
+          document.createTextNode(nice(w.a)+" ↔ "+nice(w.b)+"  ("+(WK[w.type]||{}).label+")"));
+        ul.append(li);});
+      r.append(ul);
+    }
+    if(extraList.length) r.append(el("p","pen","Tuvalde fazla kalan: "+extraList.join(", ")+"."));
+    r.append(el("p",null, score===100 ? B.perfect : B.again));
+    $("#bclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+
+  /* ---- kilit ve sıfırlama ---- */
+  const build=()=>{
+    inst.forEach(i=>i.node.remove()); lblLayer.textContent="";
+    inst=[]; links=[]; seq=0; pick=null; checked=false;
+    $("#bres").textContent=""; $("#bres").className=""; $("#bclose").hidden=true;
+    wsel=B.wires[0].key; markWire(); paint(); sync();
+  };
+  const lock=on=>{ $("#bpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on); if(on) $("#bpanel").scrollTop=0; };
+  $("#bstart").onclick=()=>{ $("#bgate").hidden=true; $("#bwrap").hidden=false; $("#bbar").hidden=false;
+    build(); lock(true); paint(); };
+  $("#breset").onclick=()=>build();
+  $("#bclose").onclick=()=>{ lock(false); $("#bres").scrollIntoView({block:"center"}); };
+  $("#bempty").textContent=B.emptyText;
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(cv);
+  sync();
+})();}
+
+/* ---- kontrol listesi: kurduktan sonra gözden geçirilecekler ---- */
+if($("#must")){
+[["roboRIO imajı hangi sürümde","sezon için belirtilenden eski mi"],
+ ["Robotta kaç programlanabilir denetleyici var","tek olmalı"],
+ ["Komut hangi cihazdan çıkıyor","enable ve disable roboRIO'dan mı"],
+ ["Sinyal robota hangi yoldan geliyor","arena Ethernet ağı dışında bir yol var mı"],
+ ["Cihazlara ne yaptınız","yaptığınız şey istisna listesinde mi"],
+ ["MXP'den motor sürüyor musunuz","aradaki cihaz üç yoldan hangisi"]]
+.forEach(([t,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:t}),el("span",null,d));
+  li.append(w); $("#must").append(li);});
+
+$("#c2h").textContent="Sonra: tek bir şeyi değiştirin";
+$("#c2p").textContent="Kurduğunuzu iki kez bozun. Birincide co-processor'ı doğrudan motor controller'a bağlayın. İkincide sinyali arena ağı yerine robotun kendi kablosuz ağından geçirin. Her birinde hangi cümle çiğneniyor, hangisi denetimde görülür, ve hangisi maç sırasında sahayı etkiler?";
+
+}
+
+/* ---- eşleştirme paneli: kur, kontrol et, neyi yanlış yaptığını göster ---- */
+(()=>{
+  const box=$("#match");
+  if(!box||typeof MATCH==="undefined"||!MATCH.length){
+    const mp=$("#matchpanel"); if(mp) mp.remove(); return; }
+  const N=MATCH.length;
+  $("#mth").textContent=MT.h; $("#mtp").textContent=MT.p;
+  $("#mdone").textContent=MT.done;
+  $("#mgtext").textContent=MT.gate; $("#mstart").textContent=MT.start;
+  $("#mclose").textContent=MT.close;
+  let order=[], links={}, pick=null, checked=false;
+  const svgns="http://www.w3.org/2000/svg";
+  const lines=document.createElementNS(svgns,"svg"); lines.setAttribute("class","mlines");
+  const colL=el("div","mcol left"), colR=el("div","mcol right"), spacer=el("div");
+  const itemsL=[], itemsR=[], dotsL=[], dotsR=[];
+
+  const side=(txt,art)=>{const it=el("div","mitem");
+    if(art&&ART[art[0]]){const a=el("div","art");
+      a.innerHTML=`<svg viewBox="0 0 ${art[1]} ${art[2]}" aria-hidden="true">${ART[art[0]](art[3]||0,art[4]||0)}</svg>`;
+      it.append(a);}
+    const l=el("div"); l.append(Object.assign(el("span","lbl"),{textContent:txt})); it.append(l);
+    return it;};
+
+  const build=()=>{
+    box.textContent=""; itemsL.length=itemsR.length=dotsL.length=dotsR.length=0;
+    colL.textContent=""; colR.textContent="";
+    links={}; pick=null; checked=false;
+    order=[...Array(N).keys()];
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    MATCH.forEach((pr,i)=>{
+      const it=side(pr.l,pr.lart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.l+" — bağlantı noktası");
+      d.onclick=()=>tap("l",i); it.append(d);
+      colL.append(it); itemsL.push(it); dotsL.push(d);
+    });
+    order.forEach((pi,p)=>{
+      const pr=MATCH[pi]; const it=side(pr.r,pr.rart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.r+" — bağlantı noktası");
+      d.onclick=()=>tap("r",p); it.append(d);
+      colR.append(it); itemsR.push(it); dotsR.push(d);
+    });
+    box.append(lines,colL,spacer,colR);
+    $("#mres").textContent=""; $("#mres").className="";
+    paint(); sync();
+  };
+
+  const tap=(sd,i)=>{
+    if(checked) return;
+    if(!pick){ pick={sd,i}; mark(); return; }
+    if(pick.sd===sd){ pick={sd,i}; mark(); return; }
+    const l = sd==="l" ? i : pick.i, p = sd==="l" ? pick.i : i;
+    Object.keys(links).forEach(k=>{ if(links[k]===p) delete links[k]; });
+    if(links[l]===p) delete links[l]; else links[l]=p;
+    pick=null; mark(); paint(); sync();
+  };
+  const mark=()=>{
+    dotsL.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="l"&&pick.i===i));
+    dotsR.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="r"&&pick.i===i));
+  };
+  const paint=()=>{
+    const rb=box.getBoundingClientRect();
+    lines.setAttribute("viewBox",`0 0 ${rb.width} ${rb.height}`);
+    lines.setAttribute("width",rb.width); lines.setAttribute("height",rb.height);
+    let g="";
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k];
+      const a=dotsL[l].getBoundingClientRect(), b=dotsR[p].getBoundingClientRect();
+      const x1=a.left-rb.left+a.width/2, y1=a.top-rb.top+a.height/2;
+      const x2=b.left-rb.left+b.width/2, y2=b.top-rb.top+b.height/2;
+      const col = !checked ? "var(--acc)" : (order[p]===l ? "var(--ok)" : "var(--no)");
+      g+=`<path d="M${x1} ${y1} C ${x1+40} ${y1}, ${x2-40} ${y2}, ${x2} ${y2}" fill="none"
+        stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+    });
+    lines.innerHTML=g;
+  };
+  const sync=()=>{
+    const n=Object.keys(links).length;
+    $("#mdone").disabled = checked || n<N;
+    $("#mnote").textContent = checked ? MT.after : (n+" / "+N+" eşleştirildi");
+  };
+
+  $("#mdone").onclick=()=>{
+    checked=true; pick=null; mark();
+    let got=0;
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k], ok=order[p]===l;
+      if(ok) got++;
+      itemsL[l].classList.add(ok?"ok":"no"); dotsL[l].classList.add(ok?"ok":"no");
+      itemsR[p].classList.add(ok?"ok":"no"); dotsR[p].classList.add(ok?"ok":"no");
+      if(!ok) itemsL[l].querySelector("div").append(
+        Object.assign(el("span","mfix"),{textContent:"doğrusu: "+MATCH[l].r}));
+    });
+    paint();
+    const pct=Math.round(got/N*100);
+    const r=$("#mres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","eşleştirme kontrol edildi"));
+    r.append(el("div","big",got+" / "+N+" doğru · "+pct+" / 100"));
+    r.append(el("p",null, got===N ? MT.perfect : MT.again));
+    $("#mdone").disabled=true; $("#mclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+  const rs=$("#mreset");
+  if(MT.reset){ rs.textContent=MT.reset; rs.onclick=()=>build(); } else { rs.remove(); }
+
+  const lock=on=>{
+    $("#matchpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on);
+    if(on){ $("#matchpanel").scrollTop=0; }
+  };
+  $("#mstart").onclick=()=>{
+    $("#mgate").hidden=true; box.hidden=false; $("#mbar").hidden=false;
+    build(); lock(true); paint();
+  };
+  $("#mclose").onclick=()=>{ lock(false); $("#mres").scrollIntoView({block:"center"}); };
+  build();
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(box);
+})();
+
+/* ---- practice ---- */
+/* ---- video: sitede gömülü oynar, önizlemede bağlantı olarak görünür ---- */
+(()=>{
+  const host=$("#vids"), V=D.videoRefs||[];
+  if(!host) return;
+  if(!V.length){ host.remove(); return; }
+  V.forEach(v=>{
+    const w=el("div","vid"), h=el("div","vtop");
+    const lang=v.lang&&v.lang!=="tr"?" · video İngilizce":"";
+    h.append(Object.assign(el("b"),{textContent:v.label||v.title}),
+      el("span",null,(v.label?v.title+" · ":"")+v.channel+lang));
+    w.append(h);
+    const t=v.start?"?start="+v.start:"";
+    const watch="https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start:"");
+    if(window.__EMBED__){
+      const box=el("div","vframe");
+      const local=location.protocol==="file:";
+      const cover=document.createElement(local?"a":"button");
+      cover.className="vface";
+      cover.style.backgroundImage='url("https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg")';
+      const tri=el("div","vptri");
+      tri.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+      cover.append(tri);
+      if(local){
+        cover.href=watch; cover.target="_blank"; cover.rel="noopener";
+        cover.title="Yerel dosyadan açıldığı için video sayfada oynamaz; YouTube'da açılır.";
+      }else{
+        cover.type="button";
+        cover.setAttribute("aria-label",(v.label||v.title)+" videosunu oynat");
+        cover.onclick=()=>{
+          const fr=document.createElement("iframe");
+          fr.src="https://www.youtube-nocookie.com/embed/"+v.id+(v.start?"?start="+v.start+"&":"?")+"autoplay=1&rel=0";
+          fr.title=v.title; fr.allowFullscreen=true;
+          fr.referrerPolicy="strict-origin-when-cross-origin";
+          fr.setAttribute("allow","autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+          cover.replaceWith(fr);
+        };
+      }
+      box.append(cover); w.append(box);
+      const foot=el("p","vfoot");
+      const a2=document.createElement("a");
+      a2.href=watch; a2.target="_blank"; a2.rel="noopener"; a2.textContent="YouTube'da aç";
+      foot.append(document.createTextNode(local
+        ? "Bu dosya bilgisayardan açıldığı için video sayfa içinde oynamaz. Siteye yüklendiğinde burada oynar. "
+        : "Oynamazsa: "), a2);
+      w.append(foot);
+    }else{
+      const a=document.createElement("a");
+      a.className="vlink"; a.target="_blank"; a.rel="noopener";
+      a.href=watch;
+      a.textContent="videoyu YouTube'da aç";
+      w.append(a, el("p","vnote",
+        "Video sitenin kendi sayfasında bu kutunun içinde oynar. Bu önizlemede dış içerik engellendiği için yalnızca bağlantı görünür."));
+    }
+    if(v.note) w.append(el("p","vsrc",v.note));
+    host.append(w);
+  });
+})();
+
+const LET="ABCDE".split(""); let filter="all", state={};
+const SKEY="ep11", MODUL=D.id;
+try{state=JSON.parse(localStorage.getItem(SKEY)||"{}");}catch(e){state={};}
+const save=()=>{try{localStorage.setItem(SKEY,JSON.stringify(state));}catch(e){}};
+/* Sunucu ayarlanmışsa puanlar oraya da yazılır. Yazma tek yönlüdür:
+   aynı satır ikinci kez gönderilse bile veritabanı ilkini korur. */
+function sunucuyaYaz(tur,a,b){
+  if(!window.FRC || !FRC.acik) return;
+  if(tur==="tuval") FRC.tuvalYaz(MODUL,a); else FRC.cevapYaz(MODUL,a,b);
+}
+[["all","hepsi"],["core","core"],["stretch","stretch"],["pit","pit"]].forEach(([k,l])=>{
+  const b=el("button","filt",l); if(k!=="all") b.lang="en";
+  b.setAttribute("aria-pressed",k===filter);
+  b.onclick=()=>{filter=k;document.querySelectorAll(".filt").forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
+  $("#bar").append(b);});
+const scoreEl=el("span","score"); $("#bar").append(scoreEl);
+const ruleChips=(d,h)=>{if(!d.ruleRefs.length)return;const s=el("div","srcs");
+  d.ruleRefs.forEach(r=>s.append(el("span","rule",r.rule+" · "+r.season)));h.append(s);};
+const sourceRef=(d,h)=>{const dt=el("details","ref");dt.append(el("summary","kaynak"));
+  dt.append(el("p",null,d.source));h.append(dt);};
+const DFIG={
+ "electrical-11-d1":["allowed","Firmware güncellemesi istisna listesindedir."],
+ "electrical-11-d2":["allowed","Kapağı açıp bileşen değiştirmek tam olarak yasaklanan şeydir."],
+ "electrical-11-d3":["imageVer","VH-109 için üst sınır 7.0 Mbit/saniyedir."],
+ "electrical-11-d4":["signalPath","Enable ve disable komutları roboRIO'dan çıkmalıdır."],
+ "electrical-11-d5":["mxp","Kural üç yolu sayar; kendi sinyal işleme kartı bunların arasında değildir."],
+ "electrical-11-d6":["signalPath","Sinyal operator console'dan doğar ve arena ağından geçer."],
+ "electrical-11-d7":["imageVer","İmaj sürümü şartı, robotun çalışıyor olmasıyla karşılanmaz."],
+ "electrical-11-d8":["allowed","Yasak elektriksel değişikliklerle sınırlı değildir."]
+};
+const drillFig=(d,h)=>{const f=DFIG[d.id]; if(!f||!FIG[f[0]])return;
+  h.append(figure(FIG[f[0]](),f[1]));};
+
+function render(){
+  const box=$("#qs"); box.textContent="";
+  let got=0,done=0;
+  D.drills.forEach(d=>{if(state[d.id]){done++;if(state[d.id].ok)got++;}});
+  const live=done?Math.round(got/done*100):0;
+  scoreEl.textContent=done?("puan "+live+" / 100 · "+got+"/"+done+" doğru"):"puan 0 / 100";
+  D.drills.filter(d=>filter==="all"||d.difficulty===filter).forEach(d=>{
+    const q=el("div","q"),hd=el("div","qhead");
+    const pd1=el("span","pill "+d.difficulty,d.difficulty), pd2=el("span","pill",d.type.replace(/_/g," "));
+    pd1.lang="en"; pd2.lang="en"; hd.append(pd1,pd2);
+    q.append(hd);
+    if(d.symptom)q.append(el("p","sym",d.symptom));
+    if(d.scenario)q.append(el("p","sym",d.scenario));
+    q.append(el("p","qtext",d.prompt));
+    const ansBox=el("div"), prior=state[d.id];
+    const settle=(ok,txt)=>{state[d.id]={ok};save();sunucuyaYaz("cevap",d.id,ok);
+      ansBox.className="ans "+(ok?"good":"bad");
+      ansBox.append(el("span","verdict",ok?"doğru":"yanlış"),document.createTextNode(txt));
+      drillFig(d,ansBox);ruleChips(d,ansBox);sourceRef(d,ansBox);render();};
+    if(d.type==="numeric"){
+      const row=el("div","num");
+      const inp=Object.assign(el("input"),{type:"text",inputMode:"decimal",placeholder:"sayı"});
+      const go=el("button","btn","Kontrol et");
+      row.append(inp,go); if(d.unit)row.append(el("span","unit",d.unit));
+      go.onclick=()=>{const v=parseFloat(String(inp.value).replace(",","."));
+        const ok=Number.isFinite(v)&&Math.abs(v-d.answer)<=(d.tolerance||0);
+        inp.disabled=go.disabled=true;settle(ok,d.explanation);};
+      q.append(row);
+    } else if(d.type==="debug_code"){
+      const lines=String(d.code).split("\n");
+      const pre=el("div","code"); let chosen=null;
+      const lab=el("p","steplab","1 · hatalı satırı seçin");
+      const fix=el("div","fixrow");
+      const inp=Object.assign(el("input"),{type:"text",placeholder:"doğru satırı yazın",disabled:true});
+      const go=el("button","btn","Kontrol et"); go.disabled=true;
+      fix.append(inp,go);
+      lines.forEach((src,i)=>{
+        const b=el("button","ln");
+        b.append(el("span","no",String(i+1)),el("span","src",src||" "));
+        b.onclick=()=>{ if(chosen!==null) $$(".ln",pre)[chosen].classList.remove("pick");
+          chosen=i; b.classList.add("pick");
+          lab.textContent="2 · bu satırın doğrusunu yazın";
+          inp.disabled=go.disabled=false; inp.focus(); };
+        pre.append(b);});
+      const norm=x=>String(x).replace(/\s+/g," ").replace(/;\s*$/,"").trim().toLowerCase();
+      go.onclick=()=>{
+        const want=(d.acceptableAnswers&&d.acceptableAnswers.length?d.acceptableAnswers:[d.correctAnswer]).map(norm);
+        const lineOk = chosen===(d.buggyLine-1);
+        const textOk = want.includes(norm(inp.value));
+        const ok = lineOk && textOk;
+        $$(".ln",pre).forEach((x,j)=>{x.disabled=true;
+          if(j===d.buggyLine-1) x.classList.add(lineOk?"pick-ok":"reveal");
+          else if(j===chosen) x.classList.add("pick-no");});
+        inp.disabled=go.disabled=true; lab.remove();
+        const pre2 = lineOk&&!textOk ? "Satır doğru, yazdığınız düzeltme tutmadı. Doğrusu: "+d.correctAnswer+" "
+                   : !lineOk ? "Hatalı satır "+d.buggyLine+". satırdır; doğrusu: "+d.correctAnswer+" " : "";
+        settle(ok,pre2+d.explanation);};
+      q.append(lab,pre,fix);
+    } else if(d.type==="order_steps"){
+      const picked=[],w=el("div","opts");
+      d.steps.forEach((s,i)=>{const b=el("button","opt");
+        b.append(el("span","k","—"),el("span",null,s));
+        b.onclick=()=>{if(picked.includes(i))return;picked.push(i);
+          $(".k",b).textContent=picked.length;b.classList.add("taken");
+          if(picked.length===d.steps.length){
+            const ok=JSON.stringify(picked)===JSON.stringify(d.correctOrder);
+            w.querySelectorAll("button").forEach(x=>x.disabled=true);
+            settle(ok,(ok?"":"Doğru sıra: "+d.correctOrder.map(n=>n+1).join(" → ")+". ")+d.explanation);}};
+        w.append(b);});
+      q.append(w);
+    } else {
+      const items=d.elements||d.options, key=d.elements?d.faultIndex:d.correctIndex, w=el("div","opts");
+      items.forEach((o,i)=>{const b=el("button","opt");
+        b.append(el("span","k",LET[i]),el("span",null,o));
+        b.onclick=()=>{const ok=i===key;
+          w.querySelectorAll("button").forEach((x,j)=>{x.disabled=true;if(j===key&&!ok)x.classList.add("reveal");});
+          b.classList.add(ok?"pick-ok":"pick-no");settle(ok,d.explanation);};
+        w.append(b);});
+      q.append(w);
+    }
+    if(prior){
+      const dn=el("div","ans "+(prior.ok?"good":"bad"));
+      dn.append(el("span","verdict",prior.ok?"doğru — çözüldü":"yanlış — çözüldü"),
+        document.createTextNode(d.explanation));
+      drillFig(d,dn);ruleChips(d,dn);sourceRef(d,dn);
+      q.querySelectorAll(".opt,input,.btn").forEach(x=>x.disabled=true);
+      if(d.type==="debug_code"){
+        const lns=$$(".ln",q), tgt=lns[d.buggyLine-1];
+        if(tgt) tgt.classList.add(prior.ok?"pick-ok":"reveal");
+        const sl=$(".steplab",q); if(sl) sl.remove();
+        const fr=$(".fixrow",q); if(fr) fr.remove();
+      }
+      q.append(dn);
+    } else if(d.hint){ q.append(el("div","hintline","ipucu · "+d.hint)); }
+    q.append(ansBox); box.append(q);
+  });
+
+  if(done===D.drills.length && D.drills.length){
+    const score=Math.round(got/D.drills.length*100);
+    const band = score>=85 ? "Çok iyi"
+               : score>=70 ? "İyi"
+               : score>=50 ? "Geçer"
+               : "Tekrar edilmeli";
+    const f=el("div","finish");
+    f.append(el("div","cap","test tamamlandı"));
+    f.append(el("div","big",String(score)));
+    f.append(el("div","outof","100 üzerinden · "+got+" / "+D.drills.length+" doğru · "+band));
+    const bd=el("div","bd");
+    ["core","stretch","pit"].forEach(lv=>{
+      const set=D.drills.filter(d=>d.difficulty===lv);
+      if(!set.length) return;
+      const g=set.filter(d=>state[d.id]&&state[d.id].ok).length;
+      bd.append(el("span",null,lv+" "+g+"/"+set.length+" · %"+Math.round(g/set.length*100)));
+    });
+    f.append(bd);
+    f.append(el("p","sm", score===100
+      ? "Sekiz sorunun sekizini de doğru bildiniz. Şimdi sinyal yolunu örneğe bakmadan kurun."
+      : score>=70
+      ? "Yanlış bildiğiniz soruların gerekçesini bir kez daha okuyun, sonra testi baştan çözün."
+      : "Puanınız 70'in altında. Kavram bölümünü ve kartları tekrar okuyup testi baştan çözmeniz önerilir."));
+    const r=el("button","retry","Testi baştan çöz");
+    r.onclick=()=>{ state={}; save(); render();
+      document.getElementById("bar").scrollIntoView({behavior:"smooth",block:"start"}); };
+    f.append(r);
+    box.append(f);
+  }
+}
+render();
+/* ---- sunucu oturumu ve ilerlemenin geri yüklenmesi ---- */
+if(window.FRC && FRC.acik){
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    return FRC.oku(MODUL).then(function(su){
+      if(!su) return;
+      var degisti=false;
+      if(su.tuval!==null && su.tuval!==undefined && state.__b==null){
+        state.__b={s:su.tuval,n:null}; degisti=true;
+      }
+      Object.keys(su.cevaplar).forEach(function(id){
+        if(!state[id]){ state[id]=su.cevaplar[id]; degisti=true; }
+      });
+      if(degisti){ save(); render(); }
+    });
+  });
+}
+
+</script>
+
+</body>
+</html>

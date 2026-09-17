@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FRC Electrical Modul 03 - CAN Bus: daisy chain topolojisi, 120 ohm sonlandirma ve CAN ID atamasi. Kavram, uc kart, zincir semasi, kurulum tuvali ve sekiz soruluk test.">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>window.__EMBED__=true;</script>
+<meta property="og:title" content="CAN Bus: Zincir, Termination ve Device ID">
+<meta property="og:description" content="FRC Electrical Modul 03 - kavram, kartlar, sema ve test.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}
+[hidden]:not([hidden=until-found]){display:none!important}</style>
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<title>CAN Bus: Zincir, Termination ve Device ID · FRC Electrical Modül 03</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
+:root, :root[data-theme="dark"], :root[data-theme="light"]{
+  color-scheme:light;
+  --ground:#EFE9FB; --surface:#FFFFFF; --sunk:#E4DBF7;
+  --ink:#000000; --body:#141019; --mute:#463E58; --hair:#CFC2EC;
+  --acc:#5B21B6; --acc-soft:#EDE5FE;
+  --ok:#116336; --ok-soft:#E4F3EA; --no:#A5124A; --no-soft:#FBE6EE;
+  --rung-b:#7C3AED; --rung-m:#4C1D95; --rung-p:#000000; --rung-p-fg:#EFE9FB;
+  --can-h:#C08401; --can-l:#12703C;
+  --w-pos:#6D28D9; --w-neg:#000000; --dia-fill:#FFFFFF; --dia-edge:#BFB0E0;
+  --dia-ink:#000000; --dia-mute:#463E58; --dia-pd:#5B21B6; --dia-band:#E7DDFC;
+  --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+  font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:40px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font:700 clamp(34px,8vw,52px)/1.02 var(--disp);letter-spacing:-.01em;margin:10px 0 0}
+.sub{margin:14px 0 0;max-width:60ch;font-size:15.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+section{padding:38px 0;border-bottom:1px solid var(--hair)}
+section:last-of-type{border-bottom:0}
+h2{font:600 clamp(23px,5vw,29px)/1.15 var(--disp);letter-spacing:.005em;margin:8px 0 6px}
+.lede{margin:0 0 22px;font-size:15px;color:var(--mute);max-width:62ch}
+.concept p{margin:0 0 14px;font-size:15.5px;line-height:1.72;max-width:66ch}
+.vids{margin-top:22px}
+.vid{border:1px solid var(--hair);border-radius:12px;background:var(--surface);overflow:hidden}
+.vid+.vid{margin-top:14px}
+.vtop{padding:12px 16px;border-bottom:1px solid var(--hair)}
+.vtop b{display:block;color:var(--ink);font:600 14.5px/1.35 var(--sans)}
+.vtop span{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.vframe{position:relative;width:100%;aspect-ratio:16/9;background:#1b1620}
+.vface{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
+  background-color:#1b1620;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;text-decoration:none}
+.vface:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+.vptri{width:74px;height:52px;border-radius:12px;background:rgba(20,16,24,.78);
+  display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.vface:hover .vptri{background:var(--acc)}
+.vptri svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.vlink{display:inline-block;margin:14px 16px 0;padding:9px 14px;border-radius:8px;
+  background:var(--acc);color:#fff;text-decoration:none;font:600 13px/1 var(--sans)}
+.vnote{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot a{color:var(--acc);font-weight:600}
+.vsrc{margin:8px 16px 14px;font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.terms{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.term{font:500 12.5px/1 var(--mono);color:var(--ink);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:5px;padding:7px 9px}
+.rail{display:flex;flex-direction:column;gap:14px}
+.flip{perspective:1400px;background:none;border:0;padding:0;width:100%;
+  text-align:left;font:inherit;cursor:pointer;border-radius:14px}
+.flip:focus-visible{outline:2.5px solid var(--acc);outline-offset:3px}
+.inner{position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1)}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+.face{border-radius:14px;border:1px solid var(--hair);background:var(--surface);
+  box-shadow:var(--shadow);padding:20px;backface-visibility:hidden}
+.face.back{position:absolute;inset:0;transform:rotateY(180deg);overflow:auto}
+.face.front{min-height:150px;display:flex;flex-direction:column}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.rung{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 9px;border-radius:5px;color:#fff}
+.r-behaviour{background:var(--rung-b)} .r-mechanism{background:var(--rung-m)}
+.r-pit{background:var(--rung-p);color:var(--rung-p-fg)}
+.count{font:500 12px/1 var(--mono);color:var(--mute)}
+.cfront{font:600 clamp(19px,4.2vw,23px)/1.3 var(--disp);color:var(--ink)}
+.ctags{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:400 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);padding:5px 8px;border-radius:4px}
+.hintline{margin-top:12px;font:500 12px/1.5 var(--mono);color:var(--acc)}
+.face.front .hintline{margin-top:auto;padding-top:18px}
+.cardfig svg{max-height:150px}
+@media(max-width:520px){
+  .cback{font-size:13.6px;line-height:1.56}
+  .cardfig{margin-top:12px}
+  .cardfig svg{max-height:116px}
+  .take{font-size:12.8px;padding:9px 11px;margin-top:12px}
+}
+.cback{font-size:14.5px;line-height:1.62;margin:0}
+.take{margin-top:14px;padding:11px 13px;border-radius:9px;background:var(--acc-soft);
+  color:var(--ink);font:600 13.5px/1.45 var(--sans)}
+.gauges{padding:16px 18px;background:var(--sunk);border:1px solid var(--hair);
+  border-radius:12px;display:grid;gap:11px}
+.grow{display:grid;grid-template-columns:104px 1fr auto;align-items:center;gap:12px}
+.glabel{font:500 13px/1 var(--mono);color:var(--ink)}
+.gbar{height:14px;display:flex;align-items:center}
+.gbar i{display:block;width:100%;border-radius:2px;background:var(--acc)}
+.guse{font:400 12px/1.3 var(--sans);color:var(--mute);text-align:right;max-width:20ch}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.ptop{padding:18px 20px;border-bottom:1px solid var(--hair)}
+.ptop h3{font:600 19px/1.25 var(--disp)}
+.ptop p{margin:7px 0 0;font-size:14.5px}
+.must{list-style:none;margin:0;padding:2px 0}
+.must li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.must li:last-child{border-bottom:0}
+.must .n{font:600 12px/22px var(--mono);color:#fff;background:var(--acc);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.must b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.must span{font-size:13px;color:var(--mute)}
+.pfoot{padding:14px 20px;background:var(--sunk);font-size:13.5px;color:var(--mute)}
+.pfoot code{font:500 12.5px var(--mono);color:var(--ink)}
+.howgrid{display:grid;gap:16px;padding:18px 20px}
+@media(min-width:640px){.howgrid{grid-template-columns:1fr 1fr;gap:24px}}
+.howgrid h4{margin:0 0 9px;font:600 11.5px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--acc)}
+.howgrid ol{margin:0;padding-left:19px;font-size:13.8px;line-height:1.62}
+.howgrid ol li{margin-bottom:6px}
+.howgrid p{margin:0 0 9px;font-size:13.8px;line-height:1.62}
+.swipe{display:none;font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--mute);margin:0 0 8px}
+@media(max-width:860px){.swipe{display:block}}
+.fig{margin:16px 0 6px;border:1px solid var(--hair);border-radius:11px;
+  background:var(--surface);padding:13px 14px 9px}
+.fig .sc{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig .sc svg{display:block;width:100%;height:auto;min-width:520px}
+.fig .cap{margin:9px 0 0;font:500 11.5px/1.45 var(--mono);color:var(--mute)}
+.fig .cap b{display:none;color:var(--acc);font-weight:600}
+@media(max-width:620px){.fig .cap b{display:inline}}
+.ans .fig,.cfront .fig{background:var(--surface)}
+.cardfig{margin:14px 0 0;border-radius:9px;overflow:hidden}
+.cardfig svg{display:block;width:100%;height:auto}
+.conceptfig{margin:6px 0 22px}
+.match[hidden],.mbar[hidden]{display:none!important}
+.bwarn{margin:0;padding:12px 20px;font:500 13px/1.5 var(--sans);color:var(--no);
+  background:var(--no-soft);border-bottom:1px solid var(--hair)}
+#bpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#bpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#bpanel.locked #bwrap,#bpanel.locked .mbar,#bpanel.locked #bres{width:100%;max-width:1120px;
+  margin-left:auto;margin-right:auto}
+#bpanel.locked .mbar{position:sticky;bottom:0;background:var(--ground);
+  border-top:1px solid var(--hair);padding:12px 20px}
+#bpanel.locked .canvas{height:min(64vh,560px)}
+.blines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.blbl{position:absolute;inset:0;pointer-events:none;z-index:6}
+.placed{z-index:2}
+.placed.bad{outline:2.5px solid var(--no);outline-offset:3px;border-radius:10px}
+.placed.fine{outline:2px solid var(--ok);outline-offset:3px;border-radius:10px}
+.pin{position:absolute;width:15px;height:15px;border-radius:50%;padding:0;transform:translate(-50%,-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;z-index:4;touch-action:none}
+.pin:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.pin:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.pin.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.pinlb.lft{transform:translate(-100%,-50%)}
+.pinlb.rgt{transform:translate(0,-50%)}
+.pinlb{position:absolute;transform:translate(-50%,-190%);font:600 9px/1 var(--mono);
+  color:var(--acc);background:var(--surface);border:1px solid var(--hair);border-radius:4px;
+  padding:2px 3px;pointer-events:none;z-index:5;white-space:nowrap}
+.wchip[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);
+  box-shadow:0 0 0 2px var(--acc-soft)}
+.mres .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.mres .pen{margin:10px 0 0;font:500 13px/1.55 var(--sans);color:var(--no)}
+.mres .miss{margin:12px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:var(--body)}
+.mres .miss b{color:var(--no);font-family:var(--mono);font-size:12px}
+.mgate{padding:20px}
+.mgate p{margin:0 0 14px;font-size:14.5px;line-height:1.62;max-width:62ch}
+body.mlock{overflow:hidden}
+#matchpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#matchpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#matchpanel.locked .match,#matchpanel.locked .mres{width:100%;max-width:880px;margin-left:auto;margin-right:auto}
+#matchpanel.locked .mbar{width:100%;max-width:880px;margin:0 auto;position:sticky;bottom:0;
+  background:var(--ground);border-top:1px solid var(--hair);padding:12px 20px}
+#matchpanel.locked .mres{margin-bottom:24px}
+.match{position:relative;display:grid;grid-template-columns:1fr 92px 1fr;padding:18px 20px 6px}
+@media(max-width:620px){.match{grid-template-columns:1fr 46px 1fr;padding:14px 12px 4px}}
+.mcol{display:flex;flex-direction:column;gap:13px}
+.mitem{position:relative;display:flex;align-items:center;gap:11px;background:var(--surface);
+  border:1.6px solid var(--hair);border-radius:12px;padding:11px 13px;min-height:60px}
+.mcol.left .mitem{padding-right:24px}
+.mcol.right .mitem{padding-left:24px}
+.mitem .lbl{font:500 14px/1.35 var(--sans);color:var(--ink)}
+@media(max-width:620px){.mitem{min-height:54px;padding:9px 10px;gap:8px}
+  .mcol.left .mitem{padding-right:20px}.mcol.right .mitem{padding-left:20px}
+  .mitem .lbl{font-size:12.8px}}
+.mitem .art{flex:none;width:66px}
+.mitem .art svg{display:block;width:100%;height:auto}
+@media(max-width:620px){.mitem .art{width:50px}}
+.mdot{position:absolute;top:50%;width:19px;height:19px;border-radius:50%;transform:translateY(-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;padding:0;z-index:3}
+.mcol.left .mdot{right:-10px}
+.mcol.right .mdot{left:-10px}
+.mdot:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.mdot:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.mdot.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.mdot.ok{border-color:var(--ok);background:var(--ok)}
+.mdot.no{border-color:var(--no);background:var(--no)}
+.mitem.ok{border-color:var(--ok);background:var(--ok-soft)}
+.mitem.no{border-color:var(--no);background:var(--no-soft)}
+.mlines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.mfix{display:block;margin-top:5px;font:500 12px/1.4 var(--mono);color:var(--no)}
+.mbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 20px 16px}
+.mbar .btn:disabled{opacity:.45;cursor:default}
+.mres{margin:0 20px 16px;padding:16px 18px;border-radius:12px;background:var(--sunk);
+  border-left:3px solid var(--acc)}
+.mres .big{font:700 30px/1 var(--disp);color:var(--ink)}
+.mres .cap{font:500 12px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:9px}
+.mres p{margin:9px 0 0;font-size:14px;line-height:1.6}
+.diawrap{overflow-x:auto;padding:6px 0 2px;-webkit-overflow-scrolling:touch}
+.tray{padding:16px 20px 4px}
+.tlabel{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin:0 0 11px}
+.tgrid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:9px;margin-bottom:16px}
+.part{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font:inherit;color:var(--body)}
+.part:hover{border-color:var(--acc);background:var(--acc-soft)}
+.part:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.part span{font:500 10.5px/1 var(--mono);color:var(--mute);white-space:nowrap}
+.bleed{width:100%}
+@media(min-width:880px){
+  .bleed{width:min(1160px,calc(100vw - 40px));margin-left:50%;transform:translateX(-50%)}
+  .bleed .canvas{height:min(74vh,620px)}
+}
+.canvas{position:relative;height:min(72vh,520px);margin:0 14px 14px;border-radius:12px;
+  border:1.5px dashed var(--hair);background:var(--sunk);overflow:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.board{position:relative;width:1080px;height:680px}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--acc-soft) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--acc-soft) 1px,transparent 1px);
+  background-size:26px 26px;opacity:.75}
+.pan{margin:0 14px 12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+@media(max-width:700px){
+  .tgrid{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;font-size:13.5px;color:var(--mute);pointer-events:none}
+.empty.gone{display:none}
+.placed{position:absolute;cursor:grab;touch-action:none;user-select:none}
+.placed:active{cursor:grabbing}
+.placed .x{position:absolute;top:-9px;right:-9px;width:19px;height:19px;border-radius:50%;
+  background:var(--no);color:#fff;border:0;font:600 11px/19px var(--sans);cursor:pointer;padding:0}
+.placed .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.wireel{position:absolute;inset:0;pointer-events:none}
+.wireel .seg{position:absolute;height:20px;transform-origin:0 50%;pointer-events:auto;
+  cursor:grab;touch-action:none}
+.wireel .seg:active{cursor:grabbing}
+.wireel .seg i{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);border-radius:99px}
+.wireel .h{position:absolute;width:20px;height:20px;border-radius:50%;padding:0;
+  background:var(--surface);border:2.5px solid var(--acc);transform:translate(-50%,-50%);
+  cursor:crosshair;touch-action:none;pointer-events:auto;z-index:2;
+  opacity:0;transition:opacity .14s ease}
+.wireel .h:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.wireel .h.m{width:17px;height:17px;background:var(--acc);border-color:var(--surface);
+  box-shadow:0 0 0 2px var(--acc)}
+.wireel:hover .h,.wireel.sel .h,.wireel:focus-within .h{opacity:1}
+@media (prefers-reduced-motion:reduce){.wireel .h{transition:none}}
+.wireel .wtag{position:absolute;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:5px;pointer-events:auto;z-index:3;
+  font:600 10.5px/1 var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:4px 5px 4px 7px;white-space:nowrap}
+.wireel .x{position:static;width:16px;height:16px;flex:none;
+  border-radius:50%;background:var(--no);color:#fff;border:0;font:600 10px/16px var(--sans);
+  cursor:pointer;padding:0}
+.wireel .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:0 20px 16px}
+.mini{font:600 12px/1 var(--mono);background:var(--surface);color:var(--body);
+  border:1px solid var(--hair);padding:9px 13px;border-radius:999px;cursor:pointer}
+.mini:hover{border-color:var(--acc)} .mini:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cnote{font-size:12.5px;color:var(--mute);margin-left:auto;font-family:var(--mono)}
+.diawrap svg{display:block;min-width:790px;width:100%;height:auto}
+.diacap{padding:0 20px 16px;font-size:13px;color:var(--mute)}
+.calls{list-style:none;margin:0;padding:2px 0}
+.calls li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.calls li:last-child{border-bottom:0}
+.calls .n{font:600 12px/22px var(--mono);color:#fff;background:var(--dia-pd);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.calls b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.calls span{font-size:13px;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+.filt{font:600 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  background:var(--surface);color:var(--body);border:1px solid var(--hair);
+  padding:9px 13px;border-radius:999px;cursor:pointer}
+.filt[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.filt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.score{margin-left:auto;font:600 13px/1 var(--mono);color:var(--mute)}
+.q{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:13px}
+.pill{font:600 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 8px;border-radius:4px;border:1px solid var(--hair);color:var(--mute)}
+.pill.core{color:var(--rung-b);border-color:currentColor}
+.pill.stretch{color:var(--acc);border-color:currentColor}
+.pill.pit{color:var(--no);border-color:currentColor}
+.sym{margin:0 0 12px;padding:12px 14px;background:var(--sunk);border-radius:9px;font-size:14px;line-height:1.6}
+.qtext{margin:0 0 15px;color:var(--ink);font:500 16.5px/1.42 var(--sans)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;text-align:left;
+  font:400 14.5px/1.5 var(--sans);color:var(--body);background:var(--surface);
+  border:1px solid var(--hair);border-radius:10px;padding:12px 13px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--acc);background:var(--acc-soft)}
+.opt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.opt:disabled{cursor:default}
+.opt .k{font:600 12px/1.45 var(--mono);color:var(--mute)}
+.opt.pick-ok{background:var(--ok-soft);border-color:var(--ok)} .opt.pick-ok .k{color:var(--ok)}
+.opt.pick-no{background:var(--no-soft);border-color:var(--no)} .opt.pick-no .k{color:var(--no)}
+.opt.reveal{border-color:var(--ok);border-style:dashed}
+.opt.taken{opacity:.55}
+.num{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.num input{font:500 16px var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:9px;padding:11px 13px;width:130px}
+.num input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.btn{font:600 13px/1 var(--sans);background:var(--ink);color:var(--ground);border:0;
+  border-radius:9px;padding:12px 17px;cursor:pointer}
+.btn:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.unit{font:500 13px var(--mono);color:var(--mute)}
+/* debug_code: satır numaralı kod bloğu, hatalı satır seçilir ve doğrusu yazılır */
+.code{margin:0 0 12px;border:1px solid var(--hair);border-radius:10px;background:var(--surface);
+  overflow:auto}
+.code .ln{display:grid;grid-template-columns:38px 1fr;align-items:stretch;width:100%;
+  border:0;border-left:3px solid transparent;background:none;text-align:left;cursor:pointer;
+  font:400 13.5px/1.62 var(--mono);color:var(--body);padding:0}
+.code .ln:hover:not(:disabled){background:var(--acc-soft)}
+.code .ln:focus-visible{outline:2.5px solid var(--acc);outline-offset:-2px}
+.code .ln:disabled{cursor:default}
+.code .ln .no{color:var(--mute);text-align:right;padding:0 9px 0 0;user-select:none;
+  background:var(--sunk);font-size:12px}
+.code .ln .src{padding:0 12px;white-space:pre}
+.code .ln.pick{border-left-color:var(--acc);background:var(--acc-soft)}
+.code .ln.pick-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.code .ln.pick-no{border-left-color:var(--no);background:var(--no-soft)}
+.code .ln.reveal{border-left-color:var(--ok);border-left-style:dashed}
+.fixrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fixrow input{flex:1 1 320px;min-width:0;font:500 13.5px var(--mono);color:var(--ink);
+  background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:11px 13px}
+.fixrow input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.steplab{margin:0 0 9px;font:500 12px/1.5 var(--mono);color:var(--mute)}
+.ans{margin-top:14px;padding:14px 15px;border-radius:10px;font-size:14.5px;line-height:1.62;
+  background:var(--sunk);border-left:3px solid var(--acc)}
+.ans .verdict{display:block;font:600 13px/1 var(--mono);letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:9px}
+.ans.good .verdict{color:var(--ok)} .ans.bad .verdict{color:var(--no)}
+.srcs{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.rule{font:500 11px/1 var(--mono);color:var(--mute);border:1px solid var(--hair);
+  border-radius:4px;padding:4px 7px}
+details.ref{margin-top:11px}
+details.ref summary{font:500 12.5px var(--mono);color:var(--mute);cursor:pointer}
+details.ref summary:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+details.ref p{margin:9px 0 0;font-size:13.5px;color:var(--mute);word-break:break-word}
+.finish{background:var(--surface);border:1.5px solid var(--acc);border-radius:14px;
+  box-shadow:var(--shadow);padding:24px 20px;text-align:center}
+.finish .big{font:700 46px/1 var(--disp);color:var(--ink);letter-spacing:-.01em}
+.finish .cap{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:12px}
+.finish .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.finish .sm{font:400 14px/1.5 var(--sans);color:var(--body);margin:10px auto 0;max-width:44ch}
+.finish .bd{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:16px 0 20px}
+.finish .bd span{font:500 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 10px}
+.retry{margin-top:18px;font:600 14px/1 var(--sans);background:var(--acc);color:var(--ground);border:0;
+  border-radius:10px;padding:14px 24px;cursor:pointer}
+.retry:hover{filter:brightness(1.08)}
+.retry:focus-visible{outline:2.5px solid var(--ink);outline-offset:3px}
+footer{padding:28px 0 0;font-size:13px;color:var(--mute)}
+.cright{margin:0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap" lang="tr">
+<header>
+  <div class="eyebrow" lang="en">electrical · modül 03</div>
+  <h1 id="mt"></h1>
+  <p class="sub" id="ms"></p>
+  <div class="meta" id="mm"></div>
+</header>
+
+<section class="concept">
+  <div class="eyebrow">kavram</div>
+  <h2>CAN bus nedir</h2>
+  <div id="body"></div>
+  <div class="vids" id="vids"></div>
+  <div class="terms" id="terms"></div>
+</section>
+
+<section>
+  <div class="eyebrow">basamak</div>
+  <h2>Davranıştan bedele</h2>
+  <p class="lede">Aynı konu üç basamakta: önce ne olduğu, sonra neden olduğu, en sonda sahada neye mal olduğu. Çevirmek için karta dokunun.</p>
+  <div class="rail" id="cards"></div>
+</section>
+
+<section>
+  <div class="eyebrow">referans</div>
+  <h2>Hattın dili</h2>
+  <p class="lede">Soldaki koruma değeri sağdaki kabloyu belirler. Çubuklar gerçek AWG oranında çizilmiştir.</p>
+  <div class="gauges" id="gauges"></div>
+</section>
+
+<section>
+  <div class="eyebrow" lang="en">mechanism map</div>
+  <h2>Kur: CAN zinciri</h2>
+  <p class="lede">Önce kurulmuş bir örnek okuyun. Sonra aynısını, örneğe bakmadan kendiniz kurun.</p>
+  <div class="panel bleed">
+    <div class="ptop"><h3>Örnek: kurallara uygun bir CAN zinciri</h3>
+      <p>Yedi cihaz, tek hat. Şemanın altındaki küçük notlar zincirin hangi kurallara uyduğunu söyler.</p></div>
+    <p class="swipe">→ şemayı yana kaydırarak tamamını görün</p>
+    <div class="diawrap" id="dia"></div>
+    <ol class="calls" id="calls"></ol>
+  </div>
+
+  <div class="panel bleed" id="matchpanel">
+    <div class="ptop"><h3 id="mth"></h3><p id="mtp"></p></div>
+    <div class="mgate" id="mgate">
+      <p id="mgtext"></p>
+      <button class="btn" id="mstart"></button>
+    </div>
+    <div class="match" id="match" hidden></div>
+    <div class="mbar" id="mbar" hidden>
+      <button class="btn" id="mdone"></button>
+      <button class="mini" id="mreset"></button>
+      <button class="mini" id="mclose" hidden></button>
+      <span class="cnote" id="mnote"></span>
+    </div>
+    <div id="mres"></div>
+  </div>
+
+  <div class="panel bleed" id="bpanel">
+    <div class="ptop"><h3 id="bh"></h3><p id="bp"></p></div>
+    <div class="mgate" id="bgate">
+      <p id="bgtext"></p>
+      <button class="btn" id="bstart"></button>
+    </div>
+    <div id="bwrap" hidden>
+      <p class="bwarn" id="bwarn"></p>
+      <div class="tray" id="btray"></div>
+      <div class="canvas" id="bcanvas"><div class="board" id="bboard"></div>
+        <div class="empty" id="bempty"></div></div>
+      <p class="pan" id="bpan"></p>
+    </div>
+    <div class="mbar" id="bbar" hidden>
+      <button class="btn" id="bdone"></button>
+      <button class="mini" id="breset"></button>
+      <button class="mini" id="bclose" hidden></button>
+      <span class="cnote" id="bnote"></span>
+    </div>
+    <div id="bres"></div>
+    <ol class="must" id="must"></ol>
+    <div class="ptop" style="border-top:1px solid var(--hair);border-bottom:0">
+      <h3 id="c2h"></h3><p id="c2p"></p>
+    </div>
+  </div>
+
+<section>
+  <div class="eyebrow">alıştırma</div>
+  <h2>Sorular</h2>
+  <p class="lede">Bir şık seçin; gerekçe hemen açılır. Puanınız cihazınızda saklanır.</p>
+  <div class="bar" id="bar"></div>
+  <div id="qs"></div>
+</section>
+
+<footer id="foot"><p class="cright">© 2026 Semih Tuna Köse</p></footer>
+</div>
+
+<script>
+const D = {"id": "electrical-03-can-bus", "title": "CAN Bus: Zincir, Termination ve Device ID", "summary": "roboRIO ile motor controller'lar ve diğer cihazlar arasındaki CAN hattının nasıl kurulduğunu, iki uçtaki termination'ın neden zorunlu olduğunu ve her cihazın neden benzersiz bir CAN ID'ye ihtiyaç duyduğunu öğretir.", "season": "2026", "verifiedOn": "2026-09-02", "estimatedMinutes": 15, "body": "Robot üzerindeki motor controller'lar, PDH, PH ve birçok sensor roboRIO ile CAN bus (CAN veri yolu) üzerinden haberleşir. CAN iki kablolu bir hattır: sarı kablo CAN-High, yeşil kablo CAN-Low taşır. Bu iki kablo tüm cihazlar boyunca kesintisiz devam eder.\n\nÖnerilen topoloji daisy chain'dir (zincir dizilimi): hat roboRIO'nun CAN portundan başlar, her cihaza girip çıkarak sırayla ilerler ve PDH'te biter. Kurallar yalnızca pasif iletkenlerden oluşan star düzenlerine de izin verir; yasak olan, hat üzerine haberleşmeyi değiştiren veya engelleyen bir cihaz koymaktır. Her Weidmuller CAN terminaline yalnızca tek bir kablo sokulur.\n\nHattın iki ucunda 120 Ω terminating resistor (sonlandırma direnci) bulunmalıdır. Bu dirençlerden biri roboRIO içinde hazır gelir. PDH'te sonlandırma cihaz üzerinden yapılandırılır: PDH zincirin sonundaysa sonlandırması etkin bırakılır. PDH zincirin ortasına alınırsa sonlandırması devre dışı bırakılır ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılır. Belirleyici olan cihazın kimliği değil, hattaki konumudur.\n\nSon olarak her cihazın kendi CAN ID'si vardır. SPARK MAX kutudan 0 ID'si ile çıkar; aynı hatta aynı tipteki iki cihaz aynı ID'yi kullanamaz. Kullanılabilir aralık 1-62'dir ve ID'ler REV Hardware Client gibi araçlarla değiştirilir.", "keyTerms": [{"term": "CAN bus", "glossTr": "cihazların roboRIO ile haberleştiği iki kablolu veri yolu"}, {"term": "CAN-High / CAN-Low", "glossTr": "CAN hattının iki sinyal kablosu; sarı High, yeşil Low"}, {"term": "daisy chain", "glossTr": "zincir dizilimi; hattın her cihaza girip çıkarak ilerlemesi"}, {"term": "terminating resistor", "glossTr": "hattın iki ucuna takılan 120 Ω sonlandırma direnci"}, {"term": "Weidmuller connector", "glossTr": "yaylı, vidasız kablo terminali"}, {"term": "CAN ID (device ID)", "glossTr": "her cihazın hat üzerindeki adres numarası"}, {"term": "REV Hardware Client", "glossTr": "REV cihazlarının ayarlarını değiştiren Windows uygulaması"}, {"term": "CANivore", "glossTr": "CTR Electronics'in USB-to-CAN adaptörü; ek CAN hattı ekler"}, {"term": "passive conductor", "glossTr": "sinyali işlemeden yalnızca ileten pasif iletken"}], "cards": [{"id": "electrical-03-c1", "rung": "behaviour", "index": 1, "of": 3, "label": "CAN BUS", "front": "CAN hattı bütün cihazlara girip çıkan tek bir seri zincirdir.", "back": "Motor controller'lar, PDH, PH ve birçok sensor roboRIO ile iki kablo üzerinden haberleşir: sarı kablo CAN-High, yeşil kablo CAN-Low. Önerilen topoloji daisy chain'dir; hat roboRIO'nun CAN portundan başlar, her cihaza girip çıkarak sırayla ilerler ve PDH'te biter. İki kablo tüm cihazlar boyunca kesintisiz devam eder. Her Weidmuller terminaline yalnızca tek bir kablo sokulur, çünkü terminalin yayı tek bir iletken için tasarlanmıştır.", "takeaway": "İki kablo, tek zincir: roboRIO'da başlar, PDH'te biter", "tags": ["daisy chain", "CAN-High", "CAN-Low", "Weidmuller"], "estMinutes": 1, "derivedFrom": ["electrical-03-d1"], "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R716", "season": "2026", "topic": "her Weidmuller CAN terminaline yalnızca tek bir kablo sokulur"}]}, {"id": "electrical-03-c2", "rung": "mechanism", "index": 2, "of": 3, "label": "CAN BUS", "front": "PDH zincirin ortasına alınırsa sonlandırmaya ne olur?", "back": "Sonlandırma dirençleri hattın iki ucunda bulunmak zorundadır ve toplam iki adettir. Bunlardan biri roboRIO içinde hazır gelir; PDH'te sonlandırma cihaz üzerinden yapılandırılır ve PDH zincirin sonundaysa etkin bırakılır. PDH ortaya alındığında kendi sonlandırması artık bir uçta değil, hattın ortasında kalır. Bu yüzden cihaz üzerinden devre dışı bırakılır ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılır. Belirleyici olan cihazın kimliği değil, hattaki konumudur.", "takeaway": "Direnç cihaza değil, hattın ucuna aittir", "tags": ["terminating resistor", "sonlandırma", "120 Ω"], "estMinutes": 2, "derivedFrom": ["electrical-03-d2", "electrical-03-d3"], "seasonSensitive": true, "imageRef": null, "ruleRefs": []}, {"id": "electrical-03-c3", "rung": "pit", "index": 3, "of": 3, "label": "CAN BUS", "front": "Maçın ortasında iki mekanizma birden sustu, pit'te her şey normal. Nereye bakarsınız?", "back": "İki cihazın aynı anda düşmesi ve arızanın kendiliğinden geçmesi ayar ya da kod sorununa işaret etmez: yanlış bir CAN ID veya bir kod hatası maçın ortasında ortaya çıkmaz ve kendiliğinden düzelmez. Daisy chain seri bir hat olduğu için titreşimle gevşeyen tek bir kablo, o noktadan sonraki her cihazı aynı anda hattan düşürür; robot durduğunda bağlantı yeniden oturur ve pit'te arıza tekrarlanmaz. Bu yüzden önce, hâlâ çalışan cihazlardan sonra gelen ilk CAN bağlantısına bakılır.", "takeaway": "Aynı anda düşen cihazlar mekanik bir bağlantıyı işaret eder, ayarı değil", "tags": ["teşhis", "titreşim", "daisy chain"], "estMinutes": 2, "derivedFrom": ["electrical-03-d8", "electrical-03-d5"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}], "drills": [{"id": "electrical-03-d1", "type": "find_the_fault", "prompt": "Aşağıdaki kurulumda kurallara aykırı olan tek öğeyi seçiniz.", "scenario": "Bir takım CAN zincirini kurmuş ve kontrol için size gösteriyor. Kurulumun öğeleri aşağıda listelenmiştir.", "elements": ["Zincir roboRIO'nun CAN portundan başlıyor ve PDH'te bitiyor.", "Her cihazda sarı kablo CAN-High, yeşil kablo CAN-Low terminaline bağlanmış.", "İki motor controller'a giden kablolar, ara bir noktada tek bir Weidmuller terminaline birlikte sokulmuş.", "PDH zincirin son cihazı ve sonlandırması cihaz üzerinden etkin bırakılmış.", "roboRIO ile PDH arasındaki diğer CAN cihazları zincire sırayla eklenmiş."], "faultIndex": 2, "explanation": "Kural, her Weidmuller CAN terminaline yalnızca tek bir kablo sokulmasını ister. İki kabloyu aynı terminale sıkıştırmak her iki bağlantıyı da güvenilmez hâle getirir: terminalin yayı tek bir iletken için tasarlanmıştır ve iki kablodan biri zamanla gevşer. Zincir seri bir hat olduğu için o noktada oluşan bir kopukluk yalnızca o cihazı değil, kendisinden sonraki tüm cihazları da hattan düşürür. Doğru çözüm zinciri o cihazın giriş ve çıkış terminal çiftlerinden geçirmektir. Diğer dört öğe doğrudur.", "hint": "Öğeleri tek tek okuyun ve bir terminale kaç kablo girebileceğini sorun.", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R716", "season": "2026", "topic": "her Weidmuller CAN terminaline yalnızca tek kablo"}], "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf", "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı. Zincir topolojisi ve kablo renkleri: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"}, {"id": "electrical-03-d2", "type": "multiple_choice", "prompt": "Takım, PDH'i CAN zincirinin ortasına almak ve üzerindeki iki connector çiftini de kullanmak istiyor. PDH'in sonlandırması şu anda etkin. Ne yapılmalıdır?", "options": ["PDH'in sonlandırması devre dışı bırakılmalı ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılmalıdır.", "Sonlandırma etkin kalmalıdır; PDH zincirin neresinde olursa olsun hattı sonlandırmaya devam eder.", "Sonlandırma devre dışı bırakılmalıdır; hattın diğer ucundaki roboRIO direnci tek başına yeterlidir.", "PDH zincirin ortasına alınamaz; iki connector çifti olsa bile son cihaz olmak zorundadır."], "correctIndex": 0, "explanation": "Terminating resistor'lar hattın iki ucunda bulunmak zorundadır. PDH ortaya alındığında kendi sonlandırması artık bir uçta değil, hattın ortasında kalır; bu nedenle cihaz üzerinden devre dışı bırakılır ve zincirin gerçek ucuna ayrı bir 120 Ω direnç takılır. Üçüncü şık yanlıştır çünkü hat tek uçtan sonlandırılamaz; iki uç da gerekir. Dördüncü şık da yanlıştır: dokümantasyon power distribution device'ı zincirin son cihazı olarak bırakmayı önerir, ancak ortaya alınması durumunda ne yapılacağını açıkça tarif eder. Öneri ile zorunluluk aynı şey değildir.", "hint": "Dirençler hattın neresinde olmak zorunda? PDH ortaya alınınca kendi sonlandırması nerede kalıyor?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html", "sourceNote": "PDH'te sonlandırmanın cihaz üzerinden yapılandırıldığı REV dokümantasyonundan doğrulandı: https://docs.revrobotics.com/ion-control/pdh/overview — \"Configurable CAN termination on device\". Kaynaklar sonlandırmanın cihaz üzerinde hangi arayüzle açılıp kapatıldığını belirtmiyor, bu nedenle metin o ayrıntıya girmiyor."}, {"id": "electrical-03-d3", "type": "numeric", "prompt": "Bir robotta CAN zinciri roboRIO'da başlıyor, sırayla altı cihazdan geçiyor ve PDH'te bitiyor. Doğru kurulmuş bir hatta kaç adet terminating resistor etkin olmalıdır? Cevabınızı yalnızca sayı olarak yazınız.", "answer": 2, "tolerance": 0, "unit": "adet", "explanation": "CAN hattı iki ucundan sonlandırılır; toplam iki adet 120 Ω direnç etkin olur. Bu örnekte uçlardan biri roboRIO'dur ve direnci dahilidir, diğeri PDH'tir ve sonlandırma cihaz üzerinden yapılandırılır. Aradaki altı cihazda sonlandırma etkinleştirilmez. Cevap cihaz sayısına değil, hattın uç sayısına bağlıdır: zincire cihaz eklemek bu sayıyı değiştirmez.", "hint": "Direnç sayısı cihaz sayısına mı, yoksa hattın uç sayısına mı bağlı?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html", "sourceNote": "PDH'in sonlandırmasının cihaz üzerinden yapılandırıldığı bilgisi: https://docs.revrobotics.com/ion-control/pdh/overview"}, {"id": "electrical-03-d4", "type": "multiple_choice", "prompt": "Takım dört yeni SPARK MAX taktı ve hiçbirinin ayarını değiştirmeden robotu çalıştırdı. Bu kurulumun sorunu nedir?", "options": ["SPARK MAX cihazlarının CAN ID'si yoktur; adresleme zincirdeki sıraya göre otomatik yapılır.", "Dördü de kutudan 0 CAN ID'si ile çıkar; aynı hatta aynı tipteki her cihazın benzersiz bir CAN ID'si olması gerekir.", "Sorun yoktur; CAN ID'leri yalnızca zincirde beşten fazla cihaz varsa değiştirilir.", "Dördünün de ID'si aynı olmalıdır; CAN ID cihazın markasını ve tipini belirtir."], "correctIndex": 1, "explanation": "SPARK MAX kutudan 0 device ID'si ile çıkar ve üretici hattaki her cihaza benzersiz bir CAN ID atanmasını ister; kullanılabilir aralık 1-62'dir. ID'ler cihaz bir Windows bilgisayara bağlanarak REV Hardware Client ile değiştirilir. Protokol tarafında device number altı bitlik bir alandır ve aynı cihaz tipi içinde benzersiz olmak zorundadır; bu nedenle aynı tipteki dört SPARK MAX aynı numarayı paylaşamaz. Adresleme zincirdeki fiziksel sıraya göre otomatik yapılmaz; cihazın konumu ile ID'si arasında bir bağ yoktur.", "hint": "Kutudan çıkan iki cihazın ID'si birbirinden farklı mı? Farklı değilse hat onları nasıl ayırt eder?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.revrobotics.com/brushless/spark-max/control-interfaces", "sourceNote": "Device number'ın altı bitlik olduğu ve cihaz tipi içinde benzersiz olması gerektiği: https://docs.wpilib.org/en/stable/docs/software/can-devices/can-addressing.html"}, {"id": "electrical-03-d5", "type": "diagnose", "symptom": "CAN zinciri roboRIO'dan başlıyor ve şu sırayla ilerliyor: SPARK MAX 1, SPARK MAX 2, SPARK MAX 3, SPARK MAX 4, PH, PDH. Robot açıldığında SPARK MAX 1, 2 ve 3 haberleşiyor; SPARK MAX 4, PH ve PDH hiç görünmüyor. Tüm cihazların besleme bağlantıları sağlam ve LED'leri güç aldıklarını gösteriyor.", "prompt": "Arıza büyük olasılıkla nerededir?", "options": ["SPARK MAX 4'ün CAN ID'si yanlış ayarlanmıştır.", "PDH'in sonlandırması cihaz üzerinden devre dışı bırakılmış olarak kalmıştır.", "SPARK MAX 3 ile SPARK MAX 4 arasındaki CAN bağlantısında kopukluk vardır.", "roboRIO'nun CAN portu arızalıdır."], "correctIndex": 2, "explanation": "Daisy chain seri bir hattır: bir noktada oluşan kopukluk hattı ikiye böler. Kopukluktan önceki cihazlar roboRIO ile haberleşmeye devam eder, sonrasındaki her şey hattan düşer. Burada çalışanlar ile çalışmayanlar tam olarak SPARK MAX 3 ile SPARK MAX 4 arasında ayrılmaktadır; arıza bu segmenttedir. Birinci şık elenir çünkü yanlış bir CAN ID yalnızca o cihazı etkiler, PH ve PDH'i de hattan düşürmez. Dördüncü şık elenir çünkü roboRIO'nun portu arızalı olsaydı hiçbir cihaz haberleşmezdi. LED'lerin yanıyor olması arızanın besleme tarafında değil, CAN kablo çiftinde olduğunu gösterir.", "hint": "Çalışan cihazlar ile çalışmayanlar zincirde hangi noktada ayrılıyor?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"}, {"id": "electrical-03-d6", "type": "multiple_choice", "prompt": "Takım, CAN trafiğini bölmek için CTR Electronics CANivore USB-to-CAN adaptörünü ekliyor ve PH'i bu yeni CAN hattına taşımayı planlıyor. Bu plan uygun mudur?", "options": ["Uygundur. Kurallar ek CAN hatları eklemeye izin verir ve her cihaz bu hatlara taşınabilir.", "Uygundur. PH yalnızca pnömatik sistemi kontrol ettiği için hangi CAN hattına bağlandığı serbesttir.", "Uygun değildir. CANivore gibi USB-to-CAN adaptörleri robot üzerinde hiçbir şekilde kullanılamaz.", "Uygun değildir. Kurallar ek CAN hattı eklemeye izin verir, ancak PH'in roboRIO'nun dahili CAN hattı üzerinden kontrol edilmesi zorunludur."], "correctIndex": 3, "explanation": "Kurallar CANivore adaptörü ile roboRIO'ya ek CAN hatları eklenmesine adıyla izin verir. Ancak PCM, PH ve Servo Hub için ayrı bir madde vardır: bu cihazların sinyal girişleri roboRIO'dan gelmeli ve roboRIO'nun dahili CAN hattı üzerinden taşınmalıdır. Motor controller'lar için böyle bir kısıt yoktur; onlar ek hatta taşınabilir. Üçüncü şık yanlıştır çünkü adaptör açıkça izin verilen cihazlar arasında sayılmıştır. Bu ayrım, CAN yükünü bölmek isteyen takımların planını doğrudan etkiler: bölme yapılabilir, ancak pnömatik kontrol birimleri dahili hatta kalmak zorundadır.", "hint": "Ek CAN hattı eklemek serbest mi? Serbestse, her cihaz o hatta taşınabilir mi?", "difficulty": "stretch", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R715", "season": "2026", "topic": "PCM, PH ve Servo Hub roboRIO'nun dahili CAN hattından kontrol edilir"}, {"rule": "R717", "season": "2026", "topic": "CANivore ile ek CAN hattı eklenebilir"}], "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf", "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."}, {"id": "electrical-03-d7", "type": "find_the_fault", "prompt": "Aşağıdaki dört uygulamadan üçü kurallara uygundur. Uygun olmayanı seçiniz.", "scenario": "Bir takım CAN hattını yeniden düzenlemiş ve yaptığı değişiklikleri aşağıdaki gibi anlatıyor.", "elements": ["Motor controller'lar, yalnızca pasif iletkenlerden oluşan bir dağıtım bloğu üzerinden star biçiminde bağlanmış.", "roboRIO ile motor controller'lar arasına, sinyali tazelediği söylenen aktif bir CAN tekrarlayıcı kart yerleştirilmiş.", "CAN kabloları 22 AWG kesitinde; sinyal seviyesi devreler için istenen minimum kalınlığın üzerinde.", "PH, roboRIO'nun dahili CAN hattı üzerinden kontrol ediliyor."], "faultIndex": 1, "explanation": "Kural, roboRIO ile PCM/PH'ler ve CAN motor controller'lar arasındaki haberleşmeyi değiştiren, engelleyen veya buna karışan hiçbir cihaza izin vermez. Hattın üzerine yerleştirilen aktif bir tekrarlayıcı kart tam olarak bu tanıma girer. Buna karşılık yalnızca pasif iletkenlerden oluşan star veya hub düzenleri kurallarca açıkça izinlidir: daisy chain önerilen topolojidir, tek izinli topoloji değildir. Bu ayrım sık karıştırılır. Üçüncü öğe de doğrudur; sinyal seviyesi devreler için istenen minimum 28 AWG'dir ve 22 AWG bundan daha kalındır. Dördüncü öğe pnömatik kontrol birimleri için konan zorunluluğa uygundur.", "hint": "Hangi öğe hattın üzerine, sinyale müdahale eden bir şey koyuyor? Pasif bir blok ile aktif bir kart aynı şey midir?", "difficulty": "stretch", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R716", "season": "2026", "topic": "haberleşmeyi değiştiren veya engelleyen cihaz kullanılamaz"}, {"rule": "R714", "season": "2026", "topic": "çeldirici: yalnızca pasif iletkenlerle kurulan star düzenlerine izin verilir"}, {"rule": "R622", "season": "2026", "topic": "çeldirici: sinyal seviyesi devreler için minimum 28 AWG"}, {"rule": "R715", "season": "2026", "topic": "çeldirici: PH dahili CAN hattından kontrol edilir"}], "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf", "sourceNote": "Kural metni https://www.frcmanual.com/2026/robot-construction-rules-(r) üzerinden doğrulandı; resmi PDF'in 8. bölümü yazım anında makine tarafından okunamıyordu."}, {"id": "electrical-03-d8", "type": "diagnose", "symptom": "Maçın ortasında intake ve shooter aynı anda yanıt vermeyi bıraktı. Drivetrain ve roboRIO maç boyunca normal çalıştı ve driver station bağlantısı kesilmedi. Maçtan sonra pit'te robot yeniden çalıştırıldığında her şey normaldi ve arıza tekrarlanmadı. CAN zincirinde intake ve shooter motor controller'ları, drivetrain motor controller'larından sonra geliyor.", "prompt": "İlk olarak neyi kontrol edersiniz?", "options": ["Zincirde drivetrain cihazlarından sonra gelen ilk CAN bağlantısını; titreşimle gevşeyen bir kablo o noktadan sonrasını hattan düşürür.", "Intake ve shooter motor controller'larının CAN ID ayarlarını.", "Battery'nin şarj durumunu ve maç sonundaki gerilimini.", "Intake ve shooter kodunu; büyük olasılıkla bir yazılım hatası vardır."], "correctIndex": 0, "explanation": "İki cihazın aynı anda düşmesi ve arızanın kendiliğinden geçmesi, ayar veya kod sorununa değil mekanik bir bağlantı sorununa işaret eder: yanlış bir CAN ID veya bir kod hatası maçın ortasında ortaya çıkmaz ve kendiliğinden düzelmez. Daisy chain seri bir hat olduğu için tek bir gevşek iletken kendisinden sonraki her şeyi hattan düşürür ve düşen grup tam olarak zincirin o noktadan sonraki kısmıdır. Drivetrain'in etkilenmemesi, arızanın drivetrain cihazlarından sonraki bir noktada olduğunu söyler. Battery zayıflasaydı roboRIO ve drivetrain de etkilenirdi. WPILib'in kablolama önerileri tam bu nedenle her bağlantının çekilerek denenmesini ve kabloların bağlantı noktalarına yakın, gerilim oluşturmayacak şekilde sabitlenmesini ister.", "hint": "İki cihaz aynı anda düştü ve kendiliğinden geri geldi. Bu, ayar sorunu ile mekanik sorun arasında hangisine işaret eder?", "difficulty": "pit", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/wiring-best-practices.html", "sourceNote": "Zincirin seri yapısı ve kopukluğun etkisi: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/can-wiring-basics.html"}], "videoRefs": [{"provider": "youtube", "id": "SfkmyN9mYLA", "start": 39, "label": "Yaylı terminale kablo nasıl sokulur", "title": "Handling - PCB Terminal LSF-SMT 3.50 / 5.00 / 7.50", "channel": "Weidmüller", "lang": "en", "note": "WPILib'in Introduction to FRC Robot Wiring sayfasında 39. saniyeden başlatılarak gömülü olan üretici videosu. Yaylı terminale kablonun nasıl sokulup çıkarıldığını gösterir.", "source": "https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-1/intro-to-frc-robot-wiring.html", "verifiedOn": "2026-09-12"}]};
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+const T={flip:"dokun ve çevir"};
+
+/* ---- shared component art: schematic, not photoreal ---- */
+const WP="var(--w-pos)", WN="var(--w-neg)", BX="var(--dia-fill)", ED="var(--dia-edge)",
+      IK="var(--dia-ink)", MU="var(--dia-mute)", PDC="var(--dia-pd)", BAND="var(--dia-band)";
+const t=(x,y,s,sz,c,an,w)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Sans,sans-serif" font-weight="${w||600}">${s}</text>`;
+const m=(x,y,s,sz,c,an)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Mono,monospace" font-weight="500">${s}</text>`;
+const wire=(d,c,w)=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+/* each part is drawn once and reused by both the example and the tray */
+const ART={
+ battery:(x,y)=>`<g>
+   <rect x="${x+14}" y="${y}" width="20" height="13" rx="3" fill="${WP}"/>
+   <rect x="${x+126}" y="${y}" width="20" height="13" rx="3" fill="${WN}"/>
+   <rect x="${x}" y="${y+11}" width="160" height="86" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+12}" y="${y+24}" width="136" height="3" rx="1.5" fill="${ED}"/>
+   ${t(x+80,y+56,"battery",14,IK)}${m(x+80,y+76,"12V · 18Ah",11,MU)}
+   ${m(x+24,y+9,"+",12,BX)}${m(x+136,y+9,"−",12,BX)}</g>`,
+ breaker:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="118" height="92" rx="10" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+38}" y="${y+22}" width="42" height="30" rx="6" fill="${WP}"/>
+   <circle cx="${x+59}" cy="${y+37}" r="5" fill="${BX}"/>
+   ${m(x+59,y+72,"120A",11.5,IK)}
+   <rect x="${x-7}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/>
+   <rect x="${x+116}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/></g>`,
+ pd:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="168" height="340" rx="11" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   ${t(x+84,y+30,"PD",16,IK)}${m(x+84,y+48,"güç dağıtımı",10.5,MU)}
+   <rect x="${x-8}" y="${y+52}" width="11" height="16" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+234}" width="11" height="16" rx="2" fill="${WN}"/>
+   ${m(x+15,y+65,"+",12,IK,"start")}${m(x+15,y+247,"−",12,IK,"start")}
+   <g>
+     <rect x="${x+96}" y="${y+55}"  width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+134}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+217}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+295}" width="60" height="24" rx="5" fill="${PDC}"/>
+   </g>
+   ${m(x+126,y+71,"10A",10.5,BX)}${m(x+126,y+150,"10A",10.5,BX)}
+   ${m(x+126,y+233,"40A",10.5,BX)}${m(x+126,y+311,"40A",10.5,BX)}
+   ${m(x+42,y+327,"kanallar",9.5,MU)}</g>`,
+ rio:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <g fill="${ED}"><rect x="${x+12}" y="${y+44}" width="14" height="6" rx="2"/>
+   <rect x="${x+32}" y="${y+44}" width="14" height="6" rx="2"/><rect x="${x+52}" y="${y+44}" width="14" height="6" rx="2"/></g>
+   <circle cx="${x+130}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+28,"roboRIO",13,IK)}${m(x+73,y+41,"beyin",9.5,MU)}</g>`,
+ radio:(x,y)=>`<g>
+   <rect x="${x+22}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x+118}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x}" y="${y}" width="146" height="48" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+24,"radio",13,IK)}${m(x+73,y+38,"kablosuz bağlantı",9.5,MU)}</g>`,
+ vrm:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="52" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   <rect x="${x+30}" y="${y-7}" width="10" height="8" rx="2" fill="${WP}"/>
+   <rect x="${x+46}" y="${y-7}" width="10" height="8" rx="2" fill="${WN}"/>
+   <rect x="${x+104}" y="${y+13}" width="30" height="9" rx="3" fill="${PDC}"/>
+   <rect x="${x+104}" y="${y+30}" width="30" height="9" rx="3" fill="${PDC}"/>
+   ${t(x+58,y+26,"VRM",13,IK)}${m(x+58,y+41,"12V regülatör",9,MU)}</g>`,
+ talon:(x,y,sub)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="62" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+24}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+34}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+30,"V+",8.5,MU,"start")}${m(x+13,y+41,"V−",8.5,MU,"start")}
+   ${t(x+84,y+28,"Talon FX",12.5,IK)}${m(x+84,y+43,sub,9,MU)}
+   ${m(x+84,y+56,"motor controller",8.5,MU)}</g>`,
+ mc:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+27,"V+",8.5,MU,"start")}${m(x+13,y+40,"V−",8.5,MU,"start")}
+   ${t(x+82,y+30,"motor controller",11.5,IK)}${m(x+82,y+45,"motoru sürer",9,MU)}</g>`
+};
+/* ---- modül 3 ek parçaları: CAN hattı ---- */
+const CH="var(--can-h)", CL="var(--can-l)";
+ART.spark=(x,y,id)=>`<g>
+   <rect x="${x}" y="${y}" width="170" height="64" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+15}" r="4" fill="${PDC}"/>
+   ${t(x+92,y+28,"SPARK MAX",12.5,IK)}${m(x+92,y+43,"motor controller",9,MU)}
+   ${id?`<rect x="${x+58}" y="${y+48}" width="68" height="17" rx="4" fill="${PDC}"/>`+
+        m(x+92,y+60,"CAN ID "+id,9.5,BX):""}</g>`;
+ART.pdh=(x,y,term)=>`<g>
+   <rect x="${x}" y="${y}" width="170" height="64" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   ${t(x+86,y+26,"PDH",13,IK)}${m(x+86,y+40,"power distribution",9,MU)}
+   <rect x="${x+18}" y="${y+46}" width="134" height="17" rx="4" fill="${term==="ON"?PDC:BX}"
+     stroke="${PDC}" stroke-width="1.4"/>
+   ${m(x+85,y+58,term==="ON"?"sonlandırma etkin":"sonlandırma kapalı",9,term==="ON"?BX:PDC)}</g>`;
+ART.ph=(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="170" height="60" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   ${t(x+92,y+28,"PH",13,IK)}${m(x+92,y+44,"pnömatik kontrol",9,MU)}</g>`;
+ART.res=(x,y,lab)=>`<g>
+   <rect x="${x}" y="${y}" width="78" height="30" rx="5" fill="${BX}" stroke="${PDC}" stroke-width="2"/>
+   <path d="M${x+9} ${y+15} l6 -7 l6 14 l6 -14 l6 14 l6 -7" fill="none" stroke="${PDC}"
+     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+   ${m(x+58,y+19,lab||"120 Ω",9.5,IK)}</g>`;
+ART.term=(x,y,two)=>`<g>
+   <rect x="${x}" y="${y}" width="34" height="40" rx="5" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+7}" y="${y+8}" width="20" height="9" rx="2" fill="${ED}"/>
+   <rect x="${x+7}" y="${y+23}" width="20" height="9" rx="2" fill="${ED}"/>
+   ${two?`<rect x="${x-16}" y="${y+8}" width="18" height="4" rx="2" fill="${CH}"/>
+     <rect x="${x-16}" y="${y+14}" width="18" height="4" rx="2" fill="${CH}"/>`
+    :`<rect x="${x-16}" y="${y+10}" width="18" height="5" rx="2.5" fill="${CH}"/>`}
+   <rect x="${x-16}" y="${y+25}" width="18" height="5" rx="2.5" fill="${CL}"/></g>`;
+ART.spark0=(x,y)=>ART.spark(x,y,"0");
+ART.spark1=(x,y)=>ART.spark(x,y,"1");
+ART.spark2=(x,y)=>ART.spark(x,y,"2");
+ART.spark3=(x,y)=>ART.spark(x,y,"3");
+ART.spark4=(x,y)=>ART.spark(x,y,"4");
+ART.pdhOn=(x,y)=>ART.pdh(x,y,"ON");
+ART.pdhOff=(x,y)=>ART.pdh(x,y,"OFF");
+ART.res120=(x,y)=>ART.res(x,y,"120 Ω");
+
+const hint=(x,y,s,anchor)=>`<g><circle cx="${x-9}" cy="${y-4}" r="2.6" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y}" font-size="11" fill="${MU}" text-anchor="${anchor||"start"}" font-family="IBM Plex Sans,sans-serif">${s}</text></g>`;
+const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y+4.5}" font-size="12.5" fill="#fff" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600">${n}</text>`;
+/* ---- figure library: her biri tek bir fikri hatırlatmak için ---- */
+const NO="var(--no)", OKC="var(--ok)";
+const nb=(x,y,w,h,title,sub,fill)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+  fill="${fill||BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(x+w/2,y+(sub?h/2-1:h/2+5),title,13,IK)+(sub?m(x+w/2,y+h/2+15,sub,10,MU):"");
+const chip=(x,y,w,s,col)=>`<rect x="${x}" y="${y}" width="${w}" height="22" rx="5" fill="${col||PDC}"/>`+
+  m(x+w/2,y+15,s,10.5,BX);
+const cross=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${NO}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.5} ${y-r*0.5} L${x+r*0.5} ${y+r*0.5} M${x+r*0.5} ${y-r*0.5} L${x-r*0.5} ${y+r*0.5}"
+   stroke="${NO}" stroke-width="2.6" stroke-linecap="round"/>`;
+const tick=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${OKC}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.45} ${y} L${x-r*0.08} ${y+r*0.4} L${x+r*0.5} ${y-r*0.42}"
+   fill="none" stroke="${OKC}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+const svg=(w,h,inner,label)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
+
+const FIG={};
+
+/* ---- modül 3 görselleri ---- */
+const mb=(x,y,w,h,title,col)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"
+  fill="${BX}" stroke="${col||ED}" stroke-width="2"/>`+t(x+w/2,y+h/2+5,title,14,IK);
+const pair=(x1,x2,y,w)=>wire(`M${x1} ${y-6} H${x2}`,CH,w||5)+wire(`M${x1} ${y+6} H${x2}`,CL,w||5);
+
+FIG.chainTopo=()=>svg(640,270,
+  m(20,24,"DAISY CHAIN · önerilen",11.5,OKC,"start")+tick(612,20,10)+
+  pair(112,148,58)+pair(240,276,58)+pair(368,404,58)+
+  nb(20,36,92,44,"roboRIO")+nb(148,36,92,44,"cihaz")+nb(276,36,92,44,"cihaz")+nb(404,36,92,44,"PDH")+
+  `<line x1="20" y1="98" x2="620" y2="98" stroke="${ED}" stroke-width="1"/>`+
+  m(20,124,"STAR · yalnızca pasif iletkenlerle",11.5,OKC,"start")+tick(612,120,10)+
+  nb(20,136,92,44,"roboRIO")+nb(148,136,104,44,"pasif blok")+
+  pair(112,148,158)+
+  wire("M252 158 H278 V136 H316",CH,4)+wire("M252 164 H272 V142 H316",CL,4)+
+  wire("M252 158 H278 V194 H316",CH,4)+wire("M252 164 H272 V200 H316",CL,4)+
+  nb(316,116,92,40,"cihaz")+nb(316,176,92,40,"cihaz")+
+  `<line x1="20" y1="216" x2="620" y2="216" stroke="${ED}" stroke-width="1"/>`+
+  m(20,242,"HAT ÜZERİNDE AKTİF CİHAZ",11.5,NO,"start")+
+  nb(280,224,180,38,"aktif tekrarlayıcı")+cross(492,243,13)+
+  m(560,248,"yasak",11,NO,"start"),
+  "İzin verilen ve yasak CAN düzenleri");
+
+FIG.termination=()=>svg(640,296,
+  m(20,24,"PDH ZİNCİRİN SONUNDA",11.5,OKC,"start")+tick(612,20,10)+
+  pair(112,160,58)+pair(252,300,58)+
+  nb(20,36,92,44,"roboRIO")+nb(160,36,92,44,"cihaz")+nb(300,36,92,44,"PDH")+
+  ART.res(20,88,"120 Ω")+ART.res(314,88,"120 Ω")+
+  m(430,107,"iki uçta ikişer değil, toplam iki adet",11,MU,"start")+
+  m(414,60,"sonlandırma etkin kalır",11,IK,"start")+
+  `<line x1="20" y1="134" x2="620" y2="134" stroke="${ED}" stroke-width="1"/>`+
+  m(20,160,"PDH ORTAYA ALINIRSA",11.5,PDC,"start")+
+  pair(112,160,196)+pair(252,300,196)+pair(392,440,196)+
+  nb(20,174,92,44,"roboRIO")+nb(160,174,92,44,"PDH")+nb(300,174,92,44,"cihaz")+nb(440,174,92,44,"cihaz")+
+  m(206,236,"sonlandırma kapalı",10.5,NO)+
+  ART.res(20,226,"120 Ω")+ART.res(454,226,"120 Ω")+
+  m(540,248,"ayrı direnç",10.5,IK,"start")+
+  m(320,288,"direnç hattın ucunda kalmalı; PDH ortaya alınınca kendi sonlandırması artık uçta değildir",11.5,MU),
+  "Sonlandırma hattın iki ucundadır");
+
+FIG.breakSplit=()=>svg(640,216,
+  pair(112,160,58)+pair(252,300,58)+pair(392,440,58)+pair(532,580,58)+
+  nb(20,36,92,44,"roboRIO")+nb(160,36,92,44,"SM 1")+nb(300,36,92,44,"SM 2")+
+  nb(440,36,92,44,"SM 3")+nb(580,36,40,44,"...")+
+  cross(416,58,14)+
+  m(206,104,"haberleşiyor",11,OKC)+
+  `<path d="M20 92 H392" fill="none" stroke="${OKC}" stroke-width="2.4"/>`+
+  `<path d="M440 92 H620" fill="none" stroke="${NO}" stroke-width="2.4" stroke-dasharray="6 5"/>`+
+  m(530,104,"hattan düştü",11,NO)+
+  m(320,152,"kopukluktan önceki cihazlar çalışmaya devam eder",12,IK)+
+  m(320,174,"sonraki her cihaz aynı anda kaybolur",12,NO)+
+  m(320,202,"çalışan ile çalışmayan arasındaki sınır, kopukluğun yeridir",12,MU),
+  "Zincirdeki kopukluk hattı ikiye böler");
+
+FIG.canIds=()=>svg(640,258,
+  m(20,26,"KUTUDAN ÇIKTIĞI GİBİ",11.5,NO,"start")+
+  nb(20,40,132,44,"SPARK MAX")+nb(168,40,132,44,"SPARK MAX")+
+  nb(316,40,132,44,"SPARK MAX")+nb(464,40,132,44,"SPARK MAX")+
+  m(86,102,"ID 0",11,NO)+m(234,102,"ID 0",11,NO)+m(382,102,"ID 0",11,NO)+m(530,102,"ID 0",11,NO)+
+  cross(612,62,13)+
+  `<line x1="20" y1="122" x2="620" y2="122" stroke="${ED}" stroke-width="1"/>`+
+  m(20,148,"AYARLANDIKTAN SONRA",11.5,OKC,"start")+
+  nb(20,162,132,44,"SPARK MAX")+nb(168,162,132,44,"SPARK MAX")+
+  nb(316,162,132,44,"SPARK MAX")+nb(464,162,132,44,"SPARK MAX")+
+  m(86,224,"ID 1",11,OKC)+m(234,224,"ID 2",11,OKC)+m(382,224,"ID 3",11,OKC)+m(530,224,"ID 4",11,OKC)+
+  tick(612,184,13)+
+  m(320,252,"kullanılabilir aralık 1-62",11.5,MU),
+  "Her cihazın benzersiz CAN ID'si olur");
+
+FIG.oneWire=()=>svg(640,272,
+  m(20,26,"WEIDMULLER TERMİNAL",11.5,PDC,"start")+
+  m(20,48,"Yaylı, vidasız kablo terminali. Kablo vidayla sıkılmaz;",12,IK,"start")+
+  m(20,68,"terminalin içindeki yay iletkeni yerinde tutar.",12,IK,"start")+
+  `<line x1="20" y1="88" x2="620" y2="88" stroke="${ED}" stroke-width="1"/>`+
+  ART.term(140,106)+tick(112,126,12)+
+  m(230,132,"her terminale tek kablo",12.5,IK,"start")+
+  `<line x1="20" y1="176" x2="620" y2="176" stroke="${ED}" stroke-width="1"/>`+
+  ART.term(140,194,true)+cross(112,214,12)+
+  m(230,214,"aynı terminale iki kablo",12.5,NO,"start")+
+  m(230,236,"yay tek iletken için tasarlanmıştır",11.5,MU,"start")+
+  m(230,256,"iki kablodan biri zamanla gevşer ve hattı böler",11.5,MU,"start"),
+  "Weidmuller terminaline tek kablo girer");
+
+FIG.extraBus=()=>svg(640,236,
+  m(20,26,"roboRIO DAHİLİ CAN HATTI",11,PDC,"start")+
+  nb(20,40,100,44,"roboRIO")+pair(120,168,62)+
+  nb(168,40,120,44,"PCM · PH")+nb(304,40,132,44,"Servo Hub")+
+  pair(288,304,62)+
+  m(452,68,"bu hatta kalır",11,IK,"start")+tick(600,62,11)+
+  `<line x1="20" y1="104" x2="620" y2="104" stroke="${ED}" stroke-width="1"/>`+
+  m(20,130,"CANivore İLE EK CAN HATTI",11,PDC,"start")+
+  nb(20,144,100,44,"roboRIO")+pair(120,180,166)+nb(180,144,124,44,"CANivore")+
+  pair(304,364,166)+nb(364,144,180,44,"motor controller")+
+  tick(600,166,11)+
+  m(320,212,"ek hat serbesttir; ancak PCM, PH ve Servo Hub roboRIO'nun dahili hattında kalır",11.5,MU)+
+  m(320,232,"motor controller'lar için böyle bir zorunluluk yoktur",11.5,MU),
+  "Ek CAN hattı ve dahili hatta kalması gerekenler");
+
+/* kart yüzleri için sade sürümler */
+FIG.chainMini=()=>svg(400,142,
+  pair(72,104,50,4)+pair(176,208,50,4)+pair(280,312,50,4)+
+  mb(8,30,64,40,"RIO")+mb(104,30,72,40,"cihaz")+mb(208,30,72,40,"cihaz")+mb(312,30,80,40,"PDH")+
+  m(200,92,"hat her cihaza girer ve çıkar",12,IK)+
+  m(200,112,"sarı CAN-High · yeşil CAN-Low",11.5,MU)+
+  m(200,134,"tek bir seri hat",11.5,PDC),
+  "Daisy chain");
+
+FIG.termMini=()=>svg(400,168,
+  pair(88,136,54,4)+pair(200,248,54,4)+
+  mb(8,34,80,40,"RIO")+mb(136,34,64,40,"cihaz")+mb(248,34,80,40,"PDH")+
+  ART.res(8,86,"120 Ω")+ART.res(250,86,"120 Ω")+
+  m(200,136,"yalnızca iki uçta",11.5,PDC)+
+  m(200,158,"PDH ortaya alınırsa sonlandırma kapatılır, uca ayrı direnç",11.5,MU),
+  "Sonlandırma iki uçta");
+
+FIG.breakMini=()=>svg(400,146,
+  pair(72,104,50,4)+pair(176,208,50,4)+pair(280,312,50,4)+
+  mb(8,30,64,40,"RIO")+mb(104,30,72,40,"SM 1")+mb(208,30,72,40,"SM 2")+mb(312,30,80,40,"SM 3")+
+  cross(192,50,13)+
+  `<path d="M8 82 H176" fill="none" stroke="${OKC}" stroke-width="2.4"/>`+
+  `<path d="M208 82 H392" fill="none" stroke="${NO}" stroke-width="2.4" stroke-dasharray="6 5"/>`+
+  m(92,100,"çalışıyor",11,OKC)+m(300,100,"düştü",11,NO)+
+  m(200,134,"sınır, kopukluğun yeridir",12,IK),
+  "Kopukluk hattı ikiye böler");
+
+
+
+
+
+$("#mt").textContent=D.title; $("#ms").textContent=D.summary;
+[["Sezon",D.season],["Drill",D.drills.length],["Kart",D.cards.length],
+ ["Süre",D.estimatedMinutes+" dk"],["Doğrulama",D.verifiedOn]]
+ .forEach(([k,v])=>{const c=el("span","chip");c.append(k+" ",Object.assign(el("b"),{textContent:v}));$("#mm").append(c);});
+const figure=(html,cap,cls)=>{const d=el("div","fig"+(cls?" "+cls:""));
+  const sc=el("div","sc"); sc.innerHTML=html; d.append(sc);
+  if(cap){const c=el("p","cap");
+    c.append(Object.assign(el("b"),{textContent:"→ yana kaydırın · "}),document.createTextNode(cap));
+    d.append(c);}
+  return d;};
+D.body.split("\n\n").forEach((p,i)=>{
+  $("#body").append(el("p",null,p));
+  if(i===1) $("#body").append(figure(FIG.chainTopo(),
+    "Daisy chain önerilir, pasif star serbesttir, hat üzerindeki aktif cihaz yasaktır.","conceptfig"));
+  if(i===2) $("#body").append(figure(FIG.termination(),
+    "Sonlandırma hattın iki ucundadır; PDH'in hattaki yeri sonlandırmasını belirler.","conceptfig"));
+});
+D.keyTerms.forEach(t=>$("#terms").append(el("span","term",t.term)));
+
+const RUNG={behaviour:"davranış",mechanism:"mekanizma",pit:"sahadaki bedeli"};
+D.cards.forEach(c=>{
+  const b=el("button","flip"); b.setAttribute("aria-pressed","false");
+  const inner=el("div","inner"),f=el("div","face front"),bk=el("div","face back");
+  const mk=()=>{const h=el("div","chead");
+    h.append(el("span","rung r-"+c.rung,RUNG[c.rung]),el("span","count",c.index+" / "+c.of));return h;};
+  f.append(mk(),el("p","cfront",c.front));
+  const tg=el("div","ctags"); c.tags.forEach(t=>tg.append(el("span","tag",t)));
+  f.append(tg,el("div","hintline",T.flip+" · "+c.estMinutes+" dk"));
+  bk.append(mk(),el("p","cback",c.back));
+  const CF={"electrical-03-c1":"chainMini","electrical-03-c2":"termMini","electrical-03-c3":"breakMini"};
+  if(CF[c.id]&&FIG[CF[c.id]]){const cf=el("div","cardfig"); cf.innerHTML=FIG[CF[c.id]](); bk.append(cf);}
+  bk.append(el("div","take",c.takeaway));
+  inner.append(f,bk); b.append(inner);
+  b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+  $("#cards").append(b);
+});
+requestAnimationFrame(()=>document.querySelectorAll(".flip").forEach(b=>{
+  const f=$(".front",b),bk=$(".back",b);
+  const h=Math.max(f.offsetHeight,Math.min(bk.scrollHeight+38,660))+"px";
+  b.style.minHeight=h; $(".inner",b).style.minHeight=h; f.style.minHeight=h;
+}));
+
+[["CAN-High","var(--can-h)","sarı kablo · hattın birinci sinyali"],
+ ["CAN-Low","var(--can-l)","yeşil kablo · hattın ikinci sinyali"],
+ ["120 Ω","var(--acc)","sonlandırma direnci · yalnızca iki uçta"],
+ ["CAN ID 1-62","var(--ink)","her cihaza bir tane, hiçbiri tekrar etmez"]]
+.forEach(([g,col,use])=>{const r=el("div","grow"),bar=el("div","gbar"),i=el("i");
+  i.style.height="10px"; i.style.background=col; bar.append(i);
+  r.append(el("span","glabel",g),bar,el("span","guse",use)); $("#gauges").append(r);});
+
+const DIA = `<svg viewBox="0 0 960 792" role="img" aria-label="CAN daisy chain şeması">
+  ${wire("M186 132 H260",CH,6)}${wire("M186 148 H260",CL,6)}
+  ${wire("M430 132 H480",CH,6)}${wire("M430 148 H480",CL,6)}
+  ${wire("M650 132 H700",CH,6)}${wire("M650 148 H700",CL,6)}
+  ${wire("M870 132 H912 V372 H870",CH,6)}${wire("M870 148 H894 V388 H870",CL,6)}
+  ${wire("M700 372 H650",CH,6)}${wire("M700 388 H650",CL,6)}
+  ${wire("M480 372 H430",CH,6)}${wire("M480 388 H430",CL,6)}
+
+  ${ART.rio(40,111)}
+  ${ART.spark(260,108,"1")}
+  ${ART.spark(480,108,"2")}
+  ${ART.spark(700,108,"3")}
+  ${ART.spark(700,348,"4")}
+  ${ART.ph(480,350)}
+  ${ART.pdh(260,348,"ON")}
+
+  ${ART.res(46,196,"120 Ω")}
+  ${m(85,244,"roboRIO içinde hazır",9.5,MU)}
+  ${ART.res(306,438,"120 Ω")}
+  ${m(345,486,"PDH üzerinde yapılandırılır",9.5,MU)}
+
+  ${m(125,96,"zincirin başı",10,PDC)}
+  ${m(345,332,"zincirin sonu",10,PDC)}
+  ${m(862,262,"zincir alt sıradan devam eder",9.5,MU,"end")}
+
+  ${badge(85,274,1)}
+  ${badge(345,516,2)}
+  ${badge(345,186,3)}
+
+  <rect x="612" y="426" width="320" height="174" rx="10" fill="none" stroke="${PDC}"
+    stroke-width="1.3" stroke-dasharray="6 5"/>
+  ${m(772,448,"WEIDMULLER TERMİNAL NEDİR",9.5,PDC)}
+  ${m(772,468,"Yaylı, vidasız kablo terminali.",10.5,IK)}
+  ${m(772,484,"Kablo vidayla sıkılmaz; içindeki yay iletkeni tutar.",9,MU)}
+  ${ART.term(676,500)}${tick(636,520,11)}
+  ${ART.term(842,500,true)}${cross(802,520,11)}
+  ${m(693,558,"tek kablo",10,OKC)}${m(859,558,"iki kablo",10,NO)}
+  ${m(772,580,"yay tek iletken içindir; ikinci kablo gevşer",9,MU)}
+
+  ${hint(28,604,"Sarı kablo CAN-High, yeşil kablo CAN-Low. İkisi bütün cihazlar boyunca kesintisiz devam eder.")}
+  ${hint(28,626,"Zincir seri bir hattır: bir noktadaki kopukluk o noktadan sonraki her cihazı hattan düşürür.")}
+  ${hint(28,648,"Sonlandırma hattın iki ucundadır: biri roboRIO içinde hazır, diğeri PDH üzerinde yapılandırılır.")}
+  ${hint(28,670,"Aynı hatta aynı tipteki iki cihaz aynı CAN ID'yi kullanamaz. Kullanılabilir aralık 1-62.")}
+  ${hint(28,692,"Hat üzerine haberleşmeyi değiştiren bir cihaz konulamaz; yalnızca pasif iletkenler serbesttir.")}
+
+  <line x1="28" y1="722" x2="932" y2="722" stroke="${ED}" stroke-width="1"/>
+  ${m(28,744,"RENKLER",10,PDC,"start")}
+  <rect x="104" y="737" width="44" height="6" rx="3" fill="${CH}"/>
+  ${m(156,744,"CAN-High · sarı",10.5,MU,"start")}
+  <rect x="288" y="737" width="44" height="6" rx="3" fill="${CL}"/>
+  ${m(340,744,"CAN-Low · yeşil",10.5,MU,"start")}
+  ${ART.res(476,730,"120 Ω")}
+  ${m(566,749,"sonlandırma direnci · hattın iki ucunda toplam iki adet",10.5,MU,"start")}
+</svg>`;
+
+$("#dia").innerHTML = DIA;
+
+/* ---- kurulum içeriği ---- */
+const BUILD={
+  h:"Kur: CAN zinciri",
+  p:"Zinciri şu sırada kurun: roboRIO, CAN ID 1, CAN ID 2, CAN ID 3, CAN ID 4, PH, PDH. Her cihazda iki CAN terminali vardır; bu alıştırmada A terminali zincirin roboRIO tarafına, B terminali PDH tarafına bakar. Gerçekte cihaz sırası başka türlü de dizilebilir; burada kontrol edilen, bu sıranın kesintisiz kurulması ve zincirin iki ucudur.",
+  gate:"Başlayınca sayfa bu bölüme kilitlenir ve yukarıdaki örnek şemayı göremezsiniz. Bitirdiğinizde hangi bağlantıyı doğru, hangisini yanlış yaptığınızı ve 100 üzerinden puanınızı görürsünüz.",
+  start:"Kurmaya başla", done:"Tamamladım", reset:"Baştan dene", close:"Kapat",
+  after:"kontrol edildi",
+  warn:"Tuvalde fazla parça bırakmayın. Kurulumda işi olmayan her parça puandan düşer.",
+  emptyText:"Tuval boş. Yukarıdaki bir cihaza dokunarak başlayın. Cihazların üst kenarındaki A ve B noktaları CAN terminalleridir; her terminale tek kablo girer.",
+  partsLabel:"Cihazlar",
+  wiresLabel:"CAN kablosu — iki iletken birlikte gider; iki noktaya dokunun",
+  perfect:"Zincir kesintisiz, iki ucu doğru ve tuvalde fazla parça yok.",
+  again:"Eksik bağlantılar yukarıda listelendi. Zincirin bir ucu roboRIO, diğer ucu PDH'tir; sonlandırma bu iki uçta bulunur.",
+  parts:[
+    {key:"rio", label:"roboRIO", art:"rio", w:170,h:76, ax:12,ay:10, pins:[["CAN",85,12]]},
+    {key:"s1", label:"SPARK MAX · ID 1", art:"spark1", w:186,h:84, ax:8,ay:12, pins:[["A",60,14],["B",126,14]]},
+    {key:"s2", label:"SPARK MAX · ID 2", art:"spark2", w:186,h:84, ax:8,ay:12, pins:[["A",60,14],["B",126,14]]},
+    {key:"s3", label:"SPARK MAX · ID 3", art:"spark3", w:186,h:84, ax:8,ay:12, pins:[["A",60,14],["B",126,14]]},
+    {key:"s4", label:"SPARK MAX · ID 4", art:"spark4", w:186,h:84, ax:8,ay:12, pins:[["A",60,14],["B",126,14]]},
+    {key:"s0", label:"SPARK MAX · ID 0", art:"spark0", w:186,h:84, ax:8,ay:12, pins:[["A",60,14],["B",126,14]]},
+    {key:"ph", label:"PH · pnömatik", art:"ph", w:190,h:80, ax:10,ay:12, pins:[["A",70,14],["B",130,14]]},
+    {key:"pdhOn", label:"PDH · sonlandırma etkin", art:"pdhOn", w:190,h:84, ax:10,ay:12, pins:[["A",70,14],["B",130,14]]},
+    {key:"pdhOff", label:"PDH · sonlandırma kapalı", art:"pdhOff", w:190,h:84, ax:10,ay:12, pins:[["A",70,14],["B",130,14]]},
+    {key:"res", label:"120 Ω direnç", art:"res120", w:98,h:50, ax:10,ay:14, pins:[["hat",49,16]]}
+  ],
+  wires:[
+    {key:"can", label:"CAN çifti · sarı + yeşil", col:"var(--can-h)", col2:"var(--can-l)", th:6}
+  ],
+  need:[
+    {a:"rio.CAN", b:"s1.A", type:"can"},
+    {a:"s1.B", b:"s2.A", type:"can"},
+    {a:"s2.B", b:"s3.A", type:"can"},
+    {a:"s3.B", b:"s4.A", type:"can"},
+    {a:"s4.B", b:"ph.A", type:"can"},
+    {a:"ph.B", b:"pdhOn.A", type:"can"}
+  ]
+};
+
+
+
+[["Hat roboRIO'da başlar, PDH'te biter",
+  "Zincir seri bir hattır ve iki ucu vardır. Sonlandırma tam olarak bu iki uçtadır: biri roboRIO içinde hazır gelir, diğeri PDH üzerinde yapılandırılır. Aradaki cihazlarda sonlandırma etkinleştirilmez."],
+ ["PDH zincirin sonunda olduğu için sonlandırması etkin",
+  "PDH ortaya alınsaydı kendi sonlandırması uçta değil hattın ortasında kalırdı; o zaman cihaz üzerinden devre dışı bırakılır ve hattın gerçek ucuna ayrı bir 120 Ω direnç takılırdı."],
+ ["Her cihazın kendi CAN ID'si var",
+  "SPARK MAX kutudan 0 ID'si ile çıkar. Aynı hatta aynı tipteki iki cihaz aynı ID'yi kullanamaz; kullanılabilir aralık 1-62'dir ve ID'ler REV Hardware Client gibi araçlarla değiştirilir."]]
+.forEach(([h,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:h}),el("span",null,d));
+  li.append(w); $("#calls").append(li);});
+
+/* ---- kurulum tuvali: pinli bağlantı, kontrol ve skor ---- */
+if($("#bpanel") && typeof BUILD!=="undefined"){(()=>{
+  const B=BUILD, cvw=$("#bcanvas"), cv=$("#bboard"),
+    lay=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  lay.setAttribute("class","blines"); cv.append(lay);
+  const lblLayer=el("div","blbl"); cv.append(lblLayer);
+  $("#bpan").textContent=B.pan||"Tuval geniştir; sağa ve aşağı kaydırarak tamamını kullanabilirsiniz.";
+  const PK={}; B.parts.forEach(p=>PK[p.key]=p);
+  const WK={}; B.wires.forEach(w=>WK[w.key]=w);
+  let inst=[], links=[], seq=0, pick=null, wsel=B.wires[0].key, checked=false, zTop=1;
+
+  $("#bh").textContent=B.h; $("#bp").textContent=B.p;
+  $("#bgtext").textContent=B.gate; $("#bstart").textContent=B.start;
+  $("#bdone").textContent=B.done; $("#breset").textContent=B.reset; $("#bclose").textContent=B.close;
+  $("#bwarn").textContent=B.warn;
+
+  /* ---- raf ---- */
+  const tray=$("#btray");
+  const grp=(label,items,render)=>{
+    tray.append(el("p","tlabel",label));
+    const g=el("div","tgrid"); items.forEach(it=>g.append(render(it))); tray.append(g);
+  };
+  grp(B.partsLabel, B.parts, p=>{
+    const b=el("button","part");
+    const sc=Math.min(1, 112/p.h, 168/p.w);
+    b.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${Math.round(p.w*sc)}"
+      height="${Math.round(p.h*sc)}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    b.append(el("span",null,p.label));
+    b.onclick=()=>{ if(!checked) place(p.key); };
+    return b;
+  });
+  grp(B.wiresLabel, B.wires, w=>{
+    const b=el("button","part wchip"); b.dataset.k=w.key;
+    b.innerHTML=`<svg viewBox="0 0 110 14" width="110" height="14" aria-hidden="true">
+      <rect x="0" y="${7-w.th/2}" width="110" height="${w.th}" rx="${w.th/2}" fill="${w.col}"/>`+
+      (w.col2?`<path d="M0 7 H110" stroke="${w.col2}" stroke-width="${w.th}"
+        stroke-dasharray="8 8"/>`:"")+`</svg>`;
+    b.append(el("span",null,w.label));
+    b.onclick=()=>{ wsel=w.key; markWire(); };
+    return b;
+  });
+  const markWire=()=>tray.querySelectorAll(".wchip").forEach(c=>
+    c.setAttribute("aria-pressed", c.dataset.k===wsel));
+  markWire();
+
+  /* ---- parça yerleştirme ---- */
+  function slot(w,h,cw,ch){
+    const pad=18, padL=104, gx=96, gy=30;
+    const boxes=inst.map(i=>({x:parseFloat(i.node.style.left)||0, y:parseFloat(i.node.style.top)||0,
+      w:i.node.offsetWidth, h:i.node.offsetHeight}));
+    const hit=(x,y)=>boxes.some(b=>x<b.x+b.w+gx && x+w+gx>b.x && y<b.y+b.h+gy && y+h+gy>b.y);
+    const maxX=Math.max(padL, cw-w-pad), maxY=Math.max(pad, ch-h-pad);
+    for(let y=pad; y<=maxY; y+=22)
+      for(let x=padL; x<=maxX; x+=22)
+        if(!hit(x,y)) return [Math.round(x),Math.round(y)];
+    const k=inst.length%6;
+    return [Math.round(Math.min(maxX, padL+k*26)), Math.round(Math.min(maxY, pad+k*26))];
+  }
+  function place(key){
+    const p=PK[key], id=++seq, labs=[];
+    const n=el("div","placed"); n.dataset.id=id; n.dataset.key=key;
+    n.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w}" height="${p.h}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    const x=el("button","x","×"); x.setAttribute("aria-label",p.label+" kaldır");
+    x.onclick=e=>{e.stopPropagation(); if(checked) return;
+      links=links.filter(l=>l.a.id!==id&&l.b.id!==id);
+      inst=inst.filter(i=>i.id!==id); labs.forEach(o=>o.lb.remove());
+      n.remove(); paint(); sync();};
+    n.append(x);
+    p.pins.forEach(([nm,px,py])=>{
+      const d=el("button","pin"); d.style.left=px+"px"; d.style.top=py+"px";
+      d.dataset.pin=nm; d.setAttribute("aria-label",p.label+" "+nm);
+      d.onclick=e=>{e.stopPropagation(); tapPin(id,nm);};
+      const lb=el("span","pinlb",nm);
+      if(py<=p.h*0.2) lb.dataset.mode="top";
+      else if(px<=p.w*0.35) lb.classList.add("lft");
+      else if(px>=p.w*0.65) lb.classList.add("rgt");
+      else lb.dataset.mode="top";
+      lblLayer.append(lb); labs.push({lb,d});
+      n.append(d);
+    });
+    const r=cv.getBoundingClientRect();
+    const pos=slot(p.w,p.h,r.width,r.height);
+    n.style.left=pos[0]+"px"; n.style.top=pos[1]+"px"; n.style.zIndex=++zTop;
+    cv.append(n); inst.push({id,key,node:n,labs}); drag(n,id); paint(); sync();
+  }
+
+  function drag(n,id){
+    n.addEventListener("pointerdown",e=>{
+      if(checked||e.target.classList.contains("x")||e.target.classList.contains("pin")) return;
+      const r=cv.getBoundingClientRect(), bb=n.getBoundingClientRect();
+      const ox=e.clientX-bb.left, oy=e.clientY-bb.top;
+      try{n.setPointerCapture(e.pointerId);}catch(err){}
+      n.style.zIndex=++zTop;
+      const mv=ev=>{
+        n.style.left=Math.max(0,Math.min(r.width-bb.width, ev.clientX-r.left-ox))+"px";
+        n.style.top =Math.max(0,Math.min(r.height-bb.height, ev.clientY-r.top -oy))+"px";
+        paint();
+      };
+      const up=()=>{n.removeEventListener("pointermove",mv);n.removeEventListener("pointerup",up);};
+      n.addEventListener("pointermove",mv); n.addEventListener("pointerup",up);
+    });
+  }
+
+  /* ---- pin bağlama ---- */
+  const pinEl=(id,nm)=>{const i=inst.find(x=>x.id===id); return i&&i.node.querySelector(`.pin[data-pin="${CSS.escape(nm)}"]`);};
+  function tapPin(id,nm){
+    if(checked) return;
+    if(!pick){ pick={id,nm}; markPins(); return; }
+    if(pick.id===id && pick.nm===nm){ pick=null; markPins(); return; }
+    const a=pick, b={id,nm};
+    const same=l=>(l.a.id===a.id&&l.a.nm===a.nm&&l.b.id===b.id&&l.b.nm===b.nm)||
+                  (l.a.id===b.id&&l.a.nm===b.nm&&l.b.id===a.id&&l.b.nm===a.nm);
+    const ex=links.findIndex(same);
+    if(ex>=0) links.splice(ex,1); else links.push({a,b,type:wsel});
+    pick=null; markPins(); paint(); sync();
+  }
+  const markPins=()=>cv.querySelectorAll(".pin").forEach(d=>{
+    const i=+d.closest(".placed").dataset.id;
+    d.classList.toggle("on", !!pick && pick.id===i && pick.nm===d.dataset.pin);
+  });
+
+  /* ---- çizim ---- */
+  function paint(){
+    const r=cv.getBoundingClientRect();
+    lay.setAttribute("viewBox",`0 0 ${r.width} ${r.height}`);
+    lay.setAttribute("width",r.width); lay.setAttribute("height",r.height);
+    let g="";
+    links.forEach(l=>{
+      const ea=pinEl(l.a.id,l.a.nm), eb=pinEl(l.b.id,l.b.nm);
+      if(!ea||!eb) return;
+      const ra=ea.getBoundingClientRect(), rb=eb.getBoundingClientRect();
+      const x1=ra.left-r.left+ra.width/2, y1=ra.top-r.top+ra.height/2;
+      const x2=rb.left-r.left+rb.width/2, y2=rb.top-r.top+rb.height/2;
+      const w=WK[l.type]||B.wires[0];
+      const col = !checked ? w.col : (l.ok ? "var(--ok)" : "var(--no)");
+      const mx=(x1+x2)/2;
+      const d=`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      g+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w.th}"
+        stroke-linecap="round" opacity="${checked?1:0.95}"/>`;
+      if(w.col2 && !checked)
+        g+=`<path d="${d}" fill="none" stroke="${w.col2}" stroke-width="${w.th}"
+          stroke-linecap="butt" stroke-dasharray="8 8" opacity="0.95"/>`;
+    });
+    lay.innerHTML=g;
+    inst.forEach(i=>(i.labs||[]).forEach(({lb,d})=>{
+      const rd=d.getBoundingClientRect();
+      const cx=rd.left-r.left+rd.width/2, cy=rd.top-r.top+rd.height/2;
+      if(lb.classList.contains("lft")){ lb.style.left=(cx-11)+"px"; lb.style.top=cy+"px"; }
+      else if(lb.classList.contains("rgt")){ lb.style.left=(cx+11)+"px"; lb.style.top=cy+"px"; }
+      else { lb.style.left=cx+"px"; lb.style.top=(cy-3)+"px"; }
+    }));
+  }
+
+  const sync=()=>{
+    const need=B.need.length;
+    $("#bempty").classList.toggle("gone", inst.length>0);
+    $("#bnote").textContent = checked ? B.after
+      : inst.length+" parça · "+links.length+" / "+need+" bağlantı";
+    $("#bdone").disabled = checked || links.length===0;
+  };
+
+  /* ---- kontrol ---- */
+  const key=l=>[l.a,l.b].map(e=>{const i=inst.find(x=>x.id===e.id); return (i?i.key:"?")+"."+e.nm;}).sort().join(" ↔ ");
+  $("#bdone").onclick=()=>{
+    checked=true; pick=null; markPins();
+    const want=B.need.map(n=>({...n, k:[n.a,n.b].slice().sort().join(" ↔ ")}));
+    const used=new Set(); let got=0; const missing=[];
+    links.forEach(l=>{
+      const k=key(l);
+      const idx=want.findIndex((w,i)=>w.k===k && w.type===l.type && !used.has(i));
+      if(idx>=0){ used.add(idx); l.ok=true; got++; } else l.ok=false;
+    });
+    want.forEach((w,i)=>{ if(!used.has(i)) missing.push(w); });
+    const wrong=links.filter(l=>!l.ok).length;
+    const needKeys=new Set();
+    B.need.forEach(n=>{ needKeys.add(n.a.split(".")[0]); needKeys.add(n.b.split(".")[0]); });
+    const counts={}; inst.forEach(i=>counts[i.key]=(counts[i.key]||0)+1);
+    let extra=0; const extraList=[];
+    Object.keys(counts).forEach(k=>{
+      const allowed = needKeys.has(k) ? 1 : 0;
+      if(counts[k]>allowed){ extra+=counts[k]-allowed;
+        extraList.push(PK[k].label+" ×"+(counts[k]-allowed)); }
+    });
+    inst.forEach(i=>{ const dup=counts[i.key]>(needKeys.has(i.key)?1:0);
+      i.node.classList.add(dup?"bad":"fine"); });
+    paint();
+    const base=Math.round(got/B.need.length*100);
+    const pen=Math.min(base, wrong*6+extra*6);
+    const score=Math.max(0, base-pen);
+    /* İlk kurulum puanı kalıcıdır: tekrar denemek puanı değiştirmez. */
+    try{ if(state && state.__b==null){ state.__b={s:score, n:B.need.length}; save();
+      sunucuyaYaz("tuval",score); } }catch(e){}
+    const r=$("#bres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","kurulum kontrol edildi"));
+    r.append(el("div","big",score+" / 100"));
+    r.append(el("div","outof",got+" / "+B.need.length+" doğru bağlantı"+
+      (wrong?" · "+wrong+" hatalı":"")+(extra?" · "+extra+" fazla parça":"")));
+    if(pen) r.append(el("p","pen","Ceza: hatalı bağlantı ve fazla parça için toplam −"+pen+" puan."));
+    if(missing.length){
+      const ul=el("ul","miss");
+      const nice=e=>{const i=e.indexOf("."), k=e.slice(0,i), pn=e.slice(i+1);
+        return (PK[k]?PK[k].label:k)+" · "+pn;};
+      missing.forEach(w=>{const li=el("li");
+        li.append(Object.assign(el("b"),{textContent:"eksik: "}),
+          document.createTextNode(nice(w.a)+" ↔ "+nice(w.b)+"  ("+(WK[w.type]||{}).label+")"));
+        ul.append(li);});
+      r.append(ul);
+    }
+    if(extraList.length) r.append(el("p","pen","Tuvalde fazla kalan: "+extraList.join(", ")+"."));
+    r.append(el("p",null, score===100 ? B.perfect : B.again));
+    $("#bclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+
+  /* ---- kilit ve sıfırlama ---- */
+  const build=()=>{
+    inst.forEach(i=>i.node.remove()); lblLayer.textContent="";
+    inst=[]; links=[]; seq=0; pick=null; checked=false;
+    $("#bres").textContent=""; $("#bres").className=""; $("#bclose").hidden=true;
+    wsel=B.wires[0].key; markWire(); paint(); sync();
+  };
+  const lock=on=>{ $("#bpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on); if(on) $("#bpanel").scrollTop=0; };
+  $("#bstart").onclick=()=>{ $("#bgate").hidden=true; $("#bwrap").hidden=false; $("#bbar").hidden=false;
+    build(); lock(true); paint(); };
+  $("#breset").onclick=()=>build();
+  $("#bclose").onclick=()=>{ lock(false); $("#bres").scrollIntoView({block:"center"}); };
+  $("#bempty").textContent=B.emptyText;
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(cv);
+  sync();
+})();}
+
+/* ---- kontrol listesi: kurduktan sonra gözden geçirilecekler ---- */
+if($("#must")){
+[["Zincir nerede başlıyor, nerede bitiyor","iki ucu çiziminizde işaretleyin"],
+ ["İki kablo her cihazdan kesintisiz geçiyor mu","sarı CAN-High, yeşil CAN-Low"],
+ ["Kaç adet 120 Ω etkin","sayısını yazın ve nerede olduklarını gösterin"],
+ ["PDH zincirin neresinde","sonundaysa sonlandırması etkin, ortadaysa kapalı ve uca ayrı direnç"],
+ ["Her cihazın CAN ID'si farklı mı","aralık 1-62; hiçbiri 0 kalmasın"],
+ ["Her terminale kaç kablo girdi","tek kablo; iki kabloyu aynı terminale sıkıştırmayın"]]
+.forEach(([t,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:t}),el("span",null,d));
+  li.append(w); $("#must").append(li);});
+
+$("#c2h").textContent="Sonra: tek bir şeyi değiştirin";
+$("#c2p").textContent="Kurduğunuzu iki kez bozun. Birincide PDH'i zincirin ortasına alın ve sonlandırmasını etkin bırakın. İkincide iki SPARK MAX'e aynı CAN ID'yi verin. Her birinde driver station'da ne görürsünüz, ve hangisi maç sırasında sessizce ortaya çıkar?";
+
+}
+
+/* ---- eşleştirme paneli: kur, kontrol et, neyi yanlış yaptığını göster ---- */
+(()=>{
+  const box=$("#match");
+  if(!box||typeof MATCH==="undefined"||!MATCH.length){
+    const mp=$("#matchpanel"); if(mp) mp.remove(); return; }
+  const N=MATCH.length;
+  $("#mth").textContent=MT.h; $("#mtp").textContent=MT.p;
+  $("#mdone").textContent=MT.done;
+  $("#mgtext").textContent=MT.gate; $("#mstart").textContent=MT.start;
+  $("#mclose").textContent=MT.close;
+  let order=[], links={}, pick=null, checked=false;
+  const svgns="http://www.w3.org/2000/svg";
+  const lines=document.createElementNS(svgns,"svg"); lines.setAttribute("class","mlines");
+  const colL=el("div","mcol left"), colR=el("div","mcol right"), spacer=el("div");
+  const itemsL=[], itemsR=[], dotsL=[], dotsR=[];
+
+  const side=(txt,art)=>{const it=el("div","mitem");
+    if(art&&ART[art[0]]){const a=el("div","art");
+      a.innerHTML=`<svg viewBox="0 0 ${art[1]} ${art[2]}" aria-hidden="true">${ART[art[0]](art[3]||0,art[4]||0)}</svg>`;
+      it.append(a);}
+    const l=el("div"); l.append(Object.assign(el("span","lbl"),{textContent:txt})); it.append(l);
+    return it;};
+
+  const build=()=>{
+    box.textContent=""; itemsL.length=itemsR.length=dotsL.length=dotsR.length=0;
+    colL.textContent=""; colR.textContent="";
+    links={}; pick=null; checked=false;
+    order=[...Array(N).keys()];
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    MATCH.forEach((pr,i)=>{
+      const it=side(pr.l,pr.lart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.l+" — bağlantı noktası");
+      d.onclick=()=>tap("l",i); it.append(d);
+      colL.append(it); itemsL.push(it); dotsL.push(d);
+    });
+    order.forEach((pi,p)=>{
+      const pr=MATCH[pi]; const it=side(pr.r,pr.rart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.r+" — bağlantı noktası");
+      d.onclick=()=>tap("r",p); it.append(d);
+      colR.append(it); itemsR.push(it); dotsR.push(d);
+    });
+    box.append(lines,colL,spacer,colR);
+    $("#mres").textContent=""; $("#mres").className="";
+    paint(); sync();
+  };
+
+  const tap=(sd,i)=>{
+    if(checked) return;
+    if(!pick){ pick={sd,i}; mark(); return; }
+    if(pick.sd===sd){ pick={sd,i}; mark(); return; }
+    const l = sd==="l" ? i : pick.i, p = sd==="l" ? pick.i : i;
+    Object.keys(links).forEach(k=>{ if(links[k]===p) delete links[k]; });
+    if(links[l]===p) delete links[l]; else links[l]=p;
+    pick=null; mark(); paint(); sync();
+  };
+  const mark=()=>{
+    dotsL.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="l"&&pick.i===i));
+    dotsR.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="r"&&pick.i===i));
+  };
+  const paint=()=>{
+    const rb=box.getBoundingClientRect();
+    lines.setAttribute("viewBox",`0 0 ${rb.width} ${rb.height}`);
+    lines.setAttribute("width",rb.width); lines.setAttribute("height",rb.height);
+    let g="";
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k];
+      const a=dotsL[l].getBoundingClientRect(), b=dotsR[p].getBoundingClientRect();
+      const x1=a.left-rb.left+a.width/2, y1=a.top-rb.top+a.height/2;
+      const x2=b.left-rb.left+b.width/2, y2=b.top-rb.top+b.height/2;
+      const col = !checked ? "var(--acc)" : (order[p]===l ? "var(--ok)" : "var(--no)");
+      g+=`<path d="M${x1} ${y1} C ${x1+40} ${y1}, ${x2-40} ${y2}, ${x2} ${y2}" fill="none"
+        stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+    });
+    lines.innerHTML=g;
+  };
+  const sync=()=>{
+    const n=Object.keys(links).length;
+    $("#mdone").disabled = checked || n<N;
+    $("#mnote").textContent = checked ? MT.after : (n+" / "+N+" eşleştirildi");
+  };
+
+  $("#mdone").onclick=()=>{
+    checked=true; pick=null; mark();
+    let got=0;
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k], ok=order[p]===l;
+      if(ok) got++;
+      itemsL[l].classList.add(ok?"ok":"no"); dotsL[l].classList.add(ok?"ok":"no");
+      itemsR[p].classList.add(ok?"ok":"no"); dotsR[p].classList.add(ok?"ok":"no");
+      if(!ok) itemsL[l].querySelector("div").append(
+        Object.assign(el("span","mfix"),{textContent:"doğrusu: "+MATCH[l].r}));
+    });
+    paint();
+    const pct=Math.round(got/N*100);
+    const r=$("#mres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","eşleştirme kontrol edildi"));
+    r.append(el("div","big",got+" / "+N+" doğru · "+pct+" / 100"));
+    r.append(el("p",null, got===N ? MT.perfect : MT.again));
+    $("#mdone").disabled=true; $("#mclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+  const rs=$("#mreset");
+  if(MT.reset){ rs.textContent=MT.reset; rs.onclick=()=>build(); } else { rs.remove(); }
+
+  const lock=on=>{
+    $("#matchpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on);
+    if(on){ $("#matchpanel").scrollTop=0; }
+  };
+  $("#mstart").onclick=()=>{
+    $("#mgate").hidden=true; box.hidden=false; $("#mbar").hidden=false;
+    build(); lock(true); paint();
+  };
+  $("#mclose").onclick=()=>{ lock(false); $("#mres").scrollIntoView({block:"center"}); };
+  build();
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(box);
+})();
+
+/* ---- practice ---- */
+/* ---- video: sitede gömülü oynar, önizlemede bağlantı olarak görünür ---- */
+(()=>{
+  const host=$("#vids"), V=D.videoRefs||[];
+  if(!host) return;
+  if(!V.length){ host.remove(); return; }
+  V.forEach(v=>{
+    const w=el("div","vid"), h=el("div","vtop");
+    const lang=v.lang&&v.lang!=="tr"?" · video İngilizce":"";
+    h.append(Object.assign(el("b"),{textContent:v.label||v.title}),
+      el("span",null,(v.label?v.title+" · ":"")+v.channel+lang));
+    w.append(h);
+    const t=v.start?"?start="+v.start:"";
+    const watch="https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start:"");
+    if(window.__EMBED__){
+      const box=el("div","vframe");
+      const local=location.protocol==="file:";
+      const cover=document.createElement(local?"a":"button");
+      cover.className="vface";
+      cover.style.backgroundImage='url("https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg")';
+      const tri=el("div","vptri");
+      tri.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+      cover.append(tri);
+      if(local){
+        cover.href=watch; cover.target="_blank"; cover.rel="noopener";
+        cover.title="Yerel dosyadan açıldığı için video sayfada oynamaz; YouTube'da açılır.";
+      }else{
+        cover.type="button";
+        cover.setAttribute("aria-label",(v.label||v.title)+" videosunu oynat");
+        cover.onclick=()=>{
+          const fr=document.createElement("iframe");
+          fr.src="https://www.youtube-nocookie.com/embed/"+v.id+(v.start?"?start="+v.start+"&":"?")+"autoplay=1&rel=0";
+          fr.title=v.title; fr.allowFullscreen=true;
+          fr.referrerPolicy="strict-origin-when-cross-origin";
+          fr.setAttribute("allow","autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+          cover.replaceWith(fr);
+        };
+      }
+      box.append(cover); w.append(box);
+      const foot=el("p","vfoot");
+      const a2=document.createElement("a");
+      a2.href=watch; a2.target="_blank"; a2.rel="noopener"; a2.textContent="YouTube'da aç";
+      foot.append(document.createTextNode(local
+        ? "Bu dosya bilgisayardan açıldığı için video sayfa içinde oynamaz. Siteye yüklendiğinde burada oynar. "
+        : "Oynamazsa: "), a2);
+      w.append(foot);
+    }else{
+      const a=document.createElement("a");
+      a.className="vlink"; a.target="_blank"; a.rel="noopener";
+      a.href=watch;
+      a.textContent="videoyu YouTube'da aç";
+      w.append(a, el("p","vnote",
+        "Video sitenin kendi sayfasında bu kutunun içinde oynar. Bu önizlemede dış içerik engellendiği için yalnızca bağlantı görünür."));
+    }
+    if(v.note) w.append(el("p","vsrc",v.note));
+    host.append(w);
+  });
+})();
+
+const LET="ABCDE".split(""); let filter="all", state={};
+const SKEY="ep03", MODUL=D.id;
+try{state=JSON.parse(localStorage.getItem(SKEY)||"{}");}catch(e){state={};}
+const save=()=>{try{localStorage.setItem(SKEY,JSON.stringify(state));}catch(e){}};
+/* Sunucu ayarlanmışsa puanlar oraya da yazılır. Yazma tek yönlüdür:
+   aynı satır ikinci kez gönderilse bile veritabanı ilkini korur. */
+function sunucuyaYaz(tur,a,b){
+  if(!window.FRC || !FRC.acik) return;
+  if(tur==="tuval") FRC.tuvalYaz(MODUL,a); else FRC.cevapYaz(MODUL,a,b);
+}
+[["all","hepsi"],["core","core"],["stretch","stretch"],["pit","pit"]].forEach(([k,l])=>{
+  const b=el("button","filt",l); if(k!=="all") b.lang="en";
+  b.setAttribute("aria-pressed",k===filter);
+  b.onclick=()=>{filter=k;document.querySelectorAll(".filt").forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
+  $("#bar").append(b);});
+const scoreEl=el("span","score"); $("#bar").append(scoreEl);
+const ruleChips=(d,h)=>{if(!d.ruleRefs.length)return;const s=el("div","srcs");
+  d.ruleRefs.forEach(r=>s.append(el("span","rule",r.rule+" · "+r.season)));h.append(s);};
+const sourceRef=(d,h)=>{const dt=el("details","ref");dt.append(el("summary","kaynak"));
+  dt.append(el("p",null,d.source));h.append(dt);};
+const DFIG={
+ "electrical-03-d1":["oneWire","Her Weidmuller terminaline yalnızca tek bir kablo sokulur."],
+ "electrical-03-d2":["termination","Direnç cihaza değil, hattın ucuna aittir."],
+ "electrical-03-d3":["termination","Hat iki ucundan sonlandırılır: toplam iki adet."],
+ "electrical-03-d4":["canIds","SPARK MAX kutudan 0 ile çıkar; her cihaza 1-62 arası benzersiz bir ID verilir."],
+ "electrical-03-d5":["breakSplit","Çalışan ile çalışmayan arasındaki sınır, kopukluğun yeridir."],
+ "electrical-03-d6":["extraBus","Ek hat serbesttir; PCM, PH ve Servo Hub dahili hatta kalır."],
+ "electrical-03-d7":["chainTopo","Pasif iletkenli star serbest, hat üzerindeki aktif cihaz yasaktır."],
+ "electrical-03-d8":["breakSplit","Aynı anda düşen cihazlar mekanik bir bağlantıyı işaret eder."]
+};
+const drillFig=(d,h)=>{const f=DFIG[d.id]; if(!f||!FIG[f[0]])return;
+  h.append(figure(FIG[f[0]](),f[1]));};
+
+function render(){
+  const box=$("#qs"); box.textContent="";
+  let got=0,done=0;
+  D.drills.forEach(d=>{if(state[d.id]){done++;if(state[d.id].ok)got++;}});
+  const live=done?Math.round(got/done*100):0;
+  scoreEl.textContent=done?("puan "+live+" / 100 · "+got+"/"+done+" doğru"):"puan 0 / 100";
+  D.drills.filter(d=>filter==="all"||d.difficulty===filter).forEach(d=>{
+    const q=el("div","q"),hd=el("div","qhead");
+    const pd1=el("span","pill "+d.difficulty,d.difficulty), pd2=el("span","pill",d.type.replace(/_/g," "));
+    pd1.lang="en"; pd2.lang="en"; hd.append(pd1,pd2);
+    q.append(hd);
+    if(d.symptom)q.append(el("p","sym",d.symptom));
+    if(d.scenario)q.append(el("p","sym",d.scenario));
+    q.append(el("p","qtext",d.prompt));
+    const ansBox=el("div"), prior=state[d.id];
+    const settle=(ok,txt)=>{state[d.id]={ok};save();sunucuyaYaz("cevap",d.id,ok);
+      ansBox.className="ans "+(ok?"good":"bad");
+      ansBox.append(el("span","verdict",ok?"doğru":"yanlış"),document.createTextNode(txt));
+      drillFig(d,ansBox);ruleChips(d,ansBox);sourceRef(d,ansBox);render();};
+    if(d.type==="numeric"){
+      const row=el("div","num");
+      const inp=Object.assign(el("input"),{type:"text",inputMode:"decimal",placeholder:"sayı"});
+      const go=el("button","btn","Kontrol et");
+      row.append(inp,go); if(d.unit)row.append(el("span","unit",d.unit));
+      go.onclick=()=>{const v=parseFloat(String(inp.value).replace(",","."));
+        const ok=Number.isFinite(v)&&Math.abs(v-d.answer)<=(d.tolerance||0);
+        inp.disabled=go.disabled=true;settle(ok,d.explanation);};
+      q.append(row);
+    } else if(d.type==="debug_code"){
+      const lines=String(d.code).split("\n");
+      const pre=el("div","code"); let chosen=null;
+      const lab=el("p","steplab","1 · hatalı satırı seçin");
+      const fix=el("div","fixrow");
+      const inp=Object.assign(el("input"),{type:"text",placeholder:"doğru satırı yazın",disabled:true});
+      const go=el("button","btn","Kontrol et"); go.disabled=true;
+      fix.append(inp,go);
+      lines.forEach((src,i)=>{
+        const b=el("button","ln");
+        b.append(el("span","no",String(i+1)),el("span","src",src||" "));
+        b.onclick=()=>{ if(chosen!==null) $$(".ln",pre)[chosen].classList.remove("pick");
+          chosen=i; b.classList.add("pick");
+          lab.textContent="2 · bu satırın doğrusunu yazın";
+          inp.disabled=go.disabled=false; inp.focus(); };
+        pre.append(b);});
+      const norm=x=>String(x).replace(/\s+/g," ").replace(/;\s*$/,"").trim().toLowerCase();
+      go.onclick=()=>{
+        const want=(d.acceptableAnswers&&d.acceptableAnswers.length?d.acceptableAnswers:[d.correctAnswer]).map(norm);
+        const lineOk = chosen===(d.buggyLine-1);
+        const textOk = want.includes(norm(inp.value));
+        const ok = lineOk && textOk;
+        $$(".ln",pre).forEach((x,j)=>{x.disabled=true;
+          if(j===d.buggyLine-1) x.classList.add(lineOk?"pick-ok":"reveal");
+          else if(j===chosen) x.classList.add("pick-no");});
+        inp.disabled=go.disabled=true; lab.remove();
+        const pre2 = lineOk&&!textOk ? "Satır doğru, yazdığınız düzeltme tutmadı. Doğrusu: "+d.correctAnswer+" "
+                   : !lineOk ? "Hatalı satır "+d.buggyLine+". satırdır; doğrusu: "+d.correctAnswer+" " : "";
+        settle(ok,pre2+d.explanation);};
+      q.append(lab,pre,fix);
+    } else if(d.type==="order_steps"){
+      const picked=[],w=el("div","opts");
+      d.steps.forEach((s,i)=>{const b=el("button","opt");
+        b.append(el("span","k","—"),el("span",null,s));
+        b.onclick=()=>{if(picked.includes(i))return;picked.push(i);
+          $(".k",b).textContent=picked.length;b.classList.add("taken");
+          if(picked.length===d.steps.length){
+            const ok=JSON.stringify(picked)===JSON.stringify(d.correctOrder);
+            w.querySelectorAll("button").forEach(x=>x.disabled=true);
+            settle(ok,(ok?"":"Doğru sıra: "+d.correctOrder.map(n=>n+1).join(" → ")+". ")+d.explanation);}};
+        w.append(b);});
+      q.append(w);
+    } else {
+      const items=d.elements||d.options, key=d.elements?d.faultIndex:d.correctIndex, w=el("div","opts");
+      items.forEach((o,i)=>{const b=el("button","opt");
+        b.append(el("span","k",LET[i]),el("span",null,o));
+        b.onclick=()=>{const ok=i===key;
+          w.querySelectorAll("button").forEach((x,j)=>{x.disabled=true;if(j===key&&!ok)x.classList.add("reveal");});
+          b.classList.add(ok?"pick-ok":"pick-no");settle(ok,d.explanation);};
+        w.append(b);});
+      q.append(w);
+    }
+    if(prior){
+      const dn=el("div","ans "+(prior.ok?"good":"bad"));
+      dn.append(el("span","verdict",prior.ok?"doğru — çözüldü":"yanlış — çözüldü"),
+        document.createTextNode(d.explanation));
+      drillFig(d,dn);ruleChips(d,dn);sourceRef(d,dn);
+      q.querySelectorAll(".opt,input,.btn").forEach(x=>x.disabled=true);
+      if(d.type==="debug_code"){
+        const lns=$$(".ln",q), tgt=lns[d.buggyLine-1];
+        if(tgt) tgt.classList.add(prior.ok?"pick-ok":"reveal");
+        const sl=$(".steplab",q); if(sl) sl.remove();
+        const fr=$(".fixrow",q); if(fr) fr.remove();
+      }
+      q.append(dn);
+    } else if(d.hint){ q.append(el("div","hintline","ipucu · "+d.hint)); }
+    q.append(ansBox); box.append(q);
+  });
+
+  if(done===D.drills.length && D.drills.length){
+    const score=Math.round(got/D.drills.length*100);
+    const band = score>=85 ? "Çok iyi"
+               : score>=70 ? "İyi"
+               : score>=50 ? "Geçer"
+               : "Tekrar edilmeli";
+    const f=el("div","finish");
+    f.append(el("div","cap","test tamamlandı"));
+    f.append(el("div","big",String(score)));
+    f.append(el("div","outof","100 üzerinden · "+got+" / "+D.drills.length+" doğru · "+band));
+    const bd=el("div","bd");
+    ["core","stretch","pit"].forEach(lv=>{
+      const set=D.drills.filter(d=>d.difficulty===lv);
+      if(!set.length) return;
+      const g=set.filter(d=>state[d.id]&&state[d.id].ok).length;
+      bd.append(el("span",null,lv+" "+g+"/"+set.length+" · %"+Math.round(g/set.length*100)));
+    });
+    f.append(bd);
+    f.append(el("p","sm", score===100
+      ? "Sekiz sorunun sekizini de doğru bildiniz. Şimdi CAN zincirini örneğe bakmadan kurun."
+      : score>=70
+      ? "Yanlış bildiğiniz soruların gerekçesini bir kez daha okuyun, sonra testi baştan çözün."
+      : "Puanınız 70'in altında. Kavram bölümünü ve kartları tekrar okuyup testi baştan çözmeniz önerilir."));
+    const r=el("button","retry","Testi baştan çöz");
+    r.onclick=()=>{ state={}; save(); render();
+      document.getElementById("bar").scrollIntoView({behavior:"smooth",block:"start"}); };
+    f.append(r);
+    box.append(f);
+  }
+}
+render();
+/* ---- sunucu oturumu ve ilerlemenin geri yüklenmesi ---- */
+if(window.FRC && FRC.acik){
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    return FRC.oku(MODUL).then(function(su){
+      if(!su) return;
+      var degisti=false;
+      if(su.tuval!==null && su.tuval!==undefined && state.__b==null){
+        state.__b={s:su.tuval,n:null}; degisti=true;
+      }
+      Object.keys(su.cevaplar).forEach(function(id){
+        if(!state[id]){ state[id]=su.cevaplar[id]; degisti=true; }
+      });
+      if(degisti){ save(); render(); }
+    });
+  });
+}
+
+</script>
+
+</body>
+</html>

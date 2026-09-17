@@ -1,0 +1,1559 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="FRC Electrical Modul 05 - Brownout: voltage sag, ic direnc, roboRIO esikleri ve guc butcesi. Kavram, uc kart, zincir semasi, kurulum tuvali ve sekiz soruluk test.">
+<meta name="color-scheme" content="light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>window.__EMBED__=true;</script>
+<meta property="og:title" content="Brownout: Voltage Sag ve Current Draw">
+<meta property="og:description" content="FRC Electrical Modul 05 - kavram, kartlar, sema ve test.">
+<meta property="og:type" content="article">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
+<style>html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}
+[hidden]:not([hidden=until-found]){display:none!important}</style>
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<title>Brownout: Voltage Sag ve Current Draw · FRC Electrical Modül 05</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
+:root, :root[data-theme="dark"], :root[data-theme="light"]{
+  color-scheme:light;
+  --ground:#EFE9FB; --surface:#FFFFFF; --sunk:#E4DBF7;
+  --ink:#000000; --body:#141019; --mute:#463E58; --hair:#CFC2EC;
+  --acc:#5B21B6; --acc-soft:#EDE5FE;
+  --ok:#116336; --ok-soft:#E4F3EA; --no:#A5124A; --no-soft:#FBE6EE;
+  --rung-b:#7C3AED; --rung-m:#4C1D95; --rung-p:#000000; --rung-p-fg:#EFE9FB;
+  --w-pos:#6D28D9; --w-neg:#000000; --dia-fill:#FFFFFF; --dia-edge:#BFB0E0;
+  --dia-ink:#000000; --dia-mute:#463E58; --dia-pd:#5B21B6; --dia-band:#E7DDFC;
+  --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);
+  font:400 16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3{color:var(--ink);text-wrap:balance;margin:0}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+header{padding:40px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font:700 clamp(34px,8vw,52px)/1.02 var(--disp);letter-spacing:-.01em;margin:10px 0 0}
+.sub{margin:14px 0 0;max-width:60ch;font-size:15.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:500 12px/1 var(--mono);color:var(--body);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 11px;white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+section{padding:38px 0;border-bottom:1px solid var(--hair)}
+section:last-of-type{border-bottom:0}
+h2{font:600 clamp(23px,5vw,29px)/1.15 var(--disp);letter-spacing:.005em;margin:8px 0 6px}
+.lede{margin:0 0 22px;font-size:15px;color:var(--mute);max-width:62ch}
+.concept p{margin:0 0 14px;font-size:15.5px;line-height:1.72;max-width:66ch}
+.vids{margin-top:22px}
+.vid{border:1px solid var(--hair);border-radius:12px;background:var(--surface);overflow:hidden}
+.vid+.vid{margin-top:14px}
+.vtop{padding:12px 16px;border-bottom:1px solid var(--hair)}
+.vtop b{display:block;color:var(--ink);font:600 14.5px/1.35 var(--sans)}
+.vtop span{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.vframe{position:relative;width:100%;aspect-ratio:16/9;background:#1b1620}
+.vface{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;
+  background-color:#1b1620;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;text-decoration:none}
+.vface:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
+.vptri{width:74px;height:52px;border-radius:12px;background:rgba(20,16,24,.78);
+  display:flex;align-items:center;justify-content:center;transition:background .15s ease}
+.vface:hover .vptri{background:var(--acc)}
+.vptri svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.vlink{display:inline-block;margin:14px 16px 0;padding:9px 14px;border-radius:8px;
+  background:var(--acc);color:#fff;text-decoration:none;font:600 13px/1 var(--sans)}
+.vnote{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot{margin:10px 16px 0;font-size:12.5px;line-height:1.5;color:var(--mute)}
+.vfoot a{color:var(--acc);font-weight:600}
+.vsrc{margin:8px 16px 14px;font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.terms{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.term{font:500 12.5px/1 var(--mono);color:var(--ink);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:5px;padding:7px 9px}
+.rail{display:flex;flex-direction:column;gap:14px}
+.flip{perspective:1400px;background:none;border:0;padding:0;width:100%;
+  text-align:left;font:inherit;cursor:pointer;border-radius:14px}
+.flip:focus-visible{outline:2.5px solid var(--acc);outline-offset:3px}
+.inner{position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,.1,.2,1)}
+.flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){.inner{transition:none}}
+.face{border-radius:14px;border:1px solid var(--hair);background:var(--surface);
+  box-shadow:var(--shadow);padding:20px;backface-visibility:hidden}
+.face.back{position:absolute;inset:0;transform:rotateY(180deg);overflow:auto}
+.face.front{min-height:150px;display:flex;flex-direction:column}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.rung{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 9px;border-radius:5px;color:#fff}
+.r-behaviour{background:var(--rung-b)} .r-mechanism{background:var(--rung-m)}
+.r-pit{background:var(--rung-p);color:var(--rung-p-fg)}
+.count{font:500 12px/1 var(--mono);color:var(--mute)}
+.cfront{font:600 clamp(19px,4.2vw,23px)/1.3 var(--disp);color:var(--ink)}
+.ctags{margin-top:18px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:400 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);padding:5px 8px;border-radius:4px}
+.hintline{margin-top:12px;font:500 12px/1.5 var(--mono);color:var(--acc)}
+.face.front .hintline{margin-top:auto;padding-top:18px}
+.cardfig svg{max-height:150px}
+@media(max-width:520px){
+  .cback{font-size:13.6px;line-height:1.56}
+  .cardfig{margin-top:12px}
+  .cardfig svg{max-height:116px}
+  .take{font-size:12.8px;padding:9px 11px;margin-top:12px}
+}
+.cback{font-size:14.5px;line-height:1.62;margin:0}
+.take{margin-top:14px;padding:11px 13px;border-radius:9px;background:var(--acc-soft);
+  color:var(--ink);font:600 13.5px/1.45 var(--sans)}
+.gauges{padding:16px 18px;background:var(--sunk);border:1px solid var(--hair);
+  border-radius:12px;display:grid;gap:11px}
+.grow{display:grid;grid-template-columns:112px 1fr auto;align-items:center;gap:12px}
+.glabel{font:500 13px/1 var(--mono);color:var(--ink)}
+.gbar{height:14px;display:flex;align-items:center}
+.gbar i{display:block;width:100%;border-radius:2px;background:var(--acc)}
+.guse{font:400 12px/1.3 var(--sans);color:var(--mute);text-align:right;max-width:20ch}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.ptop{padding:18px 20px;border-bottom:1px solid var(--hair)}
+.ptop h3{font:600 19px/1.25 var(--disp)}
+.ptop p{margin:7px 0 0;font-size:14.5px}
+.must{list-style:none;margin:0;padding:2px 0}
+.must li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.must li:last-child{border-bottom:0}
+.must .n{font:600 12px/22px var(--mono);color:#fff;background:var(--acc);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.must b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.must span{font-size:13px;color:var(--mute)}
+.pfoot{padding:14px 20px;background:var(--sunk);font-size:13.5px;color:var(--mute)}
+.pfoot code{font:500 12.5px var(--mono);color:var(--ink)}
+.howgrid{display:grid;gap:16px;padding:18px 20px}
+@media(min-width:640px){.howgrid{grid-template-columns:1fr 1fr;gap:24px}}
+.howgrid h4{margin:0 0 9px;font:600 11.5px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--acc)}
+.howgrid ol{margin:0;padding-left:19px;font-size:13.8px;line-height:1.62}
+.howgrid ol li{margin-bottom:6px}
+.howgrid p{margin:0 0 9px;font-size:13.8px;line-height:1.62}
+.swipe{display:none;font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--mute);margin:0 0 8px}
+@media(max-width:860px){.swipe{display:block}}
+.fig{margin:16px 0 6px;border:1px solid var(--hair);border-radius:11px;
+  background:var(--surface);padding:13px 14px 9px}
+.fig .sc{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fig .sc svg{display:block;width:100%;height:auto;min-width:520px}
+.fig .cap{margin:9px 0 0;font:500 11.5px/1.45 var(--mono);color:var(--mute)}
+.fig .cap b{display:none;color:var(--acc);font-weight:600}
+@media(max-width:620px){.fig .cap b{display:inline}}
+.ans .fig,.cfront .fig{background:var(--surface)}
+.cardfig{margin:14px 0 0;border-radius:9px;overflow:hidden}
+.cardfig svg{display:block;width:100%;height:auto}
+.conceptfig{margin:6px 0 22px}
+.match[hidden],.mbar[hidden]{display:none!important}
+.bwarn{margin:0;padding:12px 20px;font:500 13px/1.5 var(--sans);color:var(--no);
+  background:var(--no-soft);border-bottom:1px solid var(--hair)}
+#bpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#bpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#bpanel.locked #bwrap,#bpanel.locked .mbar,#bpanel.locked #bres{width:100%;max-width:1120px;
+  margin-left:auto;margin-right:auto}
+#bpanel.locked .mbar{position:sticky;bottom:0;background:var(--ground);
+  border-top:1px solid var(--hair);padding:12px 20px}
+#bpanel.locked .canvas{height:min(64vh,560px)}
+.blines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.blbl{position:absolute;inset:0;pointer-events:none;z-index:6}
+.placed{z-index:2}
+.placed.bad{outline:2.5px solid var(--no);outline-offset:3px;border-radius:10px}
+.placed.fine{outline:2px solid var(--ok);outline-offset:3px;border-radius:10px}
+.pin{position:absolute;width:15px;height:15px;border-radius:50%;padding:0;transform:translate(-50%,-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;z-index:4;touch-action:none}
+.pin:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.pin:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.pin.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.pinlb.lft{transform:translate(-100%,-50%)}
+.pinlb.rgt{transform:translate(0,-50%)}
+.pinlb{position:absolute;transform:translate(-50%,-190%);font:600 9px/1 var(--mono);
+  color:var(--acc);background:var(--surface);border:1px solid var(--hair);border-radius:4px;
+  padding:2px 3px;pointer-events:none;z-index:5;white-space:nowrap}
+.wchip[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);
+  box-shadow:0 0 0 2px var(--acc-soft)}
+.mres .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.mres .pen{margin:10px 0 0;font:500 13px/1.55 var(--sans);color:var(--no)}
+.mres .miss{margin:12px 0 0;padding-left:18px;font-size:13px;line-height:1.6;color:var(--body)}
+.mres .miss b{color:var(--no);font-family:var(--mono);font-size:12px}
+.mgate{padding:20px}
+.mgate p{margin:0 0 14px;font-size:14.5px;line-height:1.62;max-width:62ch}
+body.mlock{overflow:hidden}
+#matchpanel.locked{position:fixed;inset:0;z-index:80;margin:0;border:0;border-radius:0;
+  width:auto;max-width:none;transform:none;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--ground);box-shadow:none;display:flex;flex-direction:column}
+#matchpanel.locked .ptop{background:var(--surface);border-bottom:1px solid var(--hair);
+  position:sticky;top:0;z-index:4}
+#matchpanel.locked .match,#matchpanel.locked .mres{width:100%;max-width:880px;margin-left:auto;margin-right:auto}
+#matchpanel.locked .mbar{width:100%;max-width:880px;margin:0 auto;position:sticky;bottom:0;
+  background:var(--ground);border-top:1px solid var(--hair);padding:12px 20px}
+#matchpanel.locked .mres{margin-bottom:24px}
+.match{position:relative;display:grid;grid-template-columns:1fr 92px 1fr;padding:18px 20px 6px}
+@media(max-width:620px){.match{grid-template-columns:1fr 46px 1fr;padding:14px 12px 4px}}
+.mcol{display:flex;flex-direction:column;gap:13px}
+.mitem{position:relative;display:flex;align-items:center;gap:11px;background:var(--surface);
+  border:1.6px solid var(--hair);border-radius:12px;padding:11px 13px;min-height:60px}
+.mcol.left .mitem{padding-right:24px}
+.mcol.right .mitem{padding-left:24px}
+.mitem .lbl{font:500 14px/1.35 var(--sans);color:var(--ink)}
+@media(max-width:620px){.mitem{min-height:54px;padding:9px 10px;gap:8px}
+  .mcol.left .mitem{padding-right:20px}.mcol.right .mitem{padding-left:20px}
+  .mitem .lbl{font-size:12.8px}}
+.mitem .art{flex:none;width:66px}
+.mitem .art svg{display:block;width:100%;height:auto}
+@media(max-width:620px){.mitem .art{width:50px}}
+.mdot{position:absolute;top:50%;width:19px;height:19px;border-radius:50%;transform:translateY(-50%);
+  background:var(--surface);border:2.5px solid var(--acc);cursor:pointer;padding:0;z-index:3}
+.mcol.left .mdot{right:-10px}
+.mcol.right .mdot{left:-10px}
+.mdot:hover{box-shadow:0 0 0 4px var(--acc-soft)}
+.mdot:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.mdot.on{background:var(--acc);box-shadow:0 0 0 5px var(--acc-soft)}
+.mdot.ok{border-color:var(--ok);background:var(--ok)}
+.mdot.no{border-color:var(--no);background:var(--no)}
+.mitem.ok{border-color:var(--ok);background:var(--ok-soft)}
+.mitem.no{border-color:var(--no);background:var(--no-soft)}
+.mlines{position:absolute;inset:0;pointer-events:none;z-index:1}
+.mfix{display:block;margin-top:5px;font:500 12px/1.4 var(--mono);color:var(--no)}
+.mbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 20px 16px}
+.mbar .btn:disabled{opacity:.45;cursor:default}
+.mres{margin:0 20px 16px;padding:16px 18px;border-radius:12px;background:var(--sunk);
+  border-left:3px solid var(--acc)}
+.mres .big{font:700 30px/1 var(--disp);color:var(--ink)}
+.mres .cap{font:500 12px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:9px}
+.mres p{margin:9px 0 0;font-size:14px;line-height:1.6}
+.diawrap{overflow-x:auto;padding:6px 0 2px;-webkit-overflow-scrolling:touch}
+.tray{padding:16px 20px 4px}
+.tlabel{font:600 11.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin:0 0 11px}
+.tgrid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:9px;margin-bottom:16px}
+.part{background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+  padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font:inherit;color:var(--body)}
+.part:hover{border-color:var(--acc);background:var(--acc-soft)}
+.part:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.part span{font:500 10.5px/1 var(--mono);color:var(--mute);white-space:nowrap}
+.bleed{width:100%}
+@media(min-width:880px){
+  .bleed{width:min(1160px,calc(100vw - 40px));margin-left:50%;transform:translateX(-50%)}
+  .bleed .canvas{height:min(74vh,620px)}
+}
+.canvas{position:relative;height:min(72vh,520px);margin:0 14px 14px;border-radius:12px;
+  border:1.5px dashed var(--hair);background:var(--sunk);overflow:auto;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.board{position:relative;width:1080px;height:680px}
+.board::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(var(--acc-soft) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--acc-soft) 1px,transparent 1px);
+  background-size:26px 26px;opacity:.75}
+.pan{margin:0 14px 12px;font:500 12px/1.4 var(--mono);color:var(--mute)}
+@media(max-width:700px){
+  .tgrid{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px}
+}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;text-align:center;font-size:13.5px;color:var(--mute);pointer-events:none}
+.empty.gone{display:none}
+.placed{position:absolute;cursor:grab;touch-action:none;user-select:none}
+.placed:active{cursor:grabbing}
+.placed .x{position:absolute;top:-9px;right:-9px;width:19px;height:19px;border-radius:50%;
+  background:var(--no);color:#fff;border:0;font:600 11px/19px var(--sans);cursor:pointer;padding:0}
+.placed .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.wireel{position:absolute;inset:0;pointer-events:none}
+.wireel .seg{position:absolute;height:20px;transform-origin:0 50%;pointer-events:auto;
+  cursor:grab;touch-action:none}
+.wireel .seg:active{cursor:grabbing}
+.wireel .seg i{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);border-radius:99px}
+.wireel .h{position:absolute;width:20px;height:20px;border-radius:50%;padding:0;
+  background:var(--surface);border:2.5px solid var(--acc);transform:translate(-50%,-50%);
+  cursor:crosshair;touch-action:none;pointer-events:auto;z-index:2;
+  opacity:0;transition:opacity .14s ease}
+.wireel .h:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px}
+.wireel .h.m{width:17px;height:17px;background:var(--acc);border-color:var(--surface);
+  box-shadow:0 0 0 2px var(--acc)}
+.wireel:hover .h,.wireel.sel .h,.wireel:focus-within .h{opacity:1}
+@media (prefers-reduced-motion:reduce){.wireel .h{transition:none}}
+.wireel .wtag{position:absolute;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:5px;pointer-events:auto;z-index:3;
+  font:600 10.5px/1 var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:4px 5px 4px 7px;white-space:nowrap}
+.wireel .x{position:static;width:16px;height:16px;flex:none;
+  border-radius:50%;background:var(--no);color:#fff;border:0;font:600 10px/16px var(--sans);
+  cursor:pointer;padding:0}
+.wireel .x:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cbar{display:flex;flex-wrap:wrap;gap:9px;align-items:center;padding:0 20px 16px}
+.mini{font:600 12px/1 var(--mono);background:var(--surface);color:var(--body);
+  border:1px solid var(--hair);padding:9px 13px;border-radius:999px;cursor:pointer}
+.mini:hover{border-color:var(--acc)} .mini:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.cnote{font-size:12.5px;color:var(--mute);margin-left:auto;font-family:var(--mono)}
+.diawrap svg{display:block;min-width:790px;width:100%;height:auto}
+.diacap{padding:0 20px 16px;font-size:13px;color:var(--mute)}
+.calls{list-style:none;margin:0;padding:2px 0}
+.calls li{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:12px 20px;border-bottom:1px solid var(--hair)}
+.calls li:last-child{border-bottom:0}
+.calls .n{font:600 12px/22px var(--mono);color:#fff;background:var(--dia-pd);
+  border-radius:50%;width:22px;height:22px;text-align:center}
+.calls b{display:block;color:var(--ink);font:600 15px/1.35 var(--sans)}
+.calls span{font-size:13px;color:var(--mute)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+.filt{font:600 12px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  background:var(--surface);color:var(--body);border:1px solid var(--hair);
+  padding:9px 13px;border-radius:999px;cursor:pointer}
+.filt[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.filt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.score{margin-left:auto;font:600 13px/1 var(--mono);color:var(--mute)}
+.q{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+  box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+.qhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:13px}
+.pill{font:600 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  padding:5px 8px;border-radius:4px;border:1px solid var(--hair);color:var(--mute)}
+.pill.core{color:var(--rung-b);border-color:currentColor}
+.pill.stretch{color:var(--acc);border-color:currentColor}
+.pill.pit{color:var(--no);border-color:currentColor}
+.sym{margin:0 0 12px;padding:12px 14px;background:var(--sunk);border-radius:9px;font-size:14px;line-height:1.6}
+.qtext{margin:0 0 15px;color:var(--ink);font:500 16.5px/1.42 var(--sans)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;text-align:left;
+  font:400 14.5px/1.5 var(--sans);color:var(--body);background:var(--surface);
+  border:1px solid var(--hair);border-radius:10px;padding:12px 13px;cursor:pointer;width:100%}
+.opt:hover:not(:disabled){border-color:var(--acc);background:var(--acc-soft)}
+.opt:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.opt:disabled{cursor:default}
+.opt .k{font:600 12px/1.45 var(--mono);color:var(--mute)}
+.opt.pick-ok{background:var(--ok-soft);border-color:var(--ok)} .opt.pick-ok .k{color:var(--ok)}
+.opt.pick-no{background:var(--no-soft);border-color:var(--no)} .opt.pick-no .k{color:var(--no)}
+.opt.reveal{border-color:var(--ok);border-style:dashed}
+.opt.taken{opacity:.55}
+.num{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.num input{font:500 16px var(--mono);color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:9px;padding:11px 13px;width:130px}
+.num input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.btn{font:600 13px/1 var(--sans);background:var(--ink);color:var(--ground);border:0;
+  border-radius:9px;padding:12px 17px;cursor:pointer}
+.btn:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+.unit{font:500 13px var(--mono);color:var(--mute)}
+/* debug_code: satır numaralı kod bloğu, hatalı satır seçilir ve doğrusu yazılır */
+.code{margin:0 0 12px;border:1px solid var(--hair);border-radius:10px;background:var(--surface);
+  overflow:auto}
+.code .ln{display:grid;grid-template-columns:38px 1fr;align-items:stretch;width:100%;
+  border:0;border-left:3px solid transparent;background:none;text-align:left;cursor:pointer;
+  font:400 13.5px/1.62 var(--mono);color:var(--body);padding:0}
+.code .ln:hover:not(:disabled){background:var(--acc-soft)}
+.code .ln:focus-visible{outline:2.5px solid var(--acc);outline-offset:-2px}
+.code .ln:disabled{cursor:default}
+.code .ln .no{color:var(--mute);text-align:right;padding:0 9px 0 0;user-select:none;
+  background:var(--sunk);font-size:12px}
+.code .ln .src{padding:0 12px;white-space:pre}
+.code .ln.pick{border-left-color:var(--acc);background:var(--acc-soft)}
+.code .ln.pick-ok{border-left-color:var(--ok);background:var(--ok-soft)}
+.code .ln.pick-no{border-left-color:var(--no);background:var(--no-soft)}
+.code .ln.reveal{border-left-color:var(--ok);border-left-style:dashed}
+.fixrow{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.fixrow input{flex:1 1 320px;min-width:0;font:500 13.5px var(--mono);color:var(--ink);
+  background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:11px 13px}
+.fixrow input:focus-visible{outline:2.5px solid var(--acc);outline-offset:1px}
+.steplab{margin:0 0 9px;font:500 12px/1.5 var(--mono);color:var(--mute)}
+.ans{margin-top:14px;padding:14px 15px;border-radius:10px;font-size:14.5px;line-height:1.62;
+  background:var(--sunk);border-left:3px solid var(--acc)}
+.ans .verdict{display:block;font:600 13px/1 var(--mono);letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:9px}
+.ans.good .verdict{color:var(--ok)} .ans.bad .verdict{color:var(--no)}
+.srcs{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.rule{font:500 11px/1 var(--mono);color:var(--mute);border:1px solid var(--hair);
+  border-radius:4px;padding:4px 7px}
+details.ref{margin-top:11px}
+details.ref summary{font:500 12.5px var(--mono);color:var(--mute);cursor:pointer}
+details.ref summary:focus-visible{outline:2.5px solid var(--acc);outline-offset:2px}
+details.ref p{margin:9px 0 0;font-size:13.5px;color:var(--mute);word-break:break-word}
+.finish{background:var(--surface);border:1.5px solid var(--acc);border-radius:14px;
+  box-shadow:var(--shadow);padding:24px 20px;text-align:center}
+.finish .big{font:700 46px/1 var(--disp);color:var(--ink);letter-spacing:-.01em}
+.finish .cap{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--acc);margin-bottom:12px}
+.finish .outof{font:500 12px/1.4 var(--mono);color:var(--mute);margin-top:8px}
+.finish .sm{font:400 14px/1.5 var(--sans);color:var(--body);margin:10px auto 0;max-width:44ch}
+.finish .bd{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:16px 0 20px}
+.finish .bd span{font:500 11.5px/1 var(--mono);color:var(--mute);background:var(--sunk);
+  border:1px solid var(--hair);border-radius:999px;padding:7px 10px}
+.retry{margin-top:18px;font:600 14px/1 var(--sans);background:var(--acc);color:var(--ground);border:0;
+  border-radius:10px;padding:14px 24px;cursor:pointer}
+.retry:hover{filter:brightness(1.08)}
+.retry:focus-visible{outline:2.5px solid var(--ink);outline-offset:3px}
+footer{padding:28px 0 0;font-size:13px;color:var(--mute)}
+.cright{margin:0;padding:22px 0 0;border-top:1px solid var(--hair);font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap" lang="tr">
+<header>
+  <div class="eyebrow" lang="en">electrical · modül 05</div>
+  <h1 id="mt"></h1>
+  <p class="sub" id="ms"></p>
+  <div class="meta" id="mm"></div>
+</header>
+
+<section class="concept">
+  <div class="eyebrow">kavram</div>
+  <h2>Brownout nedir</h2>
+  <div id="body"></div>
+  <div class="vids" id="vids"></div>
+  <div class="terms" id="terms"></div>
+</section>
+
+<section>
+  <div class="eyebrow">basamak</div>
+  <h2>Davranıştan bedele</h2>
+  <p class="lede">Aynı konu üç basamakta: önce ne olduğu, sonra neden olduğu, en sonda sahada neye mal olduğu. Çevirmek için karta dokunun.</p>
+  <div class="rail" id="cards"></div>
+</section>
+
+<section>
+  <div class="eyebrow">referans</div>
+  <h2>Gerilim merdiveni</h2>
+  <p class="lede">Beş sayı, beş farklı olay. Hangisinin hangi anlama geldiğini karıştırmak en sık yapılan hatadır.</p>
+  <div class="gauges" id="gauges"></div>
+</section>
+
+<section>
+  <div class="eyebrow" lang="en">mechanism map</div>
+  <h2>Kur: brownout zinciri</h2>
+  <p class="lede">Önce kurulmuş bir örnek okuyun. Sonra aynısını, örneğe bakmadan kendiniz kurun.</p>
+  <div class="panel bleed">
+    <div class="ptop"><h3>Örnek: kurulmuş bir brownout zinciri</h3>
+      <p>Akımdan başlayıp kapanan çıkışlara kadar giden zincir. Şemanın altındaki küçük notlar hangi sayının ne anlama geldiğini söyler.</p></div>
+    <p class="swipe">→ şemayı yana kaydırarak tamamını görün</p>
+    <div class="diawrap" id="dia"></div>
+    <ol class="calls" id="calls"></ol>
+  </div>
+
+  <div class="panel bleed" id="matchpanel">
+    <div class="ptop"><h3 id="mth"></h3><p id="mtp"></p></div>
+    <div class="mgate" id="mgate">
+      <p id="mgtext"></p>
+      <button class="btn" id="mstart"></button>
+    </div>
+    <div class="match" id="match" hidden></div>
+    <div class="mbar" id="mbar" hidden>
+      <button class="btn" id="mdone"></button>
+      <button class="mini" id="mreset"></button>
+      <button class="mini" id="mclose" hidden></button>
+      <span class="cnote" id="mnote"></span>
+    </div>
+    <div id="mres"></div>
+  </div>
+
+  <div class="panel bleed" id="bpanel">
+    <div class="ptop"><h3 id="bh"></h3><p id="bp"></p></div>
+    <div class="mgate" id="bgate">
+      <p id="bgtext"></p>
+      <button class="btn" id="bstart"></button>
+    </div>
+    <div id="bwrap" hidden>
+      <p class="bwarn" id="bwarn"></p>
+      <div class="tray" id="btray"></div>
+      <div class="canvas" id="bcanvas"><div class="board" id="bboard"></div>
+        <div class="empty" id="bempty"></div></div>
+      <p class="pan" id="bpan"></p>
+    </div>
+    <div class="mbar" id="bbar" hidden>
+      <button class="btn" id="bdone"></button>
+      <button class="mini" id="breset"></button>
+      <button class="mini" id="bclose" hidden></button>
+      <span class="cnote" id="bnote"></span>
+    </div>
+    <div id="bres"></div>
+    <ol class="must" id="must"></ol>
+    <div class="ptop" style="border-top:1px solid var(--hair);border-bottom:0">
+      <h3 id="c2h"></h3><p id="c2p"></p>
+    </div>
+  </div>
+
+<section>
+  <div class="eyebrow">alıştırma</div>
+  <h2>Sorular</h2>
+  <p class="lede">Bir şık seçin; gerekçe hemen açılır. Puanınız cihazınızda saklanır.</p>
+  <div class="bar" id="bar"></div>
+  <div id="qs"></div>
+</section>
+
+<footer id="foot"><p class="cright">© 2026 Semih Tuna Köse</p></footer>
+</div>
+
+<script>
+const D = {"id": "electrical-05-brownout", "title": "Brownout: Voltage Sag ve Current Draw", "summary": "Battery geriliminin yük altında neden düştüğünü, roboRIO'nun hangi eşiklerde hangi çıkışları kapattığını, brownout'un sahada nasıl tanınacağını ve battery bakımının bu zincirdeki yerini öğretir.", "season": "2026", "verifiedOn": "2026-09-02", "estimatedMinutes": 16, "body": "Brownout, battery gerilimi bir eşiğin altına düştüğünde roboRIO'nun robotu korumak için çıkışları kapatmasıdır. Nedeni genellikle battery'nin boşalması değil, o andaki current draw'dur (akım çekişi).\n\nFRC battery'si kurallara göre 12V, 17-18.2Ah bir SLA battery'dir ve kısa süreliğine 180A'in üzerinde akım verebilir. Tam dolu bir battery açık devrede 12.7-13.5V arasındadır. Yük altında bu gerilim düşer: battery'nin internal resistance'ı (iç direnç) üzerinden geçen akım bir voltage drop (gerilim düşümü) yaratır. İç direnç ne kadar yüksekse aynı akımda gerilim o kadar çok düşer. Çoğu battery'nin üretici değeri 0.011 ohm'dur ve ideal değer 0.015 ohm'un altındadır; 0.020 ohm'u aşan bir battery'nin maçlarda kullanılmaması değerlendirilmelidir.\n\nroboRIO 1'de gerilim 6.8V'un altına indiğinde PWM pinlerindeki 6V çıkışı düşmeye başlar. 6.3V'un altında roboRIO brownout protection durumuna girer: PWM çıkışları kapatılır, 6V, 5V ve 3.3V user rail'ler devre dışı kalır, GPIO çıkışları High-Z konumuna geçer, relay çıkışları kapatılır, CAN üzerindeki motor controller'lara açık bir disable komutu gönderilir ve PCM ile PH gibi pnömatik cihazlar devre dışı bırakılır. Bu eşik roboRIO 1'de sabittir; roboRIO 2'de varsayılan olarak 6.75V'tur ve yazılımdan değiştirilebilir.\n\nroboRIO bu durumdan ancak gerilim 7.5V'un üzerine çıktığında çıkar. Giriş eşiğinden yüksek olan bu çıkış eşiği, brownout'un anlık değil birkaç saniyelik bir kesinti gibi görünmesinin nedenidir.", "keyTerms": [{"term": "brownout", "glossTr": "gerilim düşünce roboRIO'nun çıkışları kapatması"}, {"term": "current draw", "glossTr": "o anda çekilen akım"}, {"term": "internal resistance", "glossTr": "battery'nin iç direnci"}, {"term": "voltage drop", "glossTr": "gerilim düşümü"}, {"term": "voltage sag", "glossTr": "yük altında gerilimin anlık çökmesi"}, {"term": "open circuit voltage", "glossTr": "yük bağlı değilken ölçülen gerilim"}, {"term": "brownout protection", "glossTr": "roboRIO'nun çıkışları kapattığı koruma durumu"}, {"term": "user rail", "glossTr": "roboRIO'nun kullanıcıya verdiği 6V, 5V ve 3.3V besleme hatları"}, {"term": "High-Z", "glossTr": "yüksek empedans; çıkışın ne yüksek ne alçak sürüldüğü boşta durum"}, {"term": "power budget", "glossTr": "güç bütçesi; mekanizmalara akım paylaştırma planı"}, {"term": "current limit", "glossTr": "yazılımda motora izin verilen en yüksek akım"}, {"term": "average charge current", "glossTr": "şarj sırasında uygulanan ortalama akım"}, {"term": "Driver Station Log Viewer", "glossTr": "maç sonrası gerilim ve akım kaydını inceleyen araç"}], "cards": [{"id": "electrical-05-c1", "rung": "behaviour", "index": 1, "of": 3, "label": "BROWNOUT", "front": "Robot bir anda durdu, kimse durdurmadı.", "back": "Brownout, battery gerilimi bir eşiğin altına düştüğünde roboRIO'nun robotu korumak için çıkışları kapatmasıdır. Kapanan tek bir yol değildir: PWM çıkışları kapatılır, 6V, 5V ve 3.3V user rail'ler devre dışı kalır, GPIO çıkışları High-Z konumuna geçer, relay çıkışları kapatılır, CAN üzerindeki motor controller'lara açık bir disable komutu gönderilir ve PCM ile PH gibi pnömatik cihazlar devre dışı bırakılır. Bu yüzden 'CAN cihazları besleme alıyordu, demek ki brownout değildi' akıl yürütmesi yanlıştır: beslenmek ile komut almak aynı şey değildir.", "takeaway": "Brownout PWM, CAN ve pnömatik yolların üçünü birden durdurur", "tags": ["brownout protection", "disable", "user rail"], "estMinutes": 2, "derivedFrom": ["electrical-05-d2", "electrical-05-d3"], "seasonSensitive": true, "imageRef": null, "ruleRefs": []}, {"id": "electrical-05-c2", "rung": "mechanism", "index": 2, "of": 3, "label": "BROWNOUT", "front": "Battery boşalmadığı hâlde gerilim neden çöküyor?", "back": "Gerilimi düşüren battery'nin dolu olup olmaması değil, o andaki current draw'dur. Akım battery'nin internal resistance'ı üzerinden geçerken bir voltage drop yaratır; iç direnç ne kadar yüksekse aynı akımda gerilim o kadar çok düşer. Çoğu battery'nin üretici değeri 0.011 ohm, ideal değer 0.015 ohm'un altıdır. Kabloyu çekiştirmek veya battery'yi düşürmek iç yapıda yorulma hasarı bırakır ve iç direnci yükseltir; o battery aynı yükte brownout eşiğine daha çabuk iner.", "takeaway": "Gerilim düşümü = çekilen akım × battery'nin iç direnci", "tags": ["internal resistance", "voltage drop", "current draw"], "estMinutes": 2, "derivedFrom": ["electrical-05-d4", "electrical-05-d5"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}, {"id": "electrical-05-c3", "rung": "pit", "index": 3, "of": 3, "label": "BROWNOUT", "front": "Climber tek başına çalışıyor, sürüş tek başına çalışıyor; ikisi birlikte robot ölüyor.", "back": "Her mekanizma tek başına sorunsuzsa sorun tek bir devrede değil, toplam current draw'dadır. Çözüm koruma değerini yükseltmek değildir; breaker'ı büyütmek kabloyu risk altına sokar ve gerilim düşümünü ortadan kaldırmaz. Dokümantasyonun önerisi bir güç bütçesi çıkarmak, mekanizmalara current limit uygulamak ve birbirini dışlayan mekanizmaların aynı anda tam güçle çalışmasını yazılımda engellemektir. Maç sonrası Driver Station Log Viewer kaydı, gerilimin hangi anda ve hangi akımda çöktüğünü gösterir.", "takeaway": "Toplam akımı bütçelemeden brownout'u breaker büyüterek çözemezsiniz", "tags": ["power budget", "current limit", "log viewer"], "estMinutes": 2, "derivedFrom": ["electrical-05-d8"], "seasonSensitive": false, "imageRef": null, "ruleRefs": []}], "drills": [{"id": "electrical-05-d1", "type": "numeric", "prompt": "roboRIO 1 kullanan bir robotta battery gerilimi yük altında düşüyor. roboRIO'nun brownout protection durumuna girdiği eşik gerilimi kaç volttur? Cevabınızı yalnızca sayı olarak yazınız.", "answer": 6.3, "tolerance": 0.01, "unit": "V", "explanation": "roboRIO 1'de iki ayrı eşik vardır ve karıştırılmamalıdır. 6.8V'un altında PWM pinlerindeki 6V çıkışı düşmeye başlar; bu henüz koruma durumu değildir. 6.3V'un altında ise roboRIO brownout protection durumuna girer ve çıkışları kapatır. 4.5V'un altında cihaz tamamen kapanabilir ve ancak 4.65V'un üzerinde toparlanır. roboRIO 1'de bu eşik sabittir ve değiştirilemez; roboRIO 2'de varsayılan 6.75V'tur ve yazılımdan ayarlanabilir. Soruda hangi sürümün kullanıldığının belirtilmesinin nedeni budur.", "hint": "İki eşik var: biri PWM rail'in düşmeye başladığı, diğeri roboRIO'nun koruma durumuna geçtiği. Soru hangisini soruyor?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html"}, {"id": "electrical-05-d2", "type": "diagnose", "symptom": "Maç sırasında robot birkaç kez kısa süreliğine tamamen tepkisiz kaldı ve sonra kendiliğinden geri geldi. Bu anlarda driver station'da gerilim göstergesinin arka planı kırmızıya döndü ve roboRIO'nun power LED'i amber renge geçti. CAN zincirinde ve breaker'larda bir sorun bulunamadı.", "prompt": "Ne yaşanmıştır?", "options": ["Robot brownout yaşamıştır; battery gerilimi roboRIO'nun koruma eşiğinin altına düşmüştür.", "Bir branch breaker atmış, soğuyup kendiliğinden geri kapanmıştır.", "CAN zincirinde bir kopukluk oluşmuş ve zincirin gerisindeki cihazlar düşmüştür.", "Radio saha bağlantısını kaybetmiştir."], "correctIndex": 0, "explanation": "İki gösterge bu duruma özgüdür ve birlikte görüldüğünde başka bir anlama gelmez: roboRIO'nun power LED'inin amber renge dönmesi ve driver station'da gerilim göstergesinin arka planının kırmızıya dönmesi brownout'un doğrudan işaretleridir. Üçüncü bir gösterge daha vardır: driver station'ın mod göstergesi Voltage Brownout yazar. Diğer şıklar belirtiyle çelişir. Atan bir branch breaker yalnızca o kol devresindeki mekanizmayı durdurur, robotun tamamını değil. CAN kopukluğu zincirin yalnızca kopmadan sonraki kısmını etkiler ve gerilim göstergesini kırmızıya çevirmez. Radio bağlantı kaybı ise haberleşme kaybı olarak görünür. Robotun kendiliğinden geri gelmesi de tutarlıdır: roboRIO bu durumdan ancak gerilim 7.5V'un üzerine çıktığında çıkar. Maçtan sonra Driver Station Log Viewer ile kayıt incelenerek gerilimin ne kadar düştüğü görülebilir.", "hint": "Robotun tamamı mı etkilendi, yoksa bir bölümü mü? Gerilim göstergesinin rengi hangi şıkları tek başına eler?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html"}, {"id": "electrical-05-d3", "type": "multiple_choice", "prompt": "Takım şöyle diyor: 'Brownout olsaydı her şey dururdu. Ama sorun anında CAN üzerindeki motor controller'lar besleme almaya devam ediyordu, demek ki yaşadığımız şey brownout değildi.' Bu akıl yürütmeyi değerlendiriniz.", "options": ["Doğru. Brownout yalnızca PWM çıkışlarını etkiler; CAN üzerindeki motor controller'lar bundan etkilenmez.", "Yanlış. Brownout protection durumunda CAN üzerindeki motor controller'lara da açık bir disable komutu gönderilir.", "Doğru. CAN cihazları beslemelerini doğrudan PD'den aldığı için brownout'tan bağımsız çalışır.", "Yanlış. Brownout yalnızca CAN cihazlarını etkiler; PWM çıkışları çalışmaya devam eder."], "correctIndex": 1, "explanation": "Brownout protection durumunda roboRIO aynı anda altı şey yapar: PWM çıkışlarını kapatır, 6V, 5V ve 3.3V user rail'leri devre dışı bırakır, GPIO çıkışlarını High-Z konumuna alır, relay çıkışlarını kapatır, CAN üzerindeki motor controller'lara açık bir disable komutu gönderir ve PCM ile PH gibi pnömatik cihazları devre dışı bırakır. Yani PWM, CAN ve pnömatik yolların üçü birden durur. Üçüncü şık besleme ile komutu birbirine karıştırır: motor controller'lar gerçekten de beslemelerini PD'den alır ve elektriksel olarak ayaktadır, ancak roboRIO'dan gelen disable komutu nedeniyle motoru sürmeyi bırakırlar. Cihazın ışığının yanıyor olması onun komut aldığı anlamına gelmez.", "hint": "Bir motor controller'ın beslenmesi ile komut alması aynı şey mi? Brownout hangisini keser?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html"}, {"id": "electrical-05-d4", "type": "find_the_fault", "prompt": "Aşağıdaki battery bakım uygulamalarından dördü doğrudur. Yanlış olanı seçiniz.", "scenario": "Bir takımın pit'teki battery bakım alışkanlıkları aşağıda listelenmiştir.", "elements": ["Maçtan çıkan battery, kasası soğuyana kadar bekletiliyor ve ancak elle dokunulduğunda ılık gelmediğinde şarja takılıyor.", "Battery'ler raftan alınırken ve robota taşınırken kablolarından tutulup çekiliyor.", "Kullanılmayan battery'ler tam şarjlı olarak saklanıyor.", "Şarj sırasında battery'nin havalandırma delikleri açık bırakılıyor ve ortalama şarj akımı 6A'in altında tutuluyor.", "İç direnci 0.020 ohm'u aşan battery'ler maçlarda kullanılmıyor, yalnızca pit denemelerinde tutuluyor."], "faultIndex": 1, "explanation": "Battery'yi kablolarından tutup çekmek iç yapısında yorulma hasarı yaratır; bu hasar battery'nin internal resistance'ını yükseltir ve battery'yi zamanından önce tüketir. Sonuç doğrudan bu modülün konusudur: iç direnç yükseldikçe aynı akımda gerilim daha çok düşer, yani brownout eşiğine daha çabuk ulaşılır. Battery kasasından tutulmalıdır. Aynı nedenle battery düşürülmemelidir; düşme iç plakaları eğebilir. Diğer dört uygulama doğrudur. Şarj öncesi soğutma ve tam şarjlı saklama dokümantasyonun önerileridir. Havalandırma deliklerinin şarj sırasında kapatılmaması ve ortalama şarj akımının 6A'i aşmaması ise kural gereğidir.", "hint": "Öğelerden biri battery'ye fiziksel hasar veriyor. Bu hasarın brownout ile ne ilgisi olabilir?", "difficulty": "core", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R601", "season": "2026", "topic": "tek battery; şarj için havalandırma delikleri kapatılmamalı"}, {"rule": "R604", "season": "2026", "topic": "şarjda 6A ortalama şarj akımı aşılamaz"}], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html", "sourceNote": "Havalandırma ve battery özellikleri resmi denetim listesinden doğrulandı: \"A single 12V, 17-18.2Ah ROBOT battery, securely fastened inside ROBOT with vents unobstructed for charging. \u003cR601, R605, & R606>\" https://firstfrc.blob.core.windows.net/frc2026/Manual/2026FRCInspectionChecklist.pdf"}, {"id": "electrical-05-d5", "type": "numeric", "prompt": "Bir battery'nin iç direncini ölçtünüz. Kaç ohm'un üzerindeki bir değer, o battery'nin artık maçlarda kullanılmamasının değerlendirilmesi gerektiğine işaret eder? Cevabınızı yalnızca sayı olarak yazınız.", "answer": 0.02, "tolerance": 0.0005, "unit": "ohm", "explanation": "Dokümantasyon üç ayrı değer verir ve bunlar karıştırılmamalıdır. Çoğu battery'nin üretici değeri 0.011 ohm'dur. İdeal iç direnç 0.015 ohm'un altındadır. 0.020 ohm'u aşan bir battery için ise maçlarda kullanılmaması değerlendirilmelidir; bu bir kural yasağı değil, dokümantasyonun önerisidir. Sınırın önemi doğrudan brownout ile ilgilidir: iç direnç yükseldikçe aynı akım çekişinde gerilim daha çok düşer, dolayısıyla battery dolu olsa bile robot koruma eşiğine daha çabuk iner. Yani yüksek iç dirençli bir battery, şarj göstergesi iyi görünse de maç ortasında robotu düşürebilir.", "hint": "Üç değer var: üretici tipik değeri, ideal üst sınır ve kullanmama sınırı. Soru hangisini soruyor?", "difficulty": "stretch", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"}, {"id": "electrical-05-d6", "type": "multiple_choice", "prompt": "Maçtan on dakika önce robot boşta beklerken driver station 12.5V gösteriyor. Ne yapmalısınız?", "options": ["Battery'yi yüksek akımlı bir şarj cihazına takıp maça kadar kalan on dakikada takviye etmelisiniz.", "Bir şey yapmanıza gerek yok; 12V nominal bir battery için 12.5V fazlasıyla yeterlidir.", "Battery'yi değiştirip şarj etmelisiniz; boştaki bir robotta 12.5V okuyan bir battery maç öncesi değiştirilmelidir.", "Bir şey yapmanıza gerek yok; gerilim yalnızca yük altında ölçüldüğünde anlam taşır."], "correctIndex": 2, "explanation": "Dokümantasyon bu durumu açıkça tarif eder: boştaki bir robotta 12.5V okuyan battery'ler maçtan önce değiştirilmeli ve şarj edilmelidir. Tam dolu bir battery açık devrede 12.7-13.5V arasındadır, dolayısıyla 12.5V zaten kısmen boşalmış demektir ve yük altında gerilim buradan çok daha aşağı iner. İkinci şık yaygın bir yanılgıdır: cihazın adı yanıltıcıdır, tam dolu bir battery 12.0V değildir. Birinci şık hem kuralın izin verdiği ortalama şarj akımıyla çelişir hem de on dakikada anlamlı bir şarj sağlamaz. Dördüncü şık yanlıştır çünkü boştaki gerilim şarj durumunun doğrudan bir göstergesidir.", "hint": "Tam dolu bir battery boşta kaç volt gösterir? 12.5V bu aralığın neresinde kalıyor?", "difficulty": "core", "seasonSensitive": false, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"}, {"id": "electrical-05-d7", "type": "multiple_choice", "prompt": "Takım, maçlar arasında battery'leri daha hızlı doldurmak için etkinliğe 10A değerinde bir şarj cihazı getirmiş ve cihazı en yüksek ayarında kullanıyor. Bu uygun mudur?", "options": ["Uygundur; şarj hızı yalnızca battery ömrünü ilgilendirir, bir kural konusu değildir.", "Uygun değildir; etkinlikte takımların kendi şarj cihazını kullanması yasaktır, şarj yalnızca görevlilerin istasyonunda yapılır.", "Uygundur; cihaz yalnızca maçlar arasında ve kısa süreyle en yüksek ayarında çalıştırıldığı sürece sakınca yoktur.", "Uygun değildir; kural, bir robot battery'sinin 6A ortalama şarj akımını aşacak şekilde şarj edilmesine izin vermez."], "correctIndex": 3, "explanation": "Kural, bir robot battery'sini şarj eden hiçbir cihazın 6A ortalama şarj akımını aşacak şekilde kullanılamayacağını söyler. Buradaki incelik önemlidir: kısıt cihazın etiketinde yazan değer değil, uygulanan ortalama şarj akımıdır. 10A'lik bir cihaz, ortalama şarj akımı 6A'i aşmayacak şekilde ayarlanabiliyorsa kullanılabilir; sorudaki gibi en yüksek ayarında çalıştırılırsa kural ihlal edilir. Üçüncü şık bu nedenle yanlıştır: süre kısaltmak ortalama akımı kuralın izin verdiği seviyeye indirmez. İkinci şık ise fazla ileri gider; takımlar kendi şarj cihazlarını kullanabilir, ayrıca kural şarj cihazının uygun Anderson SB connector'a sahip olmasını ister. Mühendislik gerekçesi de aynı yöne bakar: hızlı şarj battery'yi ısıtır ve maçtan yeni çıkmış, zaten sıcak bir battery'nin soğumadan yüksek akımla şarj edilmesi ömrünü kısaltır.", "hint": "Kısıt cihazın etiketinde yazan değer mi, yoksa gerçekten uygulanan şarj akımı mı?", "difficulty": "stretch", "seasonSensitive": true, "imageRef": null, "ruleRefs": [{"rule": "R604", "season": "2026", "topic": "şarjda 6A ortalama şarj akımı aşılamaz; etkinlik boyunca geçerlidir"}, {"rule": "R603", "season": "2026", "topic": "şarj cihazında uygun Anderson SB connector bulunmalı"}], "source": "https://firstfrc.blob.core.windows.net/frc2026/Manual/2026GameManual.pdf", "sourceNote": "R603 ve R604'ün metni iki bağımsız ayna üzerinden doğrulandı (frcmanual.com ve frctools.com); resmi PDF 8. bölüme ulaşmadan kesildiği ve bu iki kural Team Update ile denetim listesinde geçmediği için resmi kaynaktan doğrulanamadı. Şarj öncesi soğutma önerisi: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"}, {"id": "electrical-05-d8", "type": "diagnose", "symptom": "Robot sürüşte tek başına ve climber çalışırken tek başına sorunsuz. Ancak maç sonunda climber çalışırken aynı anda sürüş yapıldığında robot iki kez brownout yaşadı. Battery yeni ve iç direnci 0.011 ohm ölçüldü. Hiçbir breaker atmadı ve CAN zincirinde sorun yok.", "prompt": "Bu duruma en uygun çözüm nedir?", "options": ["Bir güç bütçesi çıkarıp climber ile sürüşün aynı anda tam güçle çalışmasını yazılımda engellemek veya bu mekanizmalara current limit uygulamak.", "İlgili kanallara daha yüksek değerli breaker'lar takarak akım sınırını yükseltmek.", "Battery'yi değiştirmek; iç direnç ölçümü yanıltıcı olabilir.", "roboRIO 2 kullanılıyorsa brownout eşiğini yazılımdan düşürerek korumanın devreye girmesini geciktirmek."], "correctIndex": 0, "explanation": "Belirti nedeni doğrudan gösteriyor: her mekanizma tek başına sorunsuz, ikisi birlikte değil. Yani sorun tek bir devrede değil, toplam current draw'da. Dokümantasyonun brownout'tan kaçınma önerileri tam olarak budur: sürekli çekilebilecek en yüksek akımı belirlemek, mekanizmalar arasında bir güç bütçesi yapmak ve birbirini dışlayan mekanizmaların aynı anda çalışmasını yazılımda engellemeyi değerlendirmek. Üçüncü şık elenir, çünkü 0.011 ohm üreticinin tipik değeridir ve battery sağlıklıdır. İkinci şık durumu kötüleştirir: breaker kabloyu korur, battery'yi değil; değerini yükseltmek daha fazla akım geçmesine izin verir ve gerilim daha da düşer, ayrıca kanal başına izin verilen üst sınırlar bellidir. Dördüncü şık ise sorunu çözmez: eşiği düşürmek robota güç eklemez, yalnızca korumanın daha düşük bir gerilimde devreye girmesini sağlar ve aşırı akım çekişi olduğu gibi kalır. Üstelik bu ayar yalnızca roboRIO 2'de mümkündür; roboRIO 1'de eşik sabittir.", "hint": "Her mekanizma tek başına çalışıyor, birlikte çalışmıyor. Bu bilgi sorunu hangi tek büyüklüğe indirger?", "difficulty": "pit", "seasonSensitive": true, "imageRef": null, "ruleRefs": [], "source": "https://docs.wpilib.org/en/stable/docs/software/roborio-info/roborio-brownouts.html", "sourceNote": "Battery iç direnç değerleri için: https://docs.wpilib.org/en/stable/docs/hardware/hardware-basics/robot-battery.html"}], "videoRefs": []};
+const $=(s,r)=>(r||document).querySelector(s);
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const el=(t,c,x)=>{const n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+const T={flip:"dokun ve çevir"};
+
+/* ---- shared component art: schematic, not photoreal ---- */
+const WP="var(--w-pos)", WN="var(--w-neg)", BX="var(--dia-fill)", ED="var(--dia-edge)",
+      IK="var(--dia-ink)", MU="var(--dia-mute)", PDC="var(--dia-pd)", BAND="var(--dia-band)";
+const t=(x,y,s,sz,c,an,w)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Sans,sans-serif" font-weight="${w||600}">${s}</text>`;
+const m=(x,y,s,sz,c,an)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${c}" text-anchor="${an||"middle"}" font-family="IBM Plex Mono,monospace" font-weight="500">${s}</text>`;
+const wire=(d,c,w)=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+/* each part is drawn once and reused by both the example and the tray */
+const ART={
+ battery:(x,y)=>`<g>
+   <rect x="${x+14}" y="${y}" width="20" height="13" rx="3" fill="${WP}"/>
+   <rect x="${x+126}" y="${y}" width="20" height="13" rx="3" fill="${WN}"/>
+   <rect x="${x}" y="${y+11}" width="160" height="86" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+12}" y="${y+24}" width="136" height="3" rx="1.5" fill="${ED}"/>
+   ${t(x+80,y+56,"battery",14,IK)}${m(x+80,y+76,"12V · 18Ah",11,MU)}
+   ${m(x+24,y+9,"+",12,BX)}${m(x+136,y+9,"−",12,BX)}</g>`,
+ breaker:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="118" height="92" rx="10" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x+38}" y="${y+22}" width="42" height="30" rx="6" fill="${WP}"/>
+   <circle cx="${x+59}" cy="${y+37}" r="5" fill="${BX}"/>
+   ${m(x+59,y+72,"120A",11.5,IK)}
+   <rect x="${x-7}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/>
+   <rect x="${x+116}" y="${y+40}" width="9" height="16" rx="2" fill="${ED}"/></g>`,
+ pd:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="168" height="340" rx="11" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   ${t(x+84,y+30,"PD",16,IK)}${m(x+84,y+48,"güç dağıtımı",10.5,MU)}
+   <rect x="${x-8}" y="${y+52}" width="11" height="16" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+234}" width="11" height="16" rx="2" fill="${WN}"/>
+   ${m(x+15,y+65,"+",12,IK,"start")}${m(x+15,y+247,"−",12,IK,"start")}
+   <g>
+     <rect x="${x+96}" y="${y+55}"  width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+134}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+217}" width="60" height="24" rx="5" fill="${PDC}"/>
+     <rect x="${x+96}" y="${y+295}" width="60" height="24" rx="5" fill="${PDC}"/>
+   </g>
+   ${m(x+126,y+71,"10A",10.5,BX)}${m(x+126,y+150,"10A",10.5,BX)}
+   ${m(x+126,y+233,"40A",10.5,BX)}${m(x+126,y+311,"40A",10.5,BX)}
+   ${m(x+42,y+327,"kanallar",9.5,MU)}</g>`,
+ rio:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <g fill="${ED}"><rect x="${x+12}" y="${y+44}" width="14" height="6" rx="2"/>
+   <rect x="${x+32}" y="${y+44}" width="14" height="6" rx="2"/><rect x="${x+52}" y="${y+44}" width="14" height="6" rx="2"/></g>
+   <circle cx="${x+130}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+28,"roboRIO",13,IK)}${m(x+73,y+41,"beyin",9.5,MU)}</g>`,
+ radio:(x,y)=>`<g>
+   <rect x="${x+22}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x+118}" y="${y-9}" width="4" height="12" rx="2" fill="${ED}"/>
+   <rect x="${x}" y="${y}" width="146" height="48" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${t(x+73,y+24,"radio",13,IK)}${m(x+73,y+38,"kablosuz bağlantı",9.5,MU)}</g>`,
+ vrm:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="52" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <rect x="${x-8}" y="${y+17}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+27}" width="10" height="7" rx="2" fill="${WN}"/>
+   <rect x="${x+30}" y="${y-7}" width="10" height="8" rx="2" fill="${WP}"/>
+   <rect x="${x+46}" y="${y-7}" width="10" height="8" rx="2" fill="${WN}"/>
+   <rect x="${x+104}" y="${y+13}" width="30" height="9" rx="3" fill="${PDC}"/>
+   <rect x="${x+104}" y="${y+30}" width="30" height="9" rx="3" fill="${PDC}"/>
+   ${t(x+58,y+26,"VRM",13,IK)}${m(x+58,y+41,"12V regülatör",9,MU)}</g>`,
+ talon:(x,y,sub)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="62" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+24}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+34}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+30,"V+",8.5,MU,"start")}${m(x+13,y+41,"V−",8.5,MU,"start")}
+   ${t(x+84,y+28,"Talon FX",12.5,IK)}${m(x+84,y+43,sub,9,MU)}
+   ${m(x+84,y+56,"motor controller",8.5,MU)}</g>`,
+ mc:(x,y)=>`<g>
+   <rect x="${x}" y="${y}" width="146" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+   <circle cx="${x+16}" cy="${y+14}" r="4" fill="${PDC}"/>
+   <rect x="${x-8}" y="${y+21}" width="10" height="7" rx="2" fill="${WP}"/>
+   <rect x="${x-8}" y="${y+31}" width="10" height="7" rx="2" fill="${WN}"/>
+   ${m(x+13,y+27,"V+",8.5,MU,"start")}${m(x+13,y+40,"V−",8.5,MU,"start")}
+   ${t(x+82,y+30,"motor controller",11.5,IK)}${m(x+82,y+45,"motoru sürer",9,MU)}</g>`
+};
+/* ---- modül 5 ek parçaları: brownout zinciri ---- */
+const AMB="#C2740A";
+/* neden-sonuç düğümü: kind 0 neden, 1 eşik, 2 koruma, 3 kapanan çıkış, 4 yanlış */
+ART.node=(x,y,lab,sub,kind)=>{
+  const col = kind===3?NO : kind===4?NO : kind===2?PDC : ED;
+  const fill= kind===3?"var(--no-soft)" : kind===4?"var(--no-soft)" : kind===2?BAND : BX;
+  return `<g><rect x="${x}" y="${y}" width="182" height="62" rx="9" fill="${fill}"
+    stroke="${col}" stroke-width="2"${kind===4?' stroke-dasharray="7 5"':''}/>
+    ${t(x+91,y+(sub?26:36),lab,12,kind===3||kind===4?NO:IK)}
+    ${sub?m(x+91,y+43,sub,9,MU):""}</g>`;
+};
+ART.nDraw =(x,y)=>ART.node(x,y,"yüksek current draw","o anda çekilen akım",0);
+ART.nIr   =(x,y)=>ART.node(x,y,"battery iç direnci","internal resistance",0);
+ART.nDrop =(x,y)=>ART.node(x,y,"gerilim düşümü","akım × iç direnç",0);
+ART.nThr  =(x,y)=>ART.node(x,y,"6.3V eşiğinin altı","roboRIO 1",1);
+ART.nBp   =(x,y)=>ART.node(x,y,"brownout protection","roboRIO çıkışları keser",2);
+ART.oPwm  =(x,y)=>ART.node(x,y,"PWM çıkışları","kapatılır",3);
+ART.oRail =(x,y)=>ART.node(x,y,"6V · 5V · 3.3V rail","devre dışı",3);
+ART.oGpio =(x,y)=>ART.node(x,y,"GPIO çıkışları","High-Z",3);
+ART.oRelay=(x,y)=>ART.node(x,y,"relay çıkışları","kapatılır",3);
+ART.oCan  =(x,y)=>ART.node(x,y,"CAN motor controller","disable komutu",3);
+ART.oPneu =(x,y)=>ART.node(x,y,"PCM / PH","devre dışı",3);
+ART.xEmpty=(x,y)=>ART.node(x,y,"battery tamamen boşaldı","yaygın yanılgı",4);
+ART.xBrk  =(x,y)=>ART.node(x,y,"branch breaker attı","tek kolu etkiler",4);
+
+/* battery + iç direnç: gerilim düşümünün doğduğu yer */
+ART.cell=(x,y)=>`<g>
+  <rect x="${x+14}" y="${y}" width="20" height="13" rx="3" fill="${WP}"/>
+  <rect x="${x+126}" y="${y}" width="20" height="13" rx="3" fill="${WN}"/>
+  <rect x="${x}" y="${y+11}" width="160" height="104" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+  ${t(x+80,y+40,"battery",13,IK)}${m(x+80,y+56,"12V · 17-18.2Ah",10,MU)}
+  <path d="M${x+30} ${y+86} h14 l6 -9 l8 18 l8 -18 l8 18 l6 -9 h16" fill="none" stroke="${PDC}"
+    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  ${m(x+118,y+90,"iç direnç",9.5,PDC)}
+  ${m(x+80,y+108,"0.011 Ω tipik · 0.015 Ω altı ideal",9,MU)}
+  ${m(x+24,y+9,"+",12,BX)}${m(x+136,y+9,"−",12,BX)}</g>`;
+
+/* driver station gerilim göstergesi */
+ART.dsv=(x,y,v,red)=>`<g>
+  <rect x="${x}" y="${y}" width="126" height="52" rx="8" fill="${red?"var(--no-soft)":BX}"
+    stroke="${red?NO:ED}" stroke-width="2"/>
+  ${t(x+63,y+27,v,16,red?NO:IK)}${m(x+63,y+43,"driver station",9,MU)}</g>`;
+
+/* roboRIO, power LED rengiyle */
+ART.rioLed=(x,y,amber)=>`<g>
+  <rect x="${x}" y="${y}" width="152" height="58" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+  <circle cx="${x+18}" cy="${y+16}" r="6" fill="${amber?AMB:"var(--ok)"}"/>
+  ${m(x+18,y+34,amber?"amber":"yeşil",8,MU)}
+  ${t(x+92,y+28,"roboRIO",13,IK)}${m(x+92,y+44,amber?"brownout":"normal",9.5,amber?NO:MU)}</g>`;
+
+/* şarj cihazı */
+ART.charger=(x,y)=>`<g>
+  <rect x="${x}" y="${y}" width="150" height="56" rx="9" fill="${BX}" stroke="${ED}" stroke-width="2"/>
+  <rect x="${x+150}" y="${y+22}" width="10" height="12" rx="2" fill="${WP}"/>
+  ${t(x+75,y+26,"şarj cihazı",12,IK)}${m(x+75,y+42,"ortalama akım 6A'i aşamaz",9,MU)}</g>`;
+
+const hint=(x,y,s,anchor)=>`<g><circle cx="${x-9}" cy="${y-4}" r="2.6" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y}" font-size="11" fill="${MU}" text-anchor="${anchor||"start"}" font-family="IBM Plex Sans,sans-serif">${s}</text></g>`;
+const badge=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="13" fill="${PDC}"/>`+
+  `<text x="${x}" y="${y+4.5}" font-size="12.5" fill="#fff" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-weight="600">${n}</text>`;
+/* ---- figure library: her biri tek bir fikri hatırlatmak için ---- */
+const NO="var(--no)", OKC="var(--ok)";
+const nb=(x,y,w,h,title,sub,fill)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9"
+  fill="${fill||BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(x+w/2,y+(sub?h/2-1:h/2+5),title,13,IK)+(sub?m(x+w/2,y+h/2+15,sub,10,MU):"");
+const chip=(x,y,w,s,col)=>`<rect x="${x}" y="${y}" width="${w}" height="22" rx="5" fill="${col||PDC}"/>`+
+  m(x+w/2,y+15,s,10.5,BX);
+const cross=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${NO}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.5} ${y-r*0.5} L${x+r*0.5} ${y+r*0.5} M${x+r*0.5} ${y-r*0.5} L${x-r*0.5} ${y+r*0.5}"
+   stroke="${NO}" stroke-width="2.6" stroke-linecap="round"/>`;
+const tick=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${OKC}" stroke-width="2.6"/>`+
+  `<path d="M${x-r*0.45} ${y} L${x-r*0.08} ${y+r*0.4} L${x+r*0.5} ${y-r*0.42}"
+   fill="none" stroke="${OKC}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+const svg=(w,h,inner,label)=>`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
+
+const FIG={};
+
+/* ---- modül 5 görselleri ---- */
+const mb=(x,y,w,h,title,col)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8"
+  fill="${BX}" stroke="${col||ED}" stroke-width="2"/>`+t(x+w/2,y+h/2+5,title,14,IK);
+
+FIG.sag=()=>svg(640,290,
+  m(20,26,"AYNI BATTERY, İKİ FARKLI AN",11.5,PDC,"start")+
+  `<rect x="20" y="40" width="290" height="104" rx="10" fill="${BX}" stroke="${ED}" stroke-width="1.6"/>`+
+  m(165,66,"boşta",11,MU)+t(165,96,"12.6V",22,IK)+m(165,120,"akım yok, düşüm yok",10,MU)+
+  `<rect x="330" y="40" width="290" height="104" rx="10" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.6"/>`+
+  m(475,66,"climber + sürüş birlikte",11,NO)+t(475,96,"6.2V",22,NO)+m(475,120,"yüksek akım, büyük düşüm",10,MU)+
+  m(320,176,"Aradaki farkı yaratan battery'nin dolu olup olmaması değil,",12,IK)+
+  m(320,196,"o anda çekilen akımdır.",12,IK)+
+  `<rect x="120" y="216" width="400" height="52" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.4"/>`+
+  t(320,248,"gerilim düşümü = akım × iç direnç",15,IK),
+  "Voltage sag");
+
+FIG.thresholds=()=>svg(640,300,
+  m(20,26,"EŞİKLER KARIŞTIRILMAZ",11.5,PDC,"start")+
+  `<line x1="60" y1="46" x2="60" y2="266" stroke="${ED}" stroke-width="1.6"/>`+
+  `<circle cx="60" cy="70" r="5" fill="${PDC}"/>`+m(78,74,"12.7 - 13.5V — tam dolu aralığı",12,MU,"start")+
+  `<circle cx="60" cy="112" r="5" fill="${NO}"/>`+m(78,116,"12.5V — boştaki robotta: değiştir",12,NO,"start")+
+  `<circle cx="60" cy="166" r="5" fill="${OKC}"/>`+m(78,170,"7.5V — bunun üzerinde çıkar",12,OKC,"start")+
+  `<circle cx="60" cy="206" r="5" fill="${PDC}"/>`+m(78,210,"6.8V — PWM rail düşmeye başlar",12,MU,"start")+
+  `<circle cx="60" cy="246" r="7" fill="${NO}"/>`+m(78,250,"6.3V — brownout protection",12.5,NO,"start")+
+  m(320,286,"6.3V'ta girer, 7.5V'un üzerinde çıkar: bu yüzden kesinti saniyeler sürer",11,IK),
+  "Gerilim eşikleri");
+
+FIG.sixOff=()=>svg(640,300,
+  mb(200,20,240,52,"brownout protection",PDC)+
+  `<path d="M320 72 V96" fill="none" stroke="${NO}" stroke-width="3"/>`+
+  `<path d="M60 96 H580" fill="none" stroke="${NO}" stroke-width="3"/>`+
+  [["PWM çıkışları",20],["user rail 6·5·3.3V",220],["GPIO High-Z",420]].map(([s,x])=>
+    `<path d="M${x+100} 96 V120" fill="none" stroke="${NO}" stroke-width="3"/>`+
+    `<rect x="${x}" y="120" width="200" height="52" rx="9" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.8"/>`+
+    t(x+100,152,s,12,NO)).join("")+
+  [["relay çıkışları",20],["CAN disable komutu",220],["PCM / PH",420]].map(([s,x])=>
+    `<rect x="${x}" y="196" width="200" height="52" rx="9" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.8"/>`+
+    t(x+100,228,s,12,NO)).join("")+
+  m(320,282,"altısı birden durur; biri çalışıyor diye brownout değil denemez",11.5,IK),
+  "Brownout kapatılan çıkışlar");
+
+FIG.budget=()=>svg(640,268,
+  m(20,26,"TEK BAŞINA ÇALIŞIR, BİRLİKTE ÇALIŞMAZ",11.5,PDC,"start")+
+  `<rect x="20" y="42" width="180" height="60" rx="9" fill="${BX}" stroke="${ED}" stroke-width="1.8"/>`+
+  t(110,72,"sürüş",13,IK)+m(110,90,"tek başına sorunsuz",9.5,MU)+tick(230,72,12)+
+  `<rect x="270" y="42" width="180" height="60" rx="9" fill="${BX}" stroke="${ED}" stroke-width="1.8"/>`+
+  t(360,72,"climber",13,IK)+m(360,90,"tek başına sorunsuz",9.5,MU)+tick(480,72,12)+
+  `<rect x="20" y="122" width="430" height="60" rx="9" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.8"/>`+
+  t(235,152,"ikisi birlikte",13,NO)+m(235,170,"toplam current draw eşiği aşar",9.5,MU)+cross(480,152,12)+
+  m(320,214,"Çözüm breaker'ı büyütmek değildir: breaker kabloyu korur, gerilimi tutmaz.",11.5,IK)+
+  m(320,238,"Güç bütçesi çıkarın, current limit uygulayın, aynı anda çalışmayı kilitleyin.",11.5,IK),
+  "Güç bütçesi");
+
+FIG.batteryCare=()=>svg(640,266,
+  m(20,26,"İÇ DİRENCİ YÜKSELTEN ŞEY BROWNOUT'U YAKINLAŞTIRIR",11.5,PDC,"start")+
+  `<rect x="20" y="42" width="290" height="86" rx="10" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.6"/>`+
+  m(165,68,"kablosundan çekmek · düşürmek",11.5,NO)+m(165,90,"iç yapıda yorulma hasarı",10,MU)+
+  m(165,112,"iç direnç yükselir",10.5,NO)+
+  `<rect x="330" y="42" width="290" height="86" rx="10" fill="${BX}" stroke="${ED}" stroke-width="1.6"/>`+
+  m(475,68,"kasasından taşımak",11.5,IK)+m(475,90,"sıcakken şarja takmamak",10,MU)+
+  m(475,112,"havalandırma delikleri açık",10,MU)+
+  `<rect x="120" y="148" width="400" height="46" rx="9" fill="${BAND}" stroke="${PDC}" stroke-width="1.4"/>`+
+  t(320,177,"0.011 Ω tipik · 0.015 Ω altı ideal · 0.020 Ω üstü kullanma",12,IK)+
+  m(320,222,"Şarjda ortalama akım 6A'i aşamaz; sınır cihazın etiketi değil,",11,MU)+
+  m(320,240,"gerçekten uygulanan ortalama şarj akımıdır.",11,MU),
+  "Battery bakımı ve iç direnç");
+
+FIG.signs=()=>svg(640,236,
+  m(20,26,"SAHADA NASIL TANINIR",11.5,PDC,"start")+
+  ART.rioLed(20,44)+ART.dsv(200,45,"12.4V")+m(400,76,"normal",12,MU,"start")+
+  ART.rioLed(20,120)+ART.dsv(200,121,"6.2V",true)+
+  m(400,142,"power LED amber",12,NO,"start")+
+  m(400,162,"gerilim göstergesi kırmızı",12,NO,"start")+
+  m(320,212,"Bir kol değil robotun tamamı durur; mod göstergesi Voltage Brownout yazar.",11.5,IK),
+  "Brownout belirtileri");
+
+/* kart yüzleri için sade sürümler */
+FIG.sixOffMini=()=>svg(400,160,
+  mb(110,14,180,44,"brownout")+
+  `<path d="M200 58 V76 M40 76 H360" fill="none" stroke="${NO}" stroke-width="3"/>`+
+  [["PWM",30],["rail",125],["GPIO",220],["relay",315]].map(([s,x])=>
+    `<path d="M${x+10} 76 V92" fill="none" stroke="${NO}" stroke-width="3"/>`+
+    `<rect x="${x-20}" y="92" width="60" height="30" rx="6" fill="var(--no-soft)" stroke="${NO}" stroke-width="1.6"/>`+
+    m(x+10,112,s,10,NO)).join("")+
+  m(200,146,"CAN disable ve pnömatik de kapanır",11.5,IK),
+  "Altı çıkış birden");
+FIG.sagMini=()=>svg(400,150,
+  mb(20,24,150,50,"12.6V boşta")+
+  `<path d="M170 49 H230" fill="none" stroke="${NO}" stroke-width="3"/>`+
+  `<rect x="230" y="24" width="150" height="50" rx="8" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>`+
+  t(305,55,"6.2V yükte",14,NO)+
+  m(200,104,"düşümü yaratan akımdır",12,IK)+
+  m(200,128,"akım × iç direnç",11.5,MU),
+  "Voltage sag");
+FIG.budgetMini=()=>svg(400,150,
+  `<rect x="20" y="20" width="160" height="44" rx="8" fill="${BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(100,48,"sürüş",13,IK)+tick(196,42,11)+
+  `<rect x="220" y="20" width="160" height="44" rx="8" fill="${BX}" stroke="${ED}" stroke-width="2"/>`+
+  t(300,48,"climber",13,IK)+
+  `<rect x="20" y="78" width="360" height="44" rx="8" fill="var(--no-soft)" stroke="${NO}" stroke-width="2"/>`+
+  t(200,106,"ikisi birlikte: brownout",13,NO)+
+  m(200,142,"güç bütçesi ve current limit",11.5,IK),
+  "Güç bütçesi");
+
+
+
+
+
+$("#mt").textContent=D.title; $("#ms").textContent=D.summary;
+[["Sezon",D.season],["Drill",D.drills.length],["Kart",D.cards.length],
+ ["Süre",D.estimatedMinutes+" dk"],["Doğrulama",D.verifiedOn]]
+ .forEach(([k,v])=>{const c=el("span","chip");c.append(k+" ",Object.assign(el("b"),{textContent:v}));$("#mm").append(c);});
+const figure=(html,cap,cls)=>{const d=el("div","fig"+(cls?" "+cls:""));
+  const sc=el("div","sc"); sc.innerHTML=html; d.append(sc);
+  if(cap){const c=el("p","cap");
+    c.append(Object.assign(el("b"),{textContent:"→ yana kaydırın · "}),document.createTextNode(cap));
+    d.append(c);}
+  return d;};
+D.body.split("\n\n").forEach((p,i)=>{
+  $("#body").append(el("p",null,p));
+  if(i===1) $("#body").append(figure(FIG.sag(),
+    "Gerilimi düşüren battery'nin boş olması değil, o andaki current draw'dur.","conceptfig"));
+  if(i===2) $("#body").append(figure(FIG.sixOff(),
+    "Koruma devreye girdiğinde altı yol birden durur.","conceptfig"));
+  if(i===3) $("#body").append(figure(FIG.thresholds(),
+    "Çıkış eşiği giriş eşiğinden yüksektir; kesinti bu yüzden saniyeler sürer.","conceptfig"));
+});
+D.keyTerms.forEach(t=>$("#terms").append(el("span","term",t.term)));
+
+const RUNG={behaviour:"davranış",mechanism:"mekanizma",pit:"sahadaki bedeli"};
+D.cards.forEach(c=>{
+  const b=el("button","flip"); b.setAttribute("aria-pressed","false");
+  const inner=el("div","inner"),f=el("div","face front"),bk=el("div","face back");
+  const mk=()=>{const h=el("div","chead");
+    h.append(el("span","rung r-"+c.rung,RUNG[c.rung]),el("span","count",c.index+" / "+c.of));return h;};
+  f.append(mk(),el("p","cfront",c.front));
+  const tg=el("div","ctags"); c.tags.forEach(t=>tg.append(el("span","tag",t)));
+  f.append(tg,el("div","hintline",T.flip+" · "+c.estMinutes+" dk"));
+  bk.append(mk(),el("p","cback",c.back));
+  const CF={"electrical-05-c1":"sixOffMini","electrical-05-c2":"sagMini","electrical-05-c3":"budgetMini"};
+  if(CF[c.id]&&FIG[CF[c.id]]){const cf=el("div","cardfig"); cf.innerHTML=FIG[CF[c.id]](); bk.append(cf);}
+  bk.append(el("div","take",c.takeaway));
+  inner.append(f,bk); b.append(inner);
+  b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+  $("#cards").append(b);
+});
+requestAnimationFrame(()=>document.querySelectorAll(".flip").forEach(b=>{
+  const f=$(".front",b),bk=$(".back",b);
+  const h=Math.max(f.offsetHeight,Math.min(bk.scrollHeight+38,660))+"px";
+  b.style.minHeight=h; $(".inner",b).style.minHeight=h; f.style.minHeight=h;
+}));
+
+[["12.7 - 13.5V","var(--acc)","tam dolu battery, boşta ölçülür"],
+ ["12.5V","var(--no)","boştaki robotta okunursa maç öncesi değiştirin"],
+ ["7.5V","var(--ok)","roboRIO brownout durumundan bunun üzerinde çıkar"],
+ ["6.8V","var(--acc)","PWM pinlerindeki 6V çıkışı düşmeye başlar"],
+ ["6.3V","var(--no)","roboRIO 1 brownout protection durumuna girer"]]
+.forEach(([g,col,use])=>{const r=el("div","grow"),bar=el("div","gbar"),i=el("i");
+  i.style.height="10px"; i.style.background=col; bar.append(i);
+  r.append(el("span","glabel",g),bar,el("span","guse",use)); $("#gauges").append(r);});
+
+const DIA = `<svg viewBox="0 0 960 890" role="img" aria-label="Brownout zinciri ve gerilim eşikleri">
+
+  ${ART.cell(28,150)}
+  ${m(108,292,"gerilim düşümü burada doğar",10,PDC)}
+
+  ${wire("M188 183 H262",WP,5)}
+  ${m(225,172,"yük akımı",9.5,MU)}
+
+  ${ART.node(262,152,"yüksek current draw","aynı anda çalışan mekanizmalar",0)}
+  ${wire("M444 183 H494",PDC,3)}
+  ${ART.node(494,152,"gerilim düşümü","akım × iç direnç",0)}
+  ${wire("M585 214 V254",PDC,3)}
+  ${ART.node(494,254,"6.3V eşiğinin altı","roboRIO 1'de sabit",1)}
+  ${wire("M585 316 V356",PDC,3)}
+  ${ART.node(494,356,"brownout protection","roboRIO çıkışları keser",2)}
+
+  ${wire("M585 418 V452 H150 V486",NO,3)}
+  ${wire("M585 418 V452 H346 V486",NO,3)}
+  ${wire("M585 418 V452 H542 V486",NO,3)}
+  ${wire("M585 418 V452 H738 V486",NO,3)}
+  ${wire("M585 418 V452 H245 V566 H150 V590",NO,3)}
+  ${wire("M245 566 H346 V590",NO,3)}
+
+  ${ART.node(59,486,"PWM çıkışları","kapatılır",3)}
+  ${ART.node(255,486,"6V · 5V · 3.3V rail","devre dışı",3)}
+  ${ART.node(451,486,"GPIO çıkışları","High-Z",3)}
+  ${ART.node(647,486,"relay çıkışları","kapatılır",3)}
+  ${ART.node(59,590,"CAN motor controller","disable komutu",3)}
+  ${ART.node(255,590,"PCM / PH","devre dışı",3)}
+
+  ${m(470,596,'Altısı birden durur. "CAN cihazları besleme alıyordu" demek',10.5,IK,'start')}
+  ${m(470,614,"brownout olmadığını göstermez: beslenmek ile komut almak",10,MU,"start")}
+  ${m(470,630,"aynı şey değildir.",10,MU,"start")}
+
+  <line x1="742" y1="150" x2="742" y2="420" stroke="${ED}" stroke-width="1.6"/>
+  ${m(830,140,"GERİLİM MERDİVENİ",9.5,PDC)}
+  <circle cx="742" cy="164" r="4.5" fill="${PDC}"/>${m(754,168,"13.5V — tam dolu üst sınırı",10,MU,"start")}
+  <circle cx="742" cy="196" r="4.5" fill="${PDC}"/>${m(754,200,"12.7V — tam dolu alt sınırı",10,MU,"start")}
+  <circle cx="742" cy="228" r="4.5" fill="${NO}"/>${m(754,232,"12.5V — boştaysa değiştir",10,NO,"start")}
+  <circle cx="742" cy="284" r="4.5" fill="${OKC}"/>${m(754,288,"7.5V — çıkış eşiği",10,OKC,"start")}
+  <circle cx="742" cy="322" r="4.5" fill="${PDC}"/>${m(754,326,"6.8V — PWM rail düşer",10,MU,"start")}
+  <circle cx="742" cy="360" r="6.5" fill="${NO}"/>${m(754,364,"6.3V — brownout protection",10.5,NO,"start")}
+  <circle cx="742" cy="398" r="4.5" fill="${MU}"/>${m(754,402,"4.5V — cihaz kapanabilir",10,MU,"start")}
+  ${m(940,438,"roboRIO 2: 6.75V, yazılımdan değiştirilebilir",9,MU,"end")}
+
+  ${badge(108,320,1)}
+  ${badge(624,336,2)}
+  ${badge(706,262,3)}
+
+  ${ART.rioLed(28,676)}
+  ${ART.rioLed(28,748,true)}
+  ${ART.dsv(200,679,"12.4V")}
+  ${ART.dsv(200,751,"6.2V",true)}
+  ${m(346,706,"normal: power LED yeşil, gösterge sakin",10,MU,"start")}
+  ${m(346,772,"brownout: power LED amber,",10,IK,"start")}
+  ${m(346,788,"gerilim göstergesi kırmızı,",10,IK,"start")}
+  ${m(346,804,"mod: Voltage Brownout",10,MU,"start")}
+
+  <rect x="612" y="672" width="320" height="104" rx="10" fill="none" stroke="${PDC}"
+    stroke-width="1.3" stroke-dasharray="6 5"/>
+  ${m(772,694,"ÇIKIŞ EŞİĞİ GİRİŞTEN YÜKSEK",9.5,PDC)}
+  ${m(772,716,"6.3V'ta girer, 7.5V'un üzerinde çıkar.",11,IK)}
+  ${m(772,738,"Bu fark, brownout'un anlık değil birkaç saniyelik",9,MU)}
+  ${m(772,752,"bir kesinti gibi görünmesinin nedenidir.",9,MU)}
+
+  ${hint(28,818,"Gerilimi düşüren battery'nin boş olması değil, o andaki current draw'dur.")}
+  ${hint(28,840,"İki eşik karıştırılmaz: 6.8V'ta PWM rail düşmeye başlar, 6.3V'ta koruma devreye girer.")}
+  ${hint(28,862,"0.020 Ω'u aşan bir battery'nin maçlarda kullanılmaması değerlendirilmelidir.")}
+  ${hint(28,884,"Çözüm breaker büyütmek değil, güç bütçesi ve current limit ile toplam akımı düşürmektir.")}
+</svg>`;
+
+$("#dia").innerHTML = DIA;
+
+/* ---- kurulum içeriği ---- */
+const BUILD={
+  h:"Kur: brownout zinciri",
+  p:"Bu bölümde kablo değil neden-sonuç zinciri kurulur. Önce zinciri soldan sağa bağlayın: akım, iç direnç, gerilim düşümü, eşik, koruma. Sonra korumanın kapattığı altı çıkışı bağlayın. Kablo tipini seçmeyi unutmayın: zincir için \"neden → sonuç\", kapanan çıkışlar için \"kapatılan çıkış\".",
+  gate:"Başlayınca sayfa bu bölüme kilitlenir ve yukarıdaki örnek şemayı göremezsiniz. Bitirdiğinizde hangi bağlantıyı doğru, hangisini yanlış yaptığınızı ve 100 üzerinden puanınızı görürsünüz.",
+  start:"Kurmaya başla", done:"Tamamladım", reset:"Baştan dene", close:"Kapat",
+  after:"kontrol edildi",
+  warn:"Tuvalde fazla parça bırakmayın. Zincirde işi olmayan her parça puandan düşer.",
+  emptyText:"Tuval boş. Yukarıdaki bir kutuya dokunarak başlayın. Kutuların kenarındaki noktalar bağlantı noktalarıdır.",
+  partsLabel:"Kutular",
+  wiresLabel:"Bağlantı tipi — önce tipi seçin, sonra iki noktaya dokunun",
+  perfect:"Zincir doğru kuruldu, altı çıkışın hepsi bağlı ve tuvalde fazla kutu yok.",
+  again:"Eksik bağlantılar yukarıda listelendi. Gerilimi düşüren battery'nin boş olması değil, o andaki current draw'dur.",
+  parts:[
+    {key:"draw", label:"yüksek current draw", art:"nDraw", w:194,h:74, ax:6,ay:6,
+     pins:[["sonuç",190,37]]},
+    {key:"ir", label:"battery iç direnci", art:"nIr", w:194,h:74, ax:6,ay:6,
+     pins:[["akım",4,37],["sonuç",190,37]]},
+    {key:"drop", label:"gerilim düşümü", art:"nDrop", w:194,h:74, ax:6,ay:6,
+     pins:[["neden",4,37],["sonuç",190,37]]},
+    {key:"thr", label:"6.3V eşiğinin altı", art:"nThr", w:194,h:74, ax:6,ay:6,
+     pins:[["neden",4,37],["sonuç",190,37]]},
+    {key:"bp", label:"brownout protection", art:"nBp", w:194,h:74, ax:6,ay:6,
+     pins:[["neden",4,37],["kapatır",190,37]]},
+    {key:"pwm",  label:"PWM çıkışları", art:"oPwm", w:194,h:74, ax:6,ay:6, pins:[["giriş",4,37]]},
+    {key:"rail", label:"6V · 5V · 3.3V rail", art:"oRail", w:194,h:74, ax:6,ay:6, pins:[["giriş",4,37]]},
+    {key:"gpio", label:"GPIO High-Z", art:"oGpio", w:194,h:74, ax:6,ay:6, pins:[["giriş",4,37]]},
+    {key:"relay",label:"relay çıkışları", art:"oRelay", w:194,h:74, ax:6,ay:6, pins:[["giriş",4,37]]},
+    {key:"can",  label:"CAN disable komutu", art:"oCan", w:194,h:74, ax:6,ay:6, pins:[["giriş",4,37]]},
+    {key:"pneu", label:"PCM / PH", art:"oPneu", w:194,h:74, ax:6,ay:6, pins:[["giriş",4,37]]},
+    {key:"xEmpty", label:"battery tamamen boşaldı", art:"xEmpty", w:194,h:74, ax:6,ay:6, pins:[["sonuç",190,37]]},
+    {key:"xBrk", label:"branch breaker attı", art:"xBrk", w:194,h:74, ax:6,ay:6, pins:[["sonuç",190,37]]}
+  ],
+  wires:[
+    {key:"cause", label:"neden → sonuç", col:"var(--dia-pd)", th:4},
+    {key:"stop",  label:"kapatılan çıkış", col:"var(--no)", th:4}
+  ],
+  need:[
+    {a:"draw.sonuç", b:"ir.akım", type:"cause"},
+    {a:"ir.sonuç", b:"drop.neden", type:"cause"},
+    {a:"drop.sonuç", b:"thr.neden", type:"cause"},
+    {a:"thr.sonuç", b:"bp.neden", type:"cause"},
+    {a:"bp.kapatır", b:"pwm.giriş", type:"stop"},
+    {a:"bp.kapatır", b:"rail.giriş", type:"stop"},
+    {a:"bp.kapatır", b:"gpio.giriş", type:"stop"},
+    {a:"bp.kapatır", b:"relay.giriş", type:"stop"},
+    {a:"bp.kapatır", b:"can.giriş", type:"stop"},
+    {a:"bp.kapatır", b:"pneu.giriş", type:"stop"}
+  ]
+};
+
+
+
+[["Zincir akımdan başlar, battery'nin dolu olmasından değil",
+  "Battery tam dolu olsa bile yeterince yüksek bir current draw, iç direnç üzerinde gerilim düşümü yaratır. İç direnç ne kadar yüksekse aynı akımda gerilim o kadar çok düşer; kablosundan çekilmiş veya düşürülmüş bir battery bu yüzden erken brownout yapar."],
+ ["İki eşik ayrı olaylardır",
+  "6.8V'un altında PWM pinlerindeki 6V çıkışı düşmeye başlar; bu henüz koruma değildir. 6.3V'un altında roboRIO brownout protection durumuna girer. roboRIO 1'de bu eşik sabittir, roboRIO 2'de varsayılan 6.75V'tur ve yazılımdan değiştirilebilir."],
+ ["Koruma altı yolu birden keser",
+  "PWM, user rail'ler, GPIO, relay, CAN üzerindeki motor controller'lar ve pnömatik cihazlar aynı anda durur. Bir cihazın besleme alıyor olması brownout olmadığını göstermez: beslenmek ile komut almak aynı şey değildir."]]
+.forEach(([h,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:h}),el("span",null,d));
+  li.append(w); $("#calls").append(li);});
+
+/* ---- kurulum tuvali: pinli bağlantı, kontrol ve skor ---- */
+if($("#bpanel") && typeof BUILD!=="undefined"){(()=>{
+  const B=BUILD, cvw=$("#bcanvas"), cv=$("#bboard"),
+    lay=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  lay.setAttribute("class","blines"); cv.append(lay);
+  const lblLayer=el("div","blbl"); cv.append(lblLayer);
+  $("#bpan").textContent=B.pan||"Tuval geniştir; sağa ve aşağı kaydırarak tamamını kullanabilirsiniz.";
+  const PK={}; B.parts.forEach(p=>PK[p.key]=p);
+  const WK={}; B.wires.forEach(w=>WK[w.key]=w);
+  let inst=[], links=[], seq=0, pick=null, wsel=B.wires[0].key, checked=false, zTop=1;
+
+  $("#bh").textContent=B.h; $("#bp").textContent=B.p;
+  $("#bgtext").textContent=B.gate; $("#bstart").textContent=B.start;
+  $("#bdone").textContent=B.done; $("#breset").textContent=B.reset; $("#bclose").textContent=B.close;
+  $("#bwarn").textContent=B.warn;
+
+  /* ---- raf ---- */
+  const tray=$("#btray");
+  const grp=(label,items,render)=>{
+    tray.append(el("p","tlabel",label));
+    const g=el("div","tgrid"); items.forEach(it=>g.append(render(it))); tray.append(g);
+  };
+  grp(B.partsLabel, B.parts, p=>{
+    const b=el("button","part");
+    const sc=Math.min(1, 112/p.h, 168/p.w);
+    b.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${Math.round(p.w*sc)}"
+      height="${Math.round(p.h*sc)}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    b.append(el("span",null,p.label));
+    b.onclick=()=>{ if(!checked) place(p.key); };
+    return b;
+  });
+  grp(B.wiresLabel, B.wires, w=>{
+    const b=el("button","part wchip"); b.dataset.k=w.key;
+    b.innerHTML=`<svg viewBox="0 0 110 14" width="110" height="14" aria-hidden="true">
+      <rect x="0" y="${7-w.th/2}" width="110" height="${w.th}" rx="${w.th/2}" fill="${w.col}"/>`+
+      (w.col2?`<path d="M0 7 H110" stroke="${w.col2}" stroke-width="${w.th}"
+        stroke-dasharray="8 8"/>`:"")+`</svg>`;
+    b.append(el("span",null,w.label));
+    b.onclick=()=>{ wsel=w.key; markWire(); };
+    return b;
+  });
+  const markWire=()=>tray.querySelectorAll(".wchip").forEach(c=>
+    c.setAttribute("aria-pressed", c.dataset.k===wsel));
+  markWire();
+
+  /* ---- parça yerleştirme ---- */
+  function slot(w,h,cw,ch){
+    const pad=18, padL=104, gx=96, gy=30;
+    const boxes=inst.map(i=>({x:parseFloat(i.node.style.left)||0, y:parseFloat(i.node.style.top)||0,
+      w:i.node.offsetWidth, h:i.node.offsetHeight}));
+    const hit=(x,y)=>boxes.some(b=>x<b.x+b.w+gx && x+w+gx>b.x && y<b.y+b.h+gy && y+h+gy>b.y);
+    const maxX=Math.max(padL, cw-w-pad), maxY=Math.max(pad, ch-h-pad);
+    for(let y=pad; y<=maxY; y+=22)
+      for(let x=padL; x<=maxX; x+=22)
+        if(!hit(x,y)) return [Math.round(x),Math.round(y)];
+    const k=inst.length%6;
+    return [Math.round(Math.min(maxX, padL+k*26)), Math.round(Math.min(maxY, pad+k*26))];
+  }
+  function place(key){
+    const p=PK[key], id=++seq, labs=[];
+    const n=el("div","placed"); n.dataset.id=id; n.dataset.key=key;
+    n.innerHTML=`<svg viewBox="0 0 ${p.w} ${p.h}" width="${p.w}" height="${p.h}" aria-hidden="true">${ART[p.art](p.ax,p.ay)}</svg>`;
+    const x=el("button","x","×"); x.setAttribute("aria-label",p.label+" kaldır");
+    x.onclick=e=>{e.stopPropagation(); if(checked) return;
+      links=links.filter(l=>l.a.id!==id&&l.b.id!==id);
+      inst=inst.filter(i=>i.id!==id); labs.forEach(o=>o.lb.remove());
+      n.remove(); paint(); sync();};
+    n.append(x);
+    p.pins.forEach(([nm,px,py])=>{
+      const d=el("button","pin"); d.style.left=px+"px"; d.style.top=py+"px";
+      d.dataset.pin=nm; d.setAttribute("aria-label",p.label+" "+nm);
+      d.onclick=e=>{e.stopPropagation(); tapPin(id,nm);};
+      const lb=el("span","pinlb",nm);
+      if(py<=p.h*0.2) lb.dataset.mode="top";
+      else if(px<=p.w*0.35) lb.classList.add("lft");
+      else if(px>=p.w*0.65) lb.classList.add("rgt");
+      else lb.dataset.mode="top";
+      lblLayer.append(lb); labs.push({lb,d});
+      n.append(d);
+    });
+    const r=cv.getBoundingClientRect();
+    const pos=slot(p.w,p.h,r.width,r.height);
+    n.style.left=pos[0]+"px"; n.style.top=pos[1]+"px"; n.style.zIndex=++zTop;
+    cv.append(n); inst.push({id,key,node:n,labs}); drag(n,id); paint(); sync();
+  }
+
+  function drag(n,id){
+    n.addEventListener("pointerdown",e=>{
+      if(checked||e.target.classList.contains("x")||e.target.classList.contains("pin")) return;
+      const r=cv.getBoundingClientRect(), bb=n.getBoundingClientRect();
+      const ox=e.clientX-bb.left, oy=e.clientY-bb.top;
+      try{n.setPointerCapture(e.pointerId);}catch(err){}
+      n.style.zIndex=++zTop;
+      const mv=ev=>{
+        n.style.left=Math.max(0,Math.min(r.width-bb.width, ev.clientX-r.left-ox))+"px";
+        n.style.top =Math.max(0,Math.min(r.height-bb.height, ev.clientY-r.top -oy))+"px";
+        paint();
+      };
+      const up=()=>{n.removeEventListener("pointermove",mv);n.removeEventListener("pointerup",up);};
+      n.addEventListener("pointermove",mv); n.addEventListener("pointerup",up);
+    });
+  }
+
+  /* ---- pin bağlama ---- */
+  const pinEl=(id,nm)=>{const i=inst.find(x=>x.id===id); return i&&i.node.querySelector(`.pin[data-pin="${CSS.escape(nm)}"]`);};
+  function tapPin(id,nm){
+    if(checked) return;
+    if(!pick){ pick={id,nm}; markPins(); return; }
+    if(pick.id===id && pick.nm===nm){ pick=null; markPins(); return; }
+    const a=pick, b={id,nm};
+    const same=l=>(l.a.id===a.id&&l.a.nm===a.nm&&l.b.id===b.id&&l.b.nm===b.nm)||
+                  (l.a.id===b.id&&l.a.nm===b.nm&&l.b.id===a.id&&l.b.nm===a.nm);
+    const ex=links.findIndex(same);
+    if(ex>=0) links.splice(ex,1); else links.push({a,b,type:wsel});
+    pick=null; markPins(); paint(); sync();
+  }
+  const markPins=()=>cv.querySelectorAll(".pin").forEach(d=>{
+    const i=+d.closest(".placed").dataset.id;
+    d.classList.toggle("on", !!pick && pick.id===i && pick.nm===d.dataset.pin);
+  });
+
+  /* ---- çizim ---- */
+  function paint(){
+    const r=cv.getBoundingClientRect();
+    lay.setAttribute("viewBox",`0 0 ${r.width} ${r.height}`);
+    lay.setAttribute("width",r.width); lay.setAttribute("height",r.height);
+    let g="";
+    links.forEach(l=>{
+      const ea=pinEl(l.a.id,l.a.nm), eb=pinEl(l.b.id,l.b.nm);
+      if(!ea||!eb) return;
+      const ra=ea.getBoundingClientRect(), rb=eb.getBoundingClientRect();
+      const x1=ra.left-r.left+ra.width/2, y1=ra.top-r.top+ra.height/2;
+      const x2=rb.left-r.left+rb.width/2, y2=rb.top-r.top+rb.height/2;
+      const w=WK[l.type]||B.wires[0];
+      const col = !checked ? w.col : (l.ok ? "var(--ok)" : "var(--no)");
+      const mx=(x1+x2)/2;
+      const d=`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      g+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w.th}"
+        stroke-linecap="round" opacity="${checked?1:0.95}"/>`;
+      if(w.col2 && !checked)
+        g+=`<path d="${d}" fill="none" stroke="${w.col2}" stroke-width="${w.th}"
+          stroke-linecap="butt" stroke-dasharray="8 8" opacity="0.95"/>`;
+    });
+    lay.innerHTML=g;
+    inst.forEach(i=>(i.labs||[]).forEach(({lb,d})=>{
+      const rd=d.getBoundingClientRect();
+      const cx=rd.left-r.left+rd.width/2, cy=rd.top-r.top+rd.height/2;
+      if(lb.classList.contains("lft")){ lb.style.left=(cx-11)+"px"; lb.style.top=cy+"px"; }
+      else if(lb.classList.contains("rgt")){ lb.style.left=(cx+11)+"px"; lb.style.top=cy+"px"; }
+      else { lb.style.left=cx+"px"; lb.style.top=(cy-3)+"px"; }
+    }));
+  }
+
+  const sync=()=>{
+    const need=B.need.length;
+    $("#bempty").classList.toggle("gone", inst.length>0);
+    $("#bnote").textContent = checked ? B.after
+      : inst.length+" parça · "+links.length+" / "+need+" bağlantı";
+    $("#bdone").disabled = checked || links.length===0;
+  };
+
+  /* ---- kontrol ---- */
+  const key=l=>[l.a,l.b].map(e=>{const i=inst.find(x=>x.id===e.id); return (i?i.key:"?")+"."+e.nm;}).sort().join(" ↔ ");
+  $("#bdone").onclick=()=>{
+    checked=true; pick=null; markPins();
+    const want=B.need.map(n=>({...n, k:[n.a,n.b].slice().sort().join(" ↔ ")}));
+    const used=new Set(); let got=0; const missing=[];
+    links.forEach(l=>{
+      const k=key(l);
+      const idx=want.findIndex((w,i)=>w.k===k && w.type===l.type && !used.has(i));
+      if(idx>=0){ used.add(idx); l.ok=true; got++; } else l.ok=false;
+    });
+    want.forEach((w,i)=>{ if(!used.has(i)) missing.push(w); });
+    const wrong=links.filter(l=>!l.ok).length;
+    const needKeys=new Set();
+    B.need.forEach(n=>{ needKeys.add(n.a.split(".")[0]); needKeys.add(n.b.split(".")[0]); });
+    const counts={}; inst.forEach(i=>counts[i.key]=(counts[i.key]||0)+1);
+    let extra=0; const extraList=[];
+    Object.keys(counts).forEach(k=>{
+      const allowed = needKeys.has(k) ? 1 : 0;
+      if(counts[k]>allowed){ extra+=counts[k]-allowed;
+        extraList.push(PK[k].label+" ×"+(counts[k]-allowed)); }
+    });
+    inst.forEach(i=>{ const dup=counts[i.key]>(needKeys.has(i.key)?1:0);
+      i.node.classList.add(dup?"bad":"fine"); });
+    paint();
+    const base=Math.round(got/B.need.length*100);
+    const pen=Math.min(base, wrong*6+extra*6);
+    const score=Math.max(0, base-pen);
+    /* İlk kurulum puanı kalıcıdır: tekrar denemek puanı değiştirmez. */
+    try{ if(state && state.__b==null){ state.__b={s:score, n:B.need.length}; save();
+      sunucuyaYaz("tuval",score); } }catch(e){}
+    const r=$("#bres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","kurulum kontrol edildi"));
+    r.append(el("div","big",score+" / 100"));
+    r.append(el("div","outof",got+" / "+B.need.length+" doğru bağlantı"+
+      (wrong?" · "+wrong+" hatalı":"")+(extra?" · "+extra+" fazla parça":"")));
+    if(pen) r.append(el("p","pen","Ceza: hatalı bağlantı ve fazla parça için toplam −"+pen+" puan."));
+    if(missing.length){
+      const ul=el("ul","miss");
+      const nice=e=>{const i=e.indexOf("."), k=e.slice(0,i), pn=e.slice(i+1);
+        return (PK[k]?PK[k].label:k)+" · "+pn;};
+      missing.forEach(w=>{const li=el("li");
+        li.append(Object.assign(el("b"),{textContent:"eksik: "}),
+          document.createTextNode(nice(w.a)+" ↔ "+nice(w.b)+"  ("+(WK[w.type]||{}).label+")"));
+        ul.append(li);});
+      r.append(ul);
+    }
+    if(extraList.length) r.append(el("p","pen","Tuvalde fazla kalan: "+extraList.join(", ")+"."));
+    r.append(el("p",null, score===100 ? B.perfect : B.again));
+    $("#bclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+
+  /* ---- kilit ve sıfırlama ---- */
+  const build=()=>{
+    inst.forEach(i=>i.node.remove()); lblLayer.textContent="";
+    inst=[]; links=[]; seq=0; pick=null; checked=false;
+    $("#bres").textContent=""; $("#bres").className=""; $("#bclose").hidden=true;
+    wsel=B.wires[0].key; markWire(); paint(); sync();
+  };
+  const lock=on=>{ $("#bpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on); if(on) $("#bpanel").scrollTop=0; };
+  $("#bstart").onclick=()=>{ $("#bgate").hidden=true; $("#bwrap").hidden=false; $("#bbar").hidden=false;
+    build(); lock(true); paint(); };
+  $("#breset").onclick=()=>build();
+  $("#bclose").onclick=()=>{ lock(false); $("#bres").scrollIntoView({block:"center"}); };
+  $("#bempty").textContent=B.emptyText;
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(cv);
+  sync();
+})();}
+
+/* ---- kontrol listesi: kurduktan sonra gözden geçirilecekler ---- */
+if($("#must")){
+[["Zincirin ilk halkası ne","battery'nin doluluğu mu, o andaki akım mı"],
+ ["Gerilim düşümünü hangi iki büyüklük belirliyor","ikisini de yazın"],
+ ["Hangi eşikte ne oluyor","6.8V ve 6.3V ayrı ayrı; hangisi koruma"],
+ ["Koruma kaç yolu kesiyor","sayısını yazın ve hepsini sayın"],
+ ["Çıkış eşiği girişten neden yüksek","bu fark sahada neye benziyor"],
+ ["Çözümünüz akımı mı düşürüyor, korumayı mı geciktiriyor","hangisi gerçek çözüm"]]
+.forEach(([t,d],i)=>{const li=el("li"); li.append(el("span","n",String(i+1)));
+  const w=el("div"); w.append(Object.assign(el("b"),{textContent:t}),el("span",null,d));
+  li.append(w); $("#must").append(li);});
+
+$("#c2h").textContent="Sonra: tek bir şeyi değiştirin";
+$("#c2p").textContent="Kurduğunuzu iki kez bozun. Birincide zincirin ilk halkasına battery'nin boşalmasını koyun. İkincide korumadan yalnızca PWM çıkışını bağlayın. Her birinde hangi soruyu yanlış cevaplamış olursunuz, ve bu yanlış sahada hangi teşhis hatasına yol açar?";
+
+}
+
+/* ---- eşleştirme paneli: kur, kontrol et, neyi yanlış yaptığını göster ---- */
+(()=>{
+  const box=$("#match");
+  if(!box||typeof MATCH==="undefined"||!MATCH.length){
+    const mp=$("#matchpanel"); if(mp) mp.remove(); return; }
+  const N=MATCH.length;
+  $("#mth").textContent=MT.h; $("#mtp").textContent=MT.p;
+  $("#mdone").textContent=MT.done;
+  $("#mgtext").textContent=MT.gate; $("#mstart").textContent=MT.start;
+  $("#mclose").textContent=MT.close;
+  let order=[], links={}, pick=null, checked=false;
+  const svgns="http://www.w3.org/2000/svg";
+  const lines=document.createElementNS(svgns,"svg"); lines.setAttribute("class","mlines");
+  const colL=el("div","mcol left"), colR=el("div","mcol right"), spacer=el("div");
+  const itemsL=[], itemsR=[], dotsL=[], dotsR=[];
+
+  const side=(txt,art)=>{const it=el("div","mitem");
+    if(art&&ART[art[0]]){const a=el("div","art");
+      a.innerHTML=`<svg viewBox="0 0 ${art[1]} ${art[2]}" aria-hidden="true">${ART[art[0]](art[3]||0,art[4]||0)}</svg>`;
+      it.append(a);}
+    const l=el("div"); l.append(Object.assign(el("span","lbl"),{textContent:txt})); it.append(l);
+    return it;};
+
+  const build=()=>{
+    box.textContent=""; itemsL.length=itemsR.length=dotsL.length=dotsR.length=0;
+    colL.textContent=""; colR.textContent="";
+    links={}; pick=null; checked=false;
+    order=[...Array(N).keys()];
+    for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}
+    MATCH.forEach((pr,i)=>{
+      const it=side(pr.l,pr.lart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.l+" — bağlantı noktası");
+      d.onclick=()=>tap("l",i); it.append(d);
+      colL.append(it); itemsL.push(it); dotsL.push(d);
+    });
+    order.forEach((pi,p)=>{
+      const pr=MATCH[pi]; const it=side(pr.r,pr.rart); const d=el("button","mdot");
+      d.setAttribute("aria-label",pr.r+" — bağlantı noktası");
+      d.onclick=()=>tap("r",p); it.append(d);
+      colR.append(it); itemsR.push(it); dotsR.push(d);
+    });
+    box.append(lines,colL,spacer,colR);
+    $("#mres").textContent=""; $("#mres").className="";
+    paint(); sync();
+  };
+
+  const tap=(sd,i)=>{
+    if(checked) return;
+    if(!pick){ pick={sd,i}; mark(); return; }
+    if(pick.sd===sd){ pick={sd,i}; mark(); return; }
+    const l = sd==="l" ? i : pick.i, p = sd==="l" ? pick.i : i;
+    Object.keys(links).forEach(k=>{ if(links[k]===p) delete links[k]; });
+    if(links[l]===p) delete links[l]; else links[l]=p;
+    pick=null; mark(); paint(); sync();
+  };
+  const mark=()=>{
+    dotsL.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="l"&&pick.i===i));
+    dotsR.forEach((d,i)=>d.classList.toggle("on",!!pick&&pick.sd==="r"&&pick.i===i));
+  };
+  const paint=()=>{
+    const rb=box.getBoundingClientRect();
+    lines.setAttribute("viewBox",`0 0 ${rb.width} ${rb.height}`);
+    lines.setAttribute("width",rb.width); lines.setAttribute("height",rb.height);
+    let g="";
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k];
+      const a=dotsL[l].getBoundingClientRect(), b=dotsR[p].getBoundingClientRect();
+      const x1=a.left-rb.left+a.width/2, y1=a.top-rb.top+a.height/2;
+      const x2=b.left-rb.left+b.width/2, y2=b.top-rb.top+b.height/2;
+      const col = !checked ? "var(--acc)" : (order[p]===l ? "var(--ok)" : "var(--no)");
+      g+=`<path d="M${x1} ${y1} C ${x1+40} ${y1}, ${x2-40} ${y2}, ${x2} ${y2}" fill="none"
+        stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;
+    });
+    lines.innerHTML=g;
+  };
+  const sync=()=>{
+    const n=Object.keys(links).length;
+    $("#mdone").disabled = checked || n<N;
+    $("#mnote").textContent = checked ? MT.after : (n+" / "+N+" eşleştirildi");
+  };
+
+  $("#mdone").onclick=()=>{
+    checked=true; pick=null; mark();
+    let got=0;
+    Object.keys(links).forEach(k=>{
+      const l=+k, p=links[k], ok=order[p]===l;
+      if(ok) got++;
+      itemsL[l].classList.add(ok?"ok":"no"); dotsL[l].classList.add(ok?"ok":"no");
+      itemsR[p].classList.add(ok?"ok":"no"); dotsR[p].classList.add(ok?"ok":"no");
+      if(!ok) itemsL[l].querySelector("div").append(
+        Object.assign(el("span","mfix"),{textContent:"doğrusu: "+MATCH[l].r}));
+    });
+    paint();
+    const pct=Math.round(got/N*100);
+    const r=$("#mres"); r.className="mres"; r.textContent="";
+    r.append(el("div","cap","eşleştirme kontrol edildi"));
+    r.append(el("div","big",got+" / "+N+" doğru · "+pct+" / 100"));
+    r.append(el("p",null, got===N ? MT.perfect : MT.again));
+    $("#mdone").disabled=true; $("#mclose").hidden=false; sync();
+    r.scrollIntoView({behavior:"smooth",block:"nearest"});
+  };
+  const rs=$("#mreset");
+  if(MT.reset){ rs.textContent=MT.reset; rs.onclick=()=>build(); } else { rs.remove(); }
+
+  const lock=on=>{
+    $("#matchpanel").classList.toggle("locked",on);
+    document.body.classList.toggle("mlock",on);
+    if(on){ $("#matchpanel").scrollTop=0; }
+  };
+  $("#mstart").onclick=()=>{
+    $("#mgate").hidden=true; box.hidden=false; $("#mbar").hidden=false;
+    build(); lock(true); paint();
+  };
+  $("#mclose").onclick=()=>{ lock(false); $("#mres").scrollIntoView({block:"center"}); };
+  build();
+  addEventListener("resize",paint);
+  if(window.ResizeObserver) new ResizeObserver(paint).observe(box);
+})();
+
+/* ---- practice ---- */
+/* ---- video: sitede gömülü oynar, önizlemede bağlantı olarak görünür ---- */
+(()=>{
+  const host=$("#vids"), V=D.videoRefs||[];
+  if(!host) return;
+  if(!V.length){ host.remove(); return; }
+  V.forEach(v=>{
+    const w=el("div","vid"), h=el("div","vtop");
+    const lang=v.lang&&v.lang!=="tr"?" · video İngilizce":"";
+    h.append(Object.assign(el("b"),{textContent:v.label||v.title}),
+      el("span",null,(v.label?v.title+" · ":"")+v.channel+lang));
+    w.append(h);
+    const t=v.start?"?start="+v.start:"";
+    const watch="https://www.youtube.com/watch?v="+v.id+(v.start?"&t="+v.start:"");
+    if(window.__EMBED__){
+      const box=el("div","vframe");
+      const local=location.protocol==="file:";
+      const cover=document.createElement(local?"a":"button");
+      cover.className="vface";
+      cover.style.backgroundImage='url("https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg")';
+      const tri=el("div","vptri");
+      tri.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+      cover.append(tri);
+      if(local){
+        cover.href=watch; cover.target="_blank"; cover.rel="noopener";
+        cover.title="Yerel dosyadan açıldığı için video sayfada oynamaz; YouTube'da açılır.";
+      }else{
+        cover.type="button";
+        cover.setAttribute("aria-label",(v.label||v.title)+" videosunu oynat");
+        cover.onclick=()=>{
+          const fr=document.createElement("iframe");
+          fr.src="https://www.youtube-nocookie.com/embed/"+v.id+(v.start?"?start="+v.start+"&":"?")+"autoplay=1&rel=0";
+          fr.title=v.title; fr.allowFullscreen=true;
+          fr.referrerPolicy="strict-origin-when-cross-origin";
+          fr.setAttribute("allow","autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+          cover.replaceWith(fr);
+        };
+      }
+      box.append(cover); w.append(box);
+      const foot=el("p","vfoot");
+      const a2=document.createElement("a");
+      a2.href=watch; a2.target="_blank"; a2.rel="noopener"; a2.textContent="YouTube'da aç";
+      foot.append(document.createTextNode(local
+        ? "Bu dosya bilgisayardan açıldığı için video sayfa içinde oynamaz. Siteye yüklendiğinde burada oynar. "
+        : "Oynamazsa: "), a2);
+      w.append(foot);
+    }else{
+      const a=document.createElement("a");
+      a.className="vlink"; a.target="_blank"; a.rel="noopener";
+      a.href=watch;
+      a.textContent="videoyu YouTube'da aç";
+      w.append(a, el("p","vnote",
+        "Video sitenin kendi sayfasında bu kutunun içinde oynar. Bu önizlemede dış içerik engellendiği için yalnızca bağlantı görünür."));
+    }
+    if(v.note) w.append(el("p","vsrc",v.note));
+    host.append(w);
+  });
+})();
+
+const LET="ABCDE".split(""); let filter="all", state={};
+const SKEY="ep05", MODUL=D.id;
+try{state=JSON.parse(localStorage.getItem(SKEY)||"{}");}catch(e){state={};}
+const save=()=>{try{localStorage.setItem(SKEY,JSON.stringify(state));}catch(e){}};
+/* Sunucu ayarlanmışsa puanlar oraya da yazılır. Yazma tek yönlüdür:
+   aynı satır ikinci kez gönderilse bile veritabanı ilkini korur. */
+function sunucuyaYaz(tur,a,b){
+  if(!window.FRC || !FRC.acik) return;
+  if(tur==="tuval") FRC.tuvalYaz(MODUL,a); else FRC.cevapYaz(MODUL,a,b);
+}
+[["all","hepsi"],["core","core"],["stretch","stretch"],["pit","pit"]].forEach(([k,l])=>{
+  const b=el("button","filt",l); if(k!=="all") b.lang="en";
+  b.setAttribute("aria-pressed",k===filter);
+  b.onclick=()=>{filter=k;document.querySelectorAll(".filt").forEach(x=>x.setAttribute("aria-pressed",x===b));render();};
+  $("#bar").append(b);});
+const scoreEl=el("span","score"); $("#bar").append(scoreEl);
+const ruleChips=(d,h)=>{if(!d.ruleRefs.length)return;const s=el("div","srcs");
+  d.ruleRefs.forEach(r=>s.append(el("span","rule",r.rule+" · "+r.season)));h.append(s);};
+const sourceRef=(d,h)=>{const dt=el("details","ref");dt.append(el("summary","kaynak"));
+  dt.append(el("p",null,d.source));h.append(dt);};
+const DFIG={
+ "electrical-05-d1":["thresholds","6.8V'ta PWM rail düşer; koruma 6.3V'ta devreye girer."],
+ "electrical-05-d2":["signs","Amber power LED ile kırmızı gerilim göstergesi birlikte brownout demektir."],
+ "electrical-05-d3":["sixOff","Koruma PWM, CAN ve pnömatik yolların üçünü birden durdurur."],
+ "electrical-05-d4":["batteryCare","Kablosundan çekilen battery'nin iç direnci yükselir; brownout yaklaşır."],
+ "electrical-05-d5":["batteryCare","0.011 Ω tipik, 0.015 Ω altı ideal, 0.020 Ω üstü kullanılmaması değerlendirilir."],
+ "electrical-05-d6":["thresholds","Tam dolu battery boşta 12.7-13.5V arasındadır."],
+ "electrical-05-d7":["batteryCare","Sınır cihazın etiketi değil, uygulanan ortalama şarj akımıdır."],
+ "electrical-05-d8":["budget","Tek başına çalışıp birlikte çalışmamak toplam current draw'u işaret eder."]
+};
+const drillFig=(d,h)=>{const f=DFIG[d.id]; if(!f||!FIG[f[0]])return;
+  h.append(figure(FIG[f[0]](),f[1]));};
+
+function render(){
+  const box=$("#qs"); box.textContent="";
+  let got=0,done=0;
+  D.drills.forEach(d=>{if(state[d.id]){done++;if(state[d.id].ok)got++;}});
+  const live=done?Math.round(got/done*100):0;
+  scoreEl.textContent=done?("puan "+live+" / 100 · "+got+"/"+done+" doğru"):"puan 0 / 100";
+  D.drills.filter(d=>filter==="all"||d.difficulty===filter).forEach(d=>{
+    const q=el("div","q"),hd=el("div","qhead");
+    const pd1=el("span","pill "+d.difficulty,d.difficulty), pd2=el("span","pill",d.type.replace(/_/g," "));
+    pd1.lang="en"; pd2.lang="en"; hd.append(pd1,pd2);
+    q.append(hd);
+    if(d.symptom)q.append(el("p","sym",d.symptom));
+    if(d.scenario)q.append(el("p","sym",d.scenario));
+    q.append(el("p","qtext",d.prompt));
+    const ansBox=el("div"), prior=state[d.id];
+    const settle=(ok,txt)=>{state[d.id]={ok};save();sunucuyaYaz("cevap",d.id,ok);
+      ansBox.className="ans "+(ok?"good":"bad");
+      ansBox.append(el("span","verdict",ok?"doğru":"yanlış"),document.createTextNode(txt));
+      drillFig(d,ansBox);ruleChips(d,ansBox);sourceRef(d,ansBox);render();};
+    if(d.type==="numeric"){
+      const row=el("div","num");
+      const inp=Object.assign(el("input"),{type:"text",inputMode:"decimal",placeholder:"sayı"});
+      const go=el("button","btn","Kontrol et");
+      row.append(inp,go); if(d.unit)row.append(el("span","unit",d.unit));
+      go.onclick=()=>{const v=parseFloat(String(inp.value).replace(",","."));
+        const ok=Number.isFinite(v)&&Math.abs(v-d.answer)<=(d.tolerance||0);
+        inp.disabled=go.disabled=true;settle(ok,d.explanation);};
+      q.append(row);
+    } else if(d.type==="debug_code"){
+      const lines=String(d.code).split("\n");
+      const pre=el("div","code"); let chosen=null;
+      const lab=el("p","steplab","1 · hatalı satırı seçin");
+      const fix=el("div","fixrow");
+      const inp=Object.assign(el("input"),{type:"text",placeholder:"doğru satırı yazın",disabled:true});
+      const go=el("button","btn","Kontrol et"); go.disabled=true;
+      fix.append(inp,go);
+      lines.forEach((src,i)=>{
+        const b=el("button","ln");
+        b.append(el("span","no",String(i+1)),el("span","src",src||" "));
+        b.onclick=()=>{ if(chosen!==null) $$(".ln",pre)[chosen].classList.remove("pick");
+          chosen=i; b.classList.add("pick");
+          lab.textContent="2 · bu satırın doğrusunu yazın";
+          inp.disabled=go.disabled=false; inp.focus(); };
+        pre.append(b);});
+      const norm=x=>String(x).replace(/\s+/g," ").replace(/;\s*$/,"").trim().toLowerCase();
+      go.onclick=()=>{
+        const want=(d.acceptableAnswers&&d.acceptableAnswers.length?d.acceptableAnswers:[d.correctAnswer]).map(norm);
+        const lineOk = chosen===(d.buggyLine-1);
+        const textOk = want.includes(norm(inp.value));
+        const ok = lineOk && textOk;
+        $$(".ln",pre).forEach((x,j)=>{x.disabled=true;
+          if(j===d.buggyLine-1) x.classList.add(lineOk?"pick-ok":"reveal");
+          else if(j===chosen) x.classList.add("pick-no");});
+        inp.disabled=go.disabled=true; lab.remove();
+        const pre2 = lineOk&&!textOk ? "Satır doğru, yazdığınız düzeltme tutmadı. Doğrusu: "+d.correctAnswer+" "
+                   : !lineOk ? "Hatalı satır "+d.buggyLine+". satırdır; doğrusu: "+d.correctAnswer+" " : "";
+        settle(ok,pre2+d.explanation);};
+      q.append(lab,pre,fix);
+    } else if(d.type==="order_steps"){
+      const picked=[],w=el("div","opts");
+      d.steps.forEach((s,i)=>{const b=el("button","opt");
+        b.append(el("span","k","—"),el("span",null,s));
+        b.onclick=()=>{if(picked.includes(i))return;picked.push(i);
+          $(".k",b).textContent=picked.length;b.classList.add("taken");
+          if(picked.length===d.steps.length){
+            const ok=JSON.stringify(picked)===JSON.stringify(d.correctOrder);
+            w.querySelectorAll("button").forEach(x=>x.disabled=true);
+            settle(ok,(ok?"":"Doğru sıra: "+d.correctOrder.map(n=>n+1).join(" → ")+". ")+d.explanation);}};
+        w.append(b);});
+      q.append(w);
+    } else {
+      const items=d.elements||d.options, key=d.elements?d.faultIndex:d.correctIndex, w=el("div","opts");
+      items.forEach((o,i)=>{const b=el("button","opt");
+        b.append(el("span","k",LET[i]),el("span",null,o));
+        b.onclick=()=>{const ok=i===key;
+          w.querySelectorAll("button").forEach((x,j)=>{x.disabled=true;if(j===key&&!ok)x.classList.add("reveal");});
+          b.classList.add(ok?"pick-ok":"pick-no");settle(ok,d.explanation);};
+        w.append(b);});
+      q.append(w);
+    }
+    if(prior){
+      const dn=el("div","ans "+(prior.ok?"good":"bad"));
+      dn.append(el("span","verdict",prior.ok?"doğru — çözüldü":"yanlış — çözüldü"),
+        document.createTextNode(d.explanation));
+      drillFig(d,dn);ruleChips(d,dn);sourceRef(d,dn);
+      q.querySelectorAll(".opt,input,.btn").forEach(x=>x.disabled=true);
+      if(d.type==="debug_code"){
+        const lns=$$(".ln",q), tgt=lns[d.buggyLine-1];
+        if(tgt) tgt.classList.add(prior.ok?"pick-ok":"reveal");
+        const sl=$(".steplab",q); if(sl) sl.remove();
+        const fr=$(".fixrow",q); if(fr) fr.remove();
+      }
+      q.append(dn);
+    } else if(d.hint){ q.append(el("div","hintline","ipucu · "+d.hint)); }
+    q.append(ansBox); box.append(q);
+  });
+
+  if(done===D.drills.length && D.drills.length){
+    const score=Math.round(got/D.drills.length*100);
+    const band = score>=85 ? "Çok iyi"
+               : score>=70 ? "İyi"
+               : score>=50 ? "Geçer"
+               : "Tekrar edilmeli";
+    const f=el("div","finish");
+    f.append(el("div","cap","test tamamlandı"));
+    f.append(el("div","big",String(score)));
+    f.append(el("div","outof","100 üzerinden · "+got+" / "+D.drills.length+" doğru · "+band));
+    const bd=el("div","bd");
+    ["core","stretch","pit"].forEach(lv=>{
+      const set=D.drills.filter(d=>d.difficulty===lv);
+      if(!set.length) return;
+      const g=set.filter(d=>state[d.id]&&state[d.id].ok).length;
+      bd.append(el("span",null,lv+" "+g+"/"+set.length+" · %"+Math.round(g/set.length*100)));
+    });
+    f.append(bd);
+    f.append(el("p","sm", score===100
+      ? "Sekiz sorunun sekizini de doğru bildiniz. Şimdi brownout zincirini örneğe bakmadan kurun."
+      : score>=70
+      ? "Yanlış bildiğiniz soruların gerekçesini bir kez daha okuyun, sonra testi baştan çözün."
+      : "Puanınız 70'in altında. Kavram bölümünü ve kartları tekrar okuyup testi baştan çözmeniz önerilir."));
+    const r=el("button","retry","Testi baştan çöz");
+    r.onclick=()=>{ state={}; save(); render();
+      document.getElementById("bar").scrollIntoView({behavior:"smooth",block:"start"}); };
+    f.append(r);
+    box.append(f);
+  }
+}
+render();
+/* ---- sunucu oturumu ve ilerlemenin geri yüklenmesi ---- */
+if(window.FRC && FRC.acik){
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    return FRC.oku(MODUL).then(function(su){
+      if(!su) return;
+      var degisti=false;
+      if(su.tuval!==null && su.tuval!==undefined && state.__b==null){
+        state.__b={s:su.tuval,n:null}; degisti=true;
+      }
+      Object.keys(su.cevaplar).forEach(function(id){
+        if(!state[id]){ state[id]=su.cevaplar[id]; degisti=true; }
+      });
+      if(degisti){ save(); render(); }
+    });
+  });
+}
+
+</script>
+
+</body>
+</html>
