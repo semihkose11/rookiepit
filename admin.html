@@ -152,6 +152,15 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
   .rbas b{font-size:16pt}
   .lede{display:none}
 }
+
+/* ---- ogrenci arama ---- */
+.oara{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+.oara input{flex:1 1 240px;min-width:0;font:400 14px/1.4 var(--sans);
+  padding:10px 13px;border:1px solid var(--hair);border-radius:11px;
+  background:var(--surface);color:var(--body)}
+.oara input:focus-visible{outline:2px solid var(--acc);outline-offset:1px;
+  border-color:var(--acc)}
+.osay{font:500 12px/1 var(--mono);color:var(--mute);white-space:nowrap}
 </style>
 
 <style>
@@ -301,6 +310,11 @@ body{padding-top:56px}
   <h2>Öğrenciler</h2>
   <p class="lede">Hesap açan herkes burada görünür. Bir hesabı mentör yaptığınızda
   o kişi bu panele ve ilerleme tablosuna erişir.</p>
+  <div class="oara">
+    <input id="oara" type="search" autocomplete="off" spellcheck="false"
+           placeholder="Ada göre ara" aria-label="Öğrenci ara">
+    <span class="osay" id="osay"></span>
+  </div>
   <div class="ogr" id="oliste"></div>
   <p class="msg" id="omsg" role="status" aria-live="polite"></p>
 </section>
@@ -515,10 +529,34 @@ function gorevCiz(){
 }
 
 /* ---- öğrenci listesi ---- */
+/* Arama: ada gore, buyuk-kucuk harf ve Turkce'ye duyarsiz. */
+var ARAMA="";
+function sadelestir(x){
+  return String(x||"").toLocaleLowerCase("tr")
+    .replace(/ı/g,"i").replace(/ş/g,"s").replace(/ğ/g,"g")
+    .replace(/ü/g,"u").replace(/ö/g,"o").replace(/ç/g,"c").trim();
+}
+
 function ogrenciCiz(){
   var k=$("#oliste"); k.innerHTML="";
-  if(!OGR.length){ k.appendChild(el("p","bos","Henüz kayıtlı hesap yok.")); return; }
-  OGR.forEach(function(o){
+  var say=$("#osay");
+  if(!OGR.length){
+    if(say) say.textContent="";
+    k.appendChild(el("p","bos","Henüz kayıtlı hesap yok.")); return;
+  }
+  var q=sadelestir(ARAMA);
+  var liste = q ? OGR.filter(function(o){ return sadelestir(o.ad).indexOf(q)>=0; })
+                : OGR;
+  if(say){
+    say.textContent = q
+      ? (liste.length+" / "+OGR.length+" hesap")
+      : (OGR.length+" hesap");
+  }
+  if(!liste.length){
+    k.appendChild(el("p","bos","\u201C"+ARAMA+"\u201D ile eşleşen hesap yok."));
+    return;
+  }
+  liste.forEach(function(o){
     var r=el("div","orow");
     var sol=el("div");
     sol.appendChild(el("div","ad",o.ad));
@@ -612,6 +650,12 @@ function girisYukle(gun){
     .catch(function(h){ bildir("#gmsg","bad",FRC.okunurHata(h)); });
 }
 
+function aramaKur(){
+  var g=$("#oara");
+  if(!g) return;
+  g.addEventListener("input", function(){ ARAMA=g.value; ogrenciCiz(); });
+}
+
 function raporKur(){
   var t=$("#gtarih");
   t.value = yerelGun(new Date());
@@ -665,6 +709,7 @@ if(!window.FRC){
     $("#p-gorevler").hidden=false;
     /* Giriş kaydı yalnızca admin'e açıktır; mentörde sekme hiç görünmez.
        Kural veritabanında da uygulanır, bu yalnızca arayüz tarafı. */
+    aramaKur();
     if(ROL(BEN.rol)==="admin"){ raporKur(); }
     else { gizle(['.tab[data-p="girisler"]', '#p-girisler']); }
     return yukle();
