@@ -15,6 +15,7 @@
      FRC.korumaliSayfa()  oturum yoksa giriş sayfasına gönderir
      FRC.oku(modulKey)    bir modülün sunucudaki durumu
      FRC.hepsiniOku()     bütün modüllerin durumu
+     FRC.girisleri(gun)   giriş kaydı raporu (mentör ve admin)
      FRC.tuvalYaz(...)    ilk tuval puanı
      FRC.cevapYaz(...)    bir sorunun ilk cevabı
    ===================================================================== */
@@ -216,6 +217,22 @@
     });
   }
 
+  /* ---- giriş kaydı ------------------------------------------------- */
+  /* Her başarılı girişte bir satır yazılır: ad, e-posta, tarih ve saat.
+     Bu, programın işleyişine ait bir güvenlik kaydıdır; çerez onayına
+     bağlı değildir ve çerez kutusunda açıkça bildirilir. Kayıt
+     değiştirilemez, veritabanında UPDATE ve DELETE politikası yoktur.
+     Yazma başarısız olursa giriş yine tamamlanır: kayıt tutulamaması
+     öğrencinin programa girmesini engellememelidir. */
+  function girisKaydet() {
+    if (!ACIK || !oturum || !oturum.user) return Promise.resolve();
+    return gonder("giris_kaydi", {
+      kullanici: oturum.user.id,
+      ad: (profil && profil.ad) || "",
+      eposta: oturum.user.email || ""
+    }).catch(function () {});
+  }
+
   function gonder(tablo, satir) {
     return istek("/rest/v1/" + tablo, {
       method: "POST",
@@ -245,7 +262,10 @@
         govde: { email: eposta, password: sifre, data: { ad: ad } }
       }).then(function (r) {
         /* E-posta doğrulaması açıksa oturum gelmez; bunu çağıran ayırt eder. */
-        if (r && r.access_token) { oturumKaydet(r); return profilOku().then(function () { return { oturumAcildi: true }; }); }
+        /* Kayit sonrasi giris kaydini girisYap yazar: giris sayfasi kayittan
+           hemen sonra girisYap cagiriyor, ikisinde de yazsak cift kayit olur. */
+        if (r && r.access_token) { oturumKaydet(r);
+          return profilOku().then(function () { return { oturumAcildi: true }; }); }
         return { oturumAcildi: false };
       });
     },
@@ -256,7 +276,8 @@
         method: "POST", anonim: true, govde: { email: eposta, password: sifre }
       }).then(function (r) {
         oturumKaydet(r);
-        return profilOku().then(kuyruguBosalt).then(function () { return FRC.kullanici(); });
+        return profilOku().then(girisKaydet).then(kuyruguBosalt)
+          .then(function () { return FRC.kullanici(); });
       });
     },
 
@@ -461,6 +482,20 @@
       });
     },
 
+    /* Giriş kaydı raporu. gun verilirse (YYYY-AA-GG) yalnızca o günün
+       kayıtları döner; verilmezse en yeni kayıtlar. Yalnızca mentör ve
+       admin bütün kayıtları görebilir, bunu veritabanı uygular. */
+    girisleri: function (gun, sinir) {
+      if (!ACIK || !oturum) return Promise.resolve([]);
+      var s = "/rest/v1/giris_kaydi?select=ad,eposta,zaman,kullanici&order=zaman.desc";
+      if (gun) {
+        s += "&zaman=gte." + encodeURIComponent(gun + "T00:00:00+03:00")
+           + "&zaman=lt."  + encodeURIComponent(gun + "T23:59:59.999+03:00");
+      }
+      s += "&limit=" + (sinir || 500);
+      return istek(s).then(function (r) { return r || []; });
+    },
+
     ozet: function () {   /* koç tablosu için */
       if (!ACIK || !oturum) return Promise.resolve(null);
       return Promise.all([
@@ -482,7 +517,7 @@
       oturumKaydet(gelen);
       return kullaniciCek()
         .then(function () { sahibiDenetle(oturum && oturum.user && oturum.user.id); })
-        .then(profilOku).then(kuyruguBosalt)
+        .then(profilOku).then(girisKaydet).then(kuyruguBosalt)
         .then(function () { return FRC.kullanici(); })
         .catch(function () { oturumKapat(); return null; });
     }

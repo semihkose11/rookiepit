@@ -11,6 +11,8 @@
    · Programın kendi işleyişi için gereken oturum ve ilerleme kaydı
      localStorage'da tutulur ve onaya bağlı değildir; kapatılırsa
      program kullanılamaz hâle gelir.
+   · Her girişte ad, e-posta ve saat sunucuya kaydedilir. Bu bir
+     güvenlik kaydıdır, onaya bağlı değildir ve kutuda bildirilir.
 
    Onay geri alınabilir: FRC_CEREZ.ayarlar() kutuyu yeniden açar.
    ===================================================================== */
@@ -135,7 +137,9 @@
     m.appendChild(document.createTextNode(
       " Oturumunuz ve modül ilerlemeniz, program çalışsın diye tarayıcınıza"
       + " kaydedilir; bu kayıt olmadan program kullanılamaz. Seçiminizi"
-      + " hatırlayan bir çerez de yazılır."));
+      + " hatırlayan bir çerez de yazılır. Hesabınızla her girişinizde adınız,"
+      + " e-postanız ve giriş saatiniz kaydedilir; bu kayıt programın"
+      + " güvenlik kaydıdır ve mentörler görür."));
     k.appendChild(m);
 
     k.appendChild(el("p", "czd",

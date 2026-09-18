@@ -117,6 +117,41 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
  border:1px dashed var(--hair);border-radius:13px}
 .cright{margin:44px 0 0;padding:20px 0 0;border-top:1px solid var(--hair);
  font:500 12px/1.6 var(--mono);color:var(--mute);text-align:center}
+
+/* ---- giris kaydi raporu ---- */
+.gfiltre{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.gfiltre label{font:600 11px/1 var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mute)}
+.gfiltre input[type=date]{font:500 13px/1 var(--mono);padding:9px 10px;
+  border:1px solid var(--hair);border-radius:9px;background:var(--surface);
+  color:var(--body)}
+.rbas{margin:0 0 10px;font:400 13px/1.5 var(--sans);color:var(--mute)}
+.rbas b{display:block;font:700 18px/1.3 var(--disp);color:var(--ink);
+  letter-spacing:.01em;margin-bottom:2px}
+#gtablo{border-collapse:collapse;width:100%;font:400 13.5px/1.5 var(--sans)}
+#gtablo th{text-align:left;font:600 11px/1 var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mute);padding:0 14px 9px 0;
+  border-bottom:1px solid var(--hair);white-space:nowrap}
+#gtablo td{padding:9px 14px 9px 0;border-bottom:1px solid var(--hair);
+  vertical-align:top}
+#gtablo td.zm{font:500 13px/1.5 var(--mono);white-space:nowrap}
+#gtablo td.ep{color:var(--mute)}
+#gtablo tr:last-child td{border-bottom:0}
+.rbos{margin:6px 0 0;font:400 13.5px/1.6 var(--sans);color:var(--mute)}
+
+@media print{
+  /* PDF cikisinda yalnizca rapor basilir. */
+  body{padding-top:0;background:#fff}
+  .nvbtn,.nvpanel,.nvback,header,.tabs,.gfiltre,.cright,#gmsg,
+  .panel:not(#p-girisler){display:none !important}
+  #p-girisler{display:block !important}
+  #p-girisler>h2{display:none}        /* baslik rapor satirinda zaten var */
+  .wrap{max-width:none;padding:0}
+  .scroll{overflow:visible}
+  #gtablo{font-size:11.5pt}
+  .rbas b{font-size:16pt}
+  .lede{display:none}
+}
 </style>
 
 <style>
@@ -206,6 +241,7 @@ body{padding-top:56px}
   <button class="tab" data-p="gorevler" aria-selected="true">Görevler</button>
   <button class="tab" data-p="yeni" aria-selected="false">Yeni görev</button>
   <button class="tab" data-p="ogrenciler" aria-selected="false">Öğrenciler</button>
+  <button class="tab" data-p="girisler" aria-selected="false">Girişler</button>
 </nav>
 
 <section class="panel" id="p-gorevler" hidden>
@@ -269,6 +305,25 @@ body{padding-top:56px}
   <p class="msg" id="omsg" role="status" aria-live="polite"></p>
 </section>
 
+<section class="panel" id="p-girisler" hidden>
+  <h2>Giriş kaydı</h2>
+  <p class="lede">Her başarılı giriş ad, e-posta, tarih ve saat ile kaydedilir.
+  Kayıt değiştirilemez ve silinemez. Bir günü seçip raporu PDF olarak
+  kaydedebilirsiniz.</p>
+  <div class="gfiltre">
+    <label for="gtarih">Gün</label>
+    <input id="gtarih" type="date">
+    <button class="go mini ikincil" id="gbugun" type="button">Bugün</button>
+    <button class="go mini ikincil" id="ghepsi" type="button">Son 500 kayıt</button>
+    <button class="go mini" id="gpdf" type="button">PDF olarak kaydet</button>
+  </div>
+  <div id="grapor">
+    <p class="rbas"><b id="rbaslik"></b><span id="rozet"></span></p>
+    <div class="scroll"><table id="gtablo"></table></div>
+  </div>
+  <p class="msg" id="gmsg" role="status" aria-live="polite"></p>
+</section>
+
 <p class="cright">© 2026 Semih Tuna Köse</p>
 </div>
 
@@ -307,7 +362,7 @@ var TURAD={odev:"ödev",modul:"modül",okuma:"okuma",serbest:"serbest"};
 $$(".tab").forEach(function(b){
   b.onclick=function(){
     $$(".tab").forEach(function(x){x.setAttribute("aria-selected", x===b?"true":"false");});
-    ["gorevler","yeni","ogrenciler"].forEach(function(p){
+    ["gorevler","yeni","ogrenciler","girisler"].forEach(function(p){
       $("#p-"+p).hidden = p!==b.dataset.p;
     });
   };
@@ -501,6 +556,73 @@ function ogrenciCiz(){
   });
 }
 
+/* ---- giris kaydi raporu ---- */
+var AYLAR=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
+  "Eylül","Ekim","Kasım","Aralık"];
+/* Istanbul saatine gore YYYY-AA-GG; sv-SE bu bicimi verir. */
+function yerelGun(d){
+  return new Date(d).toLocaleDateString("sv-SE",{timeZone:"Europe/Istanbul"});
+}
+function saatMetni(z){
+  return new Date(z).toLocaleTimeString("tr-TR",
+    {timeZone:"Europe/Istanbul",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+}
+function tarihMetni(g){
+  var p=String(g).split("-");
+  if(p.length!==3) return g;
+  return Number(p[2])+" "+AYLAR[Number(p[1])-1]+" "+p[0];
+}
+
+function girisCiz(kayitlar, gun){
+  var tb=$("#gtablo"); tb.innerHTML="";
+  $("#rbaslik").textContent = gun
+    ? ("Giriş kaydı · "+tarihMetni(gun))
+    : "Giriş kaydı · son 500 kayıt";
+  var kisi={}; kayitlar.forEach(function(k){ kisi[k.kullanici]=1; });
+  $("#rozet").textContent = kayitlar.length
+    ? (kayitlar.length+" giriş · "+Object.keys(kisi).length+" kişi")
+    : "";
+  var eski=$(".rbos"); if(eski) eski.remove();
+  if(!kayitlar.length){
+    $("#grapor").appendChild(el("p","rbos",
+      gun ? "Bu günde giriş yok." : "Henüz giriş kaydı yok."));
+    return;
+  }
+  var thead=document.createElement("thead"), tr=document.createElement("tr");
+  ["Ad","E-posta","Tarih","Saat"].forEach(function(b){
+    var th=document.createElement("th"); th.textContent=b; tr.appendChild(th);
+  });
+  thead.appendChild(tr); tb.appendChild(thead);
+  var tbody=document.createElement("tbody");
+  kayitlar.forEach(function(k){
+    var r=document.createElement("tr");
+    var c1=document.createElement("td"); c1.textContent=k.ad||"—";
+    var c2=document.createElement("td"); c2.className="ep"; c2.textContent=k.eposta||"—";
+    var c3=document.createElement("td"); c3.className="zm"; c3.textContent=yerelGun(k.zaman);
+    var c4=document.createElement("td"); c4.className="zm"; c4.textContent=saatMetni(k.zaman);
+    r.appendChild(c1); r.appendChild(c2); r.appendChild(c3); r.appendChild(c4);
+    tbody.appendChild(r);
+  });
+  tb.appendChild(tbody);
+}
+
+function girisYukle(gun){
+  bildir("#gmsg","","");
+  return FRC.girisleri(gun).then(function(k){ girisCiz(k, gun); })
+    .catch(function(h){ bildir("#gmsg","bad",FRC.okunurHata(h)); });
+}
+
+function raporKur(){
+  var t=$("#gtarih");
+  t.value = yerelGun(new Date());
+  t.onchange=function(){ girisYukle(t.value); };
+  $("#gbugun").onclick=function(){ t.value=yerelGun(new Date()); girisYukle(t.value); };
+  $("#ghepsi").onclick=function(){ t.value=""; girisYukle(null); };
+  /* Tarayicinin yazdirma penceresinden "PDF olarak kaydet" secilir. */
+  $("#gpdf").onclick=function(){ window.print(); };
+  girisYukle(t.value);
+}
+
 /* ---- veri ---- */
 function yukle(){
   return Promise.all([FRC.ozet(), FRC.gorevler()]).then(function(r){
@@ -541,6 +663,7 @@ if(!window.FRC){
     }
     $("#tabs").hidden=false;
     $("#p-gorevler").hidden=false;
+    raporKur();
     return yukle();
   }).catch(function(h){ uyar("bad", FRC.okunurHata(h)); });
 }

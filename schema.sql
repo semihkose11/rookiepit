@@ -324,3 +324,43 @@ group by o.id, o.ad, m.modul, t.puan;
 --    Kullanıcı id'sini Supabase panelinde Authentication > Users altında
 --    bulabilirsiniz.
 -- ---------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------
+-- 8. Giriş kaydı
+-- ---------------------------------------------------------------------
+
+create table if not exists public.giris_kaydi (
+  id        bigint generated always as identity primary key,
+  kullanici uuid not null references auth.users (id) on delete cascade,
+  ad        text not null default '',
+  eposta    text not null default '',
+  zaman     timestamptz not null default now()
+);
+
+create index if not exists giris_kaydi_zaman_idx
+  on public.giris_kaydi (zaman desc);
+create index if not exists giris_kaydi_kullanici_idx
+  on public.giris_kaydi (kullanici, zaman desc);
+
+alter table public.giris_kaydi enable row level security;
+
+-- Kişi yalnızca kendi girişini yazabilir.
+drop policy if exists giris_yaz on public.giris_kaydi;
+create policy giris_yaz on public.giris_kaydi
+  for insert to authenticated
+  with check (kullanici = auth.uid());
+
+-- Kendi kaydı herkese, bütün kayıtlar mentör ve admin'e açıktır.
+drop policy if exists giris_oku on public.giris_kaydi;
+create policy giris_oku on public.giris_kaydi
+  for select to authenticated
+  using (kullanici = auth.uid() or public.koc_mu());
+
+-- Günlük özet: raporun dayandığı görünüm.
+create or replace view public.giris_gunluk as
+  select (zaman at time zone 'Europe/Istanbul')::date as gun,
+         count(*)                as giris_sayisi,
+         count(distinct kullanici) as kisi_sayisi
+    from public.giris_kaydi
+   group by 1
+   order by 1 desc;
