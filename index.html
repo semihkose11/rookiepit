@@ -53,6 +53,33 @@ a{color:inherit}
 .who{font:500 12px/1.4 var(--mono);color:var(--mute);text-align:right}
 .who b{display:block;color:var(--ink);font-size:13px}
 
+/* ---- dişli menüsü ---- */
+.dsar{position:relative}
+.disli{width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+ border:1px solid var(--hair);border-radius:999px;background:var(--surface);
+ cursor:pointer;padding:0}
+.disli:hover{background:var(--sunk);border-color:var(--acc)}
+.disli:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.disli svg{width:20px;height:20px;display:block;fill:none;stroke:var(--ink);
+ stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dmenu{position:absolute;right:0;top:calc(100% + 8px);z-index:60;min-width:224px;
+ background:var(--surface);border:1px solid var(--hair);border-radius:13px;
+ padding:7px;box-shadow:0 2px 6px rgba(40,24,80,.10),0 16px 40px rgba(40,24,80,.16);
+ text-align:left}
+.dmenu[hidden]{display:none}
+.dkim{padding:8px 11px 10px;border-bottom:1px solid var(--hair);margin-bottom:6px}
+.dkim b{display:block;font:600 14px/1.35 var(--sans);color:var(--ink)}
+.dkim span{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.dmenu a,.dmenu button{display:block;width:100%;text-align:left;box-sizing:border-box;
+ padding:9px 11px;border:0;border-radius:9px;background:none;cursor:pointer;
+ font:500 14px/1.3 var(--sans);color:var(--body);text-decoration:none}
+.dmenu a:hover,.dmenu button:hover{background:var(--acc-soft);color:var(--acc)}
+.dmenu a:focus-visible,.dmenu button:focus-visible{outline:2px solid var(--acc);
+ outline-offset:-2px}
+.dayir{height:1px;background:var(--hair);margin:6px 4px}
+.dcik{color:var(--no)}
+.dcik:hover{background:var(--no-soft);color:var(--no)}
+
 /* ---- hero ---- */
 header.hero{padding:54px 0 44px}
 .eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
@@ -396,11 +423,69 @@ footer p{margin:0 0 10px;max-width:70ch;line-height:1.7}
     var yetkili = (k.rol==="mentor" || k.rol==="admin" || k.rol==="koc");
     var etiket = k.rol==="admin" ? "admin" : (yetkili ? "mentör" : "öğrenci");
     who.appendChild(document.createTextNode(etiket));
-    var git=document.createElement("a");
-    git.className="btn solid";
-    git.href=yetkili?"admin.html":"moduller.html";
-    git.textContent=yetkili?"Yönetim paneli":"Programa devam et";
-    kutu.appendChild(who); kutu.appendChild(git);
+
+    /* Dişli: hesap ve gezinme araçları tek yerde toplanır. */
+    var sar=document.createElement("div"); sar.className="dsar";
+    var d=document.createElement("button");
+    d.className="disli"; d.id="disli"; d.type="button";
+    d.setAttribute("aria-label","Menü"); d.setAttribute("aria-haspopup","true");
+    d.setAttribute("aria-expanded","false"); d.setAttribute("aria-controls","dmenu");
+    d.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'
+      + '<circle cx="12" cy="12" r="3.1"></circle>'
+      + '<path d="M19.2 14.4a1.5 1.5 0 0 0 .3 1.65l.05.05a1.8 1.8 0 1 1-2.55 2.55l-.05-.05'
+      + 'a1.5 1.5 0 0 0-1.65-.3 1.5 1.5 0 0 0-.9 1.37V20a1.8 1.8 0 1 1-3.6 0v-.1'
+      + 'a1.5 1.5 0 0 0-.98-1.37 1.5 1.5 0 0 0-1.65.3l-.05.05a1.8 1.8 0 1 1-2.55-2.55'
+      + 'l.05-.05a1.5 1.5 0 0 0 .3-1.65 1.5 1.5 0 0 0-1.37-.9H4a1.8 1.8 0 1 1 0-3.6h.1'
+      + 'a1.5 1.5 0 0 0 1.37-.98 1.5 1.5 0 0 0-.3-1.65l-.05-.05a1.8 1.8 0 1 1 2.55-2.55'
+      + 'l.05.05a1.5 1.5 0 0 0 1.65.3h.07a1.5 1.5 0 0 0 .9-1.37V4a1.8 1.8 0 1 1 3.6 0v.1'
+      + 'a1.5 1.5 0 0 0 .9 1.37 1.5 1.5 0 0 0 1.65-.3l.05-.05a1.8 1.8 0 1 1 2.55 2.55'
+      + 'l-.05.05a1.5 1.5 0 0 0-.3 1.65v.07a1.5 1.5 0 0 0 1.37.9H20a1.8 1.8 0 1 1 0 3.6h-.1'
+      + 'a1.5 1.5 0 0 0-1.37.9z"></path></svg>';
+
+    var m=document.createElement("div");
+    m.className="dmenu"; m.id="dmenu"; m.hidden=true;
+    m.setAttribute("role","menu");
+
+    var kim=document.createElement("div"); kim.className="dkim";
+    var kb=document.createElement("b"); kb.textContent=k.ad; kim.appendChild(kb);
+    var ke=document.createElement("span");
+    ke.textContent=(k.eposta||"")+" · "+etiket; kim.appendChild(ke);
+    m.appendChild(kim);
+
+    function madde(metin, adres){
+      var a=document.createElement("a");
+      a.href=adres; a.textContent=metin; a.setAttribute("role","menuitem");
+      m.appendChild(a); return a;
+    }
+    madde("Modüller","moduller.html");
+    if(yetkili){
+      madde("Yönetim paneli","admin.html#gorevler");
+      madde("Görevlendirme","admin.html#yeni");
+      madde("İlerleme tablosu","koc.html");
+    }
+    var ayir=document.createElement("div"); ayir.className="dayir"; m.appendChild(ayir);
+    var cik=document.createElement("button");
+    cik.type="button"; cik.className="dcik"; cik.textContent="Oturumu kapat";
+    cik.setAttribute("role","menuitem");
+    cik.onclick=function(){
+      cik.disabled=true;
+      Promise.resolve(FRC.cikisYap()).then(function(){ location.reload(); });
+    };
+    m.appendChild(cik);
+
+    function ac(){ m.hidden=false; d.setAttribute("aria-expanded","true");
+      var ilk=m.querySelector("a"); if(ilk) ilk.focus(); }
+    function kapat(){ m.hidden=true; d.setAttribute("aria-expanded","false"); }
+    d.onclick=function(e){ e.stopPropagation(); m.hidden ? ac() : kapat(); };
+    document.addEventListener("click", function(e){
+      if(!m.hidden && !sar.contains(e.target)) kapat();
+    });
+    document.addEventListener("keydown", function(e){
+      if(e.key==="Escape" && !m.hidden){ kapat(); d.focus(); }
+    });
+
+    sar.appendChild(d); sar.appendChild(m);
+    kutu.appendChild(who); kutu.appendChild(sar);
   });
 })();
 </script>

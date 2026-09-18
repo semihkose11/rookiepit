@@ -36,7 +36,21 @@ h1{font:700 clamp(30px,6vw,46px)/1.04 var(--disp);margin:8px 0 0}
  border:1px solid var(--hair);border-radius:999px;padding:9px 13px;cursor:pointer;
  text-decoration:none;display:inline-block;margin:8px 0 0 6px}
 .lnk:hover{background:var(--sunk)}
-nav.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+nav.tabs{display:flex;flex-wrap:wrap;gap:16px 26px;margin:22px 0 0;align-items:flex-end}
+/* [hidden] tek basina yetmez: yazardan gelen display kurali onu ezer. */
+nav.tabs[hidden]{display:none}
+.tgrup{display:flex;flex-direction:column;gap:9px}
+.tgrup[hidden]{display:none}
+.tetiket{font:600 10.5px/1 var(--mono);letter-spacing:.12em;
+ text-transform:uppercase;color:var(--mute)}
+.tsira{display:flex;flex-wrap:wrap;gap:8px}
+@media (min-width:720px){
+  .tgrup+.tgrup{padding-left:26px;border-left:1px solid var(--hair)}
+}
+@media (max-width:719px){
+  nav.tabs{flex-direction:column;align-items:stretch;gap:18px}
+  .tgrup+.tgrup{padding-top:16px;border-top:1px solid var(--hair)}
+}
 .tab{font:600 13px/1 var(--mono);color:var(--body);background:var(--surface);
  border:1px solid var(--hair);border-radius:999px;padding:11px 15px;cursor:pointer}
 .tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -246,11 +260,21 @@ body{padding-top:56px}
 
 <div id="uyari"></div>
 
-<nav class="tabs" role="tablist" id="tabs" hidden>
-  <button class="tab" data-p="gorevler" aria-selected="true">Görevler</button>
-  <button class="tab" data-p="yeni" aria-selected="false">Yeni görev</button>
-  <button class="tab" data-p="ogrenciler" aria-selected="false">Öğrenciler</button>
-  <button class="tab" data-p="girisler" aria-selected="false">Girişler</button>
+<nav class="tabs" id="tabs" hidden>
+  <div class="tgrup" id="tg-gorev">
+    <span class="tetiket" id="tl-gorev">Görev yönetimi</span>
+    <div class="tsira" role="tablist" aria-labelledby="tl-gorev">
+      <button class="tab" data-p="gorevler" aria-selected="true">Görevler</button>
+      <button class="tab" data-p="yeni" aria-selected="false">Yeni görev</button>
+    </div>
+  </div>
+  <div class="tgrup" id="tg-ogrenci">
+    <span class="tetiket" id="tl-ogrenci">Öğrenci yönetimi</span>
+    <div class="tsira" role="tablist" aria-labelledby="tl-ogrenci">
+      <button class="tab" data-p="ogrenciler" aria-selected="false">Öğrenciler</button>
+      <button class="tab" data-p="girisler" aria-selected="false">Girişler</button>
+    </div>
+  </div>
 </nav>
 
 <section class="panel" id="p-gorevler" hidden>
@@ -373,14 +397,49 @@ function gecmis(d){
 var TURAD={odev:"ödev",modul:"modül",okuma:"okuma",serbest:"serbest"};
 
 /* ---- sekmeler ---- */
+/* Iki bolum: gorev yonetimi ve ogrenci yonetimi. Her bolumun kendi sekme sirasi
+   vardir; secilen sekme yalnizca kendi panelini acar. */
+var SEKMELER=["gorevler","yeni","ogrenciler","girisler"];
+
+/* Rol gizledigi sekme secilemez: gizle() hem hidden hem display kullanir. */
+function sekmeAcik(p){
+  var b=$('.tab[data-p="'+p+'"]');
+  return !!b && !b.hidden && b.style.display!=="none";
+}
+function sekmeSec(p, adresYaz){
+  if(SEKMELER.indexOf(p)<0 || !sekmeAcik(p)) return false;
+  $$(".tab").forEach(function(x){
+    x.setAttribute("aria-selected", x.dataset.p===p ? "true" : "false");
+  });
+  SEKMELER.forEach(function(q){
+    var k=$("#p-"+q); if(k) k.hidden = q!==p;
+  });
+  if(adresYaz && window.history && history.replaceState){
+    history.replaceState(null, "", "#"+p);
+  }
+  return true;
+}
 $$(".tab").forEach(function(b){
-  b.onclick=function(){
-    $$(".tab").forEach(function(x){x.setAttribute("aria-selected", x===b?"true":"false");});
-    ["gorevler","yeni","ogrenciler","girisler"].forEach(function(p){
-      $("#p-"+p).hidden = p!==b.dataset.p;
-    });
-  };
+  b.onclick=function(){ sekmeSec(b.dataset.p, true); };
 });
+/* Disli menusunden gelen admin.html#gorevler gibi baglantilar. */
+function adresSekmesi(){
+  var t=$("#tabs");
+  if(!t || t.hidden) return false;   /* yetkisiz hesapta adres cubugu da acamaz */
+  var p=(location.hash||"").replace(/^#/,"");
+  return sekmeSec(p, false);
+}
+window.addEventListener("hashchange", adresSekmesi);
+
+/* Bos bir bolum kalirsa basligi da gizlenir. */
+function bolumBasliklari(){
+  [["#tg-gorev",["gorevler","yeni"]],["#tg-ogrenci",["ogrenciler","girisler"]]]
+  .forEach(function(g){
+    var k=$(g[0]); if(!k) return;
+    var acik=g[1].some(sekmeAcik);
+    if(!acik){ k.hidden=true; k.style.display="none"; }
+  });
+}
 
 /* ---- yeni görev formu ---- */
 var msel=$("#modul");
@@ -712,6 +771,8 @@ if(!window.FRC){
     aramaKur();
     if(ROL(BEN.rol)==="admin"){ raporKur(); }
     else { gizle(['.tab[data-p="girisler"]', '#p-girisler']); }
+    bolumBasliklari();
+    adresSekmesi();
     return yukle();
   }).catch(function(h){ uyar("bad", FRC.okunurHata(h)); });
 }
