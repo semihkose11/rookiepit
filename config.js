@@ -15,5 +15,11 @@
 window.FRC_CONFIG = {
   url:  "https://oeotfegioxqvkkxodgxx.supabase.co",
   key:  "sb_publishable_EYZoFTR2MMJc2JH7XcjJug_oYVFZnWk",
-  girisSayfasi: "giris.html"
+  girisSayfasi: "giris.html",
+
+  /* Bakimda olan bolumler. Buradaki bolum modul listesinde
+     "(bakimda)" olarak gorunur ve modulleri kapanir. Geri acmak
+     icin bolumu bu listeden cikarmak yeterlidir.
+     Gecerli degerler: "electrical", "programming", "cad". */
+  bakim: ["programming", "cad"]
 };

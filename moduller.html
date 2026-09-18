@@ -113,6 +113,9 @@ li.mod.pass .num{background:var(--ok)}
 .gate.bad b{color:#6D0B31}
 .locked{margin:10px 0 0;padding:13px 16px;border:1px dashed var(--hair);border-radius:12px;
  font:500 12.5px/1.5 var(--mono);color:var(--mute);text-align:center;background:transparent}
+.bakim{margin:10px 0 0;padding:14px 16px;border:1px solid #E8C68A;border-radius:12px;
+  background:#FDF0DC;color:#8A5A00;font:500 14px/1.6 var(--sans)}
+.bakim b{font-weight:700}
 .donedept{margin:10px 0 0;padding:14px 16px;border:1px solid #A9D6BC;border-radius:12px;
  background:var(--ok-soft);color:var(--ok);font:600 13.5px/1.5 var(--sans);text-align:center}
 
@@ -343,6 +346,37 @@ function scoreOf(r){
           started: done>0 || board!==null};
 }
 
+/* ---- bakim kipi ---------------------------------------------------- */
+/* Bakimda olan bolum listelenmez: seridi, sayaci ve modul listesi gizlenir,
+   basligina (bakimda) eklenir ve yerine bir uyari konur. Boylece ogrenci
+   o bolumun modullerine bu sayfadan gecemez. */
+const BAKIM = (window.FRC_CONFIG && Array.isArray(FRC_CONFIG.bakim))
+  ? FRC_CONFIG.bakim : [];
+function bakimda(d){ return BAKIM.indexOf(d) >= 0; }
+
+function bakimUygula(){
+  DEPT.forEach(d=>{
+    if(!bakimda(d)) return;
+    const bar=$("#bar-"+d), dm=$("#dm-"+d), lk=$("#lk-"+d), dn=$("#dn-"+d);
+    /* Liste bolumun kendi icinden secilir: render birden cok kez
+       cagrildiginda kardes siralamasina guvenmek yanlis ogeyi gizliyordu. */
+    const ol = $("#sec-"+d+" ol.mods");
+    const h2 = dm && dm.parentNode ? dm.parentNode.querySelector("h2") : null;
+    if(h2 && h2.textContent.indexOf("(bakımda)") < 0) h2.textContent += " (bakımda)";
+    /* hidden niteligi tek basina yetmiyor: .mods gibi kendi display
+       kurali olan ogeler tarayici varsayilanini eziyor. Satir ici
+       display de yaziliyor. */
+    [bar, dm, lk, dn, ol].forEach(n=>{ if(n){ n.hidden=true; n.style.display="none"; } });
+    if(!$("#bk-"+d) && ol && ol.parentNode){
+      const p=el("p","bakim"); p.id="bk-"+d;
+      p.append(Object.assign(el("b"),{textContent:"Bu bölüm şu anda bakımda."}));
+      p.append(document.createTextNode(" Modüller geçici olarak kapatıldı. "
+        + "Bölüm hazır olduğunda modüller yeniden burada görünecek."));
+      ol.parentNode.insertBefore(p, ol);
+    }
+  });
+}
+
 function render(){
   const agg={done:0,got:0,q:0,passed:0,open:0};
   const sn=$("#snote");
@@ -420,6 +454,8 @@ function render(){
 
 }
 
+const renderAsil = render;
+render = function(){ renderAsil(); bakimUygula(); };
 render();
 
 /* sync.js yüklenmediyse sayfa kendi klasöründe değil; modül bağlantıları
@@ -514,6 +550,9 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)render();}
   var LAB = {electrical:"Elektrik ve Kablolama", programming:"Programlama", cad:"CAD"};
   var DEPT = ["electrical","programming","cad"];
   var PASS = 70;
+  /* Bakimda olan bolum menude de listelenmez. */
+  var BAKIM = (window.FRC_CONFIG && Object.prototype.toString.call(FRC_CONFIG.bakim)
+    === "[object Array]") ? FRC_CONFIG.bakim : [];
   var HERE = (location.pathname.split("/").pop() || "index.html");
   var SUNUCU = null;
 
@@ -558,7 +597,9 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)render();}
         if(rows[i].f===HERE && acik.indexOf(rows[i])<0) acik.push(rows[i]);
       }
       kilitli += rows.length - acik.length;
-      box.appendChild(ekle("div","nvdept",LAB[d]));
+      var bak = BAKIM.indexOf(d) >= 0;
+      box.appendChild(ekle("div","nvdept", LAB[d] + (bak ? " (bakımda)" : "")));
+      if(bak){ box.appendChild(ekle("p","nvlock","Bu bölüm bakımda")); return; }
       acik.forEach(function(r){
         var a=ekle("a","nvitem"+(r.f===HERE?" nvhere":""));
         a.href=r.f;
