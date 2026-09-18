@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="description" content="FRC Calisma Programi antrenor tablosu.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%235B21B6'/%3E%3Cpath d='M56 14 L30 56 h18 l-6 30 26-42 h-18 z' fill='%23fff'/%3E%3C/svg%3E">
-<title>Antrenör Tablosu · FRC Çalışma Programı</title>
+<title>Mentör Tablosu · FRC Çalışma Programı</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 html{-webkit-text-size-adjust:100%}
@@ -85,6 +85,7 @@ body{padding-top:56px}
   color:var(--acc);padding:0 4px 14px}
 .nvtop{display:flex;flex-direction:column;gap:2px;padding:0 0 10px;
   border-bottom:1px solid var(--hair);margin-bottom:12px}
+.nvtop[hidden]{display:none}   /* hidden tek basina yetmiyor: display kurali eziyor */
 .nvtop a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;
   color:var(--body);font:500 14.5px/1.3 var(--sans)}
 .nvtop a:hover{background:var(--acc-soft);color:var(--acc)}
@@ -127,7 +128,7 @@ body{padding-top:56px}
   </div>
   <div id="nvlist" class="nvlist"></div>
   <div id="nvkoc" class="nvtop" style="border:0;border-top:1px solid var(--hair);padding:12px 0 0;margin:14px 0 0" hidden>
-    <a href="koc.html">Antrenör tablosu</a>
+    <a href="koc.html">Mentör tablosu</a>
     <a href="admin.html">Yönetim paneli</a>
   </div>
   <p class="nvnote" id="nvnote"></p>
@@ -137,7 +138,7 @@ body{padding-top:56px}
 <header>
   <div>
     <div class="eyebrow" lang="en">FRC · rookie practice</div>
-    <h1>Antrenör Tablosu</h1>
+    <h1>Mentör Tablosu</h1>
   </div>
   <div class="who"><b id="kim"></b><span id="rol"></span><br>
     <a class="lnk" href="admin.html">Yönetim paneli</a>
@@ -202,7 +203,9 @@ function ciz(){
   thead.append(r2); t.append(thead);
 
   var tb=el("tbody");
-  VERI.ogrenciler.filter(function(o){return o.rol!=="koc";}).forEach(function(o){
+  VERI.ogrenciler.filter(function(o){
+    return o.rol!=="mentor" && o.rol!=="admin" && o.rol!=="koc";
+  }).forEach(function(o){
     var tr=el("tr");
     var td=el("td","ad");
     td.append(Object.assign(el("b"),{textContent:o.ad}));
@@ -247,16 +250,16 @@ if(!window.FRC){
   /* sync.js yüklenmemiş: sayfa yanındaki dosyalar olmadan açılmış. */
   uyar("bad","Bu sayfa tek başına çalışmaz: yanında config.js ve sync.js dosyaları bulunmalıdır. Dosyayı indirip tek başına açtıysanız, bunun yerine programın klasörünü açıp aynı klasördeki sayfayı kullanın.");
 } else if(!FRC.acik){
-  uyar("warn","Sunucu ayarlanmamış. config.js dosyasındaki url ve key alanları doldurulmadan antrenör tablosu çalışmaz.");
+  uyar("warn","Sunucu ayarlanmamış. config.js dosyasındaki url ve key alanları doldurulmadan mentör tablosu çalışmaz.");
 } else {
   FRC.korumaliSayfa().then(function(devam){
     if(!devam) return;
     var k=FRC.kullanici();
     $("#kim").textContent=k.ad; $("#rol").textContent=k.eposta;
-    if(k.rol!=="koc"){
+    if(!(k.rol==="mentor" || k.rol==="admin" || k.rol==="koc")){
       /* Ogrenci hesabinda sayfa iskeleti de gorunmesin: yalnizca uyari kalir. */
       gizle(['.who .lnk[href="admin.html"]', '.tools', '.key', '#scroll', '#bos']);
-      uyar("bad","Bu sayfa yalnızca antrenör hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
+      uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
     }
     return FRC.ozet().then(function(v){
@@ -284,6 +287,8 @@ if(!window.FRC){
   /* Bakimda olan bolum menude de listelenmez. */
   var BAKIM = (window.FRC_CONFIG && Object.prototype.toString.call(FRC_CONFIG.bakim)
     === "[object Array]") ? FRC_CONFIG.bakim : [];
+  /* Bakim yalnizca ogrenciyi baglar. */
+  var YETKILI = false;
   var HERE = (location.pathname.split("/").pop() || "index.html");
   var SUNUCU = null;
 
@@ -328,7 +333,7 @@ if(!window.FRC){
         if(rows[i].f===HERE && acik.indexOf(rows[i])<0) acik.push(rows[i]);
       }
       kilitli += rows.length - acik.length;
-      var bak = BAKIM.indexOf(d) >= 0;
+      var bak = BAKIM.indexOf(d) >= 0 && !YETKILI;
       box.appendChild(ekle("div","nvdept", LAB[d] + (bak ? " (bakımda)" : "")));
       if(bak){ box.appendChild(ekle("p","nvlock","Bu bölüm bakımda")); return; }
       acik.forEach(function(r){
@@ -374,7 +379,11 @@ if(!window.FRC){
   if(window.FRC && FRC.acik && FRC.hazir){
     FRC.hazir.then(function(){
       var u = FRC.kullanici && FRC.kullanici();
-      if(u && u.rol==="koc"){ document.getElementById("nvkoc").hidden=false; }
+      if(u && (u.rol==="mentor" || u.rol==="admin" || u.rol==="koc")){
+        YETKILI = true;
+        document.getElementById("nvkoc").hidden=false;
+        if(!pnl.hidden) ciz();
+      }
       if(!u) return null;
       return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; if(!pnl.hidden) ciz(); } });
     })["catch"](function(){});

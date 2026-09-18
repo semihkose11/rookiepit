@@ -19,7 +19,7 @@ sahibine özel olarak bildirin:
 
 - bir öğrencinin başka bir öğrencinin kaydını okuyabilmesi
 - bir öğrencinin kendi puanını değiştirebilmesi veya silebilmesi
-- öğrenci hesabının antrenör yetkilerine erişebilmesi
+- öğrenci hesabının mentör yetkilerine erişebilmesi
 - `service_role` anahtarının herhangi bir yerde açıkta durması
 
 Bunlar satır düzeyinde güvenlik kurallarının amacına aykırıdır ve düzeltilmesi

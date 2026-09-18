@@ -13,7 +13,8 @@
 create table if not exists public.ogrenci (
   id         uuid primary key references auth.users on delete cascade,
   ad         text not null check (length(trim(ad)) between 2 and 60),
-  rol        text not null default 'ogrenci' check (rol in ('ogrenci','koc')),
+  rol        text not null default 'ogrenci'
+             check (rol in ('ogrenci','mentor','admin')),
   kayit      timestamptz not null default now()
 );
 
@@ -129,7 +130,9 @@ create table if not exists public.degerlendirme (
 );
 
 -- ---------------------------------------------------------------------
--- 5. Koç kontrolü
+-- 5. Yetki kontrolü
+--    mentor : ilerlemeyi görür, görev atar, teslimi puanlar
+--    admin  : mentörün yaptığı her şey, ayrıca rol verme yetkisi
 -- ---------------------------------------------------------------------
 create or replace function public.koc_mu()
 returns boolean
@@ -140,7 +143,21 @@ set search_path = public
 as $$
   select exists (
     select 1 from public.ogrenci
-    where id = auth.uid() and rol = 'koc'
+    where id = auth.uid() and rol in ('mentor','admin')
+  );
+$$;
+
+-- Rol verme yetkisi yalnızca admin'de.
+create or replace function public.admin_mi()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.ogrenci
+    where id = auth.uid() and rol = 'admin'
   );
 $$;
 
@@ -274,14 +291,16 @@ create policy degerlendirme_guncelle on public.degerlendirme
   for update to authenticated
   using (public.koc_mu()) with check (public.koc_mu());
 
--- Koç, öğrenci kaydını güncelleyebilir (ad düzeltmek, rol vermek).
+-- Hesap kaydını güncellemek (ad düzeltmek, rol vermek) yalnızca
+-- admin'e açıktır. Mentör rol veremez.
 drop policy if exists ogrenci_koc_guncelle on public.ogrenci;
-create policy ogrenci_koc_guncelle on public.ogrenci
+drop policy if exists ogrenci_admin_guncelle on public.ogrenci;
+create policy ogrenci_admin_guncelle on public.ogrenci
   for update to authenticated
-  using (public.koc_mu()) with check (public.koc_mu());
+  using (public.admin_mi()) with check (public.admin_mi());
 
 -- ---------------------------------------------------------------------
--- 7. Koç tablosu için birleşik görünüm
+-- 7. Mentör tablosu için birleşik görünüm
 -- ---------------------------------------------------------------------
 create or replace view public.ozet
 with (security_invoker = true) as
@@ -301,7 +320,7 @@ group by o.id, o.ad, m.modul, t.puan;
 
 -- ---------------------------------------------------------------------
 -- 8. Kendinizi koç yapmak için, hesabı açtıktan sonra bir kez çalıştırın:
---    update public.ogrenci set rol = 'koc' where id = 'BURAYA_KULLANICI_ID';
+--    update public.ogrenci set rol = 'admin' where id = 'BURAYA_KULLANICI_ID';
 --    Kullanıcı id'sini Supabase panelinde Authentication > Users altında
 --    bulabilirsiniz.
 -- ---------------------------------------------------------------------

@@ -137,6 +137,7 @@ body{padding-top:56px}
   color:var(--acc);padding:0 4px 14px}
 .nvtop{display:flex;flex-direction:column;gap:2px;padding:0 0 10px;
   border-bottom:1px solid var(--hair);margin-bottom:12px}
+.nvtop[hidden]{display:none}   /* hidden tek basina yetmiyor: display kurali eziyor */
 .nvtop a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;
   color:var(--body);font:500 14.5px/1.3 var(--sans)}
 .nvtop a:hover{background:var(--acc-soft);color:var(--acc)}
@@ -179,7 +180,7 @@ body{padding-top:56px}
   </div>
   <div id="nvlist" class="nvlist"></div>
   <div id="nvkoc" class="nvtop" style="border:0;border-top:1px solid var(--hair);padding:12px 0 0;margin:14px 0 0" hidden>
-    <a href="koc.html">Antrenör tablosu</a>
+    <a href="koc.html">Mentör tablosu</a>
     <a href="admin.html">Yönetim paneli</a>
   </div>
   <p class="nvnote" id="nvnote"></p>
@@ -261,7 +262,7 @@ body{padding-top:56px}
 
 <section class="panel" id="p-ogrenciler" hidden>
   <h2>Öğrenciler</h2>
-  <p class="lede">Hesap açan herkes burada görünür. Bir hesabı antrenör yaptığınızda
+  <p class="lede">Hesap açan herkes burada görünür. Bir hesabı mentör yaptığınızda
   o kişi bu panele ve ilerleme tablosuna erişir.</p>
   <div class="ogr" id="oliste"></div>
   <p class="msg" id="omsg" role="status" aria-live="polite"></p>
@@ -395,7 +396,9 @@ function gorevCiz(){
     at.appendChild(el("h4",null,"Kimlere atanacak"));
     var aday=el("div","aday");
     var secili=[];
-    OGR.filter(function(o){return o.rol!=="koc";}).forEach(function(o){
+    OGR.filter(function(o){
+    return o.rol!=="mentor" && o.rol!=="admin" && o.rol!=="koc";
+  }).forEach(function(o){
       var lb=el("label");
       var cb=el("input"); cb.type="checkbox";
       cb.checked = atananlar.some(function(a){return a.ogrenci===o.id;});
@@ -465,22 +468,32 @@ function ogrenciCiz(){
     sol.appendChild(el("div","ad",o.ad));
     var kac=VERI.atama.filter(function(a){return a.ogrenci===o.id;}).length;
     var kacT=VERI.teslim.filter(function(t){return t.ogrenci===o.id;}).length;
-    sol.appendChild(el("div","alt", o.rol==="koc" ? "antrenör"
+    var rolu = ROL(o.rol);
+    sol.appendChild(el("div","alt", rolu!=="ogrenci" ? ETIKET[rolu]
       : (kac+" görev · "+kacT+" teslim")));
     r.appendChild(sol);
     var sag=el("div");
-    sag.appendChild(el("span","rolet"+(o.rol==="koc"?" koc":""), o.rol==="koc"?"antrenör":"öğrenci"));
-    if(o.id!==BEN.id){
-      var b=el("button","go mini ikincil", o.rol==="koc"?"Öğrenci yap":"Antrenör yap");
-      b.style.marginLeft="8px";
-      b.onclick=function(){
-        var yeni = o.rol==="koc" ? "ogrenci" : "koc";
-        if(!confirm(o.ad+" hesabı "+(yeni==="koc"?"antrenör":"öğrenci")+" yapılacak. Emin misiniz?")) return;
-        b.disabled=true;
+    sag.appendChild(el("span","rolet"+(rolu!=="ogrenci"?" koc":""), ETIKET[rolu]));
+    /* Rol vermek yalnızca admin'e açıktır; bu kural veritabanında da uygulanır. */
+    if(o.id!==BEN.id && ROL(BEN.rol)==="admin"){
+      var sec=el("select","go mini ikincil");
+      sec.style.marginLeft="8px";
+      ["ogrenci","mentor","admin"].forEach(function(v){
+        var op=el("option",null,ETIKET[v]); op.value=v;
+        if(v===rolu) op.selected=true;
+        sec.appendChild(op);
+      });
+      sec.onchange=function(){
+        var yeni=sec.value;
+        if(yeni===rolu) return;
+        if(!confirm(o.ad+" hesabı "+ETIKET[yeni]+" yapılacak. Emin misiniz?")){
+          sec.value=rolu; return;
+        }
+        sec.disabled=true;
         FRC.rolDegistir(o.id, yeni).then(yukle)
-          .catch(function(h){ bildir("#omsg","bad",FRC.okunurHata(h)); b.disabled=false; });
+          .catch(function(h){ bildir("#omsg","bad",FRC.okunurHata(h)); sec.disabled=false; });
       };
-      sag.appendChild(b);
+      sag.appendChild(sec);
     }
     r.appendChild(sag);
     k.appendChild(r);
@@ -499,6 +512,10 @@ function yukle(){
 $("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
 
 /* Verilen seciciye uyan ogeleri gizler; yoksa sessizce gecer. */
+/* Eski 'koc' degeri mentor sayilir; veritabani gecisi oncesinde de calisir. */
+var ETIKET = {ogrenci:"öğrenci", mentor:"mentör", admin:"admin"};
+function ROL(r){ return r==="admin" ? "admin" : (r==="mentor"||r==="koc" ? "mentor" : "ogrenci"); }
+
 function gizle(seciciler){
   seciciler.forEach(function(s){
     var n=document.querySelectorAll(s);
@@ -515,10 +532,10 @@ if(!window.FRC){
     if(!devam) return;
     BEN=FRC.kullanici();
     $("#kim").textContent=BEN.ad; $("#eposta").textContent=BEN.eposta;
-    if(BEN.rol!=="koc"){
+    if(ROL(BEN.rol)==="ogrenci"){
       /* Ogrenci hesabinda capraz baglanti da gorunmesin. */
       gizle(['.who .lnk[href="koc.html"]']);
-      uyar("bad","Bu sayfa yalnızca antrenör hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
+      uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
     }
     $("#tabs").hidden=false;
@@ -539,6 +556,8 @@ if(!window.FRC){
   /* Bakimda olan bolum menude de listelenmez. */
   var BAKIM = (window.FRC_CONFIG && Object.prototype.toString.call(FRC_CONFIG.bakim)
     === "[object Array]") ? FRC_CONFIG.bakim : [];
+  /* Bakim yalnizca ogrenciyi baglar. */
+  var YETKILI = false;
   var HERE = (location.pathname.split("/").pop() || "index.html");
   var SUNUCU = null;
 
@@ -583,7 +602,7 @@ if(!window.FRC){
         if(rows[i].f===HERE && acik.indexOf(rows[i])<0) acik.push(rows[i]);
       }
       kilitli += rows.length - acik.length;
-      var bak = BAKIM.indexOf(d) >= 0;
+      var bak = BAKIM.indexOf(d) >= 0 && !YETKILI;
       box.appendChild(ekle("div","nvdept", LAB[d] + (bak ? " (bakımda)" : "")));
       if(bak){ box.appendChild(ekle("p","nvlock","Bu bölüm bakımda")); return; }
       acik.forEach(function(r){
@@ -629,7 +648,11 @@ if(!window.FRC){
   if(window.FRC && FRC.acik && FRC.hazir){
     FRC.hazir.then(function(){
       var u = FRC.kullanici && FRC.kullanici();
-      if(u && u.rol==="koc"){ document.getElementById("nvkoc").hidden=false; }
+      if(u && (u.rol==="mentor" || u.rol==="admin" || u.rol==="koc")){
+        YETKILI = true;
+        document.getElementById("nvkoc").hidden=false;
+        if(!pnl.hidden) ciz();
+      }
       if(!u) return null;
       return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; if(!pnl.hidden) ciz(); } });
     })["catch"](function(){});

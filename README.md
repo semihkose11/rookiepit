@@ -48,7 +48,8 @@ o tarayıcıya kaydeder. Hesap sistemini açtığınızda ilerleme sunucuda tutu
 - Öğrenci hangi bilgisayardan girerse girsin kaldığı modülden devam eder
 - Puanlar **bir kez yazılır ve değiştirilemez**; bu kural veritabanında uygulanır,
   sayfada değil, dolayısıyla tarayıcı araçlarıyla aşılamaz
-- Antrenör, `koc.html` sayfasından bütün öğrencilerin modül modül puanlarını görür
+- Mentör, `koc.html` sayfasından bütün öğrencilerin modül modül puanlarını görür
+- Roller üç kademelidir: öğrenci, mentör, admin. Rol vermek yalnızca admin'e açıktır
 - `admin.html` yönetim panelinden görev oluşturup öğrencilere atayabilir; atanan
   görev öğrencinin modül listesinin en üstünde görünür
 - İsterseniz Google ile giriş açılabilir; öğrenci şifre hatırlamak zorunda kalmaz
@@ -64,10 +65,10 @@ içinde.
 
 ### Görev atama
 
-Ders içeriği hazır olmasa da altyapı kurulu: antrenör ödev, okuma, modül
+Ders içeriği hazır olmasa da altyapı kurulu: mentör ödev, okuma, modül
 çalışması veya serbest çalışma türünde görev oluşturur, son tarih verir,
 öğrencileri seçer. Öğrenci görevi kendi sayfasında görür ve yaptığını
-işaretler; antrenör teslimi puanlar. Bir öğrenci yalnızca kendisine atanmış
+işaretler; mentör teslimi puanlar. Bir öğrenci yalnızca kendisine atanmış
 görevleri görebilir — bunu veritabanı kuralları uygular, sayfa değil.
 
 ![Yönetim paneli](docs/img/admin.png)
@@ -82,7 +83,7 @@ görevleri görebilir — bunu veritabanı kuralları uygular, sayfa değil.
 index.html                     karşılama sayfası, misyon ve giriş seçenekleri
 moduller.html                  modül listesi, sıralı kilit
 giris.html                     kayıt ve giriş
-koc.html                       antrenör ilerleme tablosu
+koc.html                       mentör ilerleme tablosu
 admin.html                     yönetim paneli: görev oluşturma ve atama
 config.js                      Supabase bağlantı ayarları (boş gelir)
 sync.js                        oturum ve ilerleme katmanı

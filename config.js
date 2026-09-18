@@ -21,5 +21,5 @@ window.FRC_CONFIG = {
      "(bakimda)" olarak gorunur ve modulleri kapanir. Geri acmak
      icin bolumu bu listeden cikarmak yeterlidir.
      Gecerli degerler: "electrical", "programming", "cad". */
-  bakim: ["programming"]
+  bakim: ["programming", "cad"]
 };
