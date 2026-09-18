@@ -40,7 +40,14 @@ h1{font:700 clamp(30px,6vw,44px)/1.04 var(--disp);color:var(--ink);margin:8px 0 
 .msg{margin:22px 0 0;padding:13px 15px;border-radius:11px;font-size:14px}
 .msg.bad{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
 .msg.warn{background:var(--warn-soft);color:var(--warn);border:1px solid #E8C68A}
-.scroll{margin-top:22px;overflow-x:auto;border:1px solid var(--hair);border-radius:13px;
+.bol{margin-top:30px}
+.bol:first-child{margin-top:22px}
+.bhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bico{width:12px;height:12px;border-radius:4px;flex:none}
+.bhead h2{font:700 clamp(20px,3.4vw,26px)/1.1 var(--disp);letter-spacing:.01em;
+  margin:0;color:var(--ink)}
+.bmeta{font:500 12px/1 var(--mono);color:var(--mute)}
+.scroll{margin-top:12px;overflow-x:auto;border:1px solid var(--hair);border-radius:13px;
  background:var(--surface);box-shadow:var(--shadow)}
 table{border-collapse:separate;border-spacing:0;width:100%;font:400 13px/1.4 var(--sans)}
 th,td{padding:9px 10px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--hair)}
@@ -154,7 +161,7 @@ body{padding-top:56px}
 </div>
 
 <div id="uyari"></div>
-<div class="scroll" id="scroll" hidden><table id="tablo"></table></div>
+<div id="bolumler" hidden></div>
 <p class="empty" id="bos" hidden>Henüz kayıtlı öğrenci yok.</p>
 
 <div class="key">
@@ -171,62 +178,94 @@ body{padding-top:56px}
 <script>
 var MODS=[{"dept":"electrical","n":"00","id":"electrical-00-tools","q":8,"title":"Aletler: Elektrik Ekibinin Takım Çantası"},{"dept":"electrical","n":"01","id":"electrical-01-power-path","q":9,"title":"Power Path: Battery'den PD'ye"},{"dept":"electrical","n":"02","id":"electrical-02-circuit-protection","q":8,"title":"Circuit Protection: Branch Breaker ve Fuse Seçimi"},{"dept":"electrical","n":"03","id":"electrical-03-can-bus","q":8,"title":"CAN Bus: Zincir, Termination ve Device ID"},{"dept":"electrical","n":"04","id":"electrical-04-radio","q":8,"title":"Radio: Besleme, Bağlantı ve Status Lights"},{"dept":"electrical","n":"05","id":"electrical-05-brownout","q":8,"title":"Brownout: Voltage Sag ve Current Draw"},{"dept":"electrical","n":"06","id":"electrical-06-status-lights","q":8,"title":"Status Lights: roboRIO, RSL ve PD"},{"dept":"electrical","n":"07","id":"electrical-07-pneumatics","q":8,"title":"Pneumatics: Basınç Bölgeleri, Koruma ve Besleme"},{"dept":"electrical","n":"08","id":"electrical-08-motors","q":8,"title":"Motorlar ve Motor Controller'lar"},{"dept":"electrical","n":"09","id":"electrical-09-custom-circuits","q":8,"title":"Custom Circuit'ler ve Legal Wiring"},{"dept":"electrical","n":"10","id":"electrical-10-wire-management","q":8,"title":"Wire Management, Strain Relief ve Bakım"},{"dept":"electrical","n":"11","id":"electrical-11-control-system","q":8,"title":"Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor"},{"dept":"electrical","n":"12","id":"electrical-12-inspection","q":8,"title":"Inspection Points: Elektrik Denetimi Baştan Sona"},{"dept":"programming","n":"00","id":"programming-00-java-vscode","q":8,"title":"Temel Java ve VS Code"},{"dept":"programming","n":"00b","id":"programming-00b-wpilib-temelleri","q":8,"title":"WPILib Temelleri"},{"dept":"programming","n":"01","id":"programming-01-project-structure","q":8,"title":"Proje Yapısı ve Robot Yaşam Döngüsü"},{"dept":"programming","n":"02","id":"programming-02-deploy","q":8,"title":"Deploy ve Driver Station Bağlantısı"},{"dept":"programming","n":"03","id":"programming-03-command-based","q":8,"title":"Command-Based Temelleri"},{"dept":"programming","n":"04","id":"programming-04-subsystems","q":8,"title":"Subsystem'ler ve Default Command'ler"},{"dept":"programming","n":"05","id":"programming-05-motor-controllers","q":8,"title":"Motor Controller'ları Koddan Sürmek"},{"dept":"programming","n":"06","id":"programming-06-triggers","q":8,"title":"Joystick ve Tuş Bağlamaları"},{"dept":"programming","n":"07","id":"programming-07-sensors","q":8,"title":"Sensor'ler: Encoder, Limit Switch ve Gyro"},{"dept":"programming","n":"08","id":"programming-08-pid","q":8,"title":"Closed-Loop Kontrol ve PIDController"},{"dept":"programming","n":"09","id":"programming-09-telemetry","q":8,"title":"Telemetry ve Driver Station Loglarıyla Hata Ayıklama"},{"dept":"programming","n":"10","id":"programming-10-autonomous","q":8,"title":"Autonomous Rutinleri ve SendableChooser"},{"dept":"programming","n":"11","id":"programming-11-simulation","q":8,"title":"Simulation ve Unit Test"},{"dept":"programming","n":"12","id":"programming-12-competition","q":8,"title":"Yarışmaya Hazırlık ve Yazılım Denetimi"},{"dept":"cad","n":"01","id":"cad-01-onshape-basics","q":8,"title":"Onshape'e Giriş: Document, Part Studio ve Assembly"},{"dept":"cad","n":"02","id":"cad-02-sketching","q":8,"title":"Sketch Temelleri ve Kısıtlanma Durumu"},{"dept":"cad","n":"03","id":"cad-03-constraints","q":8,"title":"Sketch Constraint'leri ve Tasarım Niyeti"},{"dept":"cad","n":"04","id":"cad-04-features","q":8,"title":"Feature'lar ve Extrude'un End Condition'ları"},{"dept":"cad","n":"05","id":"cad-05-variables-configurations","q":8,"title":"Variable'lar ve Configuration'lar"},{"dept":"cad","n":"06","id":"cad-06-in-context","q":8,"title":"Multi-Part Part Studio ve In-Context Tasarım"},{"dept":"cad","n":"07","id":"cad-07-mates","q":8,"title":"Assembly Mate'leri ve Mate Connector"},{"dept":"cad","n":"08","id":"cad-08-versions-branches","q":8,"title":"Version, Branch ve Merge"},{"dept":"cad","n":"09","id":"cad-09-drawings","q":8,"title":"Drawing: Teknik Resim ve Güncelleme"},{"dept":"cad","n":"10","id":"cad-10-cots-imports","q":8,"title":"COTS Parçalar, Import ve Linked Document"},{"dept":"cad","n":"11","id":"cad-11-robot-rules","q":8,"title":"Robot Kuralları ve CAD"},{"dept":"cad","n":"12","id":"cad-12-design-review","q":8,"title":"Capstone: CAD Tasarım İncelemesi"}], ACC={"electrical": "#B45309", "programming": "#0E7490", "cad": "#6D28D9"}, LABEL={"electrical": "Elektrik", "programming": "Programlama", "cad": "CAD"}, PASS=70;
 var DEPT=["electrical","programming","cad"];
+var TAM={electrical:"Elektrik ve Kablolama", programming:"Programlama", cad:"CAD"};
 var $=function(s){return document.querySelector(s);};
 var el=function(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
 var filtre="all", VERI=null;
 
 function uyar(tip,metin){ $("#uyari").innerHTML=""; var p=el("p","msg "+tip,metin); $("#uyari").append(p); }
 
-function durum(tuval, dogru, cevaplanan, q){
-  if(tuval===null && cevaplanan===0) return {k:"new", t:"—"};
-  if(tuval===null || cevaplanan<q) return {k:"go", t:(cevaplanan)+"/"+q};
-  var test=Math.round(dogru/q*100), ort=Math.round((test+tuval)/2);
+/* Kurulum tuvali olmayan modul: gecme olcutu yalnizca test puanidir.
+   Modul listesi bunu sayfadan okuyor; burada acikca listelenir. Bu
+   olmadan electrical-00 mentor tablosunda hicbir zaman gecmis
+   gorunmuyordu, oysa ogrenci onu gecip sonraki module geciyordu. */
+var TUVALSIZ={"electrical-00-tools":true};
+
+function durum(tuval, dogru, cevaplanan, q, tuvalsiz){
+  if(cevaplanan===0 && (tuvalsiz || tuval===null)) return {k:"new", t:"—"};
+  if(cevaplanan<q || (!tuvalsiz && tuval===null)) return {k:"go", t:(cevaplanan)+"/"+q};
+  var test=Math.round(dogru/q*100);
+  var ort = tuvalsiz ? test : Math.round((test+tuval)/2);
   return {k: ort>=PASS?"ok":"re", t:"%"+ort, ort:ort};
 }
 
 function ciz(){
-  var mods=MODS.filter(function(m){return filtre==="all"||m.dept===filtre;});
-  var t=$("#tablo"); t.innerHTML="";
-  var thead=el("thead");
-  var r1=el("tr");
-  r1.append(Object.assign(el("th","ad"),{rowSpan:2, textContent:"Öğrenci"}));
-  DEPT.forEach(function(d){
-    var n=mods.filter(function(m){return m.dept===d;}).length;
-    if(!n) return;
-    var th=el("th","dept",LABEL[d]); th.colSpan=n; th.style.background=ACC[d]; r1.append(th);
-  });
-  r1.append(Object.assign(el("th",null),{rowSpan:2, textContent:"Geçilen"}));
-  thead.append(r1);
-  var r2=el("tr");
-  mods.forEach(function(m){
-    var th=el("th",null,m.n); th.title=m.title; r2.append(th);
-  });
-  thead.append(r2); t.append(thead);
-
-  var tb=el("tbody");
-  VERI.ogrenciler.filter(function(o){
+  var host=$("#bolumler"); host.innerHTML="";
+  var ogr=VERI.ogrenciler.filter(function(o){
     return o.rol!=="mentor" && o.rol!=="admin" && o.rol!=="koc";
-  }).forEach(function(o){
-    var tr=el("tr");
-    var td=el("td","ad");
-    td.append(Object.assign(el("b"),{textContent:o.ad}));
-    tr.append(td);
-    var gecen=0;
-    mods.forEach(function(m){
-      var tv=VERI.tuvalMap[o.id+"|"+m.id];
-      var cv=VERI.cevapMap[o.id+"|"+m.id]||{d:0,n:0};
-      var s=durum(tv===undefined?null:tv, cv.d, cv.n, m.q);
-      if(s.k==="ok") gecen++;
-      var c=el("td");
-      c.append(Object.assign(el("span","cell c-"+s.k),{textContent:s.t}));
-      tr.append(c);
-    });
-    tr.append(Object.assign(el("td","sum"),{textContent:gecen+" / "+mods.length}));
-    tb.append(tr);
   });
-  t.append(tb);
-  $("#scroll").hidden = VERI.ogrenciler.length===0;
-  $("#bos").hidden = VERI.ogrenciler.length>0;
+  /* Her bolum kendi basligi ve kendi tablosuyla ayri durur; filtre
+     dugmeleri hangi bolumlerin gosterilecegini secer. */
+  DEPT.filter(function(d){ return filtre==="all" || d===filtre; })
+    .forEach(function(d){
+      var mods=MODS.filter(function(m){ return m.dept===d; });
+      if(!mods.length) return;
+
+      var sec=el("section","bol"); sec.dataset.d=d;
+      var h=el("div","bhead");
+      var ico=el("span","bico"); ico.style.background=ACC[d];
+      h.append(ico);
+      h.append(Object.assign(el("h2"),{textContent:TAM[d]}));
+      var bitiren=0;
+      var satirlar=ogr.map(function(o){
+        var gecen=0;
+        var hucreler=mods.map(function(m){
+          var tv=VERI.tuvalMap[o.id+"|"+m.id];
+          var cv=VERI.cevapMap[o.id+"|"+m.id]||{d:0,n:0};
+          var s=durum(tv===undefined?null:tv, cv.d, cv.n, m.q, !!TUVALSIZ[m.id]);
+          if(s.k==="ok") gecen++;
+          return s;
+        });
+        if(gecen===mods.length) bitiren++;
+        return {o:o, hucreler:hucreler, gecen:gecen};
+      });
+      h.append(Object.assign(el("span","bmeta"),
+        {textContent: mods.length+" modül · bölümü tamamlayan "
+          + bitiren+" / "+ogr.length+" öğrenci"}));
+      sec.append(h);
+
+      var t2=el("table");
+      var thead=el("thead"), r1=el("tr");
+      r1.append(Object.assign(el("th","ad"),{textContent:"Öğrenci"}));
+      mods.forEach(function(m){
+        var th=el("th",null,m.n); th.title=m.title; r1.append(th);
+      });
+      r1.append(Object.assign(el("th",null),{textContent:"Geçilen"}));
+      thead.append(r1); t2.append(thead);
+
+      var tb=el("tbody");
+      satirlar.forEach(function(r){
+        var tr=el("tr");
+        var td=el("td","ad");
+        td.append(Object.assign(el("b"),{textContent:r.o.ad}));
+        tr.append(td);
+        r.hucreler.forEach(function(s){
+          var c=el("td");
+          c.append(Object.assign(el("span","cell c-"+s.k),{textContent:s.t}));
+          tr.append(c);
+        });
+        tr.append(Object.assign(el("td","sum"),
+          {textContent:r.gecen+" / "+mods.length}));
+        tb.append(tr);
+      });
+      t2.append(tb);
+
+      var sc=el("div","scroll"); sc.append(t2);
+      sec.append(sc); host.append(sec);
+    });
+
+  $("#bolumler").hidden = ogr.length===0;
+  $("#bos").hidden = ogr.length>0;
 }
 
 [].forEach.call(document.querySelectorAll(".fbtn"),function(b){
@@ -259,7 +298,7 @@ if(!window.FRC){
     $("#kim").textContent=k.ad; $("#rol").textContent=k.eposta;
     if(!(k.rol==="mentor" || k.rol==="admin" || k.rol==="koc")){
       /* Ogrenci hesabinda sayfa iskeleti de gorunmesin: yalnizca uyari kalir. */
-      gizle(['.who .lnk[href="admin.html"]', '.tools', '.key', '#scroll', '#bos']);
+      gizle(['.who .lnk[href="admin.html"]', '.tools', '.key', '#bolumler', '#bos']);
       uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
     }
