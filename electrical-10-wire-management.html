@@ -409,6 +409,7 @@ body{padding-top:56px}
   color:var(--acc);padding:0 4px 14px}
 .nvtop{display:flex;flex-direction:column;gap:2px;padding:0 0 10px;
   border-bottom:1px solid var(--hair);margin-bottom:12px}
+.nvtop[hidden]{display:none}   /* hidden tek basina yetmiyor: display kurali eziyor */
 .nvtop a{display:block;padding:8px 10px;border-radius:8px;text-decoration:none;
   color:var(--body);font:500 14.5px/1.3 var(--sans)}
 .nvtop a:hover{background:var(--acc-soft);color:var(--acc)}
@@ -451,7 +452,7 @@ body{padding-top:56px}
   </div>
   <div id="nvlist" class="nvlist"></div>
   <div id="nvkoc" class="nvtop" style="border:0;border-top:1px solid var(--hair);padding:12px 0 0;margin:14px 0 0" hidden>
-    <a href="koc.html">Antrenör tablosu</a>
+    <a href="koc.html">Mentör tablosu</a>
     <a href="admin.html">Yönetim paneli</a>
   </div>
   <p class="nvnote" id="nvnote"></p>
@@ -1629,6 +1630,8 @@ if(window.FRC && FRC.acik){
   /* Bakimda olan bolum menude de listelenmez. */
   var BAKIM = (window.FRC_CONFIG && Object.prototype.toString.call(FRC_CONFIG.bakim)
     === "[object Array]") ? FRC_CONFIG.bakim : [];
+  /* Bakim yalnizca ogrenciyi baglar. */
+  var YETKILI = false;
   var HERE = (location.pathname.split("/").pop() || "index.html");
   var SUNUCU = null;
 
@@ -1673,7 +1676,7 @@ if(window.FRC && FRC.acik){
         if(rows[i].f===HERE && acik.indexOf(rows[i])<0) acik.push(rows[i]);
       }
       kilitli += rows.length - acik.length;
-      var bak = BAKIM.indexOf(d) >= 0;
+      var bak = BAKIM.indexOf(d) >= 0 && !YETKILI;
       box.appendChild(ekle("div","nvdept", LAB[d] + (bak ? " (bakımda)" : "")));
       if(bak){ box.appendChild(ekle("p","nvlock","Bu bölüm bakımda")); return; }
       acik.forEach(function(r){
@@ -1719,7 +1722,11 @@ if(window.FRC && FRC.acik){
   if(window.FRC && FRC.acik && FRC.hazir){
     FRC.hazir.then(function(){
       var u = FRC.kullanici && FRC.kullanici();
-      if(u && u.rol==="koc"){ document.getElementById("nvkoc").hidden=false; }
+      if(u && (u.rol==="mentor" || u.rol==="admin" || u.rol==="koc")){
+        YETKILI = true;
+        document.getElementById("nvkoc").hidden=false;
+        if(!pnl.hidden) ciz();
+      }
       if(!u) return null;
       return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; if(!pnl.hidden) ciz(); } });
     })["catch"](function(){});
