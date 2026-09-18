@@ -61,7 +61,7 @@ kütüphane yüklemez. Dışa açtığı işlevler:
 | `FRC.korumaliSayfa()` | oturum yoksa giriş sayfasına gönderir |
 | `FRC.oku` / `FRC.hepsiniOku` | ilerlemeyi sunucudan okur |
 | `FRC.tuvalYaz` / `FRC.cevapYaz` | ilk puanı sunucuya yazar |
-| `FRC.ozet()` | antrenör tablosunun verisi |
+| `FRC.ozet()` | mentör tablosunun verisi |
 
 Sağlayıcı dönüşünde Supabase jetonları adresin `#` kısmında verir. `sync.js`
 bunu okuyup oturumu kaydeder ve adresi temizler, böylece jeton adres çubuğunda
@@ -76,11 +76,11 @@ düğme hiç çizilmez.
 Dört tablo birbirine bağlıdır:
 
 ```
-gorev          antrenörün yazdığı tanım: tür, başlık, açıklama, modül,
+gorev          mentörün yazdığı tanım: tür, başlık, açıklama, modül,
                bağlantı, son tarih, kapalı mı
 atama          hangi görev hangi öğrenciye verildi
 teslim         öğrenci "yaptım" dedi; isterse bir açıklama bırakır
-degerlendirme  antrenörün verdiği puan ve yorum
+degerlendirme  mentörün verdiği puan ve yorum
 ```
 
 `gorev.tur` dört değerden birini alır: `odev`, `modul`, `okuma`, `serbest`.
@@ -90,12 +90,12 @@ modülün bağlantısı gösterilir.
 Kimin neyi görebileceği veritabanında tanımlıdır. Bir öğrenci yalnızca
 kendisine atanmış görevleri okuyabilir; `gorev` tablosunun okuma politikası
 `atama` tablosuna bakarak karar verir. Öğrenci teslim yazabilir ama yalnızca
-kendisine atanmış bir görev için. Puanı yalnızca antrenör yazar.
+kendisine atanmış bir görev için. Puanı yalnızca mentör yazar.
 
 Yeni bir görev türü eklemek için üç yeri değiştirmek gerekir: `schema.sql`
 içindeki `check (tur in (...))` kısıtı, `admin.html` içindeki `TURAD` ve tür
 seçim listesi, `moduller.html` içindeki `TURAD`.
 
-Antrenör bir hesabı `admin.html` içindeki Öğrenciler sekmesinden antrenör
-yapabilir. İlk antrenör hesabı bu yolla yapılamaz; onu bir kez SQL ile
+Mentör bir hesabı `admin.html` içindeki Öğrenciler sekmesinden mentör
+yapabilir. İlk mentör hesabı bu yolla yapılamaz; onu bir kez SQL ile
 işaretlemek gerekir (bkz. `docs/KURULUM.md`, 4. adım).

@@ -51,7 +51,7 @@ window.FRC_CONFIG = {
 Asıl koruma 2. adımdaki satır düzeyinde güvenlik kurallarıdır. **service_role**
 anahtarını buraya asla yazmayın; o anahtar bütün kuralları atlar.
 
-## 4. Kendinizi antrenör yapın
+## 4. Kendinizi admin yapın
 
 1. `giris.html` sayfasını açıp kendinize bir hesap açın.
 2. Supabase panelinde **Authentication > Users** altında hesabınızın `id` değerini
@@ -59,12 +59,16 @@ anahtarını buraya asla yazmayın; o anahtar bütün kuralları atlar.
 3. **SQL Editor** açıp şunu çalıştırın:
 
 ```sql
-update public.ogrenci set rol = 'koc' where id = 'BURAYA_ID';
+update public.ogrenci set rol = 'admin' where id = 'BURAYA_ID';
 ```
 
+Roller üç kademelidir: **öğrenci**, **mentör**, **admin**. Mentör ilerlemeyi
+görür, görev oluşturup atar ve teslimi puanlar; rol veremez. Admin bunların
+hepsini yapar ve ayrıca rol verir — bu kural veritabanında uygulanır.
+
 Artık `koc.html` size bütün öğrencilerin modül modül puanlarını, `admin.html` ise
-görev oluşturma ve atama panelini açar. Bundan sonraki antrenörleri SQL'e
-dokunmadan panelin Öğrenciler sekmesinden işaretleyebilirsiniz.
+görev oluşturma ve atama panelini açar. Bundan sonraki mentörleri ve adminleri
+SQL'e dokunmadan panelin Öğrenciler sekmesinden atayabilirsiniz.
 
 ## 5. Google ile giriş (isteğe bağlı)
 
