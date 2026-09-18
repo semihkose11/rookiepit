@@ -350,11 +350,13 @@ create policy giris_yaz on public.giris_kaydi
   for insert to authenticated
   with check (kullanici = auth.uid());
 
--- Kendi kaydı herkese, bütün kayıtlar mentör ve admin'e açıktır.
+-- Giriş kaydını yalnızca admin okuyabilir. Mentörün erişimi yoktur ve
+-- öğrenci kendi kaydını da göremez. Yazma açıktır: herkes kendi giriş
+-- satırını ekler, kimse okumaz.
 drop policy if exists giris_oku on public.giris_kaydi;
 create policy giris_oku on public.giris_kaydi
   for select to authenticated
-  using (kullanici = auth.uid() or public.koc_mu());
+  using (public.admin_mi());
 
 -- Günlük özet: raporun dayandığı görünüm.
 create or replace view public.giris_gunluk as

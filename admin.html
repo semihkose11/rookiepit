@@ -663,7 +663,10 @@ if(!window.FRC){
     }
     $("#tabs").hidden=false;
     $("#p-gorevler").hidden=false;
-    raporKur();
+    /* Giriş kaydı yalnızca admin'e açıktır; mentörde sekme hiç görünmez.
+       Kural veritabanında da uygulanır, bu yalnızca arayüz tarafı. */
+    if(ROL(BEN.rol)==="admin"){ raporKur(); }
+    else { gizle(['.tab[data-p="girisler"]', '#p-girisler']); }
     return yukle();
   }).catch(function(h){ uyar("bad", FRC.okunurHata(h)); });
 }
