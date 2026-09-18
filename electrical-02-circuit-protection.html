@@ -1641,6 +1641,9 @@ if(window.FRC && FRC.acik){
   var LAB = {electrical:"Elektrik ve Kablolama", programming:"Programlama", cad:"CAD"};
   var DEPT = ["electrical","programming","cad"];
   var PASS = 70;
+  /* Bakimda olan bolum menude de listelenmez. */
+  var BAKIM = (window.FRC_CONFIG && Object.prototype.toString.call(FRC_CONFIG.bakim)
+    === "[object Array]") ? FRC_CONFIG.bakim : [];
   var HERE = (location.pathname.split("/").pop() || "index.html");
   var SUNUCU = null;
 
@@ -1685,7 +1688,9 @@ if(window.FRC && FRC.acik){
         if(rows[i].f===HERE && acik.indexOf(rows[i])<0) acik.push(rows[i]);
       }
       kilitli += rows.length - acik.length;
-      box.appendChild(ekle("div","nvdept",LAB[d]));
+      var bak = BAKIM.indexOf(d) >= 0;
+      box.appendChild(ekle("div","nvdept", LAB[d] + (bak ? " (bakımda)" : "")));
+      if(bak){ box.appendChild(ekle("p","nvlock","Bu bölüm bakımda")); return; }
       acik.forEach(function(r){
         var a=ekle("a","nvitem"+(r.f===HERE?" nvhere":""));
         a.href=r.f;
