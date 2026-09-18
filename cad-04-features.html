@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="cerez.js"></script>
 <meta name="description" content="FRC Cad Modul 04 - Extrude operation type secimi, alti end type, merge scope kurali ve feature duzenlerken rollback. Kavram, uc kart, sema, kurulum tuvali ve sekiz soruluk test.">
 <meta name="color-scheme" content="light">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<script>window.__EMBED__=true;</script>
 <meta property="og:title" content="Feature'lar ve Extrude'un End Condition'ları">
 <meta property="og:description" content="FRC Cad Modul 04 - kavram, kartlar, sema ve test.">
 <meta property="og:type" content="article">
@@ -16,7 +16,6 @@
 <script src="config.js"></script>
 <script src="sync.js"></script>
 <title>Feature'lar ve Extrude'un End Condition'ları · FRC Cad Modül 04</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
 :root, :root[data-theme="dark"], :root[data-theme="light"]{
@@ -450,6 +449,7 @@ body{padding-top:56px}
   <div class="nvtop">
     <a href="index.html">Ana sayfa</a>
     <a href="moduller.html">Modül listesi</a>
+    <a href="#" id="nvcerez">Çerez ayarları</a>
   </div>
   <div id="nvlist" class="nvlist"></div>
   <div id="nvkoc" class="nvtop" style="border:0;border-top:1px solid var(--hair);padding:12px 0 0;margin:14px 0 0" hidden>
@@ -1754,6 +1754,12 @@ if(window.FRC && FRC.acik){
   }
   btn.addEventListener("click", function(){ pnl.hidden ? ac() : kapat(); });
   bck.addEventListener("click", kapat);
+  /* Cerez kutusunu yeniden acar; secim degistirilebilsin. */
+  var cz=document.getElementById("nvcerez");
+  if(cz) cz.addEventListener("click", function(e){
+    e.preventDefault(); kapat();
+    if(window.FRC_CEREZ) FRC_CEREZ.ayarlar();
+  });
   document.getElementById("nvkapat").addEventListener("click", kapat);
   document.addEventListener("keydown", function(e){
     if(e.key==="Escape" && !pnl.hidden) kapat();
