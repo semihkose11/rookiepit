@@ -100,6 +100,24 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
  background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:13px 16px}
 .orow .ad{font:600 15px/1.3 var(--sans);color:var(--ink)}
 .orow .alt{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
+.oprof{margin:10px 0 2px;padding:16px;border:1px solid var(--hair);border-radius:12px;
+ background:var(--sunk)}
+.oprof[hidden]{display:none}
+.oprof dl{margin:0 0 6px;display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:620px){.oprof dl{grid-template-columns:1fr 1fr}}
+.oprof dt{font:600 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+ color:var(--mute);margin:0 0 4px}
+.oprof dd{margin:0;font:500 14.5px/1.4 var(--sans);color:var(--ink);overflow-wrap:anywhere}
+.oprof dd.kimlik{font:500 12px/1.5 var(--mono);color:var(--body)}
+.obol{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--hair)}
+.obol .nokta{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+.obol .bad{flex:1 1 auto;min-width:0}
+.obol .bad b{display:block;font:600 14px/1.25 var(--sans);color:var(--ink)}
+.obol .bad span{font:500 12px/1.5 var(--mono);color:var(--mute)}
+.obol .cubuk{width:100%;height:6px;border-radius:999px;background:var(--hair);
+ margin-top:6px;overflow:hidden}
+.obol .cubuk i{display:block;height:100%;border-radius:999px}
+.obol .sayi{font:600 13.5px/1 var(--mono);color:var(--ink);white-space:nowrap}
 .rolet{font:600 11px/1 var(--mono);border-radius:999px;padding:6px 9px;
  background:var(--sunk);color:var(--mute)}
 .rolet.koc{background:var(--acc-soft);color:var(--acc)}
@@ -385,11 +403,19 @@ body{padding-top:56px}
 <script src="disli.js"></script>
 <script>
 var MODS=[{"id":"electrical-00-tools","ad":"Elektrik 00 · Aletler: Elektrik Ekibinin Takım Çantası"},{"id":"electrical-01-power-path","ad":"Elektrik 01 · Power Path: Battery'den PD'ye"},{"id":"electrical-02-circuit-protection","ad":"Elektrik 02 · Circuit Protection: Branch Breaker ve Fuse Seçimi"},{"id":"electrical-03-can-bus","ad":"Elektrik 03 · CAN Bus: Zincir, Termination ve Device ID"},{"id":"electrical-04-radio","ad":"Elektrik 04 · Radio: Besleme, Bağlantı ve Status Lights"},{"id":"electrical-05-brownout","ad":"Elektrik 05 · Brownout: Voltage Sag ve Current Draw"},{"id":"electrical-06-status-lights","ad":"Elektrik 06 · Status Lights: roboRIO, RSL ve PD"},{"id":"electrical-07-pneumatics","ad":"Elektrik 07 · Pneumatics: Basınç Bölgeleri, Koruma ve Besleme"},{"id":"electrical-08-motors","ad":"Elektrik 08 · Motorlar ve Motor Controller'lar"},{"id":"electrical-09-custom-circuits","ad":"Elektrik 09 · Custom Circuit'ler ve Legal Wiring"},{"id":"electrical-10-wire-management","ad":"Elektrik 10 · Wire Management, Strain Relief ve Bakım"},{"id":"electrical-11-control-system","ad":"Elektrik 11 · Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor"},{"id":"electrical-12-inspection","ad":"Elektrik 12 · Inspection Points: Elektrik Denetimi Baştan Sona"},{"id":"programming-00-java-vscode","ad":"Programlama 00 · Temel Java ve VS Code"},{"id":"programming-00b-wpilib-temelleri","ad":"Programlama 00b · WPILib Temelleri"},{"id":"programming-01-project-structure","ad":"Programlama 01 · Proje Yapısı ve Robot Yaşam Döngüsü"},{"id":"programming-02-deploy","ad":"Programlama 02 · Deploy ve Driver Station Bağlantısı"},{"id":"programming-03-command-based","ad":"Programlama 03 · Command-Based Temelleri"},{"id":"programming-04-subsystems","ad":"Programlama 04 · Subsystem'ler ve Default Command'ler"},{"id":"programming-05-motor-controllers","ad":"Programlama 05 · Motor Controller'ları Koddan Sürmek"},{"id":"programming-06-triggers","ad":"Programlama 06 · Joystick ve Tuş Bağlamaları"},{"id":"programming-07-sensors","ad":"Programlama 07 · Sensor'ler: Encoder, Limit Switch ve Gyro"},{"id":"programming-08-pid","ad":"Programlama 08 · Closed-Loop Kontrol ve PIDController"},{"id":"programming-09-telemetry","ad":"Programlama 09 · Telemetry ve Driver Station Loglarıyla Hata Ayıklama"},{"id":"programming-10-autonomous","ad":"Programlama 10 · Autonomous Rutinleri ve SendableChooser"},{"id":"programming-11-simulation","ad":"Programlama 11 · Simulation ve Unit Test"},{"id":"programming-12-competition","ad":"Programlama 12 · Yarışmaya Hazırlık ve Yazılım Denetimi"},{"id":"cad-01-onshape-basics","ad":"CAD 01 · Onshape'e Giriş: Document, Part Studio ve Assembly"},{"id":"cad-02-sketching","ad":"CAD 02 · Sketch Temelleri ve Kısıtlanma Durumu"},{"id":"cad-03-constraints","ad":"CAD 03 · Sketch Constraint'leri ve Tasarım Niyeti"},{"id":"cad-04-features","ad":"CAD 04 · Feature'lar ve Extrude'un End Condition'ları"},{"id":"cad-05-variables-configurations","ad":"CAD 05 · Variable'lar ve Configuration'lar"},{"id":"cad-06-in-context","ad":"CAD 06 · Multi-Part Part Studio ve In-Context Tasarım"},{"id":"cad-07-mates","ad":"CAD 07 · Assembly Mate'leri ve Mate Connector"},{"id":"cad-08-versions-branches","ad":"CAD 08 · Version, Branch ve Merge"},{"id":"cad-09-drawings","ad":"CAD 09 · Drawing: Teknik Resim ve Güncelleme"},{"id":"cad-10-cots-imports","ad":"CAD 10 · COTS Parçalar, Import ve Linked Document"},{"id":"cad-11-robot-rules","ad":"CAD 11 · Robot Kuralları ve CAD"},{"id":"cad-12-design-review","ad":"CAD 12 · Capstone: CAD Tasarım İncelemesi"}];
+/* Ogrenci profili icin modul olculeri: bolum, soru sayisi, tuvali var mi. */
+var IMODS=[{"d":"electrical","i":"electrical-00-tools","n":"00","q":8,"v":0},{"d":"electrical","i":"electrical-01-power-path","n":"01","q":9,"v":1},{"d":"electrical","i":"electrical-02-circuit-protection","n":"02","q":8,"v":1},{"d":"electrical","i":"electrical-03-can-bus","n":"03","q":8,"v":1},{"d":"electrical","i":"electrical-04-radio","n":"04","q":8,"v":1},{"d":"electrical","i":"electrical-05-brownout","n":"05","q":8,"v":1},{"d":"electrical","i":"electrical-06-status-lights","n":"06","q":8,"v":1},{"d":"electrical","i":"electrical-07-pneumatics","n":"07","q":8,"v":1},{"d":"electrical","i":"electrical-08-motors","n":"08","q":8,"v":1},{"d":"electrical","i":"electrical-09-custom-circuits","n":"09","q":8,"v":1},{"d":"electrical","i":"electrical-10-wire-management","n":"10","q":8,"v":1},{"d":"electrical","i":"electrical-11-control-system","n":"11","q":8,"v":1},{"d":"electrical","i":"electrical-12-inspection","n":"12","q":8,"v":1},{"d":"programming","i":"programming-00-java-vscode","n":"00","q":8,"v":1},{"d":"programming","i":"programming-00b-wpilib-temelleri","n":"00b","q":8,"v":1},{"d":"programming","i":"programming-01-project-structure","n":"01","q":8,"v":1},{"d":"programming","i":"programming-02-deploy","n":"02","q":8,"v":1},{"d":"programming","i":"programming-03-command-based","n":"03","q":8,"v":1},{"d":"programming","i":"programming-04-subsystems","n":"04","q":8,"v":1},{"d":"programming","i":"programming-05-motor-controllers","n":"05","q":8,"v":1},{"d":"programming","i":"programming-06-triggers","n":"06","q":8,"v":1},{"d":"programming","i":"programming-07-sensors","n":"07","q":8,"v":1},{"d":"programming","i":"programming-08-pid","n":"08","q":8,"v":1},{"d":"programming","i":"programming-09-telemetry","n":"09","q":8,"v":1},{"d":"programming","i":"programming-10-autonomous","n":"10","q":8,"v":1},{"d":"programming","i":"programming-11-simulation","n":"11","q":8,"v":1},{"d":"programming","i":"programming-12-competition","n":"12","q":8,"v":1},{"d":"cad","i":"cad-01-onshape-basics","n":"01","q":8,"v":1},{"d":"cad","i":"cad-02-sketching","n":"02","q":8,"v":1},{"d":"cad","i":"cad-03-constraints","n":"03","q":8,"v":1},{"d":"cad","i":"cad-04-features","n":"04","q":8,"v":1},{"d":"cad","i":"cad-05-variables-configurations","n":"05","q":8,"v":1},{"d":"cad","i":"cad-06-in-context","n":"06","q":8,"v":1},{"d":"cad","i":"cad-07-mates","n":"07","q":8,"v":1},{"d":"cad","i":"cad-08-versions-branches","n":"08","q":8,"v":1},{"d":"cad","i":"cad-09-drawings","n":"09","q":8,"v":1},{"d":"cad","i":"cad-10-cots-imports","n":"10","q":8,"v":1},{"d":"cad","i":"cad-11-robot-rules","n":"11","q":8,"v":1},{"d":"cad","i":"cad-12-design-review","n":"12","q":8,"v":1}];
+var IDEPT=["electrical","programming","cad"];
+var ILAB={electrical:"Elektrik ve Kablolama", programming:"Programlama", cad:"CAD"};
+var IRENK={electrical:"#B45309", programming:"#0E7490", cad:"#6D28D9"};
+var IPASS=70;
 var $=function(s,r){return (r||document).querySelector(s);};
 var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s));};
 var el=function(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
 var MODAD={}; MODS.forEach(function(m){MODAD[m.id]=m.ad;});
-var VERI=null, OGR=[], BEN=null;
+var VERI=null, OGR=[], BEN=null, OZET={ogrenciler:[],tuval:[],cevap:[]};
+var EPOSTA={};            /* kullanici -> e-posta (giris kaydindan, yalniz admin) */
+var ACIK_PROFIL=null;     /* profili acik olan ogrencinin kimligi */
 
 function uyar(tip,metin){
   var k=$("#uyari"); k.innerHTML="";
@@ -632,6 +658,7 @@ function ogrenciCiz(){
     return;
   }
   liste.forEach(function(o){
+    var kutu=el("div","okutu");
     var r=el("div","orow");
     var sol=el("div");
     sol.appendChild(el("div","ad",o.ad));
@@ -664,9 +691,101 @@ function ogrenciCiz(){
       };
       sag.appendChild(sec);
     }
+    /* Profil: ad, e-posta, kimlik ve modül ilerlemesi. Bu sayfa zaten
+       yalnızca mentör ve admin hesaplarına açıktır. */
+    var pd=el("button","go mini ikincil","Profil");
+    pd.type="button"; pd.style.marginLeft="8px";
+    pd.setAttribute("aria-expanded", ACIK_PROFIL===o.id ? "true" : "false");
+    pd.onclick=function(){
+      ACIK_PROFIL = (ACIK_PROFIL===o.id) ? null : o.id;
+      ogrenciCiz();
+    };
+    sag.appendChild(pd);
     r.appendChild(sag);
-    k.appendChild(r);
+    kutu.appendChild(r);
+    if(ACIK_PROFIL===o.id) kutu.appendChild(profilPaneli(o));
+    k.appendChild(kutu);
   });
+}
+
+/* Bir öğrencinin bölüm bölüm ilerlemesi. Ölçüt modül listesiyle aynıdır:
+   tuval ile test puanının ortalaması %70; tuvali olmayan modülde test tek
+   başına sayılır. */
+function ogrenciIlerleme(id){
+  var t={}, c={};
+  (OZET.tuval||[]).forEach(function(x){ if(x.kullanici===id) t[x.modul]=x.puan; });
+  (OZET.cevap||[]).forEach(function(x){
+    if(x.kullanici!==id) return;
+    c[x.modul]=c[x.modul]||{d:0,n:0};
+    c[x.modul].n++; if(x.dogru) c[x.modul].d++;
+  });
+  return IDEPT.map(function(d){
+    var satirlar=IMODS.filter(function(m){ return m.d===d; });
+    var gecilen=0, toplam=0, puanlanan=0, acik=null, baslanan=0;
+    satirlar.forEach(function(m){
+      var cc=c[m.i], p=null;
+      if(cc) baslanan++;
+      if(cc && cc.n>=m.q){
+        var test=Math.round(cc.d/m.q*100);
+        if(!m.v) p=test;
+        else if(t[m.i]!==undefined && t[m.i]!==null) p=Math.round((test+t[m.i])/2);
+      }
+      if(p!==null){ toplam+=p; puanlanan++; if(p>=IPASS) gecilen++; }
+      if(acik===null && (p===null || p<IPASS)) acik=m;
+    });
+    return {d:d, modul:satirlar.length, gecilen:gecilen, baslanan:baslanan,
+            ort: puanlanan ? Math.round(toplam/puanlanan) : null, acik:acik};
+  });
+}
+
+function tarihKisa(z){
+  if(!z) return "—";
+  var g=new Date(z);
+  if(isNaN(g)) return "—";
+  return g.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
+}
+
+function profilPaneli(o){
+  var p=el("div","oprof");
+  var dl=document.createElement("dl");
+  function alan(baslik, deger, sinif){
+    var b=document.createElement("div");
+    var dt=document.createElement("dt"); dt.textContent=baslik;
+    var dd=document.createElement("dd"); dd.textContent=deger;
+    if(sinif) dd.className=sinif;
+    b.appendChild(dt); b.appendChild(dd); dl.appendChild(b);
+  }
+  alan("Ad", o.ad||"—");
+  alan("E-posta", EPOSTA[o.id] || (ROL(BEN.rol)==="admin"
+        ? "Giriş kaydı yok" : "Yalnızca admin görebilir"));
+  alan("Rol", ETIKET[ROL(o.rol)]);
+  alan("Hesap kimliği", o.id, "kimlik");
+  alan("Hesap açılışı", tarihKisa(o.kayit));
+  var atanan=VERI.atama.filter(function(a){return a.ogrenci===o.id;}).length;
+  var teslim=VERI.teslim.filter(function(t){return t.ogrenci===o.id;}).length;
+  alan("Görev", atanan+" atandı · "+teslim+" teslim");
+  p.appendChild(dl);
+
+  ogrenciIlerleme(o.id).forEach(function(b){
+    var sat=el("div","obol");
+    var nokta=el("span","nokta"); nokta.style.background=IRENK[b.d]; sat.appendChild(nokta);
+    var ad=el("div","bad");
+    ad.appendChild(el("b",null,ILAB[b.d]));
+    var alt=b.gecilen+" / "+b.modul+" modül geçildi";
+    if(b.ort!==null) alt += " · ortalama %"+b.ort;
+    if(b.acik) alt += " · şu an modül "+b.acik.n;
+    else alt += " · bölüm tamamlandı";
+    if(!b.baslanan) alt = b.modul+" modül · henüz başlanmadı";
+    ad.appendChild(el("span",null,alt));
+    var cubuk=el("div","cubuk"); var dolu=el("i");
+    dolu.style.width=Math.round(b.gecilen/b.modul*100)+"%";
+    dolu.style.background=IRENK[b.d];
+    cubuk.appendChild(dolu); ad.appendChild(cubuk);
+    sat.appendChild(ad);
+    sat.appendChild(el("span","sayi","%"+Math.round(b.gecilen/b.modul*100)));
+    p.appendChild(sat);
+  });
+  return p;
 }
 
 /* ---- giris kaydi raporu ---- */
@@ -743,6 +862,15 @@ function girisYukle(gun){
   }).catch(function(h){ bildir("#gmsg","bad",FRC.okunurHata(h)); });
 }
 
+/* Ogrenci tablosunda e-posta yok; en son giris kaydindan okunur.
+   Giris kaydi yalnizca admin'e aciktir, mentorde bos kalir. */
+function epostaTopla(){
+  return FRC.girisleri(null, 500).then(function(k){
+    (k||[]).forEach(function(r){ if(r.kullanici && !EPOSTA[r.kullanici]) EPOSTA[r.kullanici]=r.eposta; });
+    if(ACIK_PROFIL) ogrenciCiz();
+  }).catch(function(){});
+}
+
 function aramaKur(){
   var g=$("#oara");
   if(!g) return;
@@ -767,6 +895,7 @@ function raporKur(){
 /* ---- veri ---- */
 function yukle(){
   return Promise.all([FRC.ozet(), FRC.gorevler()]).then(function(r){
+    OZET = r[0] || {ogrenciler:[],tuval:[],cevap:[]};
     OGR = (r[0] && r[0].ogrenciler) || [];
     VERI = r[1] || {gorev:[],atama:[],teslim:[],degerlendirme:[]};
     gorevCiz(); ogrenciCiz();
@@ -804,7 +933,7 @@ if(!window.FRC){
     /* Giriş kaydı yalnızca admin'e açıktır; mentörde sekme hiç görünmez.
        Kural veritabanında da uygulanır, bu yalnızca arayüz tarafı. */
     aramaKur();
-    if(ROL(BEN.rol)==="admin"){ raporKur(); }
+    if(ROL(BEN.rol)==="admin"){ raporKur(); epostaTopla(); }
     else { gizle(['.tab[data-p="girisler"]', '#p-girisler']); }
     bolumBasliklari();
     adresSekmesi();

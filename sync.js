@@ -564,7 +564,7 @@
     ozet: function () {   /* koç tablosu için */
       if (!ACIK || !oturum) return Promise.resolve(null);
       return Promise.all([
-        istek("/rest/v1/ogrenci?select=id,ad,rol&order=ad"),
+        istek("/rest/v1/ogrenci?select=id,ad,rol,kayit&order=ad"),
         istek("/rest/v1/tuval?select=kullanici,modul,puan"),
         istek("/rest/v1/cevap?select=kullanici,modul,soru,dogru")
       ]).then(function (r) { return { ogrenciler: r[0] || [], tuval: r[1] || [], cevap: r[2] || [] }; });
