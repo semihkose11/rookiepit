@@ -230,13 +230,19 @@
      değiştirilemez, veritabanında UPDATE ve DELETE politikası yoktur.
      Yazma başarısız olursa giriş yine tamamlanır: kayıt tutulamaması
      öğrencinin programa girmesini engellememelidir. */
+  /* Yazma başarılıysa true döner. Başarısızsa gün işareti konmaz;
+     böylece kayıt bir sonraki açılışta yeniden denenir. */
   function girisKaydet() {
-    if (!ACIK || !oturum || !oturum.user) return Promise.resolve();
+    if (!ACIK || !oturum || !oturum.user) return Promise.resolve(false);
     return gonder("giris_kaydi", {
       kullanici: oturum.user.id,
       ad: (profil && profil.ad) || "",
       eposta: oturum.user.email || ""
-    }).catch(function () {});
+    }).then(function () { return true; }, function () { return false; });
+  }
+
+  function girisYaz() {
+    return girisKaydet().then(function (oldu) { if (oldu) girisIsaretle(); return oldu; });
   }
 
   /* Giriş kaydı yalnızca "giriş yap" düğmesine basıldığında yazılsaydı,
@@ -259,7 +265,7 @@
   function gunlukGiris() {
     if (!ACIK || !oturum || !oturum.user) return Promise.resolve();
     if (girisIsaretliMi()) return Promise.resolve();
-    return girisKaydet().then(girisIsaretle);
+    return girisYaz();
   }
 
   function gonder(tablo, satir) {
@@ -290,11 +296,15 @@
         method: "POST", anonim: true,
         govde: { email: eposta, password: sifre, data: { ad: ad } }
       }).then(function (r) {
-        /* E-posta doğrulaması açıksa oturum gelmez; bunu çağıran ayırt eder. */
-        /* Kayit sonrasi giris kaydini girisYap yazar: giris sayfasi kayittan
-           hemen sonra girisYap cagiriyor, ikisinde de yazsak cift kayit olur. */
-        if (r && r.access_token) { oturumKaydet(r);
-          return profilOku().then(function () { return { oturumAcildi: true }; }); }
+        /* E-posta doğrulaması açıksa oturum gelmez; bunu çağıran ayırt eder.
+           Oturum geldiyse giriş kaydı burada yazılır: kayıttan sonra ayrıca
+           girisYap çağırmak gereksiz bir istek daha yapıyor ve sunucu kısa
+           aralıklı isteği sınırlarsa kayıt hiç düşmüyordu. */
+        if (r && r.access_token) {
+          oturumKaydet(r);
+          return profilOku().then(girisYaz).then(kuyruguBosalt)
+            .then(function () { return { oturumAcildi: true, kullanici: FRC.kullanici() }; });
+        }
         return { oturumAcildi: false };
       });
     },
@@ -305,7 +315,7 @@
         method: "POST", anonim: true, govde: { email: eposta, password: sifre }
       }).then(function (r) {
         oturumKaydet(r);
-        return profilOku().then(girisKaydet).then(girisIsaretle).then(kuyruguBosalt)
+        return profilOku().then(girisYaz).then(kuyruguBosalt)
           .then(function () { return FRC.kullanici(); });
       });
     },
@@ -572,7 +582,7 @@
       oturumKaydet(gelen);
       return kullaniciCek()
         .then(function () { sahibiDenetle(oturum && oturum.user && oturum.user.id); })
-        .then(profilOku).then(girisKaydet).then(girisIsaretle).then(kuyruguBosalt)
+        .then(profilOku).then(girisYaz).then(kuyruguBosalt)
         .then(function () { return FRC.kullanici(); })
         .catch(function () { oturumKapat(); return null; });
     }

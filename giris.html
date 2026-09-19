@@ -164,9 +164,11 @@ button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 
     var is = mod==="kayit"
       ? FRC.kayitOl(eposta,sifre,ad).then(function(r){
-          if(r.oturumAcildi) return FRC.girisYap(eposta,sifre);
-          goster("good","Hesap açıldı. E-postanıza gelen doğrulama bağlantısına tıklayın, sonra giriş yapın.");
+          if(r.oturumAcildi) return r.kullanici || FRC.kullanici();
+          /* Önce kip değişir: modSec() mesaj alanını temizlediği için
+             uyarı bu sırada yazılmazsa ekranda hiç görünmüyordu. */
           modSec("giris");
+          goster("good","Hesap açıldı. E-postanıza gelen doğrulama bağlantısına tıklayın, sonra giriş yapın.");
           return null;
         })
       : FRC.girisYap(eposta,sifre);
