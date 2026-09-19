@@ -27,7 +27,14 @@ header{padding:36px 0 22px;border-bottom:1px solid var(--hair);
  display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
 .eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
 h1{font:700 clamp(30px,6vw,44px)/1.04 var(--disp);color:var(--ink);margin:8px 0 0}
-.sagust{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-left:auto}
+/* Hesap kosesi: disli ile ad yan yana, sayfanin en ustunde sabit. */
+.sagust{position:fixed;top:10px;right:14px;z-index:70;display:flex;align-items:center;
+ gap:11px;padding:4px 5px 4px 13px;border-radius:999px;
+ background:rgba(255,255,255,.78);backdrop-filter:blur(7px);
+ -webkit-backdrop-filter:blur(7px);box-shadow:0 1px 2px rgba(40,24,80,.06)}
+@media (max-width:520px){
+  .sagust{gap:8px;padding:3px 4px 3px 10px}
+}
 .who{font:500 13.5px/1.5 var(--mono);color:var(--mute);text-align:right}
 .who b{display:block;color:var(--ink);font-size:15.5px}
 .lnk{font:500 12.5px/1 var(--mono);color:var(--body);background:var(--surface);
@@ -297,7 +304,7 @@ if(!window.FRC){
     if(!devam) return;
     var k=FRC.kullanici();
     $("#kim").textContent=k.ad; $("#rol").textContent=k.eposta;
-    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"koc.html", ust:true});
+    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"koc.html"});
     if(!(k.rol==="mentor" || k.rol==="admin" || k.rol==="koc")){
       /* Ogrenci hesabinda sayfa iskeleti de gorunmesin: yalnizca uyari kalir. */
       gizle(['.tools', '.key', '#bolumler', '#bos']);
