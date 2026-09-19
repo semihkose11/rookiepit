@@ -112,8 +112,6 @@ input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;backg
     <div class="dugmeler" id="sifreAc">
       <button class="go ikincil" id="sifreAcDugme" type="button"
               aria-expanded="false" aria-controls="sform">Şifreyi değiştir</button>
-      <p class="ipucu" id="sifreNot" style="margin:0;align-self:center">Eski şifre doğrulanmadan
-      yeni şifre yazılmaz.</p>
     </div>
     <form id="sform" novalidate autocomplete="off" hidden>
       <div class="alan">
@@ -222,7 +220,6 @@ function sifreBildir(tip, metin){
 }
 function sifreAc(acik){
   var form=$("#sform"), ac=$("#sifreAc"), dugme=$("#sifreAcDugme");
-  var not=$("#sifreNot"); if(not){ not.hidden=acik; not.style.display = acik ? "none" : ""; }
   form.hidden=!acik;
   ac.hidden=acik; ac.style.display = acik ? "none" : "";
   dugme.setAttribute("aria-expanded", acik ? "true" : "false");
