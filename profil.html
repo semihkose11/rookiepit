@@ -76,6 +76,7 @@ input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;backg
 .go.ikincil{background:var(--surface);color:var(--body);border:1px solid var(--hair)}
 .go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .dugmeler{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.dugmeler[hidden],form[hidden]{display:none}
 .cright{margin:40px 0 0;text-align:center;font:500 12px/1.6 var(--mono);color:var(--mute)}
 </style>
 </head>
@@ -108,11 +109,15 @@ input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;backg
     </dl>
   </div>
 
-  <h2>Şifre</h2>
+  <h2 id="sifre">Şifre</h2>
   <p class="lede">Şifrenizi değiştirmek için önce şu anki şifrenizi yazın.
   Eski şifre doğrulanmadan yeni şifre yazılmaz.</p>
   <div class="kart">
-    <form id="sform" novalidate autocomplete="off">
+    <div class="dugmeler" id="sifreAc">
+      <button class="go ikincil" id="sifreAcDugme" type="button"
+              aria-expanded="false" aria-controls="sform">Şifreyi değiştir</button>
+    </div>
+    <form id="sform" novalidate autocomplete="off" hidden>
       <div class="alan">
         <label for="eskiS">Eski şifre</label>
         <input id="eskiS" type="password" autocomplete="current-password">
@@ -127,7 +132,8 @@ input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;backg
         <input id="yeniS2" type="password" autocomplete="new-password">
       </div>
       <div class="dugmeler" style="margin-top:16px">
-        <button class="go" id="sifreKaydet" type="submit">Şifreyi değiştir</button>
+        <button class="go" id="sifreKaydet" type="submit">Kaydet</button>
+        <button class="go ikincil" id="sifreVazgec" type="button">Vazgeç</button>
       </div>
     </form>
     <p class="msg" id="sifreMsg" role="status" aria-live="polite"></p>
@@ -216,9 +222,29 @@ function ciz(veri){
 function sifreBildir(tip, metin){
   var m=$("#sifreMsg"); m.className="msg show "+tip; m.textContent=metin;
 }
+function sifreAc(acik){
+  var form=$("#sform"), ac=$("#sifreAc"), dugme=$("#sifreAcDugme");
+  form.hidden=!acik;
+  ac.hidden=acik; ac.style.display = acik ? "none" : "";
+  dugme.setAttribute("aria-expanded", acik ? "true" : "false");
+  if(acik){ var ilk=$("#eskiS"); if(ilk) ilk.focus(); }
+  else { form.reset(); $("#sifreMsg").className="msg"; }
+}
 function sifreKur(){
   var form=$("#sform"), dugme=$("#sifreKaydet");
   if(!form) return;
+  $("#sifreAcDugme").onclick=function(){ sifreAc(true); };
+  $("#sifreVazgec").onclick=function(){ sifreAc(false); };
+  /* Menüden profil.html#sifre ile gelindiğinde alan açık gelsin;
+     sayfadayken aynı bağlantıya basılırsa da açılsın. */
+  function adresDenetle(){
+    if((location.hash||"").replace(/^#/,"")!=="sifre") return;
+    sifreAc(true);
+    var bas=document.getElementById("sifre");
+    if(bas && bas.scrollIntoView) bas.scrollIntoView({block:"start"});
+  }
+  adresDenetle();
+  window.addEventListener("hashchange", adresDenetle);
   form.addEventListener("submit", function(e){
     e.preventDefault();
     var eski=$("#eskiS").value, yeni=$("#yeniS").value, tekrar=$("#yeniS2").value;
@@ -230,7 +256,9 @@ function sifreKur(){
     dugme.disabled=true;
     sifreBildir("warn","Şifre değiştiriliyor...");
     FRC.sifreDegistir(eski, yeni).then(function(){
-      form.reset();
+      form.reset(); form.hidden=true;
+      var ac=$("#sifreAc"); ac.hidden=false; ac.style.display="";
+      $("#sifreAcDugme").setAttribute("aria-expanded","false");
       sifreBildir("good","Şifreniz değiştirildi. Bundan sonra yeni şifrenizle girin.");
     }).catch(function(h){
       sifreBildir("bad", h && h.kod==="eski-sifre" ? "Eski şifre hatalı." : FRC.okunurHata(h));

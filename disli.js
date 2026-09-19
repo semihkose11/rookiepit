@@ -102,6 +102,7 @@
       m.appendChild(a); return a;
     }
     madde("Profil", "profil.html");
+    madde("Şifreyi değiştir", "profil.html#sifre");
     madde("Modüller", "moduller.html");
     if (yetkiliMi(k.rol)) {
       madde("Yönetim paneli", "admin.html");
