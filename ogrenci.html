@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="cerez.js"></script>
+<meta name="color-scheme" content="light">
+<meta name="description" content="Ogrenci bilgileri ve modul ilerlemesi. Yalnizca mentor ve admin.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg">
+<title>Öğrenci · rookiepit.com</title>
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{color-scheme:light;
+ --ground:#EFE9FB;--surface:#FFF;--sunk:#E4DBF7;
+ --ink:#000;--body:#141019;--mute:#463E58;--hair:#CFC2EC;
+ --acc:#5B21B6;--acc-soft:#EDE5FE;--ok:#116336;--ok-soft:#E4F3EA;
+ --no:#A5124A;--no-soft:#FBE6EE;--warn:#8A5A00;--warn-soft:#FDF0DC;
+ --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+ --disp:"Barlow Condensed",system-ui,sans-serif;
+ --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);font:400 16px/1.6 var(--sans)}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px 70px}
+header{padding:36px 0 22px;border-bottom:1px solid var(--hair)}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+h1{font:700 clamp(28px,6vw,42px)/1.06 var(--disp);color:var(--ink);margin:8px 0 0}
+.rozet{display:inline-block;font:600 12px/1 var(--mono);letter-spacing:.04em;
+ padding:6px 10px;border-radius:999px;background:var(--sunk);color:var(--acc);margin:12px 0 0}
+.geri{display:inline-block;margin:0 0 4px;font:500 12.5px/1 var(--mono);
+ color:var(--body);background:var(--surface);border:1px solid var(--hair);
+ border-radius:999px;padding:9px 13px;text-decoration:none}
+.geri:hover{background:var(--sunk)}
+/* Hesap kosesi: disli ile ad yan yana, sayfanin en ustunde sabit. */
+.sagust{position:fixed;top:10px;right:14px;z-index:70;display:flex;align-items:center;
+ gap:11px;padding:4px 5px 4px 13px;border-radius:999px;
+ background:rgba(255,255,255,.78);backdrop-filter:blur(7px);
+ -webkit-backdrop-filter:blur(7px);box-shadow:0 1px 2px rgba(40,24,80,.06)}
+@media (max-width:520px){.sagust{gap:8px;padding:3px 4px 3px 10px}}
+.who{font:500 13.5px/1.5 var(--mono);color:var(--mute);text-align:right}
+.who b{display:block;color:var(--ink);font-size:15.5px}
+h2{font:600 clamp(20px,4vw,25px)/1.15 var(--disp);margin:30px 0 4px;color:var(--ink)}
+.lede{margin:0 0 16px;color:var(--mute);font-size:14.5px;max-width:62ch}
+.kart{background:var(--surface);border:1px solid var(--hair);border-radius:14px;
+ padding:20px;box-shadow:var(--shadow)}
+.kart+.kart{margin-top:12px}
+dl{margin:0;display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:620px){dl{grid-template-columns:1fr 1fr}}
+dt{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+ color:var(--mute);margin:0 0 6px}
+dd{margin:0;font:500 15.5px/1.4 var(--sans);color:var(--ink);overflow-wrap:anywhere}
+dd.kimlik{font:500 12.5px/1.5 var(--mono);color:var(--body)}
+.bol{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--hair)}
+.bol:last-child{border-bottom:0}
+.nokta{width:12px;height:12px;border-radius:4px;flex:0 0 auto}
+.bad{flex:1 1 auto;min-width:0}
+.bad b{display:block;font:600 15.5px/1.25 var(--sans);color:var(--ink)}
+.bad span{font:500 12.5px/1.5 var(--mono);color:var(--mute)}
+.cubuk{width:100%;height:8px;border-radius:999px;background:var(--sunk);margin-top:8px;overflow:hidden}
+.cubuk i{display:block;height:100%;border-radius:999px}
+.sayi{font:600 15px/1 var(--mono);color:var(--ink);white-space:nowrap}
+.mlist{margin:10px 0 0;padding:0;list-style:none}
+.mlist li{display:flex;align-items:center;gap:10px;padding:8px 0;
+ border-top:1px solid var(--hair);font-size:14px}
+.mno{font:600 12px/1 var(--mono);color:var(--mute);min-width:26px}
+.mad{flex:1 1 auto;min-width:0;color:var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mdur{font:600 11.5px/1 var(--mono);padding:5px 9px;border-radius:999px;white-space:nowrap}
+.mdur.ok{background:var(--ok-soft);color:var(--ok)}
+.mdur.go{background:var(--warn-soft);color:var(--warn)}
+.mdur.re{background:var(--no-soft);color:var(--no)}
+.mdur.new{background:var(--sunk);color:var(--mute)}
+.msg{margin:14px 0 0;font:500 14px/1.5 var(--sans);padding:12px 14px;border-radius:10px;display:none}
+.msg.show{display:block}
+.msg.bad{background:var(--no-soft);color:var(--no)}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.cright{margin:40px 0 0;text-align:center;font:500 12px/1.6 var(--mono);color:var(--mute)}
+</style>
+</head>
+<body>
+
+<div class="wrap" lang="tr">
+<header>
+  <a class="geri" href="admin.html#ogrenciler">← Öğrenciler</a>
+  <div class="eyebrow" lang="en">FRC · öğrenci</div>
+  <h1 id="ad">Öğrenci</h1>
+  <span class="rozet" id="rol" hidden></span>
+  <div class="sagust">
+    <div class="who"><b id="kim"></b><span id="benrol"></span></div>
+    <div id="dkutu"></div>
+  </div>
+</header>
+
+<p class="msg" id="uyari" role="status" aria-live="polite"></p>
+
+<section id="icerik" hidden>
+  <h2>Hesap</h2>
+  <div class="kart">
+    <dl>
+      <div><dt>Ad</dt><dd id="pAd"></dd></div>
+      <div><dt>E-posta</dt><dd id="pEposta"></dd></div>
+      <div><dt>Rol</dt><dd id="pRol"></dd></div>
+      <div><dt>Hesap kimliği</dt><dd id="pId" class="kimlik"></dd></div>
+      <div><dt>Hesap açılışı</dt><dd id="pKayit"></dd></div>
+      <div><dt>Son giriş</dt><dd id="pGiris"></dd></div>
+      <div><dt>Görev</dt><dd id="pGorev"></dd></div>
+    </dl>
+  </div>
+
+  <h2>İlerleme</h2>
+  <p class="lede">Ölçüt modül listesiyle aynıdır: tuval ile test puanının ortalaması
+  %70 veya üzeri. Tuvali olmayan modülde test puanı tek başına sayılır.</p>
+  <div class="kart" id="bolumler"></div>
+
+  <h2>Modüller</h2>
+  <p class="lede">Bölüm bölüm her modülün durumu.</p>
+  <div class="kart" id="moduller"></div>
+</section>
+
+<p class="cright">© 2026 Semih Tuna Köse</p>
+</div>
+
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<script src="disli.js"></script>
+<script>
+var MODS=[{"d":"electrical","i":"electrical-00-tools","n":"00","t":"Aletler: Elektrik Ekibinin Takım Çantası","q":8,"v":0,"f":"electrical-00-tools.html"},{"d":"electrical","i":"electrical-01-power-path","n":"01","t":"Power Path: Battery'den PD'ye","q":9,"v":1,"f":"electrical-01-power-path.html"},{"d":"electrical","i":"electrical-02-circuit-protection","n":"02","t":"Circuit Protection: Branch Breaker ve Fuse Seçimi","q":8,"v":1,"f":"electrical-02-circuit-protection.html"},{"d":"electrical","i":"electrical-03-can-bus","n":"03","t":"CAN Bus: Zincir, Termination ve Device ID","q":8,"v":1,"f":"electrical-03-can-bus.html"},{"d":"electrical","i":"electrical-04-radio","n":"04","t":"Radio: Besleme, Bağlantı ve Status Lights","q":8,"v":1,"f":"electrical-04-radio.html"},{"d":"electrical","i":"electrical-05-brownout","n":"05","t":"Brownout: Voltage Sag ve Current Draw","q":8,"v":1,"f":"electrical-05-brownout.html"},{"d":"electrical","i":"electrical-06-status-lights","n":"06","t":"Status Lights: roboRIO, RSL ve PD","q":8,"v":1,"f":"electrical-06-status-lights.html"},{"d":"electrical","i":"electrical-07-pneumatics","n":"07","t":"Pneumatics: Basınç Bölgeleri, Koruma ve Besleme","q":8,"v":1,"f":"electrical-07-pneumatics.html"},{"d":"electrical","i":"electrical-08-motors","n":"08","t":"Motorlar ve Motor Controller'lar","q":8,"v":1,"f":"electrical-08-motors.html"},{"d":"electrical","i":"electrical-09-custom-circuits","n":"09","t":"Custom Circuit'ler ve Legal Wiring","q":8,"v":1,"f":"electrical-09-custom-circuits.html"},{"d":"electrical","i":"electrical-10-wire-management","n":"10","t":"Wire Management, Strain Relief ve Bakım","q":8,"v":1,"f":"electrical-10-wire-management.html"},{"d":"electrical","i":"electrical-11-control-system","n":"11","t":"Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor","q":8,"v":1,"f":"electrical-11-control-system.html"},{"d":"electrical","i":"electrical-12-inspection","n":"12","t":"Inspection Points: Elektrik Denetimi Baştan Sona","q":8,"v":1,"f":"electrical-12-inspection.html"},{"d":"programming","i":"programming-00-java-vscode","n":"00","t":"Temel Java ve VS Code","q":8,"v":1,"f":"programming-00-java-vscode.html"},{"d":"programming","i":"programming-00b-wpilib-temelleri","n":"00b","t":"WPILib Temelleri","q":8,"v":1,"f":"programming-00b-wpilib-temelleri.html"},{"d":"programming","i":"programming-01-project-structure","n":"01","t":"Proje Yapısı ve Robot Yaşam Döngüsü","q":8,"v":1,"f":"programming-01-project-structure.html"},{"d":"programming","i":"programming-02-deploy","n":"02","t":"Deploy ve Driver Station Bağlantısı","q":8,"v":1,"f":"programming-02-deploy.html"},{"d":"programming","i":"programming-03-command-based","n":"03","t":"Command-Based Temelleri","q":8,"v":1,"f":"programming-03-command-based.html"},{"d":"programming","i":"programming-04-subsystems","n":"04","t":"Subsystem'ler ve Default Command'ler","q":8,"v":1,"f":"programming-04-subsystems.html"},{"d":"programming","i":"programming-05-motor-controllers","n":"05","t":"Motor Controller'ları Koddan Sürmek","q":8,"v":1,"f":"programming-05-motor-controllers.html"},{"d":"programming","i":"programming-06-triggers","n":"06","t":"Joystick ve Tuş Bağlamaları","q":8,"v":1,"f":"programming-06-triggers.html"},{"d":"programming","i":"programming-07-sensors","n":"07","t":"Sensor'ler: Encoder, Limit Switch ve Gyro","q":8,"v":1,"f":"programming-07-sensors.html"},{"d":"programming","i":"programming-08-pid","n":"08","t":"Closed-Loop Kontrol ve PIDController","q":8,"v":1,"f":"programming-08-pid.html"},{"d":"programming","i":"programming-09-telemetry","n":"09","t":"Telemetry ve Driver Station Loglarıyla Hata Ayıklama","q":8,"v":1,"f":"programming-09-telemetry.html"},{"d":"programming","i":"programming-10-autonomous","n":"10","t":"Autonomous Rutinleri ve SendableChooser","q":8,"v":1,"f":"programming-10-autonomous.html"},{"d":"programming","i":"programming-11-simulation","n":"11","t":"Simulation ve Unit Test","q":8,"v":1,"f":"programming-11-simulation.html"},{"d":"programming","i":"programming-12-competition","n":"12","t":"Yarışmaya Hazırlık ve Yazılım Denetimi","q":8,"v":1,"f":"programming-12-competition.html"},{"d":"cad","i":"cad-01-onshape-basics","n":"01","t":"Onshape'e Giriş: Document, Part Studio ve Assembly","q":8,"v":1,"f":"cad-01-onshape-basics.html"},{"d":"cad","i":"cad-02-sketching","n":"02","t":"Sketch Temelleri ve Kısıtlanma Durumu","q":8,"v":1,"f":"cad-02-sketching.html"},{"d":"cad","i":"cad-03-constraints","n":"03","t":"Sketch Constraint'leri ve Tasarım Niyeti","q":8,"v":1,"f":"cad-03-constraints.html"},{"d":"cad","i":"cad-04-features","n":"04","t":"Feature'lar ve Extrude'un End Condition'ları","q":8,"v":1,"f":"cad-04-features.html"},{"d":"cad","i":"cad-05-variables-configurations","n":"05","t":"Variable'lar ve Configuration'lar","q":8,"v":1,"f":"cad-05-variables-configurations.html"},{"d":"cad","i":"cad-06-in-context","n":"06","t":"Multi-Part Part Studio ve In-Context Tasarım","q":8,"v":1,"f":"cad-06-in-context.html"},{"d":"cad","i":"cad-07-mates","n":"07","t":"Assembly Mate'leri ve Mate Connector","q":8,"v":1,"f":"cad-07-mates.html"},{"d":"cad","i":"cad-08-versions-branches","n":"08","t":"Version, Branch ve Merge","q":8,"v":1,"f":"cad-08-versions-branches.html"},{"d":"cad","i":"cad-09-drawings","n":"09","t":"Drawing: Teknik Resim ve Güncelleme","q":8,"v":1,"f":"cad-09-drawings.html"},{"d":"cad","i":"cad-10-cots-imports","n":"10","t":"COTS Parçalar, Import ve Linked Document","q":8,"v":1,"f":"cad-10-cots-imports.html"},{"d":"cad","i":"cad-11-robot-rules","n":"11","t":"Robot Kuralları ve CAD","q":8,"v":1,"f":"cad-11-robot-rules.html"},{"d":"cad","i":"cad-12-design-review","n":"12","t":"Capstone: CAD Tasarım İncelemesi","q":8,"v":1,"f":"cad-12-design-review.html"}];
+var LAB={electrical:"Elektrik ve Kablolama", programming:"Programlama", cad:"CAD"};
+var RENK={electrical:"#B45309", programming:"#0E7490", cad:"#6D28D9"};
+var DEPT=["electrical","programming","cad"];
+var PASS=70;
+var ETIKET={ogrenci:"öğrenci", mentor:"mentör", admin:"admin"};
+var $=function(s){return document.querySelector(s);};
+var el=function(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
+function ROL(r){ return r==="admin" ? "admin" : (r==="mentor"||r==="koc" ? "mentor" : "ogrenci"); }
+function uyar(tip,metin){ var m=$("#uyari"); m.className="msg show "+tip; m.textContent=metin; }
+
+function tarihMetni(z){
+  if(!z) return "—";
+  var g=new Date(z);
+  if(isNaN(g)) return "—";
+  return g.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
+}
+function saatMetni(z){
+  if(!z) return "—";
+  var g=new Date(z);
+  if(isNaN(g)) return "—";
+  return g.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"})
+    + " · " + g.toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"});
+}
+
+/* Modül puanı: tuval ile testin ortalaması; tuvalsiz modüller testle ölçülür. */
+function puanla(tuvalMap, cevapMap, m){
+  var c=cevapMap[m.i];
+  if(!c) return {durum:"new", puan:null};
+  if(c.n < m.q) return {durum:"go", puan:null, cevap:c.n};
+  var test=Math.round(c.d/m.q*100);
+  var p;
+  if(!m.v) p=test;
+  else {
+    var t=tuvalMap[m.i];
+    if(t===undefined || t===null) return {durum:"go", puan:null, cevap:c.n};
+    p=Math.round((test+t)/2);
+  }
+  return {durum: p>=PASS ? "ok" : "re", puan:p};
+}
+
+function ciz(ogrenci, ozet, gorevler, girisler){
+  var tuvalMap={}, cevapMap={};
+  (ozet.tuval||[]).forEach(function(x){ if(x.kullanici===ogrenci.id) tuvalMap[x.modul]=x.puan; });
+  (ozet.cevap||[]).forEach(function(x){
+    if(x.kullanici!==ogrenci.id) return;
+    cevapMap[x.modul]=cevapMap[x.modul]||{d:0,n:0};
+    cevapMap[x.modul].n++; if(x.dogru) cevapMap[x.modul].d++;
+  });
+
+  $("#ad").textContent=ogrenci.ad || "İsimsiz";
+  var rz=$("#rol"); rz.textContent=ETIKET[ROL(ogrenci.rol)]; rz.hidden=false;
+  $("#pAd").textContent=ogrenci.ad || "İsimsiz";
+  $("#pRol").textContent=ETIKET[ROL(ogrenci.rol)];
+  $("#pId").textContent=ogrenci.id;
+  $("#pKayit").textContent=tarihMetni(ogrenci.kayit);
+
+  var kendi=(girisler||[]).filter(function(g){ return g.kullanici===ogrenci.id; });
+  var yetkili=ROL(FRC.kullanici().rol);
+  if(yetkili==="admin"){
+    $("#pEposta").textContent = kendi.length ? kendi[0].eposta : "Giriş kaydı yok";
+    $("#pGiris").textContent = kendi.length ? saatMetni(kendi[0].zaman) : "Kayıt yok";
+  } else {
+    $("#pEposta").textContent = "Yalnızca admin görebilir";
+    $("#pGiris").textContent = "Yalnızca admin görebilir";
+  }
+
+  var atanan=(gorevler.atama||[]).filter(function(a){return a.ogrenci===ogrenci.id;}).length;
+  var teslim=(gorevler.teslim||[]).filter(function(t){return t.ogrenci===ogrenci.id;}).length;
+  $("#pGorev").textContent=atanan+" atandı · "+teslim+" teslim";
+
+  var bk=$("#bolumler"); bk.innerHTML="";
+  var mk=$("#moduller"); mk.innerHTML="";
+  DEPT.forEach(function(d){
+    var satirlar=MODS.filter(function(m){ return m.d===d; });
+    var gecilen=0, toplam=0, puanlanan=0, acik=null, baslanan=0;
+    var durumlar=satirlar.map(function(m){
+      var s=puanla(tuvalMap, cevapMap, m);
+      if(s.durum!=="new") baslanan++;
+      if(s.puan!==null){ toplam+=s.puan; puanlanan++; if(s.puan>=PASS) gecilen++; }
+      if(acik===null && s.durum!=="ok") acik=m;
+      return {m:m, s:s};
+    });
+    var ort = puanlanan ? Math.round(toplam/puanlanan) : null;
+
+    var sat=el("div","bol");
+    var nokta=el("span","nokta"); nokta.style.background=RENK[d]; sat.appendChild(nokta);
+    var ad=el("div","bad");
+    ad.appendChild(el("b",null,LAB[d]));
+    var alt;
+    if(!baslanan) alt = satirlar.length+" modül · henüz başlanmadı";
+    else {
+      alt = gecilen+" / "+satirlar.length+" modül geçildi";
+      if(ort!==null) alt += " · ortalama %"+ort;
+      alt += acik ? (" · şu an modül "+acik.n) : " · bölüm tamamlandı";
+    }
+    ad.appendChild(el("span",null,alt));
+    var cubuk=el("div","cubuk"); var dolu=el("i");
+    dolu.style.width=Math.round(gecilen/satirlar.length*100)+"%";
+    dolu.style.background=RENK[d]; cubuk.appendChild(dolu); ad.appendChild(cubuk);
+    sat.appendChild(ad);
+    sat.appendChild(el("span","sayi","%"+Math.round(gecilen/satirlar.length*100)));
+    bk.appendChild(sat);
+
+    var blok=el("div","bol"); blok.style.display="block";
+    blok.appendChild(el("b",null,LAB[d]));
+    var liste=el("ul","mlist");
+    durumlar.forEach(function(x){
+      var li=document.createElement("li");
+      li.appendChild(el("span","mno",x.m.n));
+      li.appendChild(el("span","mad",x.m.t));
+      var metin, sinif=x.s.durum;
+      if(x.s.durum==="ok") metin="geçti · %"+x.s.puan;
+      else if(x.s.durum==="re") metin="kaldı · %"+x.s.puan;
+      else if(x.s.durum==="go") metin="devam · "+(x.s.cevap||0)+"/"+x.m.q;
+      else metin="başlanmadı";
+      li.appendChild(el("span","mdur "+sinif, metin));
+      liste.appendChild(li);
+    });
+    blok.appendChild(liste);
+    mk.appendChild(blok);
+  });
+  $("#icerik").hidden=false;
+}
+
+function kimlikAl(){
+  var d=new URLSearchParams(location.search).get("id") || "";
+  return /^[0-9a-fA-F-]{36}$/.test(d) ? d : "";
+}
+
+if(!window.FRC){
+  uyar("bad","Bu sayfa tek başına çalışmaz: yanında config.js ve sync.js dosyaları bulunmalıdır.");
+} else if(!FRC.acik){
+  uyar("warn","Sunucu ayarlanmamış. config.js dosyasındaki url ve key alanları doldurulmadan bu sayfa çalışmaz.");
+} else {
+  FRC.korumaliSayfa().then(function(devam){
+    if(!devam) return;
+    var ben=FRC.kullanici();
+    $("#kim").textContent=ben.ad;
+    $("#benrol").textContent=ETIKET[ROL(ben.rol)];
+    FRC_DISLI.kur($("#dkutu"), ben, {buSayfa:"ogrenci.html"});
+    if(ROL(ben.rol)==="ogrenci"){
+      uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
+      return;
+    }
+    var id=kimlikAl();
+    if(!id){ uyar("bad","Öğrenci seçilmedi. Öğrenciler listesinden bir ada tıklayın."); return; }
+    var isler=[FRC.ozet(), FRC.gorevler()];
+    isler.push(ROL(ben.rol)==="admin"
+      ? FRC.girisleri(null, 500).catch(function(){ return []; })
+      : Promise.resolve([]));
+    return Promise.all(isler).then(function(r){
+      var ozet=r[0]||{ogrenciler:[],tuval:[],cevap:[]};
+      var kisi=(ozet.ogrenciler||[]).filter(function(o){ return o.id===id; })[0];
+      if(!kisi){ uyar("bad","Bu kimlikle bir hesap bulunamadı."); return; }
+      ciz(kisi, ozet, r[1]||{atama:[],teslim:[]}, r[2]||[]);
+    });
+  }).catch(function(h){ uyar("bad", FRC.okunurHata(h)); });
+}
+</script>
+</body>
+</html>

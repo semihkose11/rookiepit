@@ -99,28 +99,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 .orow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
  background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:13px 16px}
 .orow .ad{font:600 15px/1.3 var(--sans);color:var(--ink)}
-button.ad{background:none;border:0;padding:0;margin:0;cursor:pointer;text-align:left}
-button.ad:hover{text-decoration:underline}
-button.ad:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+a.ad{display:inline-block;text-decoration:none}
+a.ad:hover{text-decoration:underline}
+a.ad:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
 .orow .alt{font:500 11.5px/1.5 var(--mono);color:var(--mute)}
-.oprof{margin:10px 0 2px;padding:16px;border:1px solid var(--hair);border-radius:12px;
- background:var(--sunk)}
-.oprof[hidden]{display:none}
-.oprof dl{margin:0 0 6px;display:grid;grid-template-columns:1fr;gap:12px}
-@media (min-width:620px){.oprof dl{grid-template-columns:1fr 1fr}}
-.oprof dt{font:600 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
- color:var(--mute);margin:0 0 4px}
-.oprof dd{margin:0;font:500 14.5px/1.4 var(--sans);color:var(--ink);overflow-wrap:anywhere}
-.oprof dd.kimlik{font:500 12px/1.5 var(--mono);color:var(--body)}
-.obol{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--hair)}
-.obol .nokta{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
-.obol .bad{flex:1 1 auto;min-width:0}
-.obol .bad b{display:block;font:600 14px/1.25 var(--sans);color:var(--ink)}
-.obol .bad span{font:500 12px/1.5 var(--mono);color:var(--mute)}
-.obol .cubuk{width:100%;height:6px;border-radius:999px;background:var(--hair);
- margin-top:6px;overflow:hidden}
-.obol .cubuk i{display:block;height:100%;border-radius:999px}
-.obol .sayi{font:600 13.5px/1 var(--mono);color:var(--ink);white-space:nowrap}
 .rolet{font:600 11px/1 var(--mono);border-radius:999px;padding:6px 9px;
  background:var(--sunk);color:var(--mute)}
 .rolet.koc{background:var(--acc-soft);color:var(--acc)}
@@ -366,7 +348,7 @@ body{padding-top:56px}
 <section class="panel" id="p-ogrenciler" hidden>
   <h2>Öğrenciler</h2>
   <p class="lede">Hesap açan herkes burada görünür. Adına tıklayınca kişinin
-  bilgileri ve modül ilerlemesi açılır. Bir hesabı mentör yaptığınızda o kişi
+  sayfası açılır: bilgileri, görevleri ve modül ilerlemesi. Bir hesabı mentör yaptığınızda o kişi
   bu panele ve ilerleme tablosuna erişir.</p>
   <div class="oara">
     <input id="oara" type="search" autocomplete="off" spellcheck="false"
@@ -418,8 +400,6 @@ var $$=function(s,r){return [].slice.call((r||document).querySelectorAll(s));};
 var el=function(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n;};
 var MODAD={}; MODS.forEach(function(m){MODAD[m.id]=m.ad;});
 var VERI=null, OGR=[], BEN=null, OZET={ogrenciler:[],tuval:[],cevap:[]};
-var EPOSTA={};            /* kullanici -> e-posta (giris kaydindan, yalniz admin) */
-var ACIK_PROFIL=null;     /* profili acik olan ogrencinin kimligi */
 
 function uyar(tip,metin){
   var k=$("#uyari"); k.innerHTML="";
@@ -665,14 +645,9 @@ function ogrenciCiz(){
     var kutu=el("div","okutu");
     var r=el("div","orow");
     var sol=el("div");
-    /* Ada tıklayınca profil açılır ve kapanır. */
-    var adb=el("button","ad",o.ad);
-    adb.type="button";
-    adb.setAttribute("aria-expanded", ACIK_PROFIL===o.id ? "true" : "false");
-    adb.onclick=function(){
-      ACIK_PROFIL = (ACIK_PROFIL===o.id) ? null : o.id;
-      ogrenciCiz();
-    };
+    /* Ada tıklayınca öğrencinin kendi sayfası açılır. */
+    var adb=el("a","ad",o.ad);
+    adb.href="ogrenci.html?id="+encodeURIComponent(o.id);
     sol.appendChild(adb);
     var kac=VERI.atama.filter(function(a){return a.ogrenci===o.id;}).length;
     var kacT=VERI.teslim.filter(function(t){return t.ogrenci===o.id;}).length;
@@ -705,92 +680,10 @@ function ogrenciCiz(){
     }
     r.appendChild(sag);
     kutu.appendChild(r);
-    if(ACIK_PROFIL===o.id) kutu.appendChild(profilPaneli(o));
     k.appendChild(kutu);
   });
 }
 
-/* Bir öğrencinin bölüm bölüm ilerlemesi. Ölçüt modül listesiyle aynıdır:
-   tuval ile test puanının ortalaması %70; tuvali olmayan modülde test tek
-   başına sayılır. */
-function ogrenciIlerleme(id){
-  var t={}, c={};
-  (OZET.tuval||[]).forEach(function(x){ if(x.kullanici===id) t[x.modul]=x.puan; });
-  (OZET.cevap||[]).forEach(function(x){
-    if(x.kullanici!==id) return;
-    c[x.modul]=c[x.modul]||{d:0,n:0};
-    c[x.modul].n++; if(x.dogru) c[x.modul].d++;
-  });
-  return IDEPT.map(function(d){
-    var satirlar=IMODS.filter(function(m){ return m.d===d; });
-    var gecilen=0, toplam=0, puanlanan=0, acik=null, baslanan=0;
-    satirlar.forEach(function(m){
-      var cc=c[m.i], p=null;
-      if(cc) baslanan++;
-      if(cc && cc.n>=m.q){
-        var test=Math.round(cc.d/m.q*100);
-        if(!m.v) p=test;
-        else if(t[m.i]!==undefined && t[m.i]!==null) p=Math.round((test+t[m.i])/2);
-      }
-      if(p!==null){ toplam+=p; puanlanan++; if(p>=IPASS) gecilen++; }
-      if(acik===null && (p===null || p<IPASS)) acik=m;
-    });
-    return {d:d, modul:satirlar.length, gecilen:gecilen, baslanan:baslanan,
-            ort: puanlanan ? Math.round(toplam/puanlanan) : null, acik:acik};
-  });
-}
-
-function tarihKisa(z){
-  if(!z) return "—";
-  var g=new Date(z);
-  if(isNaN(g)) return "—";
-  return g.toLocaleDateString("tr-TR",{day:"2-digit",month:"long",year:"numeric"});
-}
-
-function profilPaneli(o){
-  var p=el("div","oprof");
-  var dl=document.createElement("dl");
-  function alan(baslik, deger, sinif){
-    var b=document.createElement("div");
-    var dt=document.createElement("dt"); dt.textContent=baslik;
-    var dd=document.createElement("dd"); dd.textContent=deger;
-    if(sinif) dd.className=sinif;
-    b.appendChild(dt); b.appendChild(dd); dl.appendChild(b);
-  }
-  alan("Ad", o.ad||"—");
-  alan("E-posta", EPOSTA[o.id] || (ROL(BEN.rol)==="admin"
-        ? "Giriş kaydı yok" : "Yalnızca admin görebilir"));
-  alan("Rol", ETIKET[ROL(o.rol)]);
-  alan("Hesap kimliği", o.id, "kimlik");
-  alan("Hesap açılışı", tarihKisa(o.kayit));
-  var atanan=VERI.atama.filter(function(a){return a.ogrenci===o.id;}).length;
-  var teslim=VERI.teslim.filter(function(t){return t.ogrenci===o.id;}).length;
-  alan("Görev", atanan+" atandı · "+teslim+" teslim");
-  p.appendChild(dl);
-
-  ogrenciIlerleme(o.id).forEach(function(b){
-    var sat=el("div","obol");
-    var nokta=el("span","nokta"); nokta.style.background=IRENK[b.d]; sat.appendChild(nokta);
-    var ad=el("div","bad");
-    ad.appendChild(el("b",null,ILAB[b.d]));
-    var alt=b.gecilen+" / "+b.modul+" modül geçildi";
-    if(b.ort!==null) alt += " · ortalama %"+b.ort;
-    if(b.acik) alt += " · şu an modül "+b.acik.n;
-    else alt += " · bölüm tamamlandı";
-    if(!b.baslanan) alt = b.modul+" modül · henüz başlanmadı";
-    ad.appendChild(el("span",null,alt));
-    var cubuk=el("div","cubuk"); var dolu=el("i");
-    dolu.style.width=Math.round(b.gecilen/b.modul*100)+"%";
-    dolu.style.background=IRENK[b.d];
-    cubuk.appendChild(dolu); ad.appendChild(cubuk);
-    sat.appendChild(ad);
-    sat.appendChild(el("span","sayi","%"+Math.round(b.gecilen/b.modul*100)));
-    p.appendChild(sat);
-  });
-  return p;
-}
-
-/* ---- giris kaydi raporu ---- */
 var AYLAR=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
   "Eylül","Ekim","Kasım","Aralık"];
 /* Istanbul saatine gore YYYY-AA-GG; sv-SE bu bicimi verir. */
@@ -864,15 +757,6 @@ function girisYukle(gun){
   }).catch(function(h){ bildir("#gmsg","bad",FRC.okunurHata(h)); });
 }
 
-/* Ogrenci tablosunda e-posta yok; en son giris kaydindan okunur.
-   Giris kaydi yalnizca admin'e aciktir, mentorde bos kalir. */
-function epostaTopla(){
-  return FRC.girisleri(null, 500).then(function(k){
-    (k||[]).forEach(function(r){ if(r.kullanici && !EPOSTA[r.kullanici]) EPOSTA[r.kullanici]=r.eposta; });
-    if(ACIK_PROFIL) ogrenciCiz();
-  }).catch(function(){});
-}
-
 function aramaKur(){
   var g=$("#oara");
   if(!g) return;
@@ -935,7 +819,7 @@ if(!window.FRC){
     /* Giriş kaydı yalnızca admin'e açıktır; mentörde sekme hiç görünmez.
        Kural veritabanında da uygulanır, bu yalnızca arayüz tarafı. */
     aramaKur();
-    if(ROL(BEN.rol)==="admin"){ raporKur(); epostaTopla(); }
+    if(ROL(BEN.rol)==="admin"){ raporKur(); }
     else { gizle(['.tab[data-p="girisler"]', '#p-girisler']); }
     bolumBasliklari();
     adresSekmesi();
