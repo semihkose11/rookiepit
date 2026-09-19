@@ -17,6 +17,8 @@
      FRC.hepsiniOku()     bütün modüllerin durumu
      FRC.girisleri(gun)   giriş kaydı raporu (mentör ve admin)
      FRC.sifreDegistir()  eski şifreyle doğrulayıp yeni şifreyi yazar
+     FRC.sifreSifirla()   sıfırlama bağlantısı ister
+     FRC.sifreYaz()       sıfırlama oturumunda yeni şifreyi yazar
      FRC.tuvalYaz(...)    ilk tuval puanı
      FRC.cevapYaz(...)    bir sorunun ilk cevabı
    ===================================================================== */
@@ -318,6 +320,29 @@
         return profilOku().then(girisYaz).then(kuyruguBosalt)
           .then(function () { return FRC.kullanici(); });
       });
+    },
+
+    /* Şifre sıfırlama bağlantısı. Sunucu, e-posta kayıtlı olsun olmasın
+       aynı yanıtı döner; böylece hangi adresin kayıtlı olduğu dışarıdan
+       anlaşılamaz. Bağlantı, yeni şifre sayfasına döner.                */
+    sifreSifirla: function (eposta, donusAdresi) {
+      if (!ACIK) return Promise.reject({ mesaj: "Sunucu ayarlanmamış." });
+      var govde = { email: eposta };
+      var yol = "/auth/v1/recover";
+      if (donusAdresi) yol += "?redirect_to=" + encodeURIComponent(donusAdresi);
+      return istek(yol, { method: "POST", anonim: true, govde: govde }).then(function () { return true; });
+    },
+
+    /* Sıfırlama bağlantısıyla açılan oturumda yeni şifreyi yazar.
+       Eski şifre sorulmaz; kimlik bağlantıdaki jetonla doğrulanmıştır. */
+    sifreYaz: function (yeni) {
+      if (!ACIK) return Promise.reject({ mesaj: "Sunucu ayarlanmamış." });
+      if (!oturum) return Promise.reject({ kod: "oturum", mesaj: "Bağlantı geçersiz veya süresi dolmuş." });
+      return istek("/auth/v1/user", { method: "PUT", govde: { password: yeni } })
+        .then(function (k) {
+          if (k && oturum) { oturum.user = k; yerelYaz(OTURUM_ANAHTARI, oturum); }
+          return true;
+        });
     },
 
     /* Şifre değiştirme. Önce eski şifreyle kimlik doğrulanır; doğrulama

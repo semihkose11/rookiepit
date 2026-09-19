@@ -57,6 +57,12 @@ button.go{width:100%;margin-top:20px;font:600 15px/1 var(--sans);color:#fff;back
 button.go:hover{background:var(--acc)}
 button.go:disabled{opacity:.55;cursor:default}
 button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.unut{margin:8px 0 0}
+.unut button{background:none;border:0;padding:0;font:500 13px/1.4 var(--sans);
+ color:#1D4ED8;text-decoration:underline;cursor:pointer}
+.unut button:hover{color:#1E40AF}
+.unut button:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+.unut[hidden]{display:none}
 .msg{margin:16px 0 0;padding:12px 14px;border-radius:10px;font-size:13.5px;display:none}
 .msg.show{display:block}
 .msg.bad{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
@@ -107,6 +113,7 @@ button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
         <label for="sifre">Şifre</label>
         <input id="sifre" name="sifre" type="password" autocomplete="current-password" required>
         <p class="hint" id="sifre-ipucu" hidden>En az 6 karakter.</p>
+        <p class="unut" id="unutF"><button type="button" id="unut">Şifremi unuttum</button></p>
       </div>
       <button class="go" id="gonder" type="submit">Giriş yap</button>
     </form>
@@ -134,25 +141,63 @@ button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
   }
   function gizle(){ msg.className="msg"; msg.textContent=""; }
 
+  /* Google düğmesi yalnızca sunucuda açıksa ve şifre sıfırlama kipi
+     dışında görünür. */
+  var googleAcik=false;
+
   function modSec(yeni){
     mod=yeni;
+    var sifirla = mod==="sifirla";
     $("#t-giris").setAttribute("aria-selected", mod==="giris");
     $("#t-kayit").setAttribute("aria-selected", mod==="kayit");
     $("#f-ad").hidden = mod!=="kayit";
     $("#ad").required = mod==="kayit";
     $("#sifre-ipucu").hidden = mod!=="kayit";
     $("#sifre").setAttribute("autocomplete", mod==="kayit"?"new-password":"current-password");
-    gonder.textContent = mod==="kayit" ? "Hesap aç" : "Giriş yap";
+    /* Sıfırlamada yalnızca e-posta sorulur. */
+    var sf=$("#sifre").parentNode;
+    sf.hidden = sifirla;
+    $("#sifre").required = !sifirla;
+    $("#unutF").hidden = sifirla;
+    var gw=$("#gwrap"); if(gw) gw.hidden = sifirla || !googleAcik;
+    gonder.textContent = sifirla ? "Sıfırlama bağlantısı gönder"
+      : (mod==="kayit" ? "Hesap aç" : "Giriş yap");
     gizle();
   }
   $("#t-giris").onclick=function(){modSec("giris");};
   $("#t-kayit").onclick=function(){modSec("kayit");};
+  $("#unut").onclick=function(){
+    modSec("sifirla");
+    goster("warn","E-posta adresinizi yazın. Adres sistemde kayıtlıysa şifre sıfırlama bağlantısı gönderilir.");
+    $("#eposta").focus();
+  };
   if((new URLSearchParams(location.search).get("mod")||"")==="kayit") modSec("kayit");
 
   form.onsubmit=function(ev){
     ev.preventDefault();
     gizle();
     var eposta=$("#eposta").value.trim(), sifre=$("#sifre").value, ad=$("#ad").value.trim();
+
+    /* Şifre sıfırlama: yalnızca e-posta istenir, şifre alanı sorulmaz. */
+    if(mod==="sifirla"){
+      if(!eposta || eposta.indexOf("@")<0) return goster("bad","Geçerli bir e-posta adresi yazın.");
+      gonder.disabled=true;
+      gonder.textContent="Gönderiliyor";
+      var donus = new URL("yeni-sifre.html", location.href).href;
+      FRC.sifreSifirla(eposta, donus).then(function(){
+        /* Adres kayıtlı olsun olmasın aynı metin gösterilir; böylece
+           hangi adresin kayıtlı olduğu dışarıdan anlaşılamaz. */
+        modSec("giris");
+        goster("good","Bu e-posta sistemde kayıtlıysa şifre sıfırlama bağlantısı gönderildi. Gelen kutunuzu ve gereksiz posta klasörünü kontrol edin.");
+      }).catch(function(h){
+        goster("bad", FRC.okunurHata(h));
+      }).then(function(){
+        gonder.disabled=false;
+        gonder.textContent = mod==="sifirla" ? "Sıfırlama bağlantısı gönder" : "Giriş yap";
+      });
+      return;
+    }
+
     if(!eposta || eposta.indexOf("@")<0) return goster("bad","Geçerli bir e-posta adresi yazın.");
     if(!sifre) return goster("bad","Şifre alanı boş bırakılamaz.");
     if(mod==="kayit"){
@@ -203,7 +248,10 @@ button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
       });
   };
   if(FRC.acik){
-    FRC.saglayicilar().then(function(sg){ gwrap.hidden = !sg.google; });
+    FRC.saglayicilar().then(function(sg){
+      googleAcik = !!sg.google;
+      gwrap.hidden = !googleAcik || mod==="sifirla";
+    });
   }
   /* Sağlayıcı dönüşünde hata geldiyse göster. */
   if(FRC.oauthHatasi) goster("bad","Google ile giriş tamamlanamadı: "+FRC.oauthHatasi);

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="cerez.js"></script>
+<meta name="color-scheme" content="light">
+<meta name="description" content="Sifre sifirlama baglantisiyla yeni sifre belirleme.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="favicon.svg">
+<title>Yeni şifre · rookiepit.com</title>
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{color-scheme:light;
+ --ground:#EFE9FB;--surface:#FFFFFF;--sunk:#E4DBF7;
+ --ink:#000;--body:#141019;--mute:#463E58;--hair:#CFC2EC;
+ --acc:#5B21B6;--acc-soft:#EDE5FE;--ok:#116336;--ok-soft:#E4F3EA;
+ --no:#A5124A;--no-soft:#FBE6EE;
+ --shadow:0 1px 2px rgba(40,24,80,.09),0 8px 24px rgba(40,24,80,.08);
+ --disp:"Barlow Condensed",system-ui,sans-serif;
+ --sans:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+ --mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--body);font:400 16px/1.6 var(--sans);
+ min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 20px 60px}
+.card{width:100%;max-width:420px}
+.eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+h1{font:700 clamp(28px,7vw,38px)/1.05 var(--disp);color:var(--ink);margin:8px 0 10px}
+.sub{margin:0 0 20px;color:var(--mute);font-size:14.5px}
+.kutu{background:var(--surface);border:1px solid var(--hair);border-radius:16px;
+ padding:22px;box-shadow:var(--shadow)}
+label{display:block;font:600 11.5px/1 var(--mono);letter-spacing:.05em;
+ text-transform:uppercase;color:var(--mute);margin:0 0 7px}
+input{width:100%;font:400 16px/1.45 var(--sans);color:var(--ink);background:var(--sunk);
+ border:1px solid var(--hair);border-radius:10px;padding:12px 13px}
+input:focus{outline:2px solid var(--acc);outline-offset:1px;background:#fff}
+.field+.field{margin-top:16px}
+.hint{margin:6px 0 0;font:400 12.5px/1.5 var(--sans);color:var(--mute)}
+button.go{width:100%;margin-top:20px;font:600 15px/1 var(--sans);color:#fff;background:var(--ink);
+ border:0;border-radius:11px;padding:15px;cursor:pointer}
+button.go:hover{background:var(--acc)}
+button.go:disabled{opacity:.55;cursor:default}
+button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.msg{margin:16px 0 0;padding:12px 14px;border-radius:10px;font-size:13.5px;display:none}
+.msg.show{display:block}
+.msg.bad{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
+.msg.good{background:var(--ok-soft);color:var(--ok);border:1px solid #A9D6BC}
+.msg.warn{background:#FDF0DC;color:#8A5A00;border:1px solid #E8C68A}
+.foot{margin:18px 0 0;font:400 12.5px/1.6 var(--sans);color:var(--mute);text-align:center}
+.foot a{color:var(--acc)}
+.cright{margin:16px 0 0;font:500 11.5px/1.6 var(--mono);color:var(--mute);text-align:center}
+</style>
+</head>
+<body>
+
+<main class="card" lang="tr">
+  <div class="eyebrow" lang="en">FRC · rookiepit</div>
+  <h1>Yeni şifre</h1>
+  <p class="sub" id="alt">Bağlantı denetleniyor...</p>
+
+  <div class="kutu">
+    <form id="form" novalidate autocomplete="off" hidden>
+      <div class="field">
+        <label for="yeni">Yeni şifre</label>
+        <input id="yeni" type="password" autocomplete="new-password" required>
+        <p class="hint">En az 6 karakter.</p>
+      </div>
+      <div class="field">
+        <label for="yeni2">Yeni şifre (tekrar)</label>
+        <input id="yeni2" type="password" autocomplete="new-password" required>
+      </div>
+      <button class="go" id="kaydet" type="submit">Şifreyi kaydet</button>
+    </form>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </div>
+
+  <p class="foot"><a href="giris.html">Giriş sayfasına dön</a></p>
+  <p class="cright">© 2026 Semih Tuna Köse</p>
+</main>
+
+<script src="config.js"></script>
+<script src="sync.js"></script>
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s);};
+  var form=$("#form"), kaydet=$("#kaydet"), msg=$("#msg");
+
+  function goster(tip, metin){ msg.className="msg show "+tip; msg.textContent=metin; }
+  function gizle(){ msg.className="msg"; msg.textContent=""; }
+
+  if(!window.FRC){
+    $("#alt").textContent="Bu sayfa tek başına çalışmaz.";
+    goster("bad","Yanında config.js ve sync.js dosyaları bulunmalıdır.");
+    return;
+  }
+  if(!FRC.acik){
+    $("#alt").textContent="Sunucu ayarlanmamış.";
+    goster("warn","config.js dosyasındaki url ve key alanları doldurulmadan şifre sıfırlanamaz.");
+    return;
+  }
+
+  /* Bağlantıdaki jetonu sync.js açılışta okur ve oturumu kurar. */
+  FRC.hazir.then(function(k){
+    if(!k){
+      $("#alt").textContent="Bağlantı geçersiz veya süresi dolmuş.";
+      goster("bad","Şifre sıfırlama bağlantısı bir süre sonra geçersiz olur. Giriş sayfasından yeniden bağlantı isteyin.");
+      return;
+    }
+    $("#alt").textContent = (k.eposta || "Hesabınız") + " için yeni bir şifre belirleyin.";
+    form.hidden=false;
+    $("#yeni").focus();
+  }).catch(function(){
+    $("#alt").textContent="Bağlantı doğrulanamadı.";
+    goster("bad","Giriş sayfasından yeniden şifre sıfırlama bağlantısı isteyin.");
+  });
+
+  form.onsubmit=function(ev){
+    ev.preventDefault();
+    gizle();
+    var a=$("#yeni").value, b=$("#yeni2").value;
+    if(!a || !b) return goster("bad","Yeni şifreyi iki kez yazın.");
+    if(a.length<6) return goster("bad","Şifre en az 6 karakter olmalıdır.");
+    if(a!==b) return goster("bad","İki alandaki şifre aynı değil.");
+    kaydet.disabled=true;
+    goster("warn","Şifre kaydediliyor...");
+    FRC.sifreYaz(a).then(function(){
+      form.hidden=true;
+      goster("good","Şifreniz değiştirildi. Modüllere yönlendiriliyorsunuz.");
+      setTimeout(function(){ location.replace("moduller.html"); }, 1600);
+    }).catch(function(h){
+      goster("bad", FRC.okunurHata(h));
+      kaydet.disabled=false;
+    });
+  };
+})();
+</script>
+</body>
+</html>
