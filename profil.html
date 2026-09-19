@@ -66,6 +66,7 @@ input[type=password]{width:100%;font:400 16px/1.45 var(--sans);color:var(--ink);
 input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;background:#fff}
 .alan+.alan{margin-top:14px}
 .ipucu{margin:6px 0 0;font:400 12.5px/1.5 var(--sans);color:var(--mute)}
+.ayrac{height:1px;background:var(--hair);margin:20px 0 16px}
 .msg{margin:14px 0 0;font:500 14px/1.5 var(--sans);padding:12px 14px;border-radius:10px;display:none}
 .msg.show{display:block}
 .msg.bad{background:var(--no-soft);color:var(--no)}
@@ -97,7 +98,7 @@ input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;backg
 <p class="msg" id="uyari" role="status" aria-live="polite"></p>
 
 <section id="icerik" hidden>
-  <h2>Hesap</h2>
+  <h2 id="sifre">Hesap</h2>
   <p class="lede">Bu bilgiler giriş yaptığınız hesaba aittir. Adınızı veya rolünüzü
   yalnızca admin değiştirebilir.</p>
   <div class="kart">
@@ -107,15 +108,12 @@ input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;backg
       <div><dt>Rol</dt><dd><span class="rozet" id="pRol"></span></dd></div>
       <div><dt>Hesap kimliği</dt><dd id="pId" style="font:500 12.5px/1.5 var(--mono)"></dd></div>
     </dl>
-  </div>
-
-  <h2 id="sifre">Şifre</h2>
-  <p class="lede">Şifrenizi değiştirmek için önce şu anki şifrenizi yazın.
-  Eski şifre doğrulanmadan yeni şifre yazılmaz.</p>
-  <div class="kart">
+    <div class="ayrac"></div>
     <div class="dugmeler" id="sifreAc">
       <button class="go ikincil" id="sifreAcDugme" type="button"
               aria-expanded="false" aria-controls="sform">Şifreyi değiştir</button>
+      <p class="ipucu" id="sifreNot" style="margin:0;align-self:center">Eski şifre doğrulanmadan
+      yeni şifre yazılmaz.</p>
     </div>
     <form id="sform" novalidate autocomplete="off" hidden>
       <div class="alan">
@@ -224,6 +222,7 @@ function sifreBildir(tip, metin){
 }
 function sifreAc(acik){
   var form=$("#sform"), ac=$("#sifreAc"), dugme=$("#sifreAcDugme");
+  var not=$("#sifreNot"); if(not){ not.hidden=acik; not.style.display = acik ? "none" : ""; }
   form.hidden=!acik;
   ac.hidden=acik; ac.style.display = acik ? "none" : "";
   dugme.setAttribute("aria-expanded", acik ? "true" : "false");
