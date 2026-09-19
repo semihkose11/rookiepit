@@ -101,6 +101,7 @@
       a.href = adres; a.textContent = metin; a.setAttribute("role", "menuitem");
       m.appendChild(a); return a;
     }
+    madde("Profil", "profil.html");
     madde("Modüller", "moduller.html");
     if (yetkiliMi(k.rol)) {
       madde("Yönetim paneli", "admin.html");
