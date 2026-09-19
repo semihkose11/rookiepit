@@ -297,7 +297,7 @@ if(!window.FRC){
     if(!devam) return;
     var k=FRC.kullanici();
     $("#kim").textContent=k.ad; $("#rol").textContent=k.eposta;
-    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"koc.html"});
+    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"koc.html", ust:true});
     if(!(k.rol==="mentor" || k.rol==="admin" || k.rol==="koc")){
       /* Ogrenci hesabinda sayfa iskeleti de gorunmesin: yalnizca uyari kalir. */
       gizle(['.tools', '.key', '#bolumler', '#bos']);

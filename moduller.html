@@ -504,7 +504,7 @@ if(window.FRC && FRC.acik){
     YETKILI = yetkiliRol(k.rol);
     $("#whoad").textContent=k.ad+" · "+rolEtiketi(k.rol);
     render();
-    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"moduller.html"});
+    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"moduller.html", ust:true});
     return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; render(); } })
       .then(function(){ return gorevleriGoster(k); });
   });

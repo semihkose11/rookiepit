@@ -4,12 +4,15 @@
    kutu     : dislinin ekleneceği oge
    kullanici: FRC.hazir'dan gelen {ad, eposta, rol}
    buSayfa  : acik olan sayfanin dosya adi; kendi baglantisi listelenmez
+   ust      : true ise disli sayfanin en ustune, sag kosede sabitlenir
    cikis    : "yenile" ise cikista sayfa yenilenir, degilse giris.html'e gidilir */
 (function () {
   "use strict";
 
   var STIL = ''
     + '.dsar{position:relative;display:inline-block}'
+    /* ust: soldaki menu dugmesinin karsisi, sayfanin en ustu */
+    + '.dsar.ust{position:fixed;right:14px;top:10px;z-index:70}'
     + '.disli{width:42px;height:42px;display:flex;align-items:center;justify-content:center;'
     + 'background:var(--surface,#fff);border:1px solid var(--hair,#e5e5e5);border-radius:999px;'
     + 'cursor:pointer;padding:0}'
@@ -72,7 +75,7 @@
     stil();
 
     var sar = document.createElement("div");
-    sar.className = "dsar";
+    sar.className = secenek.ust ? "dsar ust" : "dsar";
 
     var d = document.createElement("button");
     d.className = "disli"; d.id = "disli"; d.type = "button";

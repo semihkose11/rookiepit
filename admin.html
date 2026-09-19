@@ -758,7 +758,7 @@ if(!window.FRC){
     if(!devam) return;
     BEN=FRC.kullanici();
     $("#kim").textContent=BEN.ad; $("#eposta").textContent=BEN.eposta;
-    FRC_DISLI.kur($("#dkutu"), BEN, {buSayfa:"admin.html"});
+    FRC_DISLI.kur($("#dkutu"), BEN, {buSayfa:"admin.html", ust:true});
     if(ROL(BEN.rol)==="ogrenci"){
       uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
