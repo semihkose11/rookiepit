@@ -38,6 +38,94 @@
     document.cookie = ad + "=; path=/; max-age=0; SameSite=Lax";
   }
 
+  /* ---- tema -------------------------------------------------------
+     Seçim tarayıcıda tutulur: frc_tema = acik | koyu | sistem.
+     Bu dosya <head> içinde çalıştığı için sayfa boyanmadan önce
+     uygulanır; koyu temada açık bir kare görünüp kaybolmaz.
+     Renkler sayfaların kendi değişkenleri üzerine yazılır, böylece
+     45 sayfanın hiçbirine dokunmak gerekmez.                        */
+  var TEMA_ANAHTARI = "frc_tema";
+
+  var KOYU = ''
+    + ':root[data-tema="koyu"]{color-scheme:dark;'
+    + '--ground:#141019;--surface:#1E1826;--sunk:#2A2235;'
+    + '--ink:#FFFFFF;--body:#E9E3F4;--mute:#A79BC0;--hair:#3B3350;'
+    + '--acc:#C3A6FF;--acc-soft:#2C2340;'
+    + '--ok:#77D6A2;--ok-soft:#17301F;'
+    + '--no:#FF93B4;--no-soft:#3A1526;'
+    + '--warn:#EFC06A;--warn-soft:#382A12;'
+    + '--elec:#F0A95C;--elec-soft:#3A2A14;'
+    + '--prog:#72D2E6;--prog-soft:#123039;'
+    + '--cad:#C3A6FF;--cad-soft:#2C2340;'
+    + '--shadow:0 1px 2px rgba(0,0,0,.55),0 10px 28px rgba(0,0,0,.45)}'
+    /* Zemini --ink olan düğmelerde yazı rengi sabit beyazdı; koyu temada
+       --ink beyaza döndüğü için yazı okunmaz hâle geliyordu. */
+    + ':root[data-tema="koyu"] .btn.solid,'
+    + ':root[data-tema="koyu"] .go,'
+    + ':root[data-tema="koyu"] button.go,'
+    + ':root[data-tema="koyu"] .gb.solid,'
+    + ':root[data-tema="koyu"] .num,'
+    + ':root[data-tema="koyu"] .step .no,'
+    + ':root[data-tema="koyu"] .tab[aria-selected="true"],'
+    + ':root[data-tema="koyu"] .fbtn[aria-pressed="true"],'
+    + ':root[data-tema="koyu"] .czg{color:var(--ground)}'
+    + ':root[data-tema="koyu"] .go.ikincil,'
+    + ':root[data-tema="koyu"] .czg.ikincil{color:var(--body)}'
+    /* Sabit beyaz zeminler */
+    + ':root[data-tema="koyu"] input:focus,'
+    + ':root[data-tema="koyu"] select:focus,'
+    + ':root[data-tema="koyu"] textarea:focus,'
+    + ':root[data-tema="koyu"] .puanla input{background:var(--surface)}'
+    + ':root[data-tema="koyu"] .gkart.bitti,'
+    + ':root[data-tema="koyu"] li.mod.pass{background:var(--surface)}'
+    + ':root[data-tema="koyu"] .sagust{background:rgba(30,24,38,.82)}'
+    /* Şemalar açık zemine göre çizildi; koyu temada beyaz bir kart
+       üzerinde gösterilir, yoksa çizgiler kayboluyor. */
+    + ':root[data-tema="koyu"] figure svg,'
+    + ':root[data-tema="koyu"] .sema svg{background:#FFFFFF;border-radius:10px}';
+
+  function temaOku() {
+    try {
+      var t = localStorage.getItem(TEMA_ANAHTARI);
+      return (t === "acik" || t === "koyu" || t === "sistem") ? t : "acik";
+    } catch (e) { return "acik"; }
+  }
+  function sistemKoyu() {
+    try { return !!(window.matchMedia && matchMedia("(prefers-color-scheme:dark)").matches); }
+    catch (e) { return false; }
+  }
+  function temaUygula(secim) {
+    var koyu = secim === "koyu" || (secim === "sistem" && sistemKoyu());
+    var k = document.documentElement;
+    k.setAttribute("data-tema", koyu ? "koyu" : "acik");
+    k.setAttribute("data-tema-secim", secim);
+  }
+  function temaStili() {
+    if (document.getElementById("frc-tema")) return;
+    var s = document.createElement("style");
+    s.id = "frc-tema"; s.textContent = KOYU;
+    (document.head || document.documentElement).appendChild(s);
+  }
+  temaStili();
+  temaUygula(temaOku());
+  try {
+    var mq = window.matchMedia && matchMedia("(prefers-color-scheme:dark)");
+    if (mq && mq.addEventListener)
+      mq.addEventListener("change", function () {
+        if (temaOku() === "sistem") temaUygula("sistem");
+      });
+  } catch (e) {}
+
+  window.FRC_TEMA = {
+    al: temaOku,
+    koyuMu: function () { return document.documentElement.getAttribute("data-tema") === "koyu"; },
+    ayarla: function (secim) {
+      if (secim !== "acik" && secim !== "koyu" && secim !== "sistem") return;
+      try { localStorage.setItem(TEMA_ANAHTARI, secim); } catch (e) {}
+      temaUygula(secim);
+    }
+  };
+
   var onay = cerezOku(AD);
   if (onay !== "kabul" && onay !== "red") onay = null;
 

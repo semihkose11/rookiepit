@@ -36,6 +36,15 @@
     + '.dmenu a:focus-visible,.dmenu button:focus-visible{outline:2px solid var(--acc,#6d28d9);'
     + 'outline-offset:-2px}'
     + '.dayir{height:1px;background:var(--hair,#e5e5e5);margin:6px 4px}'
+    + '.dtema{padding:6px 11px 8px}'
+    + '.dtema span{display:block;font:600 10.5px/1 var(--mono,ui-monospace);'
+    + 'letter-spacing:.1em;text-transform:uppercase;color:var(--mute,#666);margin:0 0 7px}'
+    + '.dtsec{display:flex;gap:6px}'
+    + '.dtsec button{flex:1 1 0;width:auto;text-align:center;padding:8px 4px;'
+    + 'font:600 12.5px/1 var(--sans,system-ui);border:1px solid var(--hair,#e5e5e5);'
+    + 'border-radius:9px;background:var(--surface,#fff);color:var(--body,#333);cursor:pointer}'
+    + '.dtsec button[aria-pressed="true"]{background:var(--acc-soft,#f3eaff);'
+    + 'border-color:var(--acc,#6d28d9);color:var(--acc,#6d28d9)}'
     + '.dcik{color:var(--no,#b42318)}'
     + '.dcik:hover{background:var(--no-soft,#fdecea);color:var(--no,#b42318)}';
 
@@ -107,6 +116,30 @@
       madde("Yönetim paneli", "admin.html");
       madde("Görevlendirme", "admin.html#yeni");
       madde("İlerleme tablosu", "koc.html");
+    }
+
+    /* Tema seçimi: açık, koyu veya cihazın ayarı. Seçim tarayıcıda kalır. */
+    if (window.FRC_TEMA) {
+      var ta = document.createElement("div"); ta.className = "dayir"; m.appendChild(ta);
+      var tk = document.createElement("div"); tk.className = "dtema";
+      var tb = document.createElement("span"); tb.textContent = "Tema"; tk.appendChild(tb);
+      var ts = document.createElement("div"); ts.className = "dtsec";
+      var secenekler = [["acik", "Açık"], ["koyu", "Koyu"], ["sistem", "Cihaz"]];
+      var dugmeler = [];
+      function isaretle() {
+        var simdi = FRC_TEMA.al();
+        dugmeler.forEach(function (d) {
+          d.setAttribute("aria-pressed", d.dataset.tema === simdi ? "true" : "false");
+        });
+      }
+      secenekler.forEach(function (o) {
+        var d = document.createElement("button");
+        d.type = "button"; d.dataset.tema = o[0]; d.textContent = o[1];
+        d.onclick = function (e) { e.stopPropagation(); FRC_TEMA.ayarla(o[0]); isaretle(); };
+        dugmeler.push(d); ts.appendChild(d);
+      });
+      isaretle();
+      tk.appendChild(ts); m.appendChild(tk);
     }
 
     var ayir = document.createElement("div"); ayir.className = "dayir"; m.appendChild(ayir);
