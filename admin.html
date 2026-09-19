@@ -30,6 +30,7 @@ header{padding:34px 0 20px;border-bottom:1px solid var(--hair);
  display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
 .eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
 h1{font:700 clamp(30px,6vw,46px)/1.04 var(--disp);margin:8px 0 0}
+.sagust{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-left:auto}
 .who{font:500 12.5px/1.5 var(--mono);color:var(--mute);text-align:right}
 .who b{display:block;color:var(--ink);font-size:14px}
 .lnk{font:500 12.5px/1 var(--mono);color:var(--body);background:var(--surface);
@@ -252,10 +253,10 @@ body{padding-top:56px}
     <div class="eyebrow" lang="en">FRC · admin</div>
     <h1>Yönetim Paneli</h1>
   </div>
-  <div class="who"><b id="kim"></b><span id="eposta"></span><br>
-    <a class="lnk" href="koc.html">İlerleme tablosu</a>
-    <a class="lnk" href="moduller.html">Modüller</a>
-    <button class="lnk" id="cikis">Çıkış yap</button></div>
+  <div class="sagust">
+    <div class="who"><b id="kim"></b><span id="eposta"></span></div>
+    <div id="dkutu"></div>
+  </div>
 </header>
 
 <div id="uyari"></div>
@@ -367,6 +368,7 @@ body{padding-top:56px}
 
 <script src="config.js"></script>
 <script src="sync.js"></script>
+<script src="disli.js"></script>
 <script>
 var MODS=[{"id":"electrical-00-tools","ad":"Elektrik 00 · Aletler: Elektrik Ekibinin Takım Çantası"},{"id":"electrical-01-power-path","ad":"Elektrik 01 · Power Path: Battery'den PD'ye"},{"id":"electrical-02-circuit-protection","ad":"Elektrik 02 · Circuit Protection: Branch Breaker ve Fuse Seçimi"},{"id":"electrical-03-can-bus","ad":"Elektrik 03 · CAN Bus: Zincir, Termination ve Device ID"},{"id":"electrical-04-radio","ad":"Elektrik 04 · Radio: Besleme, Bağlantı ve Status Lights"},{"id":"electrical-05-brownout","ad":"Elektrik 05 · Brownout: Voltage Sag ve Current Draw"},{"id":"electrical-06-status-lights","ad":"Elektrik 06 · Status Lights: roboRIO, RSL ve PD"},{"id":"electrical-07-pneumatics","ad":"Elektrik 07 · Pneumatics: Basınç Bölgeleri, Koruma ve Besleme"},{"id":"electrical-08-motors","ad":"Elektrik 08 · Motorlar ve Motor Controller'lar"},{"id":"electrical-09-custom-circuits","ad":"Elektrik 09 · Custom Circuit'ler ve Legal Wiring"},{"id":"electrical-10-wire-management","ad":"Elektrik 10 · Wire Management, Strain Relief ve Bakım"},{"id":"electrical-11-control-system","ad":"Elektrik 11 · Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor"},{"id":"electrical-12-inspection","ad":"Elektrik 12 · Inspection Points: Elektrik Denetimi Baştan Sona"},{"id":"programming-00-java-vscode","ad":"Programlama 00 · Temel Java ve VS Code"},{"id":"programming-00b-wpilib-temelleri","ad":"Programlama 00b · WPILib Temelleri"},{"id":"programming-01-project-structure","ad":"Programlama 01 · Proje Yapısı ve Robot Yaşam Döngüsü"},{"id":"programming-02-deploy","ad":"Programlama 02 · Deploy ve Driver Station Bağlantısı"},{"id":"programming-03-command-based","ad":"Programlama 03 · Command-Based Temelleri"},{"id":"programming-04-subsystems","ad":"Programlama 04 · Subsystem'ler ve Default Command'ler"},{"id":"programming-05-motor-controllers","ad":"Programlama 05 · Motor Controller'ları Koddan Sürmek"},{"id":"programming-06-triggers","ad":"Programlama 06 · Joystick ve Tuş Bağlamaları"},{"id":"programming-07-sensors","ad":"Programlama 07 · Sensor'ler: Encoder, Limit Switch ve Gyro"},{"id":"programming-08-pid","ad":"Programlama 08 · Closed-Loop Kontrol ve PIDController"},{"id":"programming-09-telemetry","ad":"Programlama 09 · Telemetry ve Driver Station Loglarıyla Hata Ayıklama"},{"id":"programming-10-autonomous","ad":"Programlama 10 · Autonomous Rutinleri ve SendableChooser"},{"id":"programming-11-simulation","ad":"Programlama 11 · Simulation ve Unit Test"},{"id":"programming-12-competition","ad":"Programlama 12 · Yarışmaya Hazırlık ve Yazılım Denetimi"},{"id":"cad-01-onshape-basics","ad":"CAD 01 · Onshape'e Giriş: Document, Part Studio ve Assembly"},{"id":"cad-02-sketching","ad":"CAD 02 · Sketch Temelleri ve Kısıtlanma Durumu"},{"id":"cad-03-constraints","ad":"CAD 03 · Sketch Constraint'leri ve Tasarım Niyeti"},{"id":"cad-04-features","ad":"CAD 04 · Feature'lar ve Extrude'un End Condition'ları"},{"id":"cad-05-variables-configurations","ad":"CAD 05 · Variable'lar ve Configuration'lar"},{"id":"cad-06-in-context","ad":"CAD 06 · Multi-Part Part Studio ve In-Context Tasarım"},{"id":"cad-07-mates","ad":"CAD 07 · Assembly Mate'leri ve Mate Connector"},{"id":"cad-08-versions-branches","ad":"CAD 08 · Version, Branch ve Merge"},{"id":"cad-09-drawings","ad":"CAD 09 · Drawing: Teknik Resim ve Güncelleme"},{"id":"cad-10-cots-imports","ad":"CAD 10 · COTS Parçalar, Import ve Linked Document"},{"id":"cad-11-robot-rules","ad":"CAD 11 · Robot Kuralları ve CAD"},{"id":"cad-12-design-review","ad":"CAD 12 · Capstone: CAD Tasarım İncelemesi"}];
 var $=function(s,r){return (r||document).querySelector(s);};
@@ -735,8 +737,6 @@ function yukle(){
   });
 }
 
-$("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
-
 /* Verilen seciciye uyan ogeleri gizler; yoksa sessizce gecer. */
 /* Eski 'koc' degeri mentor sayilir; veritabani gecisi oncesinde de calisir. */
 var ETIKET = {ogrenci:"öğrenci", mentor:"mentör", admin:"admin"};
@@ -758,9 +758,8 @@ if(!window.FRC){
     if(!devam) return;
     BEN=FRC.kullanici();
     $("#kim").textContent=BEN.ad; $("#eposta").textContent=BEN.eposta;
+    FRC_DISLI.kur($("#dkutu"), BEN, {buSayfa:"admin.html"});
     if(ROL(BEN.rol)==="ogrenci"){
-      /* Ogrenci hesabinda capraz baglanti da gorunmesin. */
-      gizle(['.who .lnk[href="koc.html"]']);
       uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
     }

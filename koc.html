@@ -27,6 +27,7 @@ header{padding:36px 0 22px;border-bottom:1px solid var(--hair);
  display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
 .eyebrow{font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
 h1{font:700 clamp(30px,6vw,44px)/1.04 var(--disp);color:var(--ink);margin:8px 0 0}
+.sagust{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-left:auto}
 .who{font:500 12.5px/1.5 var(--mono);color:var(--mute);text-align:right}
 .who b{display:block;color:var(--ink);font-size:14px}
 .lnk{font:500 12.5px/1 var(--mono);color:var(--body);background:var(--surface);
@@ -148,9 +149,10 @@ body{padding-top:56px}
     <div class="eyebrow" lang="en">FRC · rookie practice</div>
     <h1>Mentör Tablosu</h1>
   </div>
-  <div class="who"><b id="kim"></b><span id="rol"></span><br>
-    <a class="lnk" href="admin.html">Yönetim paneli</a>
-    <button class="lnk" id="cikis">Çıkış yap</button></div>
+  <div class="sagust">
+    <div class="who"><b id="kim"></b><span id="rol"></span></div>
+    <div id="dkutu"></div>
+  </div>
 </header>
 
 <div class="tools" role="group" aria-label="Bölüm">
@@ -175,6 +177,7 @@ body{padding-top:56px}
 
 <script src="config.js"></script>
 <script src="sync.js"></script>
+<script src="disli.js"></script>
 <script>
 var MODS=[{"dept":"electrical","n":"00","id":"electrical-00-tools","q":8,"title":"Aletler: Elektrik Ekibinin Takım Çantası"},{"dept":"electrical","n":"01","id":"electrical-01-power-path","q":9,"title":"Power Path: Battery'den PD'ye"},{"dept":"electrical","n":"02","id":"electrical-02-circuit-protection","q":8,"title":"Circuit Protection: Branch Breaker ve Fuse Seçimi"},{"dept":"electrical","n":"03","id":"electrical-03-can-bus","q":8,"title":"CAN Bus: Zincir, Termination ve Device ID"},{"dept":"electrical","n":"04","id":"electrical-04-radio","q":8,"title":"Radio: Besleme, Bağlantı ve Status Lights"},{"dept":"electrical","n":"05","id":"electrical-05-brownout","q":8,"title":"Brownout: Voltage Sag ve Current Draw"},{"dept":"electrical","n":"06","id":"electrical-06-status-lights","q":8,"title":"Status Lights: roboRIO, RSL ve PD"},{"dept":"electrical","n":"07","id":"electrical-07-pneumatics","q":8,"title":"Pneumatics: Basınç Bölgeleri, Koruma ve Besleme"},{"dept":"electrical","n":"08","id":"electrical-08-motors","q":8,"title":"Motorlar ve Motor Controller'lar"},{"dept":"electrical","n":"09","id":"electrical-09-custom-circuits","q":8,"title":"Custom Circuit'ler ve Legal Wiring"},{"dept":"electrical","n":"10","id":"electrical-10-wire-management","q":8,"title":"Wire Management, Strain Relief ve Bakım"},{"dept":"electrical","n":"11","id":"electrical-11-control-system","q":8,"title":"Kontrol Sistemi Bütünlüğü: roboRIO, MXP ve Co-Processor"},{"dept":"electrical","n":"12","id":"electrical-12-inspection","q":8,"title":"Inspection Points: Elektrik Denetimi Baştan Sona"},{"dept":"programming","n":"00","id":"programming-00-java-vscode","q":8,"title":"Temel Java ve VS Code"},{"dept":"programming","n":"00b","id":"programming-00b-wpilib-temelleri","q":8,"title":"WPILib Temelleri"},{"dept":"programming","n":"01","id":"programming-01-project-structure","q":8,"title":"Proje Yapısı ve Robot Yaşam Döngüsü"},{"dept":"programming","n":"02","id":"programming-02-deploy","q":8,"title":"Deploy ve Driver Station Bağlantısı"},{"dept":"programming","n":"03","id":"programming-03-command-based","q":8,"title":"Command-Based Temelleri"},{"dept":"programming","n":"04","id":"programming-04-subsystems","q":8,"title":"Subsystem'ler ve Default Command'ler"},{"dept":"programming","n":"05","id":"programming-05-motor-controllers","q":8,"title":"Motor Controller'ları Koddan Sürmek"},{"dept":"programming","n":"06","id":"programming-06-triggers","q":8,"title":"Joystick ve Tuş Bağlamaları"},{"dept":"programming","n":"07","id":"programming-07-sensors","q":8,"title":"Sensor'ler: Encoder, Limit Switch ve Gyro"},{"dept":"programming","n":"08","id":"programming-08-pid","q":8,"title":"Closed-Loop Kontrol ve PIDController"},{"dept":"programming","n":"09","id":"programming-09-telemetry","q":8,"title":"Telemetry ve Driver Station Loglarıyla Hata Ayıklama"},{"dept":"programming","n":"10","id":"programming-10-autonomous","q":8,"title":"Autonomous Rutinleri ve SendableChooser"},{"dept":"programming","n":"11","id":"programming-11-simulation","q":8,"title":"Simulation ve Unit Test"},{"dept":"programming","n":"12","id":"programming-12-competition","q":8,"title":"Yarışmaya Hazırlık ve Yazılım Denetimi"},{"dept":"cad","n":"01","id":"cad-01-onshape-basics","q":8,"title":"Onshape'e Giriş: Document, Part Studio ve Assembly"},{"dept":"cad","n":"02","id":"cad-02-sketching","q":8,"title":"Sketch Temelleri ve Kısıtlanma Durumu"},{"dept":"cad","n":"03","id":"cad-03-constraints","q":8,"title":"Sketch Constraint'leri ve Tasarım Niyeti"},{"dept":"cad","n":"04","id":"cad-04-features","q":8,"title":"Feature'lar ve Extrude'un End Condition'ları"},{"dept":"cad","n":"05","id":"cad-05-variables-configurations","q":8,"title":"Variable'lar ve Configuration'lar"},{"dept":"cad","n":"06","id":"cad-06-in-context","q":8,"title":"Multi-Part Part Studio ve In-Context Tasarım"},{"dept":"cad","n":"07","id":"cad-07-mates","q":8,"title":"Assembly Mate'leri ve Mate Connector"},{"dept":"cad","n":"08","id":"cad-08-versions-branches","q":8,"title":"Version, Branch ve Merge"},{"dept":"cad","n":"09","id":"cad-09-drawings","q":8,"title":"Drawing: Teknik Resim ve Güncelleme"},{"dept":"cad","n":"10","id":"cad-10-cots-imports","q":8,"title":"COTS Parçalar, Import ve Linked Document"},{"dept":"cad","n":"11","id":"cad-11-robot-rules","q":8,"title":"Robot Kuralları ve CAD"},{"dept":"cad","n":"12","id":"cad-12-design-review","q":8,"title":"Capstone: CAD Tasarım İncelemesi"}], ACC={"electrical": "#B45309", "programming": "#0E7490", "cad": "#6D28D9"}, LABEL={"electrical": "Elektrik", "programming": "Programlama", "cad": "CAD"}, PASS=70;
 var DEPT=["electrical","programming","cad"];
@@ -277,8 +280,6 @@ function ciz(){
   };
 });
 
-$("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
-
 /* Verilen seciciye uyan ogeleri gizler; yoksa sessizce gecer. */
 function gizle(seciciler){
   seciciler.forEach(function(s){
@@ -296,9 +297,10 @@ if(!window.FRC){
     if(!devam) return;
     var k=FRC.kullanici();
     $("#kim").textContent=k.ad; $("#rol").textContent=k.eposta;
+    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"koc.html"});
     if(!(k.rol==="mentor" || k.rol==="admin" || k.rol==="koc")){
       /* Ogrenci hesabinda sayfa iskeleti de gorunmesin: yalnizca uyari kalir. */
-      gizle(['.who .lnk[href="admin.html"]', '.tools', '.key', '#bolumler', '#bos']);
+      gizle(['.tools', '.key', '#bolumler', '#bos']);
       uyar("bad","Bu sayfa yalnızca mentör ve admin hesaplarına açıktır. Öğrenci hesabıyla giriş yaptınız.");
       return;
     }

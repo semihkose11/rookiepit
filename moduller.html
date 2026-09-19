@@ -63,6 +63,7 @@ a.home:hover{color:var(--acc)}
 .gkart a.gb.solid:hover,.gkart button.gb.solid:hover{background:var(--acc);border-color:var(--acc)}
 .gkart .gnot{margin:10px 0 0;font:400 13px/1.6 var(--sans);color:var(--mute)}
 .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.sagust{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-left:auto}
 .who{text-align:right;font:500 12px/1.5 var(--mono);color:var(--mute)}
 .who b{display:block;color:var(--ink);font-size:13.5px}
 button.lnk{font:500 11.5px/1 var(--mono);color:var(--body);background:var(--surface);
@@ -128,6 +129,7 @@ li.mod.pass .num{background:var(--ok)}
 </style>
 <script src="config.js"></script>
 <script src="sync.js"></script>
+<script src="disli.js"></script>
 
 <style>
 /* ---- sol ust menu (gezinme) ---------------------------------------- */
@@ -202,8 +204,10 @@ body{padding-top:56px}
 <header>
   <div class="topbar">
     <div class="eyebrow" lang="en">FRC · rookie practice</div>
-    <div class="who" id="who" hidden><b id="whoad"></b>
-      <button class="lnk" id="cikis">Çıkış yap</button></div>
+    <div class="sagust">
+      <div class="who" id="who" hidden><b id="whoad"></b></div>
+      <div id="dkutu"></div>
+    </div>
   </div>
   <h1><a href="index.html" class="home">FRC Çalışma Programı</a></h1>
   <p class="sub">Üç bölüm, 39 modül. Her bölümde bir seferde tek bir modül açıktır.
@@ -500,7 +504,7 @@ if(window.FRC && FRC.acik){
     YETKILI = yetkiliRol(k.rol);
     $("#whoad").textContent=k.ad+" · "+rolEtiketi(k.rol);
     render();
-    $("#cikis").onclick=function(){ FRC.cikisYap().then(function(){ location.replace("giris.html"); }); };
+    FRC_DISLI.kur($("#dkutu"), k, {buSayfa:"moduller.html"});
     return FRC.hepsiniOku().then(function(v){ if(v){ SUNUCU=v; render(); } })
       .then(function(){ return gorevleriGoster(k); });
   });
