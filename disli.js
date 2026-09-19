@@ -102,7 +102,9 @@
       m.appendChild(a); return a;
     }
     madde("Profil", "profil.html");
-    madde("Şifreyi değiştir", "profil.html#sifre");
+    /* Şifre maddesi öğrenci menüsünde görünmez; profil sayfasındaki
+       düğme yerinde durur, oradan değiştirilebilir. */
+    if (yetkiliMi(k.rol)) madde("Şifreyi değiştir", "profil.html#sifre");
     madde("Modüller", "moduller.html");
     if (yetkiliMi(k.rol)) {
       madde("Yönetim paneli", "admin.html");
