@@ -48,12 +48,12 @@
 
   var KOYU = ''
     + ':root[data-tema="koyu"]{color-scheme:dark;'
-    + '--ground:#141019;--surface:#1E1826;--sunk:#2A2235;'
-    + '--ink:#FFFFFF;--body:#E9E3F4;--mute:#A79BC0;--hair:#3B3350;'
-    + '--acc:#C3A6FF;--acc-soft:#2C2340;'
-    + '--ok:#77D6A2;--ok-soft:#17301F;'
-    + '--no:#FF93B4;--no-soft:#3A1526;'
-    + '--warn:#EFC06A;--warn-soft:#382A12;'
+    + '--ground:#171126;--surface:#221A38;--sunk:#2E2449;'
+    + '--ink:#FFFFFF;--body:#EBE4FA;--mute:#B2A3D6;--hair:#453869;'
+    + '--acc:#C9AEFF;--acc-soft:#342856;'
+    + '--ok:#7EDCA8;--ok-soft:#1B3328;'
+    + '--no:#FF9ABA;--no-soft:#3E1A31;'
+    + '--warn:#F2C572;--warn-soft:#3B2E1E;'
     + '--elec:#F0A95C;--elec-soft:#3A2A14;'
     + '--prog:#72D2E6;--prog-soft:#123039;'
     + '--cad:#C3A6FF;--cad-soft:#2C2340;'
@@ -78,7 +78,7 @@
     + ':root[data-tema="koyu"] .puanla input{background:var(--surface)}'
     + ':root[data-tema="koyu"] .gkart.bitti,'
     + ':root[data-tema="koyu"] li.mod.pass{background:var(--surface)}'
-    + ':root[data-tema="koyu"] .sagust{background:rgba(30,24,38,.82)}'
+    + ':root[data-tema="koyu"] .sagust{background:rgba(34,26,56,.84)}'
     /* Şemalar açık zemine göre çizildi; koyu temada beyaz bir kart
        üzerinde gösterilir, yoksa çizgiler kayboluyor. */
     + ':root[data-tema="koyu"] figure svg,'
