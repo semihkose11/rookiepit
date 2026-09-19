@@ -28,6 +28,7 @@
   var OTURUM_ANAHTARI = "frc_oturum";
   var KUYRUK_ANAHTARI = "frc_kuyruk";
   var SAHIP_ANAHTARI = "frc_sahip";   /* yerel kaydin hangi hesaba ait oldugu */
+  var GUN_ANAHTARI = "frc_giris_gun"; /* bugun giris kaydi yazildi mi */
 
   var oturum = null;    /* {access_token, refresh_token, expires_at, user} */
   var profil = null;    /* {id, ad, rol} */
@@ -238,6 +239,29 @@
     }).catch(function () {});
   }
 
+  /* Giriş kaydı yalnızca "giriş yap" düğmesine basıldığında yazılsaydı,
+     tarayıcısında oturumu açık kalan kişi hiç görünmezdi. Bu yüzden kayıtlı
+     oturumla açılan ilk sayfada da, hesap başına günde bir kez, bir satır
+     yazılır. İşaret tarayıcıda tutulur; hesap veya gün değişince yenilenir. */
+  function bugunTR() {
+    try { return new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Istanbul" }); }
+    catch (e) { return new Date().toISOString().slice(0, 10); }
+  }
+  function girisIsaretle() {
+    yerelYaz(GUN_ANAHTARI, {
+      id: oturum && oturum.user && oturum.user.id, gun: bugunTR()
+    });
+  }
+  function girisIsaretliMi() {
+    var v = yerelOku(GUN_ANAHTARI, null);
+    return !!v && v.id === (oturum && oturum.user && oturum.user.id) && v.gun === bugunTR();
+  }
+  function gunlukGiris() {
+    if (!ACIK || !oturum || !oturum.user) return Promise.resolve();
+    if (girisIsaretliMi()) return Promise.resolve();
+    return girisKaydet().then(girisIsaretle);
+  }
+
   function gonder(tablo, satir) {
     return istek("/rest/v1/" + tablo, {
       method: "POST",
@@ -281,7 +305,7 @@
         method: "POST", anonim: true, govde: { email: eposta, password: sifre }
       }).then(function (r) {
         oturumKaydet(r);
-        return profilOku().then(girisKaydet).then(kuyruguBosalt)
+        return profilOku().then(girisKaydet).then(girisIsaretle).then(kuyruguBosalt)
           .then(function () { return FRC.kullanici(); });
       });
     },
@@ -317,6 +341,7 @@
       /* Bilgisayar paylaşılıyorsa sıradaki öğrenci temiz başlar. */
       ilerlemeyiSil();
       try { localStorage.removeItem(SAHIP_ANAHTARI); } catch (e) {}
+      yerelSil(GUN_ANAHTARI);
       if (!ACIK || !s) return Promise.resolve();
       return fetch(C.url.replace(/\/+$/, "") + "/auth/v1/logout", {
         method: "POST",
@@ -547,7 +572,7 @@
       oturumKaydet(gelen);
       return kullaniciCek()
         .then(function () { sahibiDenetle(oturum && oturum.user && oturum.user.id); })
-        .then(profilOku).then(girisKaydet).then(kuyruguBosalt)
+        .then(profilOku).then(girisKaydet).then(girisIsaretle).then(kuyruguBosalt)
         .then(function () { return FRC.kullanici(); })
         .catch(function () { oturumKapat(); return null; });
     }
@@ -557,7 +582,8 @@
     var p = (oturum.expires_at && oturum.expires_at - 60 <= simdi) ? tazele() : Promise.resolve(oturum);
     return p.then(function (o) {
       if (!o) return null;
-      return profilOku().then(kuyruguBosalt).then(function () { return FRC.kullanici(); });
+      return profilOku().then(gunlukGiris).then(kuyruguBosalt)
+        .then(function () { return FRC.kullanici(); });
     }).catch(function () { return null; });
   })();
 

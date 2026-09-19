@@ -147,6 +147,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 .gfiltre input[type=date]{font:500 13px/1 var(--mono);padding:9px 10px;
   border:1px solid var(--hair);border-radius:9px;background:var(--surface);
   color:var(--body)}
+.gfiltre input[type=search]{flex:1 1 220px;min-width:170px;font:400 14px/1.2 var(--sans);
+  padding:9px 12px;border:1px solid var(--hair);border-radius:999px;
+  background:var(--surface);color:var(--ink)}
+.gfiltre input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .rbas{margin:0 0 10px;font:400 13px/1.5 var(--sans);color:var(--mute)}
 .rbas b{display:block;font:700 18px/1.3 var(--disp);color:var(--ink);
   letter-spacing:.01em;margin-bottom:2px}
@@ -362,6 +366,9 @@ body{padding-top:56px}
     <button class="go mini ikincil" id="gbugun" type="button">Bugün</button>
     <button class="go mini ikincil" id="ghepsi" type="button">Son 500 kayıt</button>
     <button class="go mini" id="gpdf" type="button">PDF olarak kaydet</button>
+    <label for="gara">Ad</label>
+    <input id="gara" type="search" autocomplete="off" spellcheck="false"
+           placeholder="Ada veya e-postaya göre ara" aria-label="Giriş kaydında ara">
   </div>
   <div id="grapor">
     <p class="rbas"><b id="rbaslik"></b><span id="rozet"></span></p>
@@ -679,19 +686,35 @@ function tarihMetni(g){
   return Number(p[2])+" "+AYLAR[Number(p[1])-1]+" "+p[0];
 }
 
+/* Yuklenen kayitlar ve ad suzgeci. Suzgec tarayicida uygulanir;
+   PDF de ekranda ne varsa onu yazdirir. */
+var GKAYIT=[], GGUN=null, GARAMA="";
+
+function girisSuz(){
+  var t=sadelestir(GARAMA);
+  if(!t) return GKAYIT;
+  return GKAYIT.filter(function(k){
+    return sadelestir(k.ad).indexOf(t)>=0 || sadelestir(k.eposta).indexOf(t)>=0;
+  });
+}
+
 function girisCiz(kayitlar, gun){
   var tb=$("#gtablo"); tb.innerHTML="";
-  $("#rbaslik").textContent = gun
+  var suzuk = !!sadelestir(GARAMA);
+  $("#rbaslik").textContent = (gun
     ? ("Giriş kaydı · "+tarihMetni(gun))
-    : "Giriş kaydı · son 500 kayıt";
+    : "Giriş kaydı · son 500 kayıt")
+    + (suzuk ? ' · "'+GARAMA.trim()+'"' : "");
   var kisi={}; kayitlar.forEach(function(k){ kisi[k.kullanici]=1; });
   $("#rozet").textContent = kayitlar.length
-    ? (kayitlar.length+" giriş · "+Object.keys(kisi).length+" kişi")
+    ? (kayitlar.length+" giriş · "+Object.keys(kisi).length+" kişi"
+       + (suzuk ? " · toplam "+GKAYIT.length+" kayıt içinde" : ""))
     : "";
   var eski=$(".rbos"); if(eski) eski.remove();
   if(!kayitlar.length){
     $("#grapor").appendChild(el("p","rbos",
-      gun ? "Bu günde giriş yok." : "Henüz giriş kaydı yok."));
+      suzuk ? "Bu ada uyan giriş yok."
+            : (gun ? "Bu günde giriş yok." : "Henüz giriş kaydı yok.")));
     return;
   }
   var thead=document.createElement("thead"), tr=document.createElement("tr");
@@ -714,8 +737,10 @@ function girisCiz(kayitlar, gun){
 
 function girisYukle(gun){
   bildir("#gmsg","","");
-  return FRC.girisleri(gun).then(function(k){ girisCiz(k, gun); })
-    .catch(function(h){ bildir("#gmsg","bad",FRC.okunurHata(h)); });
+  return FRC.girisleri(gun).then(function(k){
+    GKAYIT = k || []; GGUN = gun;
+    girisCiz(girisSuz(), gun);
+  }).catch(function(h){ bildir("#gmsg","bad",FRC.okunurHata(h)); });
 }
 
 function aramaKur(){
@@ -732,6 +757,10 @@ function raporKur(){
   $("#ghepsi").onclick=function(){ t.value=""; girisYukle(null); };
   /* Tarayicinin yazdirma penceresinden "PDF olarak kaydet" secilir. */
   $("#gpdf").onclick=function(){ window.print(); };
+  var ara=$("#gara");
+  if(ara) ara.addEventListener("input", function(){
+    GARAMA=ara.value; girisCiz(girisSuz(), GGUN);
+  });
   girisYukle(t.value);
 }
 
