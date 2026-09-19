@@ -59,10 +59,18 @@ dd{margin:0;font:500 16px/1.4 var(--sans);color:var(--ink);overflow-wrap:anywher
 .cubuk{width:100%;height:8px;border-radius:999px;background:var(--sunk);margin-top:8px;overflow:hidden}
 .cubuk i{display:block;height:100%;border-radius:999px;background:var(--acc)}
 .sayi{font:600 15px/1 var(--mono);color:var(--ink);white-space:nowrap}
+label{display:block;font:600 11.5px/1 var(--mono);letter-spacing:.05em;
+ text-transform:uppercase;color:var(--mute);margin:0 0 7px}
+input[type=password]{width:100%;font:400 16px/1.45 var(--sans);color:var(--ink);
+ background:var(--sunk);border:1px solid var(--hair);border-radius:10px;padding:11px 12px}
+input[type=password]:focus{outline:2px solid var(--acc);outline-offset:1px;background:#fff}
+.alan+.alan{margin-top:14px}
+.ipucu{margin:6px 0 0;font:400 12.5px/1.5 var(--sans);color:var(--mute)}
 .msg{margin:14px 0 0;font:500 14px/1.5 var(--sans);padding:12px 14px;border-radius:10px;display:none}
 .msg.show{display:block}
 .msg.bad{background:var(--no-soft);color:var(--no)}
 .msg.warn{background:var(--warn-soft);color:var(--warn)}
+.msg.good{background:var(--ok-soft);color:var(--ok)}
 .go{font:600 14px/1 var(--sans);color:#fff;background:var(--ink);border:0;border-radius:999px;
  padding:13px 18px;cursor:pointer}
 .go.ikincil{background:var(--surface);color:var(--body);border:1px solid var(--hair)}
@@ -98,6 +106,31 @@ dd{margin:0;font:500 16px/1.4 var(--sans);color:var(--ink);overflow-wrap:anywher
       <div><dt>Rol</dt><dd><span class="rozet" id="pRol"></span></dd></div>
       <div><dt>Hesap kimliği</dt><dd id="pId" style="font:500 12.5px/1.5 var(--mono)"></dd></div>
     </dl>
+  </div>
+
+  <h2>Şifre</h2>
+  <p class="lede">Şifrenizi değiştirmek için önce şu anki şifrenizi yazın.
+  Eski şifre doğrulanmadan yeni şifre yazılmaz.</p>
+  <div class="kart">
+    <form id="sform" novalidate autocomplete="off">
+      <div class="alan">
+        <label for="eskiS">Eski şifre</label>
+        <input id="eskiS" type="password" autocomplete="current-password">
+      </div>
+      <div class="alan">
+        <label for="yeniS">Yeni şifre</label>
+        <input id="yeniS" type="password" autocomplete="new-password">
+        <p class="ipucu">En az 6 karakter.</p>
+      </div>
+      <div class="alan">
+        <label for="yeniS2">Yeni şifre (tekrar)</label>
+        <input id="yeniS2" type="password" autocomplete="new-password">
+      </div>
+      <div class="dugmeler" style="margin-top:16px">
+        <button class="go" id="sifreKaydet" type="submit">Şifreyi değiştir</button>
+      </div>
+    </form>
+    <p class="msg" id="sifreMsg" role="status" aria-live="polite"></p>
   </div>
 
   <h2>İlerleme</h2>
@@ -178,6 +211,33 @@ function ciz(veri){
   });
 }
 
+/* Şifre değiştirme. Denetimler tarayıcıda yapılır, asıl doğrulamayı
+   sunucu yapar: eski şifre yanlışsa yeni şifre hiç yazılmaz. */
+function sifreBildir(tip, metin){
+  var m=$("#sifreMsg"); m.className="msg show "+tip; m.textContent=metin;
+}
+function sifreKur(){
+  var form=$("#sform"), dugme=$("#sifreKaydet");
+  if(!form) return;
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var eski=$("#eskiS").value, yeni=$("#yeniS").value, tekrar=$("#yeniS2").value;
+    if(!eski) return sifreBildir("bad","Eski şifrenizi yazın.");
+    if(!yeni || !tekrar) return sifreBildir("bad","Yeni şifreyi iki kez yazın.");
+    if(yeni.length<6) return sifreBildir("bad","Yeni şifre en az 6 karakter olmalıdır.");
+    if(yeni!==tekrar) return sifreBildir("bad","Yeni şifre iki alanda aynı değil.");
+    if(yeni===eski) return sifreBildir("bad","Yeni şifre eskisiyle aynı olamaz.");
+    dugme.disabled=true;
+    sifreBildir("warn","Şifre değiştiriliyor...");
+    FRC.sifreDegistir(eski, yeni).then(function(){
+      form.reset();
+      sifreBildir("good","Şifreniz değiştirildi. Bundan sonra yeni şifrenizle girin.");
+    }).catch(function(h){
+      sifreBildir("bad", h && h.kod==="eski-sifre" ? "Eski şifre hatalı." : FRC.okunurHata(h));
+    }).then(function(){ dugme.disabled=false; });
+  });
+}
+
 if(!window.FRC){
   uyar("bad","Bu sayfa tek başına çalışmaz: yanında config.js ve sync.js dosyaları bulunmalıdır.");
 } else if(!FRC.acik){
@@ -198,6 +258,7 @@ if(!window.FRC){
       $("#cikis").disabled=true;
       Promise.resolve(FRC.cikisYap()).then(function(){ location.replace("giris.html"); });
     };
+    sifreKur();
     ciz(null);
     return FRC.hepsiniOku().then(function(v){ if(v) ciz(v); });
   }).catch(function(h){ uyar("bad", FRC.okunurHata(h)); });

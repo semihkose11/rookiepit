@@ -16,6 +16,7 @@
      FRC.oku(modulKey)    bir modülün sunucudaki durumu
      FRC.hepsiniOku()     bütün modüllerin durumu
      FRC.girisleri(gun)   giriş kaydı raporu (mentör ve admin)
+     FRC.sifreDegistir()  eski şifreyle doğrulayıp yeni şifreyi yazar
      FRC.tuvalYaz(...)    ilk tuval puanı
      FRC.cevapYaz(...)    bir sorunun ilk cevabı
    ===================================================================== */
@@ -100,6 +101,10 @@
     if (m.indexOf("not confirmed") >= 0)
       return "Hesap henüz doğrulanmamış. E-postanıza gelen bağlantıya tıklayın.";
     if (m.indexOf("rate") >= 0) return "Çok fazla deneme yapıldı. Bir süre bekleyin.";
+    if (m.indexOf("should be different") >= 0)
+      return "Yeni şifre eskisiyle aynı olamaz.";
+    if (m.indexOf("reauthentication") >= 0)
+      return "Sunucu yeniden kimlik doğrulama istedi. Çıkış yapıp yeniden girin.";
     return (h && h.mesaj) || "Beklenmeyen bir hata oluştu.";
   }
 
@@ -278,6 +283,31 @@
         oturumKaydet(r);
         return profilOku().then(girisKaydet).then(kuyruguBosalt)
           .then(function () { return FRC.kullanici(); });
+      });
+    },
+
+    /* Şifre değiştirme. Önce eski şifreyle kimlik doğrulanır; doğrulama
+       başarısızsa hiçbir şey değişmez. Doğrulama tazelenmiş bir oturum
+       döndürür ve yeni şifre bu jetonla yazılır, böylece sunucudaki
+       "yakın zamanda giriş" koşulu da sağlanır. Şifreler hiçbir yerde
+       saklanmaz; yalnızca isteğin gövdesinde sunucuya gider.          */
+    sifreDegistir: function (eski, yeni) {
+      if (!ACIK) return Promise.reject({ mesaj: "Sunucu ayarlanmamış." });
+      if (!oturum || !oturum.user || !oturum.user.email)
+        return Promise.reject({ kod: "oturum", mesaj: "Oturum bulunamadı. Yeniden giriş yapın." });
+      var eposta = oturum.user.email;
+      return istek("/auth/v1/token?grant_type=password", {
+        method: "POST", anonim: true, govde: { email: eposta, password: eski }
+      }).catch(function (h) {
+        if (h && (h.durum === 400 || h.durum === 401))
+          throw { kod: "eski-sifre", mesaj: "Eski şifre hatalı.", durum: h.durum };
+        throw h;
+      }).then(function (taze) {
+        oturumKaydet(taze);
+        return istek("/auth/v1/user", { method: "PUT", govde: { password: yeni } });
+      }).then(function (k) {
+        if (k && oturum) { oturum.user = k; yerelYaz(OTURUM_ANAHTARI, oturum); }
+        return true;
       });
     },
 
