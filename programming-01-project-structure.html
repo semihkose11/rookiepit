@@ -15,6 +15,7 @@
 [hidden]:not([hidden=until-found]){display:none!important}</style>
 <script src="config.js"></script>
 <script src="sync.js"></script>
+<script src="sonraki.js"></script>
 <title>Proje Yapısı ve Robot Yaşam Döngüsü · FRC Programming Modül 01</title>
 <style>
 /* Tek sabit tema: beyaz-mor zemin, siyah yazı. Koyu mod devre dışı. */
@@ -1628,12 +1629,25 @@ function render(){
       : score>=70
       ? "Yanlış bildiğiniz soruların gerekçesini bir kez daha okuyun, sonra testi baştan çözün."
       : "Puanınız 70'in altında. Kavram bölümünü ve kartları tekrar okuyup testi baştan çözmeniz önerilir."));
-    const r=el("button","retry","Testi baştan çöz");
-    r.onclick=()=>{ state={}; save(); render();
-      document.getElementById("bar").scrollIntoView({behavior:"smooth",block:"start"}); };
-    f.append(r);
     box.append(f);
   }
+  /* Modul sonu eylem kutusu: sonraki module gec / modulu tekrarla. */
+  if(window.FRC_SONRAKI) FRC_SONRAKI.kur({
+    id: MODUL,
+    bitti: done===D.drills.length && D.drills.length>0,
+    test: D.drills.length ? Math.round(got/D.drills.length*100) : null,
+    tuval: (state.__b && typeof state.__b.s==="number") ? state.__b.s : null,
+    tekrar: function(){
+      state={}; save(); render();
+      var br=document.getElementById("breset"),
+          g=document.getElementById("bgate"),
+          w=document.getElementById("bwrap"),
+          bb=document.getElementById("bbar");
+      if(br) br.click();
+      if(g&&w&&bb){ g.hidden=false; w.hidden=true; bb.hidden=true; }
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+  });
 }
 render();
 /* ---- sunucu oturumu ve ilerlemenin geri yüklenmesi ---- */
