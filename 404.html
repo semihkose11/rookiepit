@@ -41,10 +41,21 @@ a.btn.solid:hover{background:var(--acc);border-color:var(--acc)}
   <p>Aradığınız adres taşınmış veya hiç var olmamış olabilir. Modül adları
   değiştiyse ana sayfadan devam edin.</p>
   <div class="cta">
-    <a class="btn solid" href="/rookiepit/">Ana sayfa</a>
-    <a class="btn" href="/rookiepit/moduller.html">Modüller</a>
+    <a class="btn solid" id="k404ana" href="/">Ana sayfa</a>
+    <a class="btn" id="k404mod" href="/moduller.html">Modüller</a>
   </div>
   <p class="cright">© 2026 Semih Tuna Köse</p>
 </main>
+<script>
+/* Site iki adreste birden yayinda olabilir: kendi alan adinin kokunde
+   (rookiepit.com/) ve proje sitesi yolunda (semihkose11.github.io/rookiepit/).
+   404 sayfasi her iki durumda da kokun neresi oldugunu adresten okur. */
+(function () {
+  var kok = /^\/rookiepit\//.test(location.pathname) ? "/rookiepit/" : "/";
+  var a = document.getElementById("k404ana"), m = document.getElementById("k404mod");
+  if (a) a.setAttribute("href", kok);
+  if (m) m.setAttribute("href", kok + "moduller.html");
+})();
+</script>
 </body>
 </html>
