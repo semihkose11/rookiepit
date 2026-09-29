@@ -133,8 +133,11 @@ button.go:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
   var $=function(s){return document.querySelector(s);};
   var mod="giris";
   var msg=$("#msg"), gonder=$("#gonder"), form=$("#form");
-  var donus=(new URLSearchParams(location.search).get("donus")||"moduller.html")
-            .replace(/[^A-Za-z0-9._-]/g,"") || "moduller.html";
+  /* Giriş bittiğinde gidilecek sayfa. Kilitli bir sayfadan gelindiyse o sayfa
+     adres satırında "donus" ile taşınır; doğrudan gelindiyse ana sayfaya gidilir. */
+  var donus=(new URLSearchParams(location.search).get("donus")||"")
+            .replace(/[^A-Za-z0-9._-]/g,"");
+  if(!/^[A-Za-z0-9._-]+\.html$/.test(donus)) donus="index.html";
 
   function goster(tip, metin){
     msg.className="msg show "+tip; msg.textContent=metin;

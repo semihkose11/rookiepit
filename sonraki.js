@@ -112,8 +112,29 @@
     yuva.parentNode.insertBefore(kutu, yuva.nextSibling);
   }
 
+  /* Mentor ve admin hesaplarinda kilit uygulanmaz: siradaki module puan
+     sartini karsilamadan da gecebilirler. Rol sunucudan gelene kadar
+     bilinmez, geldiginde kutu yeniden cizilir. */
+  var yetkili = false, sonSecenek = null;
+
+  function rolYetkili(r) { return r === "mentor" || r === "admin" || r === "koc"; }
+
+  var dinlendi = false;
+  function rolDinle() {
+    if (dinlendi || !window.FRC || !FRC.hazir) return;
+    dinlendi = true;
+    FRC.hazir.then(function (k) {
+      var y = !!(k && rolYetkili(k.rol));
+      if (y === yetkili) return;
+      yetkili = y;
+      if (sonSecenek) kur(sonSecenek);
+    })["catch"](function () {});
+  }
+
   function kur(o) {
     o = o || {};
+    sonSecenek = o;
+    rolDinle();
     kaldir();
     if (!o.bitti) return;
 
@@ -125,7 +146,7 @@
     var tuval = (typeof o.tuval === "number") ? o.tuval : null;
     var ort = bu.v ? ((test !== null && tuval !== null) ? Math.round((test + tuval) / 2) : null)
                    : test;
-    var acik = ort !== null && ort >= GECER;
+    var acik = yetkili || (ort !== null && ort >= GECER);
 
     stil();
 
@@ -179,6 +200,8 @@
 
     yerlestir(kutu);
   }
+
+  rolDinle();
 
   window.FRC_SONRAKI = { kur: kur, kaldir: kaldir, GECER: GECER };
 })();
