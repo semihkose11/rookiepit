@@ -88,6 +88,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 .go.ikincil:hover{background:var(--sunk)}
 .go.tehlike{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
 .go.mini{font-size:12.5px;padding:9px 12px;margin-top:0;border-radius:9px}
+.silonay{margin:4px 0 0;padding:12px 14px;border-radius:12px;
+  background:var(--no-soft);border:1px solid #EBB3C9}
+.silonay p{margin:0 0 10px;font:400 13.5px/1.6 var(--sans);color:#6D0B31}
+.silonay .dugmeler{display:flex;flex-wrap:wrap;gap:8px}
 .msg{margin:16px 0 0;padding:12px 14px;border-radius:10px;font-size:13.5px;display:none}
 .msg.show{display:block}
 .msg.bad{background:var(--no-soft);color:#6D0B31;border:1px solid #EBB3C9}
@@ -678,10 +682,51 @@ function ogrenciCiz(){
       };
       sag.appendChild(sec);
     }
+    /* Hesabi silmek yalnizca admin'e aciktir; admin hesaplari ve kisinin
+       kendisi silinemez. Ayni kural Edge Function'da da uygulanir. */
+    if(o.id!==BEN.id && ROL(BEN.rol)==="admin" && rolu!=="admin"){
+      var sil=el("button","go mini tehlike","Sil");
+      sil.type="button";
+      sil.style.marginLeft="8px";
+      sil.onclick=function(){ silOnayi(kutu, o, sil); };
+      sag.appendChild(sil);
+    }
     r.appendChild(sag);
     kutu.appendChild(r);
     k.appendChild(kutu);
   });
+}
+
+/* Silme geri alinamaz, bu yuzden tek tiklamayla yapilmaz: satirin altinda
+   ayri bir onay kutusu acilir. */
+function silOnayi(kutu, o, dugme){
+  if(kutu.querySelector(".silonay")) return;
+  dugme.disabled=true;
+  var ku=el("div","silonay");
+  ku.appendChild(el("p",null, o.ad+" hesabı, bütün puanları, görevleri ve "
+    + "giriş kayıtları kalıcı olarak silinecek. Bu işlem geri alınamaz."));
+  var dg=el("div","dugmeler");
+  var evet=el("button","go mini tehlike","Evet, hesabı sil");
+  evet.type="button";
+  var vaz=el("button","go mini ikincil","Vazgeç");
+  vaz.type="button";
+  vaz.onclick=function(){ ku.remove(); dugme.disabled=false; };
+  evet.onclick=function(){
+    evet.disabled=true; vaz.disabled=true;
+    evet.textContent="Siliniyor";
+    FRC.hesapSil(o.id).then(function(){
+      bildir("#omsg","good", o.ad+" hesabı silindi.");
+      return yukle();
+    }).catch(function(h){
+      bildir("#omsg","bad", FRC.okunurHata(h));
+      evet.disabled=false; vaz.disabled=false;
+      evet.textContent="Evet, hesabı sil";
+    });
+  };
+  dg.appendChild(evet); dg.appendChild(vaz);
+  ku.appendChild(dg);
+  kutu.appendChild(ku);
+  evet.focus();
 }
 
 var AYLAR=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",

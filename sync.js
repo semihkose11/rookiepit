@@ -16,6 +16,7 @@
      FRC.oku(modulKey)    bir modülün sunucudaki durumu
      FRC.hepsiniOku()     bütün modüllerin durumu
      FRC.girisleri(gun)   giriş kaydı raporu (mentör ve admin)
+     FRC.hesapSil(id)     hesabı kalıcı siler (yalnızca admin)
      FRC.sifreDegistir()  eski şifreyle doğrulayıp yeni şifreyi yazar
      FRC.sifreSifirla()   sıfırlama bağlantısı ister
      FRC.sifreYaz()       sıfırlama oturumunda yeni şifreyi yazar
@@ -569,6 +570,21 @@
         method: "PATCH",
         basliklar: { "Prefer": "return=minimal" },
         govde: { rol: rol }
+      });
+    },
+
+    /* Bir hesabı kalıcı olarak siler. İşi sunucudaki ogrenci-sil Edge
+       Function yapar; gizli anahtar oradadır, tarayıcıya hiç inmez.
+       Yetki denetimi de orada yapılır: yalnızca admin silebilir, admin
+       hesapları ve kişinin kendisi silinemez. */
+    hesapSil: function (ogrenciId) {
+      if (!ACIK || !oturum) return Promise.reject({ mesaj: "Oturum yok." });
+      return istek("/functions/v1/ogrenci-sil", {
+        method: "POST",
+        govde: { id: ogrenciId }
+      }).then(function (y) {
+        if (!y || !y.silindi) throw { kod: "silme", mesaj: "Hesap silinemedi." };
+        return y;
       });
     },
 
